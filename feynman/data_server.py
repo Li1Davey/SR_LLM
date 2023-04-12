@@ -7,7 +7,15 @@ from feynman.datasets.sampling import build_sampling_objs
 import json
 
 
-# from tqdm import tqdm
+# call a million batch of dataset. compute the time.
+# a class takes the input of a file, that a file is an equation.
+# the class will return a batch of data, everytime it was queried.
+# don't do the tcp version.
+# create a offline version to bitbucket.org
+#
+# future competition.
+# offline evaluation: that are not open.
+# type of noise, rate of noise.
 
 def _recv_X_send_y():
     context = zmq.Context()
