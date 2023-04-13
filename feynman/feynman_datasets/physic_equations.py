@@ -3,9 +3,9 @@ from collections import OrderedDict
 import numpy as np
 import sympy
 
-from feynman.datasets.base import KnownEquation
-from feynman.datasets.registry import register_eq_class
-from feynman.datasets.sampling import DefaultSampling, IntegerSampling, SimpleSampling
+from .base import KnownEquation
+from .registry import register_eq_class
+from .sampling import DefaultSampling, IntegerSampling, SimpleSampling
 
 FEYNMAN_EQUATION_CLASS_DICT = OrderedDict()
 GRAVITATIONAL_CONSTANT = 6.67430e-11

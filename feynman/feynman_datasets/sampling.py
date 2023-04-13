@@ -1,6 +1,6 @@
 import numpy as np
 
-from feynman.datasets.registry import get_sampling_obj, register_sampling_class, register_sampling_func
+from .registry import get_sampling_obj, register_sampling_class, register_sampling_func
 
 
 @register_sampling_func
