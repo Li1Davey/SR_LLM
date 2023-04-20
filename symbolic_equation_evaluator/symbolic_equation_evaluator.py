@@ -3,9 +3,10 @@ import time
 import numpy as np
 import scipy
 from feynman_datasets import sampling, physic_equations
-from feynman_datasets.registry import get_eq_obj
-from feynman_datasets.sampling import build_sampling_objs
+# from feynman_datasets.registry import get_eq_obj
+# from feynman_datasets.sampling import build_sampling_objs
 import json
+import pickle
 
 
 # call a million batch of dataset. compute the time.
@@ -19,7 +20,7 @@ import json
 # type of noise, rate of noise.
 
 
-def _recv_config_send_Xy():
+def _socket_data_generator():
     import zmq
     context = zmq.Context()
     socket = context.socket(zmq.REP)
@@ -28,43 +29,12 @@ def _recv_config_send_Xy():
     while True:
         #  Wait for next request from client
         message = socket.recv_json()
-        # print("Received request: {}".format(message))
-        dataset = generate_batch_Xy(message['eq_name'], message['batch_size'])
-
-        #  Do some 'work'
-        # time.sleep(1)
-        # print('Sending data pairs: {}'.format(dataset.shape))
+        # dataset = generate_batch_Xy(message['eq_name'], message['batch_size'])
         #  Send reply back to client
-        socket.send(dataset)
+        # socket.send(dataset)
         idx += 1
         if idx % 100 == 0:
             print("sending", idx)
-
-
-def generate_batch_Xy(dataset_name, sample_size):
-    print(f'Generating dataset `{dataset_name}` ...')
-    print()
-    dataset_kwargs = dict()
-
-    # Instantiate equation object
-    sampling_objs = build_sampling_objs(dataset_kwargs.pop('sampling_objs')) if 'sampling_objs' in dataset_kwargs else None
-    eq_instance = get_eq_obj(dataset_name, sampling_objs=sampling_objs, **dataset_kwargs)
-    # Generate tabular dataset
-    dataset = eq_instance.create_dataset(sample_size)
-    return dataset
-
-
-def generate_cvgp_format_dataset(dataset_name, sample_file_size, singlefile_sample_size=256):
-    print(f'Generating dataset `{dataset_name}` ...')
-    dataset_kwargs = dict()
-    # Instantiate equation object
-    sampling_objs = build_sampling_objs(dataset_kwargs.pop('sampling_objs')) if 'sampling_objs' in dataset_kwargs else None
-    eq_instance = get_eq_obj(dataset_name, sampling_objs=sampling_objs, **dataset_kwargs)
-
-    # Write out each split
-    fixed_column = [i for i in range(len(eq_instance.x))]
-    dataset = eq_instance.create_fixedcolumn_dataset(singlefile_sample_size, fixed_column)
-    return dataset
 
 
 class Dataloader(object):
@@ -88,16 +58,6 @@ class Dataloader(object):
         self.noise_scale = noise_scale
         self.noises = construct_noise(self.noise_type)
 
-    def gen_X_randomly(self, input_dim, fixed_dims, scale=9.5, bias=0.5, **extra_params):
-        '''
-        generate a batch of data randomly.
-        '''
-
-        X = np.random.rand(self.batch_size, input_dim) * scale + bias
-        if len(fixed_dims) != 0:
-            X[:, fixed_dims] = X[0, fixed_dims]
-        return X
-
     def compute_ytrue_from_given_X(self, X):
         """
         evaluate the y_true from given input X
@@ -111,22 +71,35 @@ class Dataloader(object):
         """
         if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             loss = self.metric(y_true, y_pred, np.var(y_true))
-        elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']
+        elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
             loss = self.metric(y_true, y_pred)
         return loss
 
+from sympy.parsing.sympy_parser import parse_expr
 
-def make_data_sample_distribution(dataX_sampling_type):
-    _all_samplers = {
-        'normal': lambda scale, batch_size: np.random.normal(loc=0.0, scale=scale, size=batch_size),
-        'exponential': lambda scale, batch_size: np.random.exponential(scale=scale, size=batch_size),
-        'uniform': lambda scale, batch_size: np.random.uniform(low=-np.abs(scale), high=np.abs(scale), size=batch_size),
-        'laplace': lambda scale, batch_size: np.random.laplace(loc=0.0, scale=scale, size=batch_size),
-        'logistic': lambda scale, batch_size: np.random.logistic(loc=0.0, scale=scale, size=batch_size)
-    }
-    assert dataX_sampling_type in _all_samplers, "Unrecognized noise_type" + dataX_sampling_type
+def _read_true_program_file(filename):
+    """
+    filename: string of true program
+    """
+    expression = df['expression'].iloc[0][1:-1]
+    expr = parse_expr(expression)
+    print('dso', expr.expand())
+    var_x = expr.free_symbols
+    print(var_x)
+    y_hat = np.zeros(X_test.shape[0])
+    for idx in range(X_test.shape[0]):
+        X = X_test[idx, :]
+        val_dict = {}
+        for x in var_x:
+            i = int(x.name[1:]) - 1
+            val_dict[x] = X[i]
+        y_hat[idx] = expr.evalf(subs=val_dict)
 
-    return _all_samplers[dataX_sampling_type]
+    return y_hat
+
+
+def read_picked_data(filename):
+    return pickle.load(open(filename, 'rb'))
 
 
 def construct_noise(noise_type):
@@ -194,7 +167,8 @@ def make_regression_metric(metric_name):
 
         # Spearman correlation coefficient
         # Range: [0, 1]
-        "spearman": lambda y, y_hat: scipy.stats.spearmanr(y, y_hat)[0]
+        "spearman": lambda y, y_hat: scipy.stats.spearmanr(y, y_hat)[0],
+        "accuracy(r2)": lambda y, y_hat: evaluate_accuracy_r2(y, y_hat)
     }
 
     assert metric_name in all_metrics, "Unrecognized reward function name."
@@ -202,25 +176,7 @@ def make_regression_metric(metric_name):
     return all_metrics[metric_name]
 
 
-class Feynman_dataloader(Dataloader):
-    def __int__(self, dataset_family, true_program, batch_size, noise_type, noise_scale, metric_name):
-        """
-        dataset_family: feynman-easy, feynman-medium, feynman-hard
-        """
-        super().__int__(dataset_family, true_program, batch_size, noise_type, noise_scale, metric_name)
-        pass
-
-    def gen_X_randomly(self, input_dim, fixed_dims, scale=9.5, bias=0.5, **extra_params):
-        pass
-
-
-class SinCosInv_dataloader(Dataloader):
-    def __int__(self, dataset_family, true_program, batch_size, noise_type, noise_scale, metric_name):
-        """
-        dataset_family: Inv, SinCos, SinCosInv
-        """
-        super().__int__(dataset_family, true_program, batch_size, noise_type, noise_scale, metric_name)
-        pass
-
-    def gen_X_randomly(self, input_dim, fixed_dims, scale=9.5, bias=0.5, **extra_params):
-        pass
+def evaluate_accuracy_r2(y, y_hat, tau=0.95):
+    from sklearn.metrics import r2_score
+    score = r2_score(y, y_hat)
+    return score

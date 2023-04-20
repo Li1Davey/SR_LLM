@@ -1,7 +1,6 @@
 from collections import OrderedDict
 
 import numpy as np
-import sympy
 
 from .base import KnownEquation
 from .registry import register_eq_class
@@ -23,7 +22,6 @@ FINE_STRUCTURE_CONSTANT = 7.2973525693e-3
 def register_feynman_eq_class(cls):
     register_eq_class(cls)
     FEYNMAN_EQUATION_CLASS_DICT[cls.__name__] = cls
-    return cls
 
 
 @register_feynman_eq_class
@@ -38,18 +36,13 @@ class FeynmanICh6Eq20(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-i.6.20'
+    _eq_name = 'symbolic_equation_evaluator-i.6.20'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.exp(-(x[0] / x[1]) ** 2 / 2) / (sympy.sqrt(2 * sympy.pi) * x[1])
-
-    def eq_func(self, x):
-        return np.exp(-(x[0] / x[1]) ** 2 / 2) / (np.sqrt(2 * np.pi) * x[1])
 
 
 @register_feynman_eq_class
@@ -62,18 +55,13 @@ class FeynmanICh6Eq20a(KnownEquation):
         - x[0]: theta (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.6.20a'
+    _eq_name = 'symbolic_equation_evaluator-i.6.20a'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-1, 1.0e1)]
-        
-        super().__init__(num_vars=1, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.exp(-x[0] ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
 
-    def eq_func(self, x):
-        return np.exp(-x[0] ** 2 / 2) / np.sqrt(2 * np.pi)
+        super().__init__(num_vars=1, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -89,7 +77,7 @@ class FeynmanICh6Eq20b(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-i.6.20b'
+    _eq_name = 'symbolic_equation_evaluator-i.6.20b'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -97,13 +85,8 @@ class FeynmanICh6Eq20b(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
                 DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.exp(-((x[0] - x[1]) / x[2]) ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
 
-    def eq_func(self, x):
-        return np.exp(-((x[0] - x[1]) / x[2]) ** 2 / 2)/(np.sqrt(2 * np.pi) * x[2])
+        super().__init__(num_vars=3, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -119,7 +102,7 @@ class FeynmanICh8Eq14(KnownEquation):
         - x[3]: y1 (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.8.14'
+    _eq_name = 'symbolic_equation_evaluator-i.8.14'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -127,13 +110,8 @@ class FeynmanICh8Eq14(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
             ]
-        
-        super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt((x[0] - x[1]) ** 2 + (x[2] - x[3]) ** 2)
 
-    def eq_func(self, x):
-        return np.sqrt((x[0] - x[1]) ** 2 + (x[2] - x[3]) ** 2)
+        super().__init__(num_vars=4, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -154,7 +132,7 @@ class FeynmanICh9Eq18(KnownEquation):
     - Constraints:
         - (x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2 != 0
     """
-    _eq_name = 'feynman-i.9.18'
+    _eq_name = 'symbolic_equation_evaluator-i.9.18'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -165,14 +143,10 @@ class FeynmanICh9Eq18(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
             ]
-        
-        super().__init__(num_vars=8, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = \
-            GRAVITATIONAL_CONSTANT * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)
 
-    def eq_func(self, x):
-        return GRAVITATIONAL_CONSTANT * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)
+        super().__init__(num_vars=8, sampling_objs=sampling_objs)
+
+        GRAVITATIONAL_CONSTANT * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)
 
 
 @register_feynman_eq_class
@@ -187,7 +161,7 @@ class FeynmanICh10Eq7(KnownEquation):
     - Constraints:
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
-    _eq_name = 'feynman-i.10.7'
+    _eq_name = 'symbolic_equation_evaluator-i.10.7'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -196,13 +170,8 @@ class FeynmanICh10Eq7(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
                 DefaultSampling(1.0e5, 1.0e8, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return x[0] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -220,7 +189,7 @@ class FeynmanICh11Eq19(KnownEquation):
         - x[5]: y3 (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.11.19'
+    _eq_name = 'symbolic_equation_evaluator-i.11.19'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -228,13 +197,8 @@ class FeynmanICh11Eq19(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
             ]
-        
-        super().__init__(num_vars=6, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] + x[2] * x[3] + x[4] * x[5]
 
-    def eq_func(self, x):
-        return x[0] * x[1] + x[2] * x[3] + x[4] * x[5]
+        super().__init__(num_vars=6, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -248,7 +212,7 @@ class FeynmanICh12Eq1(KnownEquation):
         - x[1]: Nn (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-i.12.1'
+    _eq_name = 'symbolic_equation_evaluator-i.12.1'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -256,13 +220,8 @@ class FeynmanICh12Eq1(KnownEquation):
                 DefaultSampling(1.0e-2, 1.0, uses_negative=False),
                 DefaultSampling(1.0e-2, 1.0, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1]
 
-    def eq_func(self, x):
-        return x[0] * x[1]
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -278,7 +237,7 @@ class FeynmanICh12Eq2(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-i.12.2'
+    _eq_name = 'symbolic_equation_evaluator-i.12.2'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -286,13 +245,8 @@ class FeynmanICh12Eq2(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
                 DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[2] ** 3)
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / (4 * np.pi * ELECTRIC_CONSTANT * x[2] ** 3)
+        super().__init__(num_vars=3, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -307,18 +261,13 @@ class FeynmanICh12Eq4(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-i.12.4'
+    _eq_name = 'symbolic_equation_evaluator-i.12.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] ** 3)
 
-    def eq_func(self, x):
-        return x[0] * x[1] / (4 * np.pi * ELECTRIC_CONSTANT * x[1] ** 3)
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -332,18 +281,13 @@ class FeynmanICh12Eq5(KnownEquation):
         - x[1]: Ef (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.12.5'
+    _eq_name = 'symbolic_equation_evaluator-i.12.5'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1]
 
-    def eq_func(self, x):
-        return x[0] * x[1]
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -360,7 +304,7 @@ class FeynmanICh12Eq11(KnownEquation):
         - x[4]: theta (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.12.11'
+    _eq_name = 'symbolic_equation_evaluator-i.12.11'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -370,13 +314,8 @@ class FeynmanICh12Eq11(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
                 SimpleSampling(0.0, 2 * np.pi, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (x[1] + x[2] * x[3] * sympy.sin(x[4]))
 
-    def eq_func(self, x):
-        return x[0] * (x[1] + x[2] * x[3] * np.sin(x[4]))
+        super().__init__(num_vars=5, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -392,7 +331,7 @@ class FeynmanICh13Eq4(KnownEquation):
         - x[3]: w (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.13.4'
+    _eq_name = 'symbolic_equation_evaluator-i.13.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -400,13 +339,8 @@ class FeynmanICh13Eq4(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e-1, 1.0e1),
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
             ]
-        
-        super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
-    def eq_func(self, x):
-        return 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
+        super().__init__(num_vars=4, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -424,7 +358,7 @@ class FeynmanICh13Eq12(KnownEquation):
         - x[2] != 0
         - x[3] != 0
     """
-    _eq_name = 'feynman-i.13.12'
+    _eq_name = 'symbolic_equation_evaluator-i.13.12'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -432,13 +366,8 @@ class FeynmanICh13Eq12(KnownEquation):
                 DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-2, 1.0, uses_negative=False),
                 DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-2, 1.0, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = GRAVITATIONAL_CONSTANT * x[0] * x[1] * (1 / x[2] - 1 / x[3])
 
-    def eq_func(self, x):
-        return GRAVITATIONAL_CONSTANT * x[0] * x[1] * (1 / x[2] - 1 / x[3])
+        super().__init__(num_vars=4, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -452,18 +381,13 @@ class FeynmanICh14Eq3(KnownEquation):
         - x[1]: z (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.14.3'
+    _eq_name = 'symbolic_equation_evaluator-i.14.3'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-2, 1.0)]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = GRAVITATIONAL_ACCELERATION * x[0] * x[1]
 
-    def eq_func(self, x):
-        return GRAVITATIONAL_ACCELERATION * x[0] * x[1]
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -477,18 +401,13 @@ class FeynmanICh14Eq4(KnownEquation):
         - x[1]: x (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-i.14.4'
+    _eq_name = 'symbolic_equation_evaluator-i.14.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e2, 1.0e4, uses_negative=False), DefaultSampling(1.0e-2, 1.0)]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / 2 * x[0] * x[1] ** 2
 
-    def eq_func(self, x):
-        return 1 / 2 * x[0] * x[1] ** 2
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -503,18 +422,13 @@ class FeynmanICh15Eq10(KnownEquation):
     - Constraints:
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
-    _eq_name = 'feynman-i.15.10'
+    _eq_name = 'symbolic_equation_evaluator-i.15.10'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e5, 1.0e7)]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return x[0] * x[1] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -530,7 +444,7 @@ class FeynmanICh15Eq3t(KnownEquation):
     - Constraints:
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 >= 0
     """
-    _eq_name = 'feynman-i.15.3t'
+    _eq_name = 'symbolic_equation_evaluator-i.15.3t'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -538,13 +452,8 @@ class FeynmanICh15Eq3t(KnownEquation):
                 DefaultSampling(1.0e-6, 1.0e-4, uses_negative=False),
                 DefaultSampling(1.0e5, 1.0e7), DefaultSampling(1.0, 1.0e2)
             ]
-        
-        super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (x[0] - x[1] * x[2] / SPEED_OF_LIGHT ** 2) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return (x[0] - x[1] * x[2] / SPEED_OF_LIGHT ** 2) / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        super().__init__(num_vars=3, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -560,7 +469,7 @@ class FeynmanICh15Eq3x(KnownEquation):
     - Constraints:
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
-    _eq_name = 'feynman-i.15.3x'
+    _eq_name = 'symbolic_equation_evaluator-i.15.3x'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -568,13 +477,8 @@ class FeynmanICh15Eq3x(KnownEquation):
                 DefaultSampling(1.0, 1.0e2), DefaultSampling(1.0e6, 1.0e8),
                 DefaultSampling(1.0e-6, 1.0e-4, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (x[0] - x[1] * x[2]) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return (x[0] - x[1] * x[2]) / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        super().__init__(num_vars=3, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -589,18 +493,13 @@ class FeynmanICh16Eq6(KnownEquation):
     - Constraints:
         - 1 + x[0] * x[1] != 0
     """
-    _eq_name = 'feynman-i.16.6'
+    _eq_name = 'symbolic_equation_evaluator-i.16.6'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e6, 1.0e8), DefaultSampling(1.0e6, 1.0e8)]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (x[0] + x[1]) / (1 + x[0] * x[1] / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return (x[0] + x[1]) / (1 + x[0] * x[1] / SPEED_OF_LIGHT ** 2)
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -617,7 +516,7 @@ class FeynmanICh18Eq4(KnownEquation):
     - Constraints:
         - x[0] + x[2] != 0
     """
-    _eq_name = 'feynman-i.18.4'
+    _eq_name = 'symbolic_equation_evaluator-i.18.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -627,11 +526,6 @@ class FeynmanICh18Eq4(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (x[0] * x[1] + x[2] * x[3]) / (x[0] + x[2])
-
-    def eq_func(self, x):
-        return (x[0] * x[1] + x[2] * x[3]) / (x[0] + x[2])
 
 
 @register_feynman_eq_class
@@ -646,7 +540,7 @@ class FeynmanICh18Eq12(KnownEquation):
         - x[2]: theta (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.18.12'
+    _eq_name = 'symbolic_equation_evaluator-i.18.12'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -656,11 +550,6 @@ class FeynmanICh18Eq12(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * sympy.sin(x[2])
-
-    def eq_func(self, x):
-        return x[0] * x[1] * np.sin(x[2])
 
 
 @register_feynman_eq_class
@@ -676,7 +565,7 @@ class FeynmanICh18Eq16(KnownEquation):
         - x[3]: theta (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.18.16'
+    _eq_name = 'symbolic_equation_evaluator-i.18.16'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -687,11 +576,6 @@ class FeynmanICh18Eq16(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] * sympy.sin(x[3])
-
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] * np.sin(x[3])
 
 
 @register_feynman_eq_class
@@ -707,7 +591,7 @@ class FeynmanICh24Eq6(KnownEquation):
         - x[3]: x (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.24.6'
+    _eq_name = 'symbolic_equation_evaluator-i.24.6'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -715,13 +599,8 @@ class FeynmanICh24Eq6(KnownEquation):
                 DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e-1, 1.0e1),
                 DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
             ]
-        
-        super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2) * 1/2 * x[3] ** 2
 
-    def eq_func(self, x):
-        return 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2) * 1/2 * x[3] ** 2
+        super().__init__(num_vars=4, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -736,18 +615,13 @@ class FeynmanICh25Eq13(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-i.25.13'
+    _eq_name = 'symbolic_equation_evaluator-i.25.13'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-5, 1.0e-3), DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / x[1]
-
-    def eq_func(self, x):
-        return x[0] / x[1]
 
 
 @register_feynman_eq_class
@@ -763,7 +637,7 @@ class FeynmanICh26Eq2(KnownEquation):
         - x[0] * np.sin(x[1]) >= -np.pi /2
         - x[0] * np.sin(x[1]) <= np.pi/2
     """
-    _eq_name = 'feynman-i.26.2'
+    _eq_name = 'symbolic_equation_evaluator-i.26.2'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -772,11 +646,6 @@ class FeynmanICh26Eq2(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sin(x[0]) / sympy.sin(x[1])
-
-    def eq_func(self, x):
-        return np.sin(x[0]) / np.sin(x[1])
 
 
 @register_feynman_eq_class
@@ -793,7 +662,7 @@ class FeynmanICh27Eq6(KnownEquation):
         - x[0] != 0
         - x[2] != 0
     """
-    _eq_name = 'feynman-i.27.6'
+    _eq_name = 'symbolic_equation_evaluator-i.27.6'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -804,11 +673,6 @@ class FeynmanICh27Eq6(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (1 / x[0] + x[1] / x[2])
-
-    def eq_func(self, x):
-        return 1 / (1 / x[0] + x[1] / x[2])
 
 
 @register_feynman_eq_class
@@ -821,7 +685,7 @@ class FeynmanICh29Eq4(KnownEquation):
         - x[0]: omega (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-i.29.4'
+    _eq_name = 'symbolic_equation_evaluator-i.29.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -830,11 +694,6 @@ class FeynmanICh29Eq4(KnownEquation):
             ]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / SPEED_OF_LIGHT
-
-    def eq_func(self, x):
-        return x[0] / SPEED_OF_LIGHT
 
 
 @register_feynman_eq_class
@@ -850,7 +709,7 @@ class FeynmanICh29Eq16(KnownEquation):
         - x[3]: theta2 (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.29.16'
+    _eq_name = 'symbolic_equation_evaluator-i.29.16'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -861,11 +720,6 @@ class FeynmanICh29Eq16(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt(x[0] ** 2 + x[1] ** 2 + 2 * x[0] * x[1] * sympy.cos(x[2] - x[3]))
-
-    def eq_func(self, x):
-        return np.sqrt(x[0] ** 2 + x[1] ** 2 + 2 * x[0] * x[1] * np.cos(x[2] - x[3]))
 
 
 @register_feynman_eq_class
@@ -881,7 +735,7 @@ class FeynmanICh30Eq3(KnownEquation):
     - Constraints:
         - np.sin(x[2] / 2) != 0
     """
-    _eq_name = 'feynman-i.30.3'
+    _eq_name = 'symbolic_equation_evaluator-i.30.3'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -891,11 +745,6 @@ class FeynmanICh30Eq3(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * sympy.sin(x[1] * x[2] / 2) ** 2 / sympy.sin(x[2] / 2) ** 2
-
-    def eq_func(self, x):
-        return x[0] * np.sin(x[1] * x[2] / 2) ** 2 / np.sin(x[2] / 2) ** 2
 
 
 @register_feynman_eq_class
@@ -913,7 +762,7 @@ class FeynmanICh30Eq5(KnownEquation):
         - x[2] != 0
         - x[2] != pi
     """
-    _eq_name = 'feynman-i.30.5'
+    _eq_name = 'symbolic_equation_evaluator-i.30.5'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -921,13 +770,8 @@ class FeynmanICh30Eq5(KnownEquation):
                 DefaultSampling(1.0e-11, 1.0e-9, uses_negative=False), IntegerSampling(1.0, 1.0e2, uses_negative=False),
                 SimpleSampling(0, 2 * np.pi, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (x[1] * sympy.sin(x[2]))
 
-    def eq_func(self, x):
-        return x[0] / (x[1] * np.sin(x[2]))
+        super().__init__(num_vars=3, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -943,7 +787,7 @@ class FeynmanICh32Eq5(KnownEquation):
         - x[2] != 0
         - x[3] != 0
     """
-    _eq_name = 'feynman-i.32.5'
+    _eq_name = 'symbolic_equation_evaluator-i.32.5'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -952,11 +796,6 @@ class FeynmanICh32Eq5(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] ** 2 * x[1] ** 2 / (6 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 3)
-
-    def eq_func(self, x):
-        return x[0] ** 2 * x[1] ** 2 / (6 * np.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 3)
 
 
 @register_feynman_eq_class
@@ -973,7 +812,7 @@ class FeynmanICh32Eq17(KnownEquation):
     - Constraints:
         - x[2] ** 2 - x[3] ** 2 != 0
     """
-    _eq_name = 'feynman-i.32.17'
+    _eq_name = 'symbolic_equation_evaluator-i.32.17'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -983,13 +822,7 @@ class FeynmanICh32Eq17(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (1 / 2 * ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2) \
-                        * (8 * sympy.pi * x[1] ** 2 / 3) * (x[2] ** 4 / (x[2] ** 2 - x[3] ** 2) ** 2)
 
-    def eq_func(self, x):
-        return (1 / 2 * ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2) \
-               * (8 * np.pi * x[1] ** 2 / 3) * (x[2] ** 4 / (x[2] ** 2 - x[3] ** 2) ** 2)
 
 
 @register_feynman_eq_class
@@ -1004,18 +837,13 @@ class FeynmanICh34Eq10(KnownEquation):
     - Constraints:
         - 2.99792458e8 - x[1] != 0
     """
-    _eq_name = 'feynman-i.34.10'
+    _eq_name = 'symbolic_equation_evaluator-i.34.10'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e9, 1.0e11, uses_negative=False), DefaultSampling(1.0e5, 1.0e7)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (1 - x[1] / SPEED_OF_LIGHT)
-
-    def eq_func(self, x):
-        return x[0] / (1 - x[1] / SPEED_OF_LIGHT)
 
 
 @register_feynman_eq_class
@@ -1032,7 +860,7 @@ class FeynmanICh34Eq8(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-i.34.8'
+    _eq_name = 'symbolic_equation_evaluator-i.34.8'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1042,11 +870,6 @@ class FeynmanICh34Eq8(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] / x[3]
-
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / x[3]
 
 
 @register_feynman_eq_class
@@ -1062,18 +885,13 @@ class FeynmanICh34Eq14(KnownEquation):
         - 2.99792458e8 ** 2 - x[0] ** 2 > 0
         - x[1] != 0
     """
-    _eq_name = 'feynman-i.34.14'
+    _eq_name = 'symbolic_equation_evaluator-i.34.14'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e6, 1.0e8), DefaultSampling(1.0e9, 1.0e11, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (1 + x[0] / SPEED_OF_LIGHT) / sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1]
-
-    def eq_func(self, x):
-        return (1 + x[0] / x[1]) / np.sqrt(1 - x[0] ** 2 / x[1] ** 2) * x[1]
 
 
 @register_feynman_eq_class
@@ -1086,18 +904,13 @@ class FeynmanICh34Eq27(KnownEquation):
         - x[0]: omega (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-i.34.27'
+    _eq_name = 'symbolic_equation_evaluator-i.34.27'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e9, 1.0e11, uses_negative=False)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) * x[0]
-
-    def eq_func(self, x):
-        return (PLANCK_CONSTANT / (2 * np.pi)) * x[0]
 
 
 @register_feynman_eq_class
@@ -1113,7 +926,7 @@ class FeynmanICh37Eq4(KnownEquation):
     - Constraints:
         - x[0]*x[1] >= 0
     """
-    _eq_name = 'feynman-i.37.4'
+    _eq_name = 'symbolic_equation_evaluator-i.37.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1121,13 +934,8 @@ class FeynmanICh37Eq4(KnownEquation):
                 DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False),
                 DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] + x[1] + 2 * sympy.sqrt(x[0] * x[1]) * sympy.cos(x[2])
 
-    def eq_func(self, x):
-        return x[0] + x[1] + 2 * np.sqrt(x[0] * x[1]) * np.cos(x[2])
+        super().__init__(num_vars=3, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -1143,7 +951,7 @@ class FeynmanICh38Eq12(KnownEquation):
         - x[0] != 0
         - x[1] != 0
     """
-    _eq_name = 'feynman-i.38.12'
+    _eq_name = 'symbolic_equation_evaluator-i.38.12'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1153,11 +961,6 @@ class FeynmanICh38Eq12(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 4 * sympy.pi * ELECTRIC_CONSTANT * (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (x[0] * x[1] ** 2)
-
-    def eq_func(self, x):
-        return 4 * np.pi * ELECTRIC_CONSTANT * (PLANCK_CONSTANT / (2 * np.pi)) ** 2 / (x[0] * x[1] ** 2)
 
 
 @register_feynman_eq_class
@@ -1171,20 +974,15 @@ class FeynmanICh39Eq10(KnownEquation):
         - x[1]: V (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-i.39.10'
+    _eq_name = 'symbolic_equation_evaluator-i.39.10'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
                 DefaultSampling(1.0e4, 1.0e6, uses_negative=False), DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False)
             ]
-        
-        super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 3 / 2 * x[0] * x[1]
 
-    def eq_func(self, x):
-        return 3 / 2 * x[0] * x[1]
+        super().__init__(num_vars=2, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -1200,7 +998,7 @@ class FeynmanICh39Eq11(KnownEquation):
     - Constraints:
         - x[0] - 1 != 0
     """
-    _eq_name = 'feynman-i.39.11'
+    _eq_name = 'symbolic_equation_evaluator-i.39.11'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1210,11 +1008,6 @@ class FeynmanICh39Eq11(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (x[0] - 1) * x[1] * x[2]
-
-    def eq_func(self, x):
-        return 1 / (x[0] - 1) * x[1] * x[2]
 
 
 @register_feynman_eq_class
@@ -1230,7 +1023,7 @@ class FeynmanICh39Eq22(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-i.39.22'
+    _eq_name = 'symbolic_equation_evaluator-i.39.22'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1240,11 +1033,6 @@ class FeynmanICh39Eq22(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] / x[2]
-
-    def eq_func(self, x):
-        return x[0] * BOLTZMANN_CONSTANT * x[1] / x[2]
 
 
 @register_feynman_eq_class
@@ -1261,7 +1049,7 @@ class FeynmanICh40Eq1(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-i.40.1'
+    _eq_name = 'symbolic_equation_evaluator-i.40.1'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1272,11 +1060,6 @@ class FeynmanICh40Eq1(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * sympy.exp(-x[1] * GRAVITATIONAL_ACCELERATION * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-
-    def eq_func(self, x):
-        return x[0] * np.exp(-x[1] * GRAVITATIONAL_ACCELERATION * x[2] / (BOLTZMANN_CONSTANT * x[3]))
 
 
 @register_feynman_eq_class
@@ -1291,7 +1074,7 @@ class FeynmanICh41Eq16(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-i.41.16'
+    _eq_name = 'symbolic_equation_evaluator-i.41.16'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1300,11 +1083,6 @@ class FeynmanICh41Eq16(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = PLANCK_CONSTANT / (2 * sympy.pi) * x[0] ** 3 / (sympy.pi ** 2 * SPEED_OF_LIGHT ** 2 * (sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1))
-
-    def eq_func(self, x):
-        return PLANCK_CONSTANT / (2 * np.pi) * x[0] ** 3 / (np.pi ** 2 * SPEED_OF_LIGHT ** 2 * (np.exp((PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1))
 
 
 @register_feynman_eq_class
@@ -1321,7 +1099,7 @@ class FeynmanICh43Eq16(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-i.43.16'
+    _eq_name = 'symbolic_equation_evaluator-i.43.16'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1331,11 +1109,6 @@ class FeynmanICh43Eq16(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] / x[3]
-
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / x[3]
 
 
 @register_feynman_eq_class
@@ -1349,7 +1122,7 @@ class FeynmanICh43Eq31(KnownEquation):
         - x[1]: T (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-i.43.31'
+    _eq_name = 'symbolic_equation_evaluator-i.43.31'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1358,11 +1131,6 @@ class FeynmanICh43Eq31(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1]
-
-    def eq_func(self, x):
-        return x[0] * BOLTZMANN_CONSTANT * x[1]
 
 
 @register_feynman_eq_class
@@ -1379,7 +1147,7 @@ class FeynmanICh43Eq43(KnownEquation):
         - x[0] - 1 != 0
         - x[2] != 0
     """
-    _eq_name = 'feynman-i.43.43'
+    _eq_name = 'symbolic_equation_evaluator-i.43.43'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1390,11 +1158,6 @@ class FeynmanICh43Eq43(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (x[0] - 1) * BOLTZMANN_CONSTANT * x[1] / x[2]
-
-    def eq_func(self, x):
-        return 1 / (x[0] - 1) * BOLTZMANN_CONSTANT * x[1] / x[2]
 
 
 @register_feynman_eq_class
@@ -1412,7 +1175,7 @@ class FeynmanICh44Eq4(KnownEquation):
         - x[3] != 0
         - x[2] / x[3] > 0
     """
-    _eq_name = 'feynman-i.44.4'
+    _eq_name = 'symbolic_equation_evaluator-i.44.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1423,11 +1186,6 @@ class FeynmanICh44Eq4(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] * sympy.log(x[2] / x[3])
-
-    def eq_func(self, x):
-        return x[0] * BOLTZMANN_CONSTANT * x[1] * np.log(x[2] / x[3])
 
 
 @register_feynman_eq_class
@@ -1444,7 +1202,7 @@ class FeynmanICh47Eq23(KnownEquation):
         - x[0] * x[1] / x[2] >= 0
         - x[2] != 0
     """
-    _eq_name = 'feynman-i.47.23'
+    _eq_name = 'symbolic_equation_evaluator-i.47.23'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1454,11 +1212,6 @@ class FeynmanICh47Eq23(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt(x[0] * x[1] / x[2])
-
-    def eq_func(self, x):
-        return np.sqrt(x[0] * x[1] / x[2])
 
 
 @register_feynman_eq_class
@@ -1473,7 +1226,7 @@ class FeynmanICh48Eq2(KnownEquation):
     - Constraints:
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
-    _eq_name = 'feynman-i.48.2'
+    _eq_name = 'symbolic_equation_evaluator-i.48.2'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1483,11 +1236,6 @@ class FeynmanICh48Eq2(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * SPEED_OF_LIGHT ** 2 / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return x[0] * SPEED_OF_LIGHT ** 2 / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -1503,7 +1251,7 @@ class FeynmanICh50Eq26(KnownEquation):
         - x[3]: alpha (float)
     - Constraints:
     """
-    _eq_name = 'feynman-i.50.26'
+    _eq_name = 'symbolic_equation_evaluator-i.50.26'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1513,11 +1261,6 @@ class FeynmanICh50Eq26(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (sympy.cos(x[1] * x[2]) + x[3] * sympy.cos(x[1] * x[2]) ** 2)
-
-    def eq_func(self, x):
-        return x[0] * (np.cos(x[1] * x[2]) + x[3] * np.cos(x[1] * x[2]) ** 2)
 
 
 @register_feynman_eq_class
@@ -1535,7 +1278,7 @@ class FeynmanIICh2Eq42(KnownEquation):
     - Constraints:
         - x[4] != 0
     """
-    _eq_name = 'feynman-ii.2.42'
+    _eq_name = 'symbolic_equation_evaluator-ii.2.42'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1546,11 +1289,6 @@ class FeynmanIICh2Eq42(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (x[1] - x[2]) * x[3] / x[4]
-
-    def eq_func(self, x):
-        return x[0] * (x[1] - x[2]) * x[3] / x[4]
 
 
 @register_feynman_eq_class
@@ -1565,18 +1303,13 @@ class FeynmanIICh3Eq24(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-ii.3.24'
+    _eq_name = 'symbolic_equation_evaluator-ii.3.24'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0, 1.0e2), DefaultSampling(1.0e-2, 1.0, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * x[1] ** 2)
-
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * x[1] ** 2)
 
 
 @register_feynman_eq_class
@@ -1591,18 +1324,13 @@ class FeynmanIICh4Eq23(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-ii.4.23'
+    _eq_name = 'symbolic_equation_evaluator-ii.4.23'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-2, 1.0, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
-
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT * x[1])
 
 
 @register_feynman_eq_class
@@ -1618,7 +1346,7 @@ class FeynmanIICh6Eq11(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-ii.6.11'
+    _eq_name = 'symbolic_equation_evaluator-ii.6.11'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1628,11 +1356,6 @@ class FeynmanIICh6Eq11(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT) * x[0] * sympy.cos(x[1]) / x[2] ** 2
-
-    def eq_func(self, x):
-        return 1 / (4 * np.pi * ELECTRIC_CONSTANT) * x[0] * np.cos(x[1]) / x[2] ** 2
 
 
 @register_feynman_eq_class
@@ -1650,7 +1373,7 @@ class FeynmanIICh6Eq15a(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-ii.6.15a'
+    _eq_name = 'symbolic_equation_evaluator-ii.6.15a'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1661,12 +1384,8 @@ class FeynmanIICh6Eq15a(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT) \
-                        * 3 * x[1] / x[2] ** 5 * sympy.sqrt(x[3] ** 2 + x[4] ** 2)
 
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT) * 3 * x[1] / x[2] ** 5 * np.sqrt(x[3] ** 2 + x[4] ** 2)
+
 
 
 @register_feynman_eq_class
@@ -1682,7 +1401,7 @@ class FeynmanIICh6Eq15b(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-ii.6.15b'
+    _eq_name = 'symbolic_equation_evaluator-ii.6.15b'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1692,11 +1411,6 @@ class FeynmanIICh6Eq15b(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT) * 3 * sympy.cos(x[1]) * sympy.sin(x[1]) / x[2] ** 3
-
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT) * 3 * np.cos(x[1]) * np.sin(x[1]) / x[2] ** 3
 
 
 @register_feynman_eq_class
@@ -1711,18 +1425,13 @@ class FeynmanIICh8Eq7(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-ii.8.7'
+    _eq_name = 'symbolic_equation_evaluator-ii.8.7'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-12, 1.0e-10, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 3 / 5 * x[0] ** 2 / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
-
-    def eq_func(self, x):
-        return 3 / 5 * x[0] ** 2 / (4 * np.pi * ELECTRIC_CONSTANT * x[1])
 
 
 @register_feynman_eq_class
@@ -1735,18 +1444,13 @@ class FeynmanIICh8Eq31(KnownEquation):
         - x[0]: Ef (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.8.31'
+    _eq_name = 'symbolic_equation_evaluator-ii.8.31'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e1, 1.0e3, uses_negative=False)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2 / 2
-
-    def eq_func(self, x):
-        return ELECTRIC_CONSTANT * x[0] ** 2 / 2
 
 
 @register_feynman_eq_class
@@ -1761,18 +1465,13 @@ class FeynmanIICh10Eq9(KnownEquation):
     - Constraints:
         - 1 + x[1] != 0
     """
-    _eq_name = 'feynman-ii.10.9'
+    _eq_name = 'symbolic_equation_evaluator-ii.10.9'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0, 1.0e2, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / ELECTRIC_CONSTANT * 1 / (1 + x[1])
-
-    def eq_func(self, x):
-        return x[0] / ELECTRIC_CONSTANT * 1 / (1 + x[1])
 
 
 @register_feynman_eq_class
@@ -1791,7 +1490,7 @@ class FeynmanIICh11Eq3(KnownEquation):
         - x[2] != 0
         - x[3] ** 2 - x[4] ** 2 != 0
     """
-    _eq_name = 'feynman-ii.11.3'
+    _eq_name = 'symbolic_equation_evaluator-ii.11.3'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1802,11 +1501,6 @@ class FeynmanIICh11Eq3(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / (x[2] * (x[3] ** 2 - x[4] ** 2))
-
-    def eq_func(self, x):
-        return x[0] * x[1] / (x[2] * (x[3] ** 2 - x[4] ** 2))
 
 
 @register_feynman_eq_class
@@ -1824,7 +1518,7 @@ class FeynmanIICh11Eq17(KnownEquation):
     - Constraints:
         - x[4] != 0
     """
-    _eq_name = 'feynman-ii.11.17'
+    _eq_name = 'symbolic_equation_evaluator-ii.11.17'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1835,11 +1529,6 @@ class FeynmanIICh11Eq17(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (1 + x[1] * x[2] * sympy.cos(x[3]) / (BOLTZMANN_CONSTANT * x[4]))
-
-    def eq_func(self, x):
-        return x[0] * (1 + x[1] * x[2] * np.cos(x[3]) / (BOLTZMANN_CONSTANT * x[4]))
 
 
 @register_feynman_eq_class
@@ -1856,7 +1545,7 @@ class FeynmanIICh11Eq20(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-ii.11.20'
+    _eq_name = 'symbolic_equation_evaluator-ii.11.20'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1866,11 +1555,6 @@ class FeynmanIICh11Eq20(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] ** 2 * x[2] / (3 * BOLTZMANN_CONSTANT * x[3])
-
-    def eq_func(self, x):
-        return x[0] * x[1] ** 2 * x[2] / (3 * BOLTZMANN_CONSTANT * x[3])
 
 
 @register_feynman_eq_class
@@ -1886,7 +1570,7 @@ class FeynmanIICh11Eq27(KnownEquation):
     - Constraints:
         - 1 - (x[0] * x[1] / 3) != 0
     """
-    _eq_name = 'feynman-ii.11.27'
+    _eq_name = 'symbolic_equation_evaluator-ii.11.27'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1897,11 +1581,6 @@ class FeynmanIICh11Eq27(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / (1 - (x[0] * x[1] / 3)) * ELECTRIC_CONSTANT * x[2]
-
-    def eq_func(self, x):
-        return x[0] * x[1] / (1 - (x[0] * x[1] / 3)) * ELECTRIC_CONSTANT * x[2]
 
 
 @register_feynman_eq_class
@@ -1916,7 +1595,7 @@ class FeynmanIICh11Eq28(KnownEquation):
     - Constraints:
         - 1-(x[0]*x[1]/3) != 0
     """
-    _eq_name = 'feynman-ii.11.28'
+    _eq_name = 'symbolic_equation_evaluator-ii.11.28'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1926,11 +1605,6 @@ class FeynmanIICh11Eq28(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 + x[0] * x[1] / (1 - (x[0] * x[1] / 3))
-
-    def eq_func(self, x):
-        return 1 + x[0] * x[1] / (1 - (x[0] * x[1] / 3))
 
 
 @register_feynman_eq_class
@@ -1945,18 +1619,13 @@ class FeynmanIICh13Eq17(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-ii.13.17'
+    _eq_name = 'symbolic_equation_evaluator-ii.13.17'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2) * 2 * x[0] / x[1]
-
-    def eq_func(self, x):
-        return 1 / (4 * np.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2) * 2 * x[0] / x[1]
 
 
 @register_feynman_eq_class
@@ -1971,7 +1640,7 @@ class FeynmanIICh13Eq23(KnownEquation):
     - Constraints:
         - 2.99792458e8 ** 2 - x[1] ** 2 > 0
     """
-    _eq_name = 'feynman-ii.13.23'
+    _eq_name = 'symbolic_equation_evaluator-ii.13.23'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -1981,11 +1650,6 @@ class FeynmanIICh13Eq23(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return x[0] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -2000,7 +1664,7 @@ class FeynmanIICh13Eq34(KnownEquation):
     - Constraints:
         - 2.99792458e8 ** 2 - x[1] ** 2 > 0
     """
-    _eq_name = 'feynman-ii.13.34'
+    _eq_name = 'symbolic_equation_evaluator-ii.13.34'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2010,11 +1674,6 @@ class FeynmanIICh13Eq34(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return x[0] * x[1] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -2029,7 +1688,7 @@ class FeynmanIICh15Eq4(KnownEquation):
         - x[2]: theta (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.15.4'
+    _eq_name = 'symbolic_equation_evaluator-ii.15.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2039,11 +1698,6 @@ class FeynmanIICh15Eq4(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
-
-    def eq_func(self, x):
-        return -x[0] * x[1] * np.cos(x[2])
 
 
 @register_feynman_eq_class
@@ -2058,7 +1712,7 @@ class FeynmanIICh15Eq5(KnownEquation):
         - x[2]: theta (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.15.5'
+    _eq_name = 'symbolic_equation_evaluator-ii.15.5'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2068,11 +1722,6 @@ class FeynmanIICh15Eq5(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
-
-    def eq_func(self, x):
-        return -x[0] * x[1] * np.cos(x[2])
 
 
 @register_feynman_eq_class
@@ -2089,7 +1738,7 @@ class FeynmanIICh21Eq32(KnownEquation):
         - x[1] != 0
         - 2.99792458e8 - x[2] > 0
     """
-    _eq_name = 'feynman-ii.21.32'
+    _eq_name = 'symbolic_equation_evaluator-ii.21.32'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2099,11 +1748,6 @@ class FeynmanIICh21Eq32(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] * (1 - x[2] / SPEED_OF_LIGHT))
-
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT * x[1] * (1 - x[2] / SPEED_OF_LIGHT))
 
 
 @register_feynman_eq_class
@@ -2119,18 +1763,13 @@ class FeynmanIICh24Eq17(KnownEquation):
         - x[0] ** 2 / 2.99792458e8 ** 2 - np.pi ** 2 / x[1] ** 2 >= 0
         - x[1] != 0
     """
-    _eq_name = 'feynman-ii.24.17'
+    _eq_name = 'symbolic_equation_evaluator-ii.24.17'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e9, 1.0e11), DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt(x[0] ** 2 / SPEED_OF_LIGHT ** 2 - sympy.pi ** 2 / x[1] ** 2)
-
-    def eq_func(self, x):
-        return np.sqrt(x[0] ** 2 / SPEED_OF_LIGHT ** 2 - np.pi ** 2 / x[1] ** 2)
 
 
 @register_feynman_eq_class
@@ -2143,18 +1782,13 @@ class FeynmanIICh27Eq16(KnownEquation):
         - x[0]: Ef (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.27.16'
+    _eq_name = 'symbolic_equation_evaluator-ii.27.16'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2
-
-    def eq_func(self, x):
-        return ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2
 
 
 @register_feynman_eq_class
@@ -2167,18 +1801,13 @@ class FeynmanIICh27Eq18(KnownEquation):
         - x[0]: Ef (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.27.18'
+    _eq_name = 'symbolic_equation_evaluator-ii.27.18'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2
-
-    def eq_func(self, x):
-        return ELECTRIC_CONSTANT * x[0] ** 2
 
 
 @register_feynman_eq_class
@@ -2194,7 +1823,7 @@ class FeynmanIICh34Eq2a(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-ii.34.2a'
+    _eq_name = 'symbolic_equation_evaluator-ii.34.2a'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2204,11 +1833,6 @@ class FeynmanIICh34Eq2a(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / (2 * sympy.pi * x[2])
-
-    def eq_func(self, x):
-        return x[0] * x[1] / (2 * np.pi * x[2])
 
 
 @register_feynman_eq_class
@@ -2223,7 +1847,7 @@ class FeynmanIICh34Eq2(KnownEquation):
         - x[2]: r (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.34.2'
+    _eq_name = 'symbolic_equation_evaluator-ii.34.2'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2233,11 +1857,6 @@ class FeynmanIICh34Eq2(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] / 2
-
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / 2
 
 
 @register_feynman_eq_class
@@ -2254,7 +1873,7 @@ class FeynmanIICh34Eq11(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-ii.34.11'
+    _eq_name = 'symbolic_equation_evaluator-ii.34.11'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2263,13 +1882,8 @@ class FeynmanIICh34Eq11(KnownEquation):
                 DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-9, 1.0e-7),
                 DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False)
             ]
-            
-        super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] / (2 * x[3])
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / (2 * x[3])
+        super().__init__(num_vars=4, sampling_objs=sampling_objs)
 
 
 @register_feynman_eq_class
@@ -2284,18 +1898,13 @@ class FeynmanIICh34Eq29a(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-ii.34.29a'
+    _eq_name = 'symbolic_equation_evaluator-ii.34.29a'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * PLANCK_CONSTANT / (4 * sympy.pi * x[1])
-
-    def eq_func(self, x):
-        return x[0] * PLANCK_CONSTANT / (4 * np.pi * x[1])
 
 
 @register_feynman_eq_class
@@ -2310,7 +1919,7 @@ class FeynmanIICh34Eq29b(KnownEquation):
         - x[2]: Jz (float)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.34.29b'
+    _eq_name = 'symbolic_equation_evaluator-ii.34.29b'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2320,11 +1929,6 @@ class FeynmanIICh34Eq29b(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * BOHR_MAGNETON * x[1] * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
-
-    def eq_func(self, x):
-        return x[0] * BOHR_MAGNETON * x[1] * x[2] / (PLANCK_CONSTANT / (2 * np.pi))
 
 
 @register_feynman_eq_class
@@ -2341,7 +1945,7 @@ class FeynmanIICh35Eq18(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-ii.35.18'
+    _eq_name = 'symbolic_equation_evaluator-ii.35.18'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2352,13 +1956,7 @@ class FeynmanIICh35Eq18(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (sympy.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-                                + sympy.exp(-x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])))
 
-    def eq_func(self, x):
-        return x[0] / (np.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-                       + np.exp(-x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])))
 
 
 @register_feynman_eq_class
@@ -2375,7 +1973,7 @@ class FeynmanIICh35Eq21(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-ii.35.21'
+    _eq_name = 'symbolic_equation_evaluator-ii.35.21'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2386,11 +1984,6 @@ class FeynmanIICh35Eq21(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * sympy.tanh(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-
-    def eq_func(self, x):
-        return x[0] * x[1] * np.tanh(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
 
 
 @register_feynman_eq_class
@@ -2408,7 +2001,7 @@ class FeynmanIICh36Eq38(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-ii.36.38'
+    _eq_name = 'symbolic_equation_evaluator-ii.36.38'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2419,11 +2012,6 @@ class FeynmanIICh36Eq38(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / (BOLTZMANN_CONSTANT * x[2]) + (x[0] * x[3]) / (ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2 * BOLTZMANN_CONSTANT * x[2]) * x[4]
-
-    def eq_func(self, x):
-        return x[0] * x[1] / (BOLTZMANN_CONSTANT * x[2]) + (x[0] * x[3]) / (ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2 * BOLTZMANN_CONSTANT * x[2]) * x[4]
 
 
 @register_feynman_eq_class
@@ -2438,7 +2026,7 @@ class FeynmanIICh37Eq1(KnownEquation):
         - x[2]: B (float)
     - Constraints:
     """
-    _eq_name = 'feynman-ii.37.1'
+    _eq_name = 'symbolic_equation_evaluator-ii.37.1'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2448,11 +2036,6 @@ class FeynmanIICh37Eq1(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (1 + x[1]) * x[2]
-
-    def eq_func(self, x):
-        return x[0] * (1 + x[1]) * x[2]
 
 
 @register_feynman_eq_class
@@ -2469,22 +2052,17 @@ class FeynmanIICh38Eq3(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-ii.38.3'
+    _eq_name = 'symbolic_equation_evaluator-ii.38.3'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
                 DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
                 DefaultSampling(1.0e-4, 1.0e-2, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-2, 1.0, uses_negative=False) 
+                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-2, 1.0, uses_negative=False)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] / x[3]
-
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / x[3]
 
 
 @register_feynman_eq_class
@@ -2499,7 +2077,7 @@ class FeynmanIICh38Eq14(KnownEquation):
     - Constraints:
         - 1 + x[1] != 0
     """
-    _eq_name = 'feynman-ii.38.14'
+    _eq_name = 'symbolic_equation_evaluator-ii.38.14'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2509,11 +2087,6 @@ class FeynmanIICh38Eq14(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (2 * (1 + x[1]))
-
-    def eq_func(self, x):
-        return x[0] / (2 * (1 + x[1]))
 
 
 @register_feynman_eq_class
@@ -2529,7 +2102,7 @@ class FeynmanIIICh4Eq32(KnownEquation):
         - x[0] != 0
         - x[1] != 0
     """
-    _eq_name = 'feynman-iii.4.32'
+    _eq_name = 'symbolic_equation_evaluator-iii.4.32'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2539,11 +2112,6 @@ class FeynmanIIICh4Eq32(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
-
-    def eq_func(self, x):
-        return 1 / (np.exp((PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
 
 
 @register_feynman_eq_class
@@ -2559,7 +2127,7 @@ class FeynmanIIICh4Eq33(KnownEquation):
         - x[0] != 0
         - x[1] != 0
     """
-    _eq_name = 'feynman-iii.4.33'
+    _eq_name = 'symbolic_equation_evaluator-iii.4.33'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2569,11 +2137,6 @@ class FeynmanIIICh4Eq33(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
-
-    def eq_func(self, x):
-        return (PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (np.exp((PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
 
 
 @register_feynman_eq_class
@@ -2587,18 +2150,13 @@ class FeynmanIIICh7Eq38(KnownEquation):
         - x[1]: B (float)
     - Constraints:
     """
-    _eq_name = 'feynman-iii.7.38'
+    _eq_name = 'symbolic_equation_evaluator-iii.7.38'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-3, 1.0e-1)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 2 * x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))
-
-    def eq_func(self, x):
-        return 2 * x[0] * x[1] / (PLANCK_CONSTANT / (2 * np.pi))
 
 
 @register_feynman_eq_class
@@ -2612,18 +2170,13 @@ class FeynmanIIICh8Eq54(KnownEquation):
         - x[1]: t (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-iii.8.54'
+    _eq_name = 'symbolic_equation_evaluator-iii.8.54'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-18, 1.0e-16), DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sin(x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))) ** 2
-
-    def eq_func(self, x):
-        return np.sin(x[0] * x[1] / (PLANCK_CONSTANT / (2 * np.pi))) ** 2
 
 
 @register_feynman_eq_class
@@ -2642,22 +2195,17 @@ class FeynmanIIICh9Eq52(KnownEquation):
         - x[2] != 0
         - x[3] - x[4] != 0
     """
-    _eq_name = 'feynman-iii.9.52'
+    _eq_name = 'symbolic_equation_evaluator-iii.9.52'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-22, 1.0e-20), DefaultSampling(1.0e1, 1.0e3), 
+                DefaultSampling(1.0e-22, 1.0e-20), DefaultSampling(1.0e1, 1.0e3),
                 DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False),
                 DefaultSampling(1.0e8, 1.0e10, uses_negative=False), DefaultSampling(1.0e8, 1.0e10, uses_negative=False)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (x[0] * x[1] * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))) * sympy.sin((x[3] - x[4]) * x[2] / 2) ** 2 / ((x[3] - x[4]) * x[2] / 2) ** 2
-
-    def eq_func(self, x):
-        return (x[0] * x[1] * x[2] / (PLANCK_CONSTANT / (2 * np.pi))) ** 2 * np.sin((x[3] - x[4]) * x[2] / 2) ** 2 / ((x[3] - x[4]) * x[2] / 2) ** 2
 
 
 @register_feynman_eq_class
@@ -2673,7 +2221,7 @@ class FeynmanIIICh10Eq19(KnownEquation):
         - x[3]: Bz (float)
     - Constraints:
     """
-    _eq_name = 'feynman-iii.10.19'
+    _eq_name = 'symbolic_equation_evaluator-iii.10.19'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2683,11 +2231,6 @@ class FeynmanIIICh10Eq19(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * sympy.sqrt(x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
-
-    def eq_func(self, x):
-        return x[0] * np.sqrt(x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
 
 @register_feynman_eq_class
@@ -2700,18 +2243,13 @@ class FeynmanIIICh12Eq43(KnownEquation):
         - x[0]: n (integer)
     - Constraints:
     """
-    _eq_name = 'feynman-iii.12.43'
+    _eq_name = 'symbolic_equation_evaluator-iii.12.43'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [IntegerSampling(1, 1.0e2, uses_negative=False)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (PLANCK_CONSTANT / (2 * sympy.pi))
-
-    def eq_func(self, x):
-        return x[0] * (PLANCK_CONSTANT / (2 * np.pi))
 
 
 @register_feynman_eq_class
@@ -2726,7 +2264,7 @@ class FeynmanIIICh13Eq18(KnownEquation):
         - x[2]: k (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-iii.13.18'
+    _eq_name = 'symbolic_equation_evaluator-iii.13.18'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2736,11 +2274,6 @@ class FeynmanIIICh13Eq18(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 2 * x[0] * x[1] ** 2 * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
-
-    def eq_func(self, x):
-        return 2 * x[0] * x[1] ** 2 * x[2] / (PLANCK_CONSTANT / (2 * np.pi))
 
 
 @register_feynman_eq_class
@@ -2757,7 +2290,7 @@ class FeynmanIIICh14Eq14(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-iii.14.14'
+    _eq_name = 'symbolic_equation_evaluator-iii.14.14'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2767,11 +2300,6 @@ class FeynmanIIICh14Eq14(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (sympy.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])) - 1)
-
-    def eq_func(self, x):
-        return x[0] * (np.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])) - 1)
 
 
 @register_feynman_eq_class
@@ -2786,7 +2314,7 @@ class FeynmanIIICh15Eq12(KnownEquation):
         - x[2]: d (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-iii.15.12'
+    _eq_name = 'symbolic_equation_evaluator-iii.15.12'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2797,11 +2325,6 @@ class FeynmanIIICh15Eq12(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 2 * x[0] * (1 - sympy.cos(x[1] * x[2]))
-
-    def eq_func(self, x):
-        return 2 * x[0] * (1 - np.cos(x[1] * x[2]))
 
 
 @register_feynman_eq_class
@@ -2817,7 +2340,7 @@ class FeynmanIIICh15Eq14(KnownEquation):
         - x[0] != 0
         - x[1] != 0
     """
-    _eq_name = 'feynman-iii.15.14'
+    _eq_name = 'symbolic_equation_evaluator-iii.15.14'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2827,11 +2350,6 @@ class FeynmanIIICh15Eq14(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (2 * x[0] * x[1] ** 2)
-
-    def eq_func(self, x):
-        return (PLANCK_CONSTANT / (2 * np.pi)) ** 2 / (2 * x[0] * x[1] ** 2)
 
 
 @register_feynman_eq_class
@@ -2848,7 +2366,7 @@ class FeynmanIIICh15Eq27(KnownEquation):
         - x[1] != 0
         - x[2] != 0
     """
-    _eq_name = 'feynman-iii.15.27'
+    _eq_name = 'symbolic_equation_evaluator-iii.15.27'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2858,11 +2376,6 @@ class FeynmanIIICh15Eq27(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 2 * sympy.pi * x[0] / (x[1] * x[2])
-
-    def eq_func(self, x):
-        return 2 * np.pi * x[0] / (x[1] * x[2])
 
 
 @register_feynman_eq_class
@@ -2877,7 +2390,7 @@ class FeynmanIIICh17Eq37(KnownEquation):
         - x[2]: theta (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-iii.17.37'
+    _eq_name = 'symbolic_equation_evaluator-iii.17.37'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2887,11 +2400,6 @@ class FeynmanIIICh17Eq37(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (1 + x[1] * sympy.cos(x[2]))
-
-    def eq_func(self, x):
-        return x[0] * (1 + x[1] * np.cos(x[2]))
 
 
 @register_feynman_eq_class
@@ -2907,7 +2415,7 @@ class FeynmanIIICh19Eq51(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-iii.19.51'
+    _eq_name = 'symbolic_equation_evaluator-iii.19.51'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2917,11 +2425,6 @@ class FeynmanIIICh19Eq51(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = -x[0] * x[1] ** 4 / (2 * (4 * sympy.pi * ELECTRIC_CONSTANT) ** 2 * (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2) * (1 / x[2] ** 2)
-
-    def eq_func(self, x):
-        return -x[0] * x[1] ** 4 / (2 * (4 * np.pi * ELECTRIC_CONSTANT) ** 2 * (PLANCK_CONSTANT / (2 * np.pi)) ** 2) * (1 / x[2] ** 2)
 
 
 @register_feynman_eq_class
@@ -2938,7 +2441,7 @@ class FeynmanIIICh21Eq20(KnownEquation):
     - Constraints:
         - x[3] != 0
     """
-    _eq_name = 'feynman-iii.21.20'
+    _eq_name = 'symbolic_equation_evaluator-iii.21.20'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2949,11 +2452,6 @@ class FeynmanIIICh21Eq20(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = -x[0] * x[1] * x[2] / x[3]
-
-    def eq_func(self, x):
-        return -x[0] * x[1] * x[2] / x[3]
 
 
 @register_feynman_eq_class
@@ -2971,7 +2469,7 @@ class FeynmanBonus1(KnownEquation):
         - x[2] != 0
         - np.sin(x[3] / 2) != 0
     """
-    _eq_name = 'feynman-bonus.1'
+    _eq_name = 'symbolic_equation_evaluator-bonus.1'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -2982,13 +2480,9 @@ class FeynmanBonus1(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (x[0] * x[1] * FINE_STRUCTURE_CONSTANT * DIRAC_CONSTANT * SPEED_OF_LIGHT
-                         / (4 * x[2] * sympy.sin(x[3] / 2) ** 2)) ** 2
 
-    def eq_func(self, x):
-        return (x[0] * x[1] * FINE_STRUCTURE_CONSTANT * DIRAC_CONSTANT * SPEED_OF_LIGHT
-                / (4 * x[2] * np.sin(x[3] / 2) ** 2)) ** 2
+
+
 
 
 @register_feynman_eq_class
@@ -3009,7 +2503,7 @@ class FeynmanBonus2(KnownEquation):
         - x[1] != 0
         - x[3] * x[2] ** 2 / (x[0] * x[1] ** 2) >= -1 / 2
     """
-    _eq_name = 'feynman-bonus.2'
+    _eq_name = 'symbolic_equation_evaluator-bonus.2'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3022,11 +2516,6 @@ class FeynmanBonus2(KnownEquation):
             ]
 
         super().__init__(num_vars=6, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * x[1] / x[2] ** 2 * (1 + sympy.sqrt(1 + 2 * x[3] * x[2] ** 2 / (x[0] * x[1] ** 2)) * sympy.cos(x[4] - x[5]))
-
-    def eq_func(self, x):
-        return x[0] * x[1] / x[2] ** 2 * (1 + np.sqrt(1 + 2 * x[3] * x[2] ** 2 / (x[0] * x[1] ** 2)) * np.cos(x[4] - x[5]))
 
 
 @register_feynman_eq_class
@@ -3043,7 +2532,7 @@ class FeynmanBonus3(KnownEquation):
     - Constraints:
         - x[1] * np.cos(x[2] - x[3]) != -1
     """
-    _eq_name = 'feynman-bonus.3'
+    _eq_name = 'symbolic_equation_evaluator-bonus.3'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3053,11 +2542,6 @@ class FeynmanBonus3(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (1 - x[1] ** 2) / (1 + x[1] * sympy.cos(x[2] - x[3]))
-
-    def eq_func(self, x):
-        return x[0] * (1 - x[1] ** 2) / (1 + x[1] * np.cos(x[2] - x[3]))
 
 
 @register_feynman_eq_class
@@ -3077,7 +2561,7 @@ class FeynmanBonus4(KnownEquation):
         - x[0] != 0
         - x[4] != 0
     """
-    _eq_name = 'feynman-bonus.4'
+    _eq_name = 'symbolic_equation_evaluator-bonus.4'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3089,11 +2573,6 @@ class FeynmanBonus4(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt(2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2)))
-
-    def eq_func(self, x):
-        return np.sqrt(2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2)))
 
 
 @register_feynman_eq_class
@@ -3111,7 +2590,7 @@ class FeynmanBonus5(KnownEquation):
         - x[2] + x[3] != 0
         - x[1] * (x[2] + x[3]) > 0
     """
-    _eq_name = 'feynman-bonus.5'
+    _eq_name = 'symbolic_equation_evaluator-bonus.5'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3122,11 +2601,6 @@ class FeynmanBonus5(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 2 * sympy.pi * x[0] ** (3 / 2) / sympy.sqrt(GRAVITATIONAL_CONSTANT * (x[1] + x[2]))
-
-    def eq_func(self, x):
-        return 2 * np.pi * x[0] ** (3 / 2) / np.sqrt(GRAVITATIONAL_CONSTANT * (x[1] + x[2]))
 
 
 @register_feynman_eq_class
@@ -3151,7 +2625,7 @@ class FeynmanBonus6(KnownEquation):
         - x[6] != 0
         - 1 + 2 * x[0] * x[1] * x[2] ** 2 / (x[3] * (x[4] * x[5] * x[6] ** 2) ** 2) >= 0
     """
-    _eq_name = 'feynman-bonus.6'
+    _eq_name = 'symbolic_equation_evaluator-bonus.6'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3164,11 +2638,6 @@ class FeynmanBonus6(KnownEquation):
             ]
 
         super().__init__(num_vars=7, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt(1 + 2 * x[0] * x[1] * x[2] ** 2 / (x[3] * (x[4] * x[5] * x[6] ** 2) ** 2))
-
-    def eq_func(self, x):
-        return np.sqrt(1 + 2 * x[0] * x[1] * x[2] ** 2 / (x[3] * (x[4] * x[5] * x[6] ** 2) ** 2))
 
 
 @register_feynman_eq_class
@@ -3185,7 +2654,7 @@ class FeynmanBonus7(KnownEquation):
         - x[2] != 0
         - 6.67430e-11 * x[0] * x[2] ** 2 / 3 >= x[1] * 2.99792458e8 ** 2
     """
-    _eq_name = 'feynman-bonus.7'
+    _eq_name = 'symbolic_equation_evaluator-bonus.7'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3195,11 +2664,6 @@ class FeynmanBonus7(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt(8 * sympy.pi * GRAVITATIONAL_CONSTANT * x[0] / 3 - x[1] * SPEED_OF_LIGHT ** 2 / x[2] ** 2)
-
-    def eq_func(self, x):
-        return np.sqrt(8 * np.pi * GRAVITATIONAL_CONSTANT * x[0] / 3 - x[1] * SPEED_OF_LIGHT ** 2 / x[2] ** 2)
 
 
 @register_feynman_eq_class
@@ -3214,18 +2678,13 @@ class FeynmanBonus8(KnownEquation):
     - Constraints:
         - x[0] * (1 - np.cos(x[1])) / (9.10938356e-31 * 2.99792458e8 ** 2) != -1
     """
-    _eq_name = 'feynman-bonus.8'
+    _eq_name = 'symbolic_equation_evaluator-bonus.8'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [DefaultSampling(1.0e-24, 1.0e-22, uses_negative=False), SimpleSampling(-np.pi, np.pi)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (1 + x[0] / (ELECTRON_MASS * SPEED_OF_LIGHT ** 2) * (1 - sympy.cos(x[1])))
-
-    def eq_func(self, x):
-        return x[0] / (1 + x[0] / (ELECTRON_MASS * SPEED_OF_LIGHT ** 2) * (1 - np.cos(x[1])))
 
 
 @register_feynman_eq_class
@@ -3241,7 +2700,7 @@ class FeynmanBonus9(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-bonus.9'
+    _eq_name = 'symbolic_equation_evaluator-bonus.9'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3252,11 +2711,6 @@ class FeynmanBonus9(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = -32 / 5 * GRAVITATIONAL_CONSTANT ** 4 / SPEED_OF_LIGHT ** 5 * (x[0] * x[1]) ** 2 * (x[0] + x[1]) / x[2] ** 5
-
-    def eq_func(self, x):
-        return -32 / 5 * GRAVITATIONAL_CONSTANT ** 4 / SPEED_OF_LIGHT ** 5 * (x[0] * x[1]) ** 2 * (x[0] + x[1]) / x[2] ** 5
 
 
 @register_feynman_eq_class
@@ -3273,7 +2727,7 @@ class FeynmanBonus10(KnownEquation):
         - (np.cos(x[0]) - x[1] / 2.99792458e8) / (1 - x[1] / 2.99792458e8 * np.cos(x[0])) >= 1
         - (np.cos(x[0]) - x[1] / 2.99792458e8) / (1 - x[1] / 2.99792458e8 * np.cos(x[0])) <= 1
     """
-    _eq_name = 'feynman-bonus.10'
+    _eq_name = 'symbolic_equation_evaluator-bonus.10'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3283,11 +2737,6 @@ class FeynmanBonus10(KnownEquation):
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = (sympy.cos(x[0]) - x[1] / SPEED_OF_LIGHT) / (1 - x[1] / SPEED_OF_LIGHT * sympy.cos(x[0]))
-
-    def eq_func(self, x):
-        return (np.cos(x[0]) - x[1] / SPEED_OF_LIGHT) / (1 - x[1] / SPEED_OF_LIGHT * np.cos(x[0]))
 
 
 @register_feynman_eq_class
@@ -3303,7 +2752,7 @@ class FeynmanBonus11(KnownEquation):
         - x[3]: delta (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-bonus.11'
+    _eq_name = 'symbolic_equation_evaluator-bonus.11'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3314,11 +2763,6 @@ class FeynmanBonus11(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * (sympy.sin(x[1] / 2) * sympy.sin(x[2] * x[3] / 2) / (x[1] / 2 * sympy.sin(x[3] / 2))) ** 2
-
-    def eq_func(self, x):
-        return x[0] * (np.sin(x[1] / 2) * np.sin(x[2] * x[3] / 2) / (x[1] / 2 * np.sin(x[3] / 2))) ** 2
 
 
 @register_feynman_eq_class
@@ -3336,7 +2780,7 @@ class FeynmanBonus12(KnownEquation):
     - Constraints:
         - x[2] != 0
     """
-    _eq_name = 'feynman-bonus.12'
+    _eq_name = 'symbolic_equation_evaluator-bonus.12'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3347,13 +2791,7 @@ class FeynmanBonus12(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * x[1] * x[2] ** 2) \
-                        * (4 * sympy.pi * x[1] * x[3] * x[4] - x[0] * x[4] * x[2] ** 3 / (x[2] ** 2 - x[4] ** 2) ** 2)
 
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * x[1] * x[2] ** 2) \
-               * (4 * np.pi * x[1] * x[3] * x[4] - x[0] * x[4] * x[2] ** 3 / (x[2] ** 2 - x[4] ** 2) ** 2)
 
 
 @register_feynman_eq_class
@@ -3371,7 +2809,7 @@ class FeynmanBonus13(KnownEquation):
     - Constraints:
         - x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * np.cos(x[4]) > 0
     """
-    _eq_name = 'feynman-bonus.13'
+    _eq_name = 'symbolic_equation_evaluator-bonus.13'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3382,13 +2820,8 @@ class FeynmanBonus13(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (4 * sympy.pi * x[0]) * x[1] \
-                        / sympy.sqrt(x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * sympy.cos(x[4]))
 
-    def eq_func(self, x):
-        return 1 / (4 * np.pi * ELECTRIC_CONSTANT) * x[1] \
-               / np.sqrt(x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * np.cos(x[4]))
+
 
 
 @register_feynman_eq_class
@@ -3407,7 +2840,7 @@ class FeynmanBonus14(KnownEquation):
         - x[2] != 0
         - x[4] != -2
     """
-    _eq_name = 'feynman-bonus.14'
+    _eq_name = 'symbolic_equation_evaluator-bonus.14'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3418,11 +2851,6 @@ class FeynmanBonus14(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = x[0] * sympy.cos(x[1]) * (-x[2] + x[3] ** 3 / x[2] ** 2 * (x[4] - 1) / (x[4] + 2))
-
-    def eq_func(self, x):
-        return x[0] * np.cos(x[1]) * (-x[2] + x[3] ** 3 / x[2] ** 2 * (x[4] - 1) / (x[4] + 2))
 
 
 @register_feynman_eq_class
@@ -3439,7 +2867,7 @@ class FeynmanBonus15(KnownEquation):
         - x[0] / 2.99792458e8 * np.cos(x[2]) != -1
         - 2.99792458e8 ** 2 - x[0] ** 2 >= 0
     """
-    _eq_name = 'feynman-bonus.15'
+    _eq_name = 'symbolic_equation_evaluator-bonus.15'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3449,11 +2877,6 @@ class FeynmanBonus15(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1] / (1 + x[0] / SPEED_OF_LIGHT * sympy.cos(x[2]))
-
-    def eq_func(self, x):
-        return np.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1] / (1 + x[0] / SPEED_OF_LIGHT * np.cos(x[2]))
 
 
 @register_feynman_eq_class
@@ -3470,7 +2893,7 @@ class FeynmanBonus16(KnownEquation):
         - x[4]: Volt (float)
     - Constraints:
     """
-    _eq_name = 'feynman-bonus.16'
+    _eq_name = 'symbolic_equation_evaluator-bonus.16'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3481,12 +2904,6 @@ class FeynmanBonus16(KnownEquation):
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = sympy.sqrt((x[0] - x[1] * x[2]) ** 2 * SPEED_OF_LIGHT ** 2 + x[3] ** 2 * SPEED_OF_LIGHT ** 4) \
-                        + x[1] * x[4]
-
-    def eq_func(self, x):
-        return np.sqrt((x[0] - x[1] * x[2]) ** 2 * SPEED_OF_LIGHT ** 2 + x[3] ** 2 * SPEED_OF_LIGHT ** 4) + x[1] * x[4]
 
 
 @register_feynman_eq_class
@@ -3506,7 +2923,7 @@ class FeynmanBonus17(KnownEquation):
         - x[0] != 0
         - x[5] != 0
     """
-    _eq_name = 'feynman-bonus.17'
+    _eq_name = 'symbolic_equation_evaluator-bonus.17'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3517,11 +2934,6 @@ class FeynmanBonus17(KnownEquation):
             ]
 
         super().__init__(num_vars=6, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (2 * x[0]) * (x[1] ** 2 + x[0] ** 2 * x[2] ** 2 * x[3] ** 2 * (1 + x[4] * x[3] / x[5]))
-
-    def eq_func(self, x):
-        return 1 / (2 * x[0]) * (x[1] ** 2 + x[0] ** 2 * x[2] ** 2 * x[3] ** 2 * (1 + x[4] * x[3] / x[5]))
 
 
 @register_feynman_eq_class
@@ -3537,7 +2949,7 @@ class FeynmanBonus18(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-bonus.18'
+    _eq_name = 'symbolic_equation_evaluator-bonus.18'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3547,11 +2959,6 @@ class FeynmanBonus18(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 3 / (8 * sympy.pi * GRAVITATIONAL_CONSTANT) * (SPEED_OF_LIGHT ** 2 * x[0] / x[1] ** 2 + x[2] ** 2)
-
-    def eq_func(self, x):
-        return 3 / (8 * np.pi * GRAVITATIONAL_CONSTANT) * (SPEED_OF_LIGHT ** 2 * x[0] / x[1] ** 2 + x[2] ** 2)
 
 
 @register_feynman_eq_class
@@ -3568,7 +2975,7 @@ class FeynmanBonus19(KnownEquation):
     - Constraints:
         - x[1] != 0
     """
-    _eq_name = 'feynman-bonus.19'
+    _eq_name = 'symbolic_equation_evaluator-bonus.19'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3578,11 +2985,6 @@ class FeynmanBonus19(KnownEquation):
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = -1 / (8 * sympy.pi * GRAVITATIONAL_CONSTANT) * (SPEED_OF_LIGHT ** 4 * x[0] / x[1] ** 2 + x[2] ** 2 * SPEED_OF_LIGHT ** 2 * (1 - 2 * x[3]))
-
-    def eq_func(self, x):
-        return -1 / (8 * np.pi * GRAVITATIONAL_CONSTANT) * (SPEED_OF_LIGHT ** 4 * x[0] / x[1] ** 2 + x[2] ** 2 * SPEED_OF_LIGHT ** 2 * (1 - 2 * x[3]))
 
 
 @register_feynman_eq_class
@@ -3597,7 +2999,7 @@ class FeynmanBonus20(KnownEquation):
         - x[2]: beta (float, positive)
     - Constraints:
     """
-    _eq_name = 'feynman-bonus.20'
+    _eq_name = 'symbolic_equation_evaluator-bonus.20'
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
@@ -3608,8 +3010,3 @@ class FeynmanBonus20(KnownEquation):
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
-        x = self.x
-        self.sympy_eq = 1 / (4 * sympy.pi) * FINE_STRUCTURE_CONSTANT ** 2 * PLANCK_CONSTANT ** 2 / (ELECTRON_MASS ** 2 * SPEED_OF_LIGHT ** 2) * (x[0] / x[1]) ** 2 * (x[0] / x[1] + x[1] / x[0] - sympy.sin(x[2]) ** 2)
-
-    def eq_func(self, x):
-        return 1 / (4 * np.pi) * FINE_STRUCTURE_CONSTANT ** 2 * PLANCK_CONSTANT ** 2 / (ELECTRON_MASS ** 2 * SPEED_OF_LIGHT ** 2) * (x[0] / x[1]) ** 2 * (x[0] / x[1] + x[1] / x[0] - np.sin(x[2]) ** 2)
