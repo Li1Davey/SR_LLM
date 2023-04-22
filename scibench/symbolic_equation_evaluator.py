@@ -2,11 +2,11 @@ import time
 
 import numpy as np
 import scipy
-from feynman_datasets import sampling, physic_equations
-# from feynman_datasets.registry import get_eq_obj
-# from feynman_datasets.sampling import build_sampling_objs
+from scibench.feynman_equations import physic_equations
+
 import json
 import pickle
+from sympy.parsing.sympy_parser import parse_expr
 
 
 # call a million batch of dataset. compute the time.
@@ -20,49 +20,40 @@ import pickle
 # type of noise, rate of noise.
 
 
-def _socket_data_generator():
-    import zmq
-    context = zmq.Context()
-    socket = context.socket(zmq.REP)
-    socket.bind("tcp://*:5555")
-    idx = 0
-    while True:
-        #  Wait for next request from client
-        message = socket.recv_json()
-        # dataset = generate_batch_Xy(message['eq_name'], message['batch_size'])
-        #  Send reply back to client
-        # socket.send(dataset)
-        idx += 1
-        if idx % 100 == 0:
-            print("sending", idx)
-
-
-class Dataloader(object):
-    def __init__(self, dataset_family, true_program, batch_size, noise_type, noise_scale, metric_name):
+class Equation_evaluator(object):
+    def __init__(self, dataset_family, eq_name, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
         '''
         true_program: the program to map from X to Y
         batch_size: number of data points.
         noise_type, noise_scale: the type and scale of noise.
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
+        assert dataset_family in ['feynman', 'trigonometric'], "the dataset family not found!"
         self.dataset_family = dataset_family
-        self.true_program = true_program
-        self.batch_size = batch_size
+        self.eq_name = eq_name
+        self.true_equation = None
 
         # metric
         self.metric_name = metric_name
         self.metric = make_regression_metric(metric_name)
 
         # noise
+        assert noise_type in ['uniform', 'normal', 'exponential', 'laplace', 'logistic'], f"the noise_type: {noise_type} not defined"
         self.noise_type = noise_type
         self.noise_scale = noise_scale
         self.noises = construct_noise(self.noise_type)
 
-    def compute_ytrue_from_given_X(self, X):
+    def load_true_equation(self):
+        raise NotImplementedError("true equation is not loaded!")
+
+    def evaluate(self, X):
         """
         evaluate the y_true from given input X
         """
-        y_true = self.true_program.execute(X) + self.noises(self.noise_scale, self.batch_size)
+        nvar, batch_size = X.shape
+        if self.true_equation is None:
+            self.load_true_equation()
+        y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
         return y_true
 
     def compute_metric_loss(self, y_true, y_pred):
@@ -75,27 +66,24 @@ class Dataloader(object):
             loss = self.metric(y_true, y_pred)
         return loss
 
-from sympy.parsing.sympy_parser import parse_expr
 
-def _read_true_program_file(filename):
-    """
-    filename: string of true program
-    """
-    expression = df['expression'].iloc[0][1:-1]
-    expr = parse_expr(expression)
-    print('dso', expr.expand())
-    var_x = expr.free_symbols
-    print(var_x)
-    y_hat = np.zeros(X_test.shape[0])
-    for idx in range(X_test.shape[0]):
-        X = X_test[idx, :]
-        val_dict = {}
-        for x in var_x:
-            i = int(x.name[1:]) - 1
-            val_dict[x] = X[i]
-        y_hat[idx] = expr.evalf(subs=val_dict)
+class Feynman_evaluator(Equation_evaluator):
+    def __init__(self, dataset_family, eq_name, noise_type, noise_scale, metric_name):
+        super.__init__(dataset_family, eq_name, noise_type, noise_scale, metric_name)
 
-    return y_hat
+    def load_true_equation(self):
+        self.true_equation = physic_equations.get_eq_obj(self.eq_name)
+
+
+class Trigonometric_evaluator(Equation_evaluator):
+    def __init__(self, dataset_family, eq_name, noise_type, noise_scale, metric_name):
+        super.__init__(dataset_family, eq_name, noise_type, noise_scale, metric_name)
+        equation = physic_equations.get_eq_obj(eq_name)
+
+    def load_true_equation(self):
+        pass
+        # expr = parse_expr(expression_str)
+        # var_x = expr.free_symbols
 
 
 def read_picked_data(filename):
@@ -161,12 +149,10 @@ def make_regression_metric(metric_name):
         # Value = 1/(1 + args[0]) when y_hat == mean(y)
         "inv_nrmse": lambda y, y_hat, var_y: 1 / (1 + np.sqrt(np.mean((y - y_hat) ** 2) / var_y)),
 
-        # Pearson correlation coefficient
-        # Range: [0, 1]
+        # Pearson correlation coefficient       # Range: [0, 1]
         "pearson": lambda y, y_hat: scipy.stats.pearsonr(y, y_hat)[0],
 
-        # Spearman correlation coefficient
-        # Range: [0, 1]
+        # Spearman correlation coefficient      # Range: [0, 1]
         "spearman": lambda y, y_hat: scipy.stats.spearmanr(y, y_hat)[0],
         "accuracy(r2)": lambda y, y_hat: evaluate_accuracy_r2(y, y_hat)
     }

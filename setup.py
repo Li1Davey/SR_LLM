@@ -9,7 +9,7 @@ required = [
     "tqdm",
 ]
 
-setup(name='feynman',
+setup(name='scibench',
       version='1.0',
       setup_requires=["numpy", "Cython"],
       include_dirs=[numpy.get_include()],
