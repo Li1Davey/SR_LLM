@@ -8,7 +8,6 @@ import json
 import pickle
 from sympy.parsing.sympy_parser import parse_expr
 
-
 # call a million batch of dataset. compute the time.
 # a class takes the input of a file, that a file is an equation.
 # the class will return a batch of data, everytime it was queried.
@@ -19,9 +18,17 @@ from sympy.parsing.sympy_parser import parse_expr
 # offline evaluation: that are not open.
 # type of noise, rate of noise.
 
+eq_name_dict = {
+    'hash_code': "sincosinv/prog_0",
+}
+
+
+# init
+# 1nd way: the `eq_filename` that contains the equation
+# 2nd way is for compeition: check `initlizer_debug`,
 
 class Equation_evaluator(object):
-    def __init__(self, dataset_family, eq_name, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
+    def __init__(self, eq_filename_hashed, initlizer_debug=False, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
         '''
         true_program: the program to map from X to Y
         batch_size: number of data points.
@@ -29,9 +36,10 @@ class Equation_evaluator(object):
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
         assert dataset_family in ['feynman', 'trigonometric'], "the dataset family not found!"
-        self.dataset_family = dataset_family
-        self.eq_name = eq_name
         self.true_equation = None
+        assert initlizer_debug, ""
+        if initlizer_debug == False:
+            self.load_true_equation(eq_name_dict[eq_filename_hashed])
 
         # metric
         self.metric_name = metric_name
@@ -42,6 +50,19 @@ class Equation_evaluator(object):
         self.noise_type = noise_type
         self.noise_scale = noise_scale
         self.noises = construct_noise(self.noise_type)
+
+    def random_choose_equation(self):
+        # 1. rancomly choose 1 in eq_name_dict
+        # 2. call the hashlib.md5(eq_nbame)
+        # 3. return the md5string
+        # return hashlib.md5()
+        pass
+
+    def get_nvars(self):
+        return self.true_equation.get_nvars()
+
+    def get_function_ops(self):
+        return self.true_equation.get_ops()
 
     def load_true_equation(self):
         raise NotImplementedError("true equation is not loaded!")
