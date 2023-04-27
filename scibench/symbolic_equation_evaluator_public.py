@@ -2,12 +2,12 @@ import time
 
 import numpy as np
 import scipy
-from scibench.feynman_equations import physic_equations
+from scibench.encrpted_equations import physic_equations
 
 import json
+
 import pickle
 from sympy.parsing.sympy_parser import parse_expr
-
 
 # call a million batch of dataset. compute the time.
 # a class takes the input of a file, that a file is an equation.
@@ -19,13 +19,21 @@ from sympy.parsing.sympy_parser import parse_expr
 # offline evaluation: that are not open.
 # type of noise, rate of noise.
 
-eq_name_dict={
+eq_name_dict = {
     'hash_code': "sincosinv/prog_0",
 }
-# init with
+
+
+# init
+# 1nd way: the `eq_filename` that contains the equation
+# 2nd way is for compeition: check `initlizer_debug`,
+# kill the program for more than 1 hour,
+# they need output the best equation vis STDOUT. save to a paticular filename in format '.out' in 1 hours.
+# as a participant, we give  them some eq_name_string, output_file_name, time_limits.
+# when you get a better
 
 class Equation_evaluator(object):
-    def __init__(self, eq_filename_hashed, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
+    def __init__(self, eq_filename_hashed, initlizer_debug=False, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
         '''
         true_program: the program to map from X to Y
         batch_size: number of data points.
@@ -34,10 +42,9 @@ class Equation_evaluator(object):
         '''
         assert dataset_family in ['feynman', 'trigonometric'], "the dataset family not found!"
         self.true_equation = None
-        if initlizer_type==0:
+        assert initlizer_debug == False, ""
+        if initlizer_debug == False:
             self.load_true_equation(eq_name_dict[eq_filename_hashed])
-
-
 
         # metric
         self.metric_name = metric_name
@@ -48,13 +55,6 @@ class Equation_evaluator(object):
         self.noise_type = noise_type
         self.noise_scale = noise_scale
         self.noises = construct_noise(self.noise_type)
-
-    def random_choose_equation(self):
-        # 1. rancomly choose 1 in eq_name_dict
-        # 2. call the hashlib.md5(eq_nbame)
-        # 3. return the md5string
-        # return hashlib.md5()
-        pass
 
     def get_nvars(self):
         return self.true_equation.get_nvars()
@@ -75,35 +75,17 @@ class Equation_evaluator(object):
         y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
         return y_true
 
-    def compute_metric_loss(self, y_true, y_pred):
+    def compute_metric_loss(self, y_pred):
         """
         evaluate the metric value between y_true and y_pred
         """
+        X = self.randomly_generated()
+        y_true = self.true_equation.execute(X)
         if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             loss = self.metric(y_true, y_pred, np.var(y_true))
         elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
             loss = self.metric(y_true, y_pred)
         return loss
-
-
-class Feynman_evaluator(Equation_evaluator):
-    def __init__(self, dataset_family, eq_name, noise_type, noise_scale, metric_name):
-        super.__init__(dataset_family, eq_name, noise_type, noise_scale, metric_name)
-
-    def load_true_equation(self):
-        self.true_equation = physic_equations.get_eq_obj(self.eq_name)
-
-
-class Trigonometric_evaluator(Equation_evaluator):
-    def __init__(self, dataset_family, eq_name, noise_type, noise_scale, metric_name):
-        super.__init__(dataset_family, eq_name, noise_type, noise_scale, metric_name)
-        equation = physic_equations.get_eq_obj(eq_name)
-
-    def load_true_equation(self):
-        pass
-        # expr = parse_expr(expression_str)
-        # var_x = expr.free_symbols
-
 
 def read_picked_data(filename):
     return pickle.load(open(filename, 'rb'))

@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 import scipy
-from scibench.feynman_equations import physic_equations
+from scibench.encrpted_equations import physic_equations
 
 import json
 import pickle
@@ -25,7 +25,9 @@ eq_name_dict = {
 
 # init
 # 1nd way: the `eq_filename` that contains the equation
-# 2nd way is for compeition: check `initlizer_debug`,
+# 2nd way is for compeition: check `initlizer_debug`, the file is encrpted.
+
+PRIVATE_KEY="9endsfiosudewdcx98ewds!"
 
 class Equation_evaluator(object):
     def __init__(self, eq_filename_hashed, initlizer_debug=False, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
@@ -37,7 +39,7 @@ class Equation_evaluator(object):
         '''
         assert dataset_family in ['feynman', 'trigonometric'], "the dataset family not found!"
         self.true_equation = None
-        assert initlizer_debug, ""
+        assert initlizer_debug==True, ""
         if initlizer_debug == False:
             self.load_true_equation(eq_name_dict[eq_filename_hashed])
 
