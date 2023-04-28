@@ -1,0 +1,152 @@
+import pickle
+from sympy import *
+from sympy.parsing.sympy_parser import parse_expr
+
+
+def read_true_program(filename):
+    prog = pickle.load(open(filename, 'rb'))
+    # print('preorder=', prog['preorder'])
+    # print('const_loc=', prog['const_loc'])
+    # print('consts=', prog['consts'])
+    preorder_traversal_expr = prog['preorder']
+    for loc, val in zip(prog['const_loc'], prog['consts']):
+        preorder_traversal_expr[loc] = val
+    print(preorder_traversal_expr)
+    return preorder_traversal_expr
+
+
+#
+def sympy_expr(traversal):
+    """
+    Returns the attribute self.sympy_expr.
+
+    This is actually a bit complicated because we have to go:
+    traversal --> tree --> serialized tree --> SymPy expression
+    """
+    tree = build_tree(traversal)
+    tree = convert_to_sympy(tree)
+    tree_str = tree.__repr__()
+    print(tree_str)
+    expr = parse_expr(tree_str)
+    return expr
+
+
+# Possible library elements that sympy capitalizes
+capital = ["add", "mul", "pow"]
+
+
+class Node(object):
+    """Basic tree class supporting printing"""
+
+    def __init__(self, val):
+
+        self.val = val
+        self.children = []
+
+    def __repr__(self):
+        if len(self.children) == 0:
+            return "{}".format(self.val)
+
+        if len(self.children) == 0:
+            return self.val
+        if self.val == "add":
+            return "{} + {}".format(repr(self.children[0]), repr(self.children[1]))
+        elif self.val == "mul":
+            return "{} * {}".format(repr(self.children[0]), repr(self.children[1]))
+        elif self.val == "inv":
+            children_repr = ",".join(repr(child) for child in self.children)
+            return "1 / {}".format(children_repr)
+        else:
+            children_repr = ",".join(repr(child) for child in self.children)
+            return "{}({})".format(self.val, children_repr)
+
+
+op_arity_dict = {
+    'add': 2, 'sub': 2, 'mul': 2, 'div': 2, 'inv': 1, 'sqrt': 1,
+    'sin': 1, 'cos': 1, 'exp': 1, 'log': 1, 'n2': 1, 'n3': 1, 'n4': 1
+}
+
+
+def build_tree(traversal):
+    """Recursively builds tree from pre-order traversal"""
+
+    op = traversal.pop(0)
+    if op in op_arity_dict:
+        n_children = op_arity_dict[op]
+    else:
+        node = Node(op)
+        return node
+    val = op
+    if val in capital:
+        val = val.capitalize()
+
+    node = Node(val)
+
+    for _ in range(n_children):
+        node.children.append(build_tree(traversal))
+
+    return node
+
+
+# this function is used for pretty print the expression
+def convert_to_sympy(node):
+    """Adjusts trees to only use node values supported by sympy"""
+
+    if node.val == "div":
+        node.val = "Mul"
+        new_right = Node("Pow")
+        new_right.children.append(node.children[1])
+        new_right.children.append(Node("-1"))
+        node.children[1] = new_right
+
+    elif node.val == "sub":
+        node.val = "Add"
+        new_right = Node("Mul")
+        new_right.children.append(node.children[1])
+        new_right.children.append(Node("-1"))
+        node.children[1] = new_right
+
+    elif node.val == "inv":
+        node.val = Node("Pow")
+        node.children.append(Node("-1"))
+
+    elif node.val == "neg":
+        node.val = Node("Mul")
+        node.children.append(Node("-1"))
+
+    elif node.val == "n2":
+        node.val = "Pow"
+        node.children.append(Node("2"))
+
+    elif node.val == "n3":
+        node.val = "Pow"
+        node.children.append(Node("3"))
+
+    elif node.val == "n4":
+        node.val = "Pow"
+        node.children.append(Node("4"))
+
+    for child in node.children:
+        convert_to_sympy(child)
+
+    return node
+
+
+def write_to_files(equations, template):
+    fw = open("output.py", 'w')
+    for line in equations:
+        if len(line) > 1:
+            spl = line.strip().split("	")
+            fw.write(template.format(spl[0].strip().replace("-", "_"), spl[0].strip(), spl[1].strip(),
+                                     spl[2].strip().replace('X_1', 'x[0]').replace('X_2', 'x[1]').replace('X_3', 'x[2]').replace(
+                                         'X_4', 'x[3]').replace('X_5', 'x[4]').replace('X_6', 'x[5]').replace('X_7', 'x[6]').replace(
+                                         'log', 'sympy.log').replace('exp', 'sympy.exp').replace('sin', 'sympy.sin').replace(
+                                         'cos', 'sympy.cos').replace('div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace(
+                                         'pow', 'sympy.pow')))
+
+
+if __name__ == '__main__':
+    filename = "/home/jiangnan/PycharmProjects/xyx_dso/data/sincosinv_nv2_nt11/prog_0.data"
+    preorder_traversal_expr = read_true_program(filename)
+    expr = sympy_expr(preorder_traversal_expr)
+    print(expr)
