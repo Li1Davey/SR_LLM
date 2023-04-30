@@ -72,13 +72,13 @@ def main(private_key_folder='./', key_filename="private.key", output_folder="./"
 
 
 if __name__ == '__main__':
-    from feynman import *
+    from equations_srsd_benchmark import *
 
-    main(output_folder='./feynman')
-    # from livermore2 import *
-    #
-    # main(output_folder='./livermore2')
+    main(output_folder='./equations_srsd_benchmark')
+    from equations_DSOs import *
 
-    from livermore3 import *
+    main(output_folder='./equations_DSOs')
 
-    main(output_folder='./livermore3')
+    from equations_trigometric import *
+
+    main(output_folder='./equations_trigometric')

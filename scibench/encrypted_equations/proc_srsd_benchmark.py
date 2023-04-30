@@ -21,7 +21,7 @@ def extract(row, function_set_dict):
     sympy_eq = row['expression'].replace('x10', 'x[9]').replace('x1', 'x[0]').replace('x2', 'x[1]').replace('x3', 'x[2]').replace(
         'x4', 'x[3]').replace('x5', 'x[4]').replace('x6', 'x[5]').replace('x7', 'x[6]').replace('x8', 'x[7]').replace('x9', 'x[8]').replace(
         'log', 'sympy.log').replace('exp', 'sympy.exp').replace('sin', 'sympy.sin').replace('cos', 'sympy.cos').replace(
-        'div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace('pow', 'sympy.pow').replace('pi', 'sympy.pi').replace(
+        'div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace('pow', 'sympy.Pow').replace('pi', 'sympy.pi').replace(
         'harmonic', 'sympy.harmonic')
     function_set = function_set_dict[row['function_set']]
     return template.format(name, name, function_set, nvars, sympy_eq)

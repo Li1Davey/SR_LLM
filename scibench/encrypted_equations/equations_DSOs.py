@@ -69,7 +69,7 @@ class Keijzer_5(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = sympy.Div(30 * x[0] * x[2], (x[0] - 10) * sympy.Pow(x[1], 2))
+        self.sympy_eq = (30 * x[0] * x[2]) / ((x[0] - 10) * sympy.Pow(x[1], 2))
 
 
 @register_eq_class
@@ -80,7 +80,7 @@ class Keijzer_6(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div(x[0] * (x[0] + 1), 2)
+        self.sympy_eq = (x[0] * (x[0] + 1)) / (2)
 
 
 @register_eq_class
@@ -146,7 +146,7 @@ class Keijzer_12(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Pow(x[0], 4) - sympy.Pow(x[0], 3) + sympy.Pow(x[1], 2) / 2 - x[1]
+        self.sympy_eq = sympy.Pow(x[0], 4) - sympy.Pow(x[0], 3) + (sympy.Pow(x[1], 2)) / (2) - x[1]
 
 
 @register_eq_class
@@ -168,7 +168,7 @@ class Keijzer_14(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(8, 2 + sympy.Pow(x[0], 2) + sympy.Pow(x[1], 2))
+        self.sympy_eq = (8) / (2 + sympy.Pow(x[0], 2) + sympy.Pow(x[1], 2))
 
 
 @register_eq_class
@@ -179,7 +179,7 @@ class Keijzer_15(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Pow(x[0], 3) / 5 + sympy.Pow(x[1], 3) / 2 - x[1] - x[0]
+        self.sympy_eq = (sympy.Pow(x[0], 3)) / (5) + (sympy.Pow(x[1], 3)) / (2) - x[1] - x[0]
 
 
 @register_eq_class
@@ -201,7 +201,7 @@ class Korns_2(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = 0.23 + 14.2 * ((x[3] + x[1]) / (3 * x[4]))
+        self.sympy_eq = 0.23 + 14.2 * ((x[3] + x[1])) / ((3 * x[4]))
 
 
 @register_eq_class
@@ -212,7 +212,7 @@ class Korns_3(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = 4.9 * ((x[3] - x[0] + (x[1] / x[4])) / (3 * x[4])) - 5.41
+        self.sympy_eq = 4.9 * ((x[3] - x[0] + (x[1]) / (x[4]))) / ((3 * x[4])) - 5.41
 
 
 @register_eq_class
@@ -278,7 +278,7 @@ class Korns_9(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = (sympy.sqrt(abs(x[0]))/ sympy.log(abs(x[1]))) * (sympy.exp(x[2])/ sympy.Pow(x[3], 2))
+        self.sympy_eq = (sympy.sqrt(abs(x[0]))) / (sympy.log(abs(x[1]))) * (sympy.exp(x[2])) / (sympy.Pow(x[3], 2))
 
 
 @register_eq_class
@@ -289,7 +289,7 @@ class Korns_10(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = 0.81 + 24.3 * (2 * x[1] + 3 * sympy.Pow(x[2], 2)/ ((4 * sympy.Pow(x[3], 3) + 5 * sympy.Pow(x[4], 4))))
+        self.sympy_eq = 0.81 + 24.3 * (2 * x[1] + 3 * sympy.Pow(x[2], 2)) / (((4 * sympy.Pow(x[3], 3) + 5 * sympy.Pow(x[4], 4))))
 
 
 @register_eq_class
@@ -344,7 +344,7 @@ class Meier_3(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.Pow(x[0], 2) * sympy.Pow(x[1], 2), (x[0] + x[1]))
+        self.sympy_eq = (sympy.Pow(x[0], 2) * sympy.Pow(x[1], 2)) / ((x[0] + x[1]))
 
 
 @register_eq_class
@@ -355,7 +355,7 @@ class Meier_4(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.Pow(x[0], 5), sympy.Pow(x[1], 3))
+        self.sympy_eq = (sympy.Pow(x[0], 5)) / (sympy.Pow(x[1], 3))
 
 
 @register_eq_class
@@ -487,7 +487,7 @@ class Nguyen_12(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Pow(x[0], 4) - sympy.Pow(x[0], 3) + sympy.Div(sympy.Pow(x[1], 2), 2) - x[1]
+        self.sympy_eq = sympy.Pow(x[0], 4) - sympy.Pow(x[0], 3) + (sympy.Pow(x[1], 2)) / (2) - x[1]
 
 
 @register_eq_class
@@ -498,7 +498,7 @@ class Nguyen_12a(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Pow(x[0], 4) - sympy.Pow(x[0], 3) + sympy.Div(sympy.Pow(x[1], 2), 2) - x[1]
+        self.sympy_eq = sympy.Pow(x[0], 4) - sympy.Pow(x[0], 3) + (sympy.Pow(x[1], 2)) / (2) - x[1]
 
 
 @register_eq_class
@@ -663,7 +663,7 @@ class Livermore_7(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.exp(x[0]) - sympy.exp(-1 * x[0]), 2)
+        self.sympy_eq = (sympy.exp(x[0]) - sympy.exp(-1 * x[0])) / (2)
 
 
 @register_eq_class
@@ -674,7 +674,7 @@ class Livermore_7a(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.exp(x[0]) - sympy.exp(-1 * x[0]), 2)
+        self.sympy_eq = (sympy.exp(x[0]) - sympy.exp(-1 * x[0])) / (2)
 
 
 @register_eq_class
@@ -685,7 +685,7 @@ class Livermore_8(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.exp(x[0]) + sympy.exp(-1 * x[0]), 2)
+        self.sympy_eq = (sympy.exp(x[0]) + sympy.exp(-1 * x[0])) / (2)
 
 
 @register_eq_class
@@ -696,7 +696,7 @@ class Livermore_8a(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.exp(x[0]) + sympy.exp(-1 * x[0]), 2)
+        self.sympy_eq = (sympy.exp(x[0]) + sympy.exp(-1 * x[0])) / (2)
 
 
 @register_eq_class
@@ -730,7 +730,7 @@ class Livermore_11(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.Pow(x[0], 2) * sympy.Pow(x[1], 2), (x[0] + x[1]))
+        self.sympy_eq = (sympy.Pow(x[0], 2) * sympy.Pow(x[1], 2)) / ((x[0] + x[1]))
 
 
 @register_eq_class
@@ -741,7 +741,7 @@ class Livermore_12(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.Pow(x[0], 5), sympy.Pow(x[1], 3))
+        self.sympy_eq = (sympy.Pow(x[0], 5)) / (sympy.Pow(x[1], 3))
 
 
 @register_eq_class
@@ -874,7 +874,7 @@ class Pagie_1(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(1, (1 + sympy.Pow(x[0], -4))) + sympy.Div(1, (1 + sympy.Pow(x[1], -4)))
+        self.sympy_eq = (1) / ((1 + sympy.Pow(x[0], -4))) + (1) / ((1 + sympy.Pow(x[1], -4)))
 
 
 @register_eq_class
@@ -908,7 +908,7 @@ class R1(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.Pow(x[0] + 1, 3), sympy.Pow(x[0], 2) - x[0] + 1)
+        self.sympy_eq = (sympy.Pow(x[0] + 1, 3)) / (sympy.Pow(x[0], 2) - x[0] + 1)
 
 
 @register_eq_class
@@ -919,7 +919,7 @@ class R2(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div((sympy.Pow(x[0], 5) - 3 * sympy.Pow(x[0], 3) + 1), (sympy.Pow(x[0], 2) + 1))
+        self.sympy_eq = ((sympy.Pow(x[0], 5) - 3 * sympy.Pow(x[0], 3) + 1)) / ((sympy.Pow(x[0], 2) + 1))
 
 
 @register_eq_class
@@ -930,8 +930,8 @@ class R3(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div((sympy.Pow(x[0], 6) + sympy.Pow(x[0], 5)),
-                                  (sympy.Pow(x[0], 4) + sympy.Pow(x[0], 3) + sympy.Pow(x[0], 2) + x[0] + 1))
+        self.sympy_eq = ((sympy.Pow(x[0], 6) + sympy.Pow(x[0], 5))) / (
+            (sympy.Pow(x[0], 4) + sympy.Pow(x[0], 3) + sympy.Pow(x[0], 2) + x[0] + 1))
 
 
 @register_eq_class
@@ -942,7 +942,7 @@ class R1a(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.Pow(x[0] + 1, 3), sympy.Pow(x[0], 2) - x[0] + 1)
+        self.sympy_eq = (sympy.Pow(x[0] + 1, 3)) / (sympy.Pow(x[0], 2) - x[0] + 1)
 
 
 @register_eq_class
@@ -953,7 +953,7 @@ class R2a(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div((sympy.Pow(x[0], 5) - 3 * sympy.Pow(x[0], 3) + 1), (sympy.Pow(x[0], 2) + 1))
+        self.sympy_eq = ((sympy.Pow(x[0], 5) - 3 * sympy.Pow(x[0], 3) + 1)) / ((sympy.Pow(x[0], 2) + 1))
 
 
 @register_eq_class
@@ -964,8 +964,8 @@ class R3a(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.Div((sympy.Pow(x[0], 6) + sympy.Pow(x[0], 5)),
-                                  (sympy.Pow(x[0], 4) + sympy.Pow(x[0], 3) + sympy.Pow(x[0], 2) + x[0] + 1))
+        self.sympy_eq = ((sympy.Pow(x[0], 6) + sympy.Pow(x[0], 5))) / (
+            (sympy.Pow(x[0], 4) + sympy.Pow(x[0], 3) + sympy.Pow(x[0], 2) + x[0] + 1))
 
 
 @register_eq_class
@@ -987,7 +987,7 @@ class Vladislavleva_1(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.exp(-sympy.Pow(x[0] - 1, 2)), (1.2 + sympy.Pow((x[1] - 2.5), 2)))
+        self.sympy_eq = (sympy.exp(-sympy.Pow(x[0] - 1, 2))) / ((1.2 + sympy.Pow((x[1] - 2.5), 2)))
 
 
 @register_eq_class
@@ -1022,7 +1022,7 @@ class Vladislavleva_4(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = sympy.Div(10, (5 + (
+        self.sympy_eq = (10) / ((5 + (
                 sympy.Pow((x[0] - 3), 2) + sympy.Pow((x[1] - 3), 2) + sympy.Pow((x[2] - 3), 2) + sympy.Pow((x[3] - 3), 2) + sympy.Pow(
             (x[4] - 3), 2))))
 
@@ -1035,7 +1035,7 @@ class Vladislavleva_5(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = 30 * (x[0] - 1) * sympy.Div(x[2] - 1, (x[0] - 10) * sympy.Pow(x[1], 2))
+        self.sympy_eq = 30 * (x[0] - 1) * (x[2] - 1) / ((x[0] - 10) * sympy.Pow(x[1], 2))
 
 
 @register_eq_class
@@ -1068,7 +1068,7 @@ class Vladislavleva_8(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(sympy.Pow((x[0] - 3), 4) + sympy.Pow((x[1] - 3), 3) - (x[1] - 3), sympy.Pow((x[1] - 2), 4) + 10)
+        self.sympy_eq = (sympy.Pow((x[0] - 3), 4) + sympy.Pow((x[1] - 3), 3) - (x[1] - 3)) / (sympy.Pow((x[1] - 2), 4) + 10)
 
 
 @register_eq_class
@@ -1222,7 +1222,7 @@ class Neat_8(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.exp(-sympy.Pow(x[0] - 1, 2)) / (1.2 + sympy.Pow((x[1] - 2.5), 2))
+        self.sympy_eq = (sympy.exp(-sympy.Pow(x[0] - 1, 2))) / ((1.2 + sympy.Pow((x[1] - 2.5), 2)))
 
 
 @register_eq_class
@@ -1233,7 +1233,7 @@ class Neat_9(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.Div(1, (1 + sympy.Pow(x[0], -4))) + sympy.Div(1, (1 + sympy.Pow(x[1], -4)))
+        self.sympy_eq = (1) / ((1 + sympy.Pow(x[0], -4))) + (1) / ((1 + sympy.Pow(x[1], -4)))
 
 
 @register_eq_class

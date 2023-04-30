@@ -1,10 +1,12 @@
-import time
+import os
+import random
 
 import numpy as np
 import scipy
-from scibench.encrpted_equations import physic_equations
 
 import json
+from cryptography.fernet import Fernet
+from sympy.parsing.sympy_parser import parse_expr
 
 import pickle
 from sympy.parsing.sympy_parser import parse_expr
@@ -32,19 +34,34 @@ eq_name_dict = {
 # as a participant, we give  them some eq_name_string, output_file_name, time_limits.
 # when you get a better
 
+def decrypt_equation(eq_file, key_filename="ecrypted_equation/public.key"):
+    with open(key_filename, 'rb') as filekey:
+        key = filekey.read()
+    fernet = Fernet(key)
+    with open(eq_file, 'rb') as enc_file:
+        encrypted = enc_file.read()
+
+    decrypted = fernet.decrypt(encrypted)
+    one_equation = json.loads(decrypted)
+    one_equation['eq_expression'] = parse_expr(one_equation['eq_expression'])
+    print("-" * 20)
+    for key in one_equation:
+        print(key, "\t", one_equation[key])
+    print("-" * 20)
+    return one_equation
+
+
 class Equation_evaluator(object):
-    def __init__(self, eq_filename_hashed, initlizer_debug=False, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
+    def __init__(self, initlizer_debug=False, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
         '''
         true_program: the program to map from X to Y
         batch_size: number of data points.
         noise_type, noise_scale: the type and scale of noise.
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
-        assert dataset_family in ['feynman', 'trigonometric'], "the dataset family not found!"
         self.true_equation = None
         assert initlizer_debug == False, ""
-        if initlizer_debug == False:
-            self.load_true_equation(eq_name_dict[eq_filename_hashed])
+        self._load_random_equation()
 
         # metric
         self.metric_name = metric_name
@@ -56,11 +73,27 @@ class Equation_evaluator(object):
         self.noise_scale = noise_scale
         self.noises = construct_noise(self.noise_type)
 
-    def get_nvars(self):
-        return self.true_equation.get_nvars()
+    def _load_random_equation(self, equation_folder="encrypted_equtions"):
+        program_files = dict()
+        for root, dirs, files in os.walk(equation_folder, topdown=False):
+            for name in files:
+                if name.endswith(".encrypt"):
+                    program_files[name] = os.path.join(root, name)
+        self.eq_name = random.choice(list(program_files.keys()))
 
-    def get_function_ops(self):
-        return self.true_equation.get_ops()
+        one_equation = decrypt_equation(program_files[self.eq_name])
+        self.true_equation = one_equation['eq_expression']
+        self.num_vars = int(one_equation['num_vars'])
+        self.function_set = one_equation._function_set
+
+    def get_eq_name(self):
+        return self.eq_name
+
+    def get_nvars(self):
+        return self.num_vars
+
+    def get_function_set(self):
+        return self.function_set
 
     def load_true_equation(self):
         raise NotImplementedError("true equation is not loaded!")
@@ -87,9 +120,6 @@ class Equation_evaluator(object):
             loss = self.metric(y_true, y_pred)
         return loss
 
-def read_picked_data(filename):
-    return pickle.load(open(filename, 'rb'))
-
 
 def construct_noise(noise_type):
     _all_samplers = {
@@ -111,43 +141,27 @@ def make_regression_metric(metric_name):
     """
     all_metrics = {
         # Negative mean squared error
-        # Range: [-inf, 0]
-        # Value = -var(y) when y_hat == mean(y)
         "neg_mse": lambda y, y_hat: -np.mean((y - y_hat) ** 2),
 
         # Negative root mean squared error
-        # Range: [-inf, 0]
-        # Value = -sqrt(var(y)) when y_hat == mean(y)
         "neg_rmse": lambda y, y_hat: -np.sqrt(np.mean((y - y_hat) ** 2)),
 
         # Negative normalized mean squared error
-        # Range: [-inf, 0]
-        # Value = -1 when y_hat == mean(y)
         "neg_nmse": lambda y, y_hat, var_y: -np.mean((y - y_hat) ** 2) / var_y,
 
         # Negative normalized root mean squared error
-        # Range: [-inf, 0]
-        # Value = -1 when y_hat == mean(y)
         "neg_nrmse": lambda y, y_hat, var_y: -np.sqrt(np.mean((y - y_hat) ** 2) / var_y),
 
         # (Protected) negative log mean squared error
-        # Range: [-inf, 0]
-        # Value = -log(1 + var(y)) when y_hat == mean(y)
         "neglog_mse": lambda y, y_hat: -np.log(1 + np.mean((y - y_hat) ** 2)),
 
         # (Protected) inverse mean squared error
-        # Range: [0, 1]
-        # Value = 1/(1 + args[0]*var(y)) when y_hat == mean(y)
         "inv_mse": lambda y, y_hat: 1 / (1 + np.mean((y - y_hat) ** 2)),
 
         # (Protected) inverse normalized mean squared error
-        # Range: [0, 1]
-        # Value = 1/(1 + args[0]) when y_hat == mean(y)
         "inv_nmse": lambda y, y_hat, var_y: 1 / (1 + np.mean((y - y_hat) ** 2) / var_y),
 
         # (Protected) inverse normalized root mean squared error
-        # Range: [0, 1]
-        # Value = 1/(1 + args[0]) when y_hat == mean(y)
         "inv_nrmse": lambda y, y_hat, var_y: 1 / (1 + np.sqrt(np.mean((y - y_hat) ** 2) / var_y)),
 
         # Pearson correlation coefficient       # Range: [0, 1]

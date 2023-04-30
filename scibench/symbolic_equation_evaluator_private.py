@@ -2,7 +2,7 @@ import time
 
 import numpy as np
 import scipy
-from scibench.encrpted_equations import physic_equations
+from scibench.encrypted_equations import physic_equations
 
 import json
 import pickle
