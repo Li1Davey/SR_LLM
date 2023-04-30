@@ -7,6 +7,7 @@
 ```bash
 pip install deap
 pip install Cython
+pip install cryptography
 ```
 
 ### 0.2 Directory

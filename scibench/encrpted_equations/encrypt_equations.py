@@ -1,8 +1,8 @@
-#### Requirement: pip install cryptography
+#### Requirement:
 import json
 import os
-from feynman import *
-import click
+import xxhash
+
 from cryptography.fernet import Fernet
 from sympy.parsing.sympy_parser import parse_expr
 
@@ -47,22 +47,24 @@ def decrpt_equation(eq_file, key_filename):
     print("-" * 20)
 
 
-@click.command()
-@click.option('--private_key_folder', default="./")
-@click.option('--key_filename', default="feynman.private.key")
-@click.option('--output_folder', default="./")
-def main(private_key_folder, key_filename, output_folder):
-    if os.path.isfile(os.path.join(private_key_folder, key_filename)):
+def main(private_key_folder='./', key_filename="private.key", output_folder="./"):
+    if not os.path.isfile(os.path.join(private_key_folder, key_filename)):
+        print('A new key is generated!')
         generate_new_key(key_filename)
 
     for eqname in EQUATION_CLASS_DICT:
         one_equation = get_eq_obj(eqname)
 
-        equation = {"eq_name": one_equation._eq_name, "num_vars": one_equation.num_vars,
-                    "function_ops": one_equation._function_ops,
+        equation = {"eq_name": one_equation._eq_name,
+                    "num_vars": one_equation.num_vars,
+                    "function_set": one_equation._function_set,
                     "eq_expression": str(one_equation.sympy_eq)}
         user_encode_data = json.dumps(equation, indent=2).encode('utf-8')
-        output_eq_file = os.path.join(output_folder, eqname + ".encypt")
+        if not os.path.isdir(output_folder):
+            os.makedirs(output_folder)
+        hashed_name = xxhash.xxh128(eqname, seed=42).intdigest()
+        print(hashed_name)
+        output_eq_file = os.path.join(output_folder, str(hashed_name) + ".encypt")
 
         encrypt_equation(user_encode_data, output_eq_file, key_filename)
 
@@ -70,4 +72,13 @@ def main(private_key_folder, key_filename, output_folder):
 
 
 if __name__ == '__main__':
-    main()
+    from feynman import *
+
+    main(output_folder='./feynman')
+    # from livermore2 import *
+    #
+    # main(output_folder='./livermore2')
+
+    from livermore3 import *
+
+    main(output_folder='./livermore3')

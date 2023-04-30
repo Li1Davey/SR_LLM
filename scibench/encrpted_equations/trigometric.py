@@ -1,17 +1,16 @@
 import pickle
+import os
 from sympy import *
+import click
 from sympy.parsing.sympy_parser import parse_expr
 
 
 def read_true_program(filename):
     prog = pickle.load(open(filename, 'rb'))
-    # print('preorder=', prog['preorder'])
-    # print('const_loc=', prog['const_loc'])
-    # print('consts=', prog['consts'])
     preorder_traversal_expr = prog['preorder']
     for loc, val in zip(prog['const_loc'], prog['consts']):
         preorder_traversal_expr[loc] = val
-    print(preorder_traversal_expr)
+    # print(preorder_traversal_expr)
     return preorder_traversal_expr
 
 
@@ -26,7 +25,7 @@ def sympy_expr(traversal):
     tree = build_tree(traversal)
     tree = convert_to_sympy(tree)
     tree_str = tree.__repr__()
-    print(tree_str)
+    # print(tree_str)
     expr = parse_expr(tree_str)
     return expr
 
@@ -132,21 +131,64 @@ def convert_to_sympy(node):
     return node
 
 
-def write_to_files(equations, template):
+template = """@register_eq_class
+class {}(KnownEquation):
+    _eq_name = '{}'
+    _function_set = {}
+    
+    def __init__(self):
+        super().__init__(num_vars={})
+        x = self.x
+        self.sympy_eq = {}
+"""
+
+
+def write_to_files(equations, template, output_folder):
     fw = open("output.py", 'w')
-    for line in equations:
-        if len(line) > 1:
-            spl = line.strip().split("	")
-            fw.write(template.format(spl[0].strip().replace("-", "_"), spl[0].strip(), spl[1].strip(),
-                                     spl[2].strip().replace('X_1', 'x[0]').replace('X_2', 'x[1]').replace('X_3', 'x[2]').replace(
-                                         'X_4', 'x[3]').replace('X_5', 'x[4]').replace('X_6', 'x[5]').replace('X_7', 'x[6]').replace(
-                                         'log', 'sympy.log').replace('exp', 'sympy.exp').replace('sin', 'sympy.sin').replace(
-                                         'cos', 'sympy.cos').replace('div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace(
-                                         'pow', 'sympy.pow')))
+
+    for spl in equations:
+        function_set = None
+        for key in function_set_dict:
+            if key in spl[0]:
+                function_set = function_set_dict[key]
+        fw.write(template.format(
+            spl[0].replace("-", "_"),
+            spl[0],
+            function_set,
+            spl[1],
+            spl[2].replace('X_0', 'x[0]').replace('X_1', 'x[1]').replace('X_2', 'x[2]').replace('X_3', 'x[3]').replace(
+                'X_4', 'x[4]').replace('X_5', 'x[5]').replace('X_6', 'x[6]').replace('X_7', 'x[7]').replace(
+                'log', 'sympy.log').replace('exp', 'sympy.exp').replace('sin', 'sympy.sin').replace(
+                'cos', 'sympy.cos').replace('div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace('pow', 'sympy.pow')))
+
+
+function_set_dict = {
+    'inv_': ["add", "sub", "mul", "div", "inv", "const"],
+    'sincos_': ["add", "sub", "mul", "sin", "cos", "const"],
+    'sincosinv_': ["add", "sub", "mul", "div", "inv", "sin", "cos", "const"],
+}
+
+
+@click.command()
+@click.option('--basepath', default='/home/jiangnan/PycharmProjects/xyx_dso/data/')
+@click.option('--output_folder', default='./')
+def main(basepath, output_folder):
+    program_files = []
+    for root, dirs, files in os.walk(basepath, topdown=False):
+        for name in files:
+            if name.endswith(".data"):
+                program_files.append(os.path.join(root, name))
+    equations = []
+    for filename in program_files:
+        preorder_traversal_expr = read_true_program(filename)
+        expr = sympy_expr(preorder_traversal_expr)
+        num_vars = len(expr.free_symbols)
+        eq_class_name = "_".join(filename.split("/")[-2:])[:-5]
+        equations.append([eq_class_name, num_vars, str(expr)])
+        # print(f"eq_class_name: {eq_class_name} num_vars: {num_vars} sympy_eq: {expr}")
+        # exit()
+    write_to_files(equations, template, output_folder)
 
 
 if __name__ == '__main__':
-    filename = "/home/jiangnan/PycharmProjects/xyx_dso/data/sincosinv_nv2_nt11/prog_0.data"
-    preorder_traversal_expr = read_true_program(filename)
-    expr = sympy_expr(preorder_traversal_expr)
-    print(expr)
+    main()

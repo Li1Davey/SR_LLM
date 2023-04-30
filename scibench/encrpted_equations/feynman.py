@@ -2,7 +2,6 @@ from collections import OrderedDict
 import numpy as np
 from base import KnownEquation
 import sympy
-from sympy import Symbol
 
 FEYNMAN_EQUATION_CLASS_DICT = OrderedDict()
 GRAVITATIONAL_CONSTANT = 6.67430e-11
@@ -36,11 +35,6 @@ def get_eq_obj(key, **kwargs):
     raise KeyError(f'`{key}` is not expected as a equation object key')
 
 
-
-
-
-
-
 @register_feynman_eq_class
 class FeynmanICh6Eq20(KnownEquation):
     """
@@ -54,6 +48,7 @@ class FeynmanICh6Eq20(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-i.6.20'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -75,6 +70,7 @@ class FeynmanICh6Eq20a(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.6.20a'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -99,6 +95,7 @@ class FeynmanICh6Eq20b(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-i.6.20b'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -123,6 +120,7 @@ class FeynmanICh8Eq14(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.8.14'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -152,6 +150,7 @@ class FeynmanICh9Eq18(KnownEquation):
         - (x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2 != 0
     """
     _eq_name = 'feynman-i.9.18'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=8)
@@ -176,6 +175,7 @@ class FeynmanICh10Eq7(KnownEquation):
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
     _eq_name = 'feynman-i.10.7'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -202,6 +202,7 @@ class FeynmanICh11Eq19(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.11.19'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -224,6 +225,7 @@ class FeynmanICh12Eq1(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.12.1'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -248,6 +250,7 @@ class FeynmanICh12Eq2(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-i.12.2'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -271,6 +274,7 @@ class FeynmanICh12Eq4(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-i.12.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -293,6 +297,7 @@ class FeynmanICh12Eq5(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.12.5'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -318,6 +323,7 @@ class FeynmanICh12Eq11(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.12.11'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -342,6 +348,7 @@ class FeynmanICh13Eq4(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.13.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -368,6 +375,7 @@ class FeynmanICh13Eq12(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-i.13.12'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -390,6 +398,7 @@ class FeynmanICh14Eq3(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.14.3'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -412,6 +421,7 @@ class FeynmanICh14Eq4(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.14.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -435,6 +445,7 @@ class FeynmanICh15Eq10(KnownEquation):
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
     _eq_name = 'feynman-i.15.10'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -459,6 +470,7 @@ class FeynmanICh15Eq3t(KnownEquation):
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 >= 0
     """
     _eq_name = 'feynman-i.15.3t'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -483,6 +495,7 @@ class FeynmanICh15Eq3x(KnownEquation):
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
     _eq_name = 'feynman-i.15.3x'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -506,6 +519,7 @@ class FeynmanICh16Eq6(KnownEquation):
         - 1 + x[0] * x[1] != 0
     """
     _eq_name = 'feynman-i.16.6'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -531,6 +545,7 @@ class FeynmanICh18Eq4(KnownEquation):
         - x[0] + x[2] != 0
     """
     _eq_name = 'feynman-i.18.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -554,6 +569,7 @@ class FeynmanICh18Eq12(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.18.12'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -578,6 +594,7 @@ class FeynmanICh18Eq16(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.18.16'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -602,6 +619,7 @@ class FeynmanICh24Eq6(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.24.6'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -625,6 +643,7 @@ class FeynmanICh25Eq13(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-i.25.13'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -649,6 +668,7 @@ class FeynmanICh26Eq2(KnownEquation):
         - x[0] * np.sin(x[1]) <= np.pi/2
     """
     _eq_name = 'feynman-i.26.2'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -674,6 +694,7 @@ class FeynmanICh27Eq6(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-i.27.6'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -695,6 +716,7 @@ class FeynmanICh29Eq4(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.29.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -719,6 +741,7 @@ class FeynmanICh29Eq16(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.29.16'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -743,6 +766,7 @@ class FeynmanICh30Eq3(KnownEquation):
         - np.sin(x[2] / 2) != 0
     """
     _eq_name = 'feynman-i.30.3'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -769,6 +793,7 @@ class FeynmanICh30Eq5(KnownEquation):
         - x[2] != pi
     """
     _eq_name = 'feynman-i.30.5'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -793,6 +818,7 @@ class FeynmanICh32Eq5(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-i.32.5'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -818,6 +844,7 @@ class FeynmanICh32Eq17(KnownEquation):
         - x[2] ** 2 - x[3] ** 2 != 0
     """
     _eq_name = 'feynman-i.32.17'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -843,6 +870,7 @@ class FeynmanICh34Eq10(KnownEquation):
         - 2.99792458e8 - x[1] != 0
     """
     _eq_name = 'feynman-i.34.10'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -868,6 +896,7 @@ class FeynmanICh34Eq8(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-i.34.8'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -892,6 +921,7 @@ class FeynmanICh34Eq14(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-i.34.14'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -913,6 +943,7 @@ class FeynmanICh34Eq27(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.34.27'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -937,6 +968,7 @@ class FeynmanICh37Eq4(KnownEquation):
         - x[0]*x[1] >= 0
     """
     _eq_name = 'feynman-i.37.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -961,6 +993,7 @@ class FeynmanICh38Eq12(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-i.38.12'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -983,6 +1016,7 @@ class FeynmanICh39Eq10(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.39.10'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1007,6 +1041,7 @@ class FeynmanICh39Eq11(KnownEquation):
         - x[0] - 1 != 0
     """
     _eq_name = 'feynman-i.39.11'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1031,6 +1066,7 @@ class FeynmanICh39Eq22(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-i.39.22'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1056,6 +1092,7 @@ class FeynmanICh40Eq1(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-i.40.1'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1079,6 +1116,7 @@ class FeynmanICh41Eq16(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-i.41.16'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1106,6 +1144,7 @@ class FeynmanICh43Eq16(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-i.43.16'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1128,6 +1167,7 @@ class FeynmanICh43Eq31(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.43.31'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1153,6 +1193,7 @@ class FeynmanICh43Eq43(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-i.43.43'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1179,6 +1220,7 @@ class FeynmanICh44Eq4(KnownEquation):
         - x[2] / x[3] > 0
     """
     _eq_name = 'feynman-i.44.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1204,6 +1246,7 @@ class FeynmanICh47Eq23(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-i.47.23'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1227,6 +1270,7 @@ class FeynmanICh48Eq2(KnownEquation):
         - 1 - x[1] ** 2 / 2.99792458e8 ** 2 > 0
     """
     _eq_name = 'feynman-i.48.2'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1251,6 +1295,7 @@ class FeynmanICh50Eq26(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.50.26'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1277,6 +1322,7 @@ class FeynmanIICh2Eq42(KnownEquation):
         - x[4] != 0
     """
     _eq_name = 'feynman-ii.2.42'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1300,6 +1346,7 @@ class FeynmanIICh3Eq24(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-ii.3.24'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1323,6 +1370,7 @@ class FeynmanIICh4Eq23(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-ii.4.23'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1347,6 +1395,7 @@ class FeynmanIICh6Eq11(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-ii.6.11'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1373,6 +1422,7 @@ class FeynmanIICh6Eq15a(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-ii.6.15a'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1398,6 +1448,7 @@ class FeynmanIICh6Eq15b(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-ii.6.15b'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1421,6 +1472,7 @@ class FeynmanIICh8Eq7(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-ii.8.7'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1442,6 +1494,7 @@ class FeynmanIICh8Eq31(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.8.31'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1465,6 +1518,7 @@ class FeynmanIICh10Eq9(KnownEquation):
         - 1 + x[1] != 0
     """
     _eq_name = 'feynman-ii.10.9'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1492,6 +1546,7 @@ class FeynmanIICh11Eq3(KnownEquation):
         - x[3] ** 2 - x[4] ** 2 != 0
     """
     _eq_name = 'feynman-ii.11.3'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1518,6 +1573,7 @@ class FeynmanIICh11Eq17(KnownEquation):
         - x[4] != 0
     """
     _eq_name = 'feynman-ii.11.17'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1543,6 +1599,7 @@ class FeynmanIICh11Eq20(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-ii.11.20'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1567,6 +1624,7 @@ class FeynmanIICh11Eq27(KnownEquation):
         - 1 - (x[0] * x[1] / 3) != 0
     """
     _eq_name = 'feynman-ii.11.27'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1590,6 +1648,7 @@ class FeynmanIICh11Eq28(KnownEquation):
         - 1-(x[0]*x[1]/3) != 0
     """
     _eq_name = 'feynman-ii.11.28'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1613,6 +1672,7 @@ class FeynmanIICh13Eq17(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-ii.13.17'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1636,6 +1696,7 @@ class FeynmanIICh13Eq23(KnownEquation):
         - 2.99792458e8 ** 2 - x[1] ** 2 > 0
     """
     _eq_name = 'feynman-ii.13.23'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1659,6 +1720,7 @@ class FeynmanIICh13Eq34(KnownEquation):
         - 2.99792458e8 ** 2 - x[1] ** 2 > 0
     """
     _eq_name = 'feynman-ii.13.34'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1682,6 +1744,7 @@ class FeynmanIICh15Eq4(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.15.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1705,6 +1768,7 @@ class FeynmanIICh15Eq5(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.15.5'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1730,6 +1794,7 @@ class FeynmanIICh21Eq32(KnownEquation):
         - 2.99792458e8 - x[2] > 0
     """
     _eq_name = 'feynman-ii.21.32'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1754,6 +1819,7 @@ class FeynmanIICh24Eq17(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-ii.24.17'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1775,6 +1841,7 @@ class FeynmanIICh27Eq16(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.27.16'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1796,6 +1863,7 @@ class FeynmanIICh27Eq18(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.27.18'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1820,6 +1888,7 @@ class FeynmanIICh34Eq2a(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-ii.34.2a'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1843,6 +1912,7 @@ class FeynmanIICh34Eq2(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.34.2'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1868,6 +1938,7 @@ class FeynmanIICh34Eq11(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-ii.34.11'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1891,6 +1962,7 @@ class FeynmanIICh34Eq29a(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-ii.34.29a'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1914,6 +1986,7 @@ class FeynmanIICh34Eq29b(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.34.29b'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1939,6 +2012,7 @@ class FeynmanIICh35Eq18(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-ii.35.18'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1966,6 +2040,7 @@ class FeynmanIICh35Eq21(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-ii.35.21'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -1992,6 +2067,7 @@ class FeynmanIICh36Eq38(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-ii.36.38'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2017,6 +2093,7 @@ class FeynmanIICh37Eq1(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-ii.37.1'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2042,6 +2119,7 @@ class FeynmanIICh38Eq3(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-ii.38.3'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2065,6 +2143,7 @@ class FeynmanIICh38Eq14(KnownEquation):
         - 1 + x[1] != 0
     """
     _eq_name = 'feynman-ii.38.14'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2089,6 +2168,7 @@ class FeynmanIIICh4Eq32(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-iii.4.32'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2113,6 +2193,7 @@ class FeynmanIIICh4Eq33(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-iii.4.33'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2136,6 +2217,7 @@ class FeynmanIIICh7Eq38(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.7.38'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2158,6 +2240,7 @@ class FeynmanIIICh8Eq54(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.8.54'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2185,6 +2268,7 @@ class FeynmanIIICh9Eq52(KnownEquation):
         - x[3] - x[4] != 0
     """
     _eq_name = 'feynman-iii.9.52'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2211,6 +2295,7 @@ class FeynmanIIICh10Eq19(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.10.19'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2232,6 +2317,7 @@ class FeynmanIIICh12Eq43(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.12.43'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -2255,6 +2341,7 @@ class FeynmanIIICh13Eq18(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.13.18'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2280,6 +2367,7 @@ class FeynmanIIICh14Eq14(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-iii.14.14'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2303,6 +2391,7 @@ class FeynmanIIICh15Eq12(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.15.12'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2327,6 +2416,7 @@ class FeynmanIIICh15Eq14(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-iii.15.14'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2352,6 +2442,7 @@ class FeynmanIIICh15Eq27(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-iii.15.27'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2375,6 +2466,7 @@ class FeynmanIIICh17Eq37(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.17.37'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2399,6 +2491,7 @@ class FeynmanIIICh19Eq51(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-iii.19.51'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2425,6 +2518,7 @@ class FeynmanIIICh21Eq20(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-iii.21.20'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2451,6 +2545,7 @@ class FeynmanBonus1(KnownEquation):
         - np.sin(x[3] / 2) != 0
     """
     _eq_name = 'feynman-bonus.1'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2482,6 +2577,7 @@ class FeynmanBonus2(KnownEquation):
         - x[3] * x[2] ** 2 / (x[0] * x[1] ** 2) >= -1 / 2
     """
     _eq_name = 'feynman-bonus.2'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2507,6 +2603,7 @@ class FeynmanBonus3(KnownEquation):
         - x[1] * np.cos(x[2] - x[3]) != -1
     """
     _eq_name = 'feynman-bonus.3'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2535,6 +2632,7 @@ class FeynmanBonus4(KnownEquation):
         - x[4] != 0
     """
     _eq_name = 'feynman-bonus.4'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2561,6 +2659,7 @@ class FeynmanBonus5(KnownEquation):
         - x[1] * (x[2] + x[3]) > 0
     """
     _eq_name = 'feynman-bonus.5'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2594,6 +2693,7 @@ class FeynmanBonus6(KnownEquation):
         - 1 + 2 * x[0] * x[1] * x[2] ** 2 / (x[3] * (x[4] * x[5] * x[6] ** 2) ** 2) >= 0
     """
     _eq_name = 'feynman-bonus.6'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=7)
@@ -2619,6 +2719,7 @@ class FeynmanBonus7(KnownEquation):
         - 6.67430e-11 * x[0] * x[2] ** 2 / 3 >= x[1] * 2.99792458e8 ** 2
     """
     _eq_name = 'feynman-bonus.7'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2642,6 +2743,7 @@ class FeynmanBonus8(KnownEquation):
         - x[0] * (1 - np.cos(x[1])) / (9.10938356e-31 * 2.99792458e8 ** 2) != -1
     """
     _eq_name = 'feynman-bonus.8'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2666,6 +2768,7 @@ class FeynmanBonus9(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-bonus.9'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2691,6 +2794,7 @@ class FeynmanBonus10(KnownEquation):
         - (np.cos(x[0]) - x[1] / 2.99792458e8) / (1 - x[1] / 2.99792458e8 * np.cos(x[0])) <= 1
     """
     _eq_name = 'feynman-bonus.10'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -2715,6 +2819,7 @@ class FeynmanBonus11(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-bonus.11'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2741,6 +2846,7 @@ class FeynmanBonus12(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-bonus.12'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2769,6 +2875,7 @@ class FeynmanBonus13(KnownEquation):
         - x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * np.cos(x[4]) > 0
     """
     _eq_name = 'feynman-bonus.13'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2798,6 +2905,7 @@ class FeynmanBonus14(KnownEquation):
         - x[4] != -2
     """
     _eq_name = 'feynman-bonus.14'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2823,6 +2931,7 @@ class FeynmanBonus15(KnownEquation):
         - 2.99792458e8 ** 2 - x[0] ** 2 >= 0
     """
     _eq_name = 'feynman-bonus.15'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2848,6 +2957,7 @@ class FeynmanBonus16(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-bonus.16'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2877,6 +2987,7 @@ class FeynmanBonus17(KnownEquation):
         - x[5] != 0
     """
     _eq_name = 'feynman-bonus.17'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2901,6 +3012,7 @@ class FeynmanBonus18(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-bonus.18'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -2926,6 +3038,7 @@ class FeynmanBonus19(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-bonus.19'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -2951,6 +3064,7 @@ class FeynmanBonus20(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-bonus.20'
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)

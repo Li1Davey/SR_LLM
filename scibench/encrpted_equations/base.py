@@ -1,9 +1,10 @@
 import sympy
 from sympy import Symbol
 
+
 class KnownEquation(object):
     _eq_name = None
-    _function_ops = ['exp', 'sqrt', '+', '-', "mul", "div", "const"]
+    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self, num_vars, kwargs_list=None):
         if kwargs_list is None:
