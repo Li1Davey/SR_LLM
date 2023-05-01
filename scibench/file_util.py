@@ -3,6 +3,27 @@ import pickle
 import sys
 from pathlib import Path
 import yaml
+import json
+import json
+from cryptography.fernet import Fernet
+from sympy.parsing.sympy_parser import parse_expr
+
+
+def decrypt_equation(eq_file, key_filename):
+    with open(key_filename, 'rb') as filekey:
+        key = filekey.read()
+    fernet = Fernet(key)
+    with open(eq_file, 'rb') as enc_file:
+        encrypted = enc_file.read()
+
+    decrypted = fernet.decrypt(encrypted)
+    one_equation = json.loads(decrypted)
+    one_equation['eq_expression'] = parse_expr(one_equation['eq_expression'])
+    print("-" * 20)
+    for key in one_equation:
+        print(key, "\t", one_equation[key])
+    print("-" * 20)
+    return one_equation
 
 
 def check_if_exists(file_path):
