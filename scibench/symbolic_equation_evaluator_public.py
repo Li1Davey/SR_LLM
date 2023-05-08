@@ -182,6 +182,26 @@ def decrypt_equation(eq_file, key_filename=None):
     one_equation = json.loads(decrypted)
     list_of_tokens = eval(one_equation['eq_expression'])
     list_of_tokens = [tt[0] for tt in list_of_tokens]
+
+    #
+    var_x = []
+    for i in range(one_equation['nvar']):
+        xi = sciToken(None, 'X_' + str(i), 0, 0., i)
+        var_x.append(xi)
+
+    ops = [
+        # Binary operators
+        sciToken(np.add, "add", arity=2, complexity=1),
+        sciToken(np.subtract, "sub", arity=2, complexity=1),
+        sciToken(np.multiply, "mul", arity=2, complexity=1),
+        sciToken(np.sin, "sin", arity=1, complexity=3),
+        sciToken(np.cos, "cos", arity=1, complexity=3),
+        # functions.protected_ops[0],  # 'div'
+        functions.protected_ops[5]  # 'inv' '1/x'
+    ]
+    protected_library = sciLibrary(ops + var_x)
+    #
+    sciProgram.library = protected_library
     one_equation['eq_expression'] = sciProgram(list_of_tokens)
     print("-" * 20)
     for key in one_equation:
@@ -260,12 +280,6 @@ class sciLibrary(object):
 
     arities : list of int
         Arities corresponding to Tokens in the library.
-
-    allowed_input_tokens: the same size as input_tokens, 1 if allowed
-        in the current computation, 0 otherwise. (initially all allowed).
-
-    allowed_tokens: the same size as tokens, 1 if the token is allowed,
-        0 otherwise. (initially all allowed).
     """
 
     def __init__(self, tokens):
@@ -537,8 +551,7 @@ class sciProgram(object):
     """
     The executable program representing the symbolic expression.
 
-    The program comprises unary/binary operators, constant placeholders
-    (to-be-optimized), input variables, and hard-coded constants.
+    The program comprises unary/binary operators, input variables, and hard-coded constants.
 
     Parameters
     ----------
@@ -561,19 +574,9 @@ class sciProgram(object):
         A list of indices of constants placeholders or floating-point constants
         along the traversal.
 
-    sympy_expr : str
-        The (lazily calculated) SymPy expression corresponding to the program.
-        Used for pretty printing _only_.
 
     complexity : float
         The (lazily calcualted) complexity of the program.
-
-
-    expr_objs: array of floats
-        The objective functions done with opt_num_expr experiments during optimization.
-
-    expr_consts: 2-d array of floats
-        The optimized constant values with opt_num_expr experiments during optimization.
 
     str : str
         String representation of tokens. Useful as unique identifier.
@@ -600,6 +603,62 @@ class sciProgram(object):
         self.str = tokens.tostring()
         self.tokens = tokens
 
+    @classmethod
+    def set_execute(cls, protected):
+        """Sets which execute method to use"""
+
+        execute_function = python_execute
+
+        if protected:
+            sciProgram.protected = True
+            sciProgram.execute_function = execute_function
+        else:
+            sciProgram.protected = False
+
+            class InvalidLog():
+                """Log class to catch and record numpy warning messages"""
+
+                def __init__(self):
+                    self.error_type = None  # One of ['divide', 'overflow', 'underflow', 'invalid']
+                    self.error_node = None  # E.g. 'exp', 'log', 'true_divide'
+                    self.new_entry = False  # Flag for whether a warning has been encountered during a call to Program.execute()
+
+                def write(self, message):
+                    """This is called by numpy when encountering a warning"""
+
+                    if not self.new_entry:  # Only record the first warning encounter
+                        message = message.strip().split(' ')
+                        self.error_type = message[1]
+                        self.error_node = message[-1]
+                    self.new_entry = True
+
+                def update(self):
+                    """If a floating-point error was encountered, set Program.invalid
+                    to True and record the error type and error node."""
+
+                    if self.new_entry:
+                        self.new_entry = False
+                        return True, self.error_type, self.error_node
+                    else:
+                        return False, None, None
+
+            invalid_log = InvalidLog()
+            np.seterrcall(invalid_log)  # Tells numpy to call InvalidLog.write() when encountering a warning
+
+            # Define closure for execute function
+            def unsafe_execute(traversal, X):
+                """This is a wrapper for execute_function. If a floating-point error
+                would be hit, a warning is logged instead, p.invalid is set to True,
+                and the appropriate nan/inf value is returned. It's up to the task's
+                reward function to decide how to handle nans/infs."""
+
+                with np.errstate(all='log'):
+                    y = execute_function(traversal, X)
+                    invalid, error_node, error_type = invalid_log.update()
+                    return y, invalid, error_node, error_type
+
+            sciProgram.execute_function = unsafe_execute
+
     def execute(self, X):
         """
         Execute program on input X.
@@ -608,9 +667,8 @@ class sciProgram(object):
         X : np.array. Input to execute the Program over.
 
         Returns
-        =======
         result : np.array or list of np.array
-            In a single-object Program, returns just an array. In a multi-object Program, returns a list of arrays.
+            In a single-object Program, returns just an array.
         """
         if not sciProgram.protected:
             # return some weired error.
@@ -626,3 +684,42 @@ class sciProgram(object):
     def __repr__(self):
         """Prints the program's traversal"""
         return ','.join([repr(t) for t in self.traversal])
+
+
+def python_execute(traversal, X):
+    """
+    Executes the program according to X using Python.
+
+    Parameters
+    ----------
+    X : array-like, shape = [n_samples, n_features]
+        Training vectors, where n_samples is the number of samples and
+        n_features is the number of features.
+
+    Returns
+    -------
+    y_hats : array-like, shape = [n_samples]
+        The result of executing the program on X.
+    """
+
+    apply_stack = []
+
+    for node in traversal:
+        apply_stack.append([node])
+
+        while len(apply_stack[-1]) == apply_stack[-1][0].arity + 1:
+            token = apply_stack[-1][0]
+            terminals = apply_stack[-1][1:]
+
+            if token.input_var is not None:
+                intermediate_result = X[:, token.input_var]
+            else:
+                intermediate_result = token(*terminals)
+            if len(apply_stack) != 1:
+                apply_stack.pop()
+                apply_stack[-1].append(intermediate_result)
+            else:
+                return intermediate_result
+
+    assert False, "Function should never get here!"
+    return None
