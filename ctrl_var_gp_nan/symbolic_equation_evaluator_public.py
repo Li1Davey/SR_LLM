@@ -161,20 +161,23 @@ def evaluate_accuracy_r2(y, y_hat, tau=0.95):
     return score
 
 
+def encrypt_equation(equation, output_eq_file, key_filename, is_encrypted=0):
+    """
+    {eq_name: "", n_vars: , eq_expression: {}}
+    """
+    if is_encrypted==1:
+        # opening the key
+        with open(key_filename, 'rb') as filekey:
+            key = filekey.read()
 
-def decrypt_equation(eq_file, key_filename=None):
-    with open(eq_file, 'rb') as enc_file:
-        encrypted = enc_file.readline()
-        if encrypted == b'1\n':
-            encrypted = enc_file.readline()
-            fernet = Fernet(open(key_filename, 'rb').read())
-            decrypted = fernet.decrypt(encrypted)
-        elif encrypted == b'0\n':
-            decrypted = enc_file.readline()
-    one_equation = json.loads(decrypted)
-    one_equation['eq_expression'] = parse_expr(one_equation['eq_expression'])
-    print("-" * 20)
-    for key in one_equation:
-        print(key, "\t", one_equation[key])
-    print("-" * 20)
-    return one_equation
+        # using the generated key
+        fernet = Fernet(key)
+        # encrypting the Sympy Equation
+        encrypted = fernet.encrypt(equation)
+        with open(output_eq_file, 'wb') as encrypted_file:
+            encrypted_file.write(b'1\n')
+            encrypted_file.write(encrypted)
+    else:
+        with open(output_eq_file, 'wb') as encrypted_file:
+            encrypted_file.write(b'0\n')
+            encrypted_file.write(equation)

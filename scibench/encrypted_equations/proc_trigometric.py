@@ -8,10 +8,19 @@ from sympy.parsing.sympy_parser import parse_expr
 def read_true_program(filename):
     prog = pickle.load(open(filename, 'rb'))
     preorder_traversal_expr = prog['preorder']
+    preorder_traversal_tuple = []
     for loc, val in zip(prog['const_loc'], prog['consts']):
         preorder_traversal_expr[loc] = val
-    # print(preorder_traversal_expr)
-    return preorder_traversal_expr
+    for idx, it in enumerate(preorder_traversal_expr):
+        if idx in prog['const_loc']:
+            preorder_traversal_tuple.append((it, 'const'))
+        elif it.startswith('x') or it.startswith('X'):
+            preorder_traversal_tuple.append((it, 'var'))
+        elif it in ['add', 'mul', 'sub', 'div']:
+            preorder_traversal_tuple.append((it, 'binary'))
+        elif it in ['inv', 'sqrt', 'sin', 'cos', 'exp', 'log', 'n2', 'n3', 'n4']:
+            preorder_traversal_tuple.append((it, 'unary'))
+    return preorder_traversal_expr, preorder_traversal_tuple
 
 
 #
@@ -62,8 +71,7 @@ class Node(object):
 
 op_arity_dict = {
     'add': 2, 'sub': 2, 'mul': 2, 'div': 2, 'inv': 1, 'sqrt': 1,
-    'sin': 1, 'cos': 1, 'exp': 1, 'log': 1, 'n2': 1, 'n3': 1, 'n4': 1
-}
+    'sin': 1, 'cos': 1, 'exp': 1, 'log': 1, 'n2': 1, 'n3': 1, 'n4': 1}
 
 
 def build_tree(traversal):
@@ -140,6 +148,7 @@ class {}(KnownEquation):
         super().__init__(num_vars={})
         x = self.x
         self.sympy_eq = {}
+        self.sympy_eq_preorder_traversal = {}
 """
 
 
@@ -159,7 +168,10 @@ def write_to_files(equations, template, output_folder):
             spl[2].replace('X_0', 'x[0]').replace('X_1', 'x[1]').replace('X_2', 'x[2]').replace('X_3', 'x[3]').replace(
                 'X_4', 'x[4]').replace('X_5', 'x[5]').replace('X_6', 'x[6]').replace('X_7', 'x[7]').replace(
                 'log', 'sympy.log').replace('exp', 'sympy.exp').replace('sin', 'sympy.sin').replace(
-                'cos', 'sympy.cos').replace('div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace('pow', 'sympy.pow')))
+                'cos', 'sympy.cos').replace('div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace('pow', 'sympy.pow'),
+            spl[3]
+        )
+        )
 
 
 function_set_dict = {
@@ -180,13 +192,12 @@ def main(basepath, output_folder):
                 program_files.append(os.path.join(root, name))
     equations = []
     for filename in program_files:
-        preorder_traversal_expr = read_true_program(filename)
+        preorder_traversal_expr, preorder_traversal_tuple = read_true_program(filename)
         expr = sympy_expr(preorder_traversal_expr)
         num_vars = len(expr.free_symbols)
         eq_class_name = "_".join(filename.split("/")[-2:])[:-5]
-        equations.append([eq_class_name, num_vars, str(expr)])
-        # print(f"eq_class_name: {eq_class_name} num_vars: {num_vars} sympy_eq: {expr}")
-        # exit()
+        equations.append([eq_class_name, num_vars, str(expr), preorder_traversal_tuple])
+
     write_to_files(equations, template, output_folder)
 
 
