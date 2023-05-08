@@ -6,7 +6,16 @@ import scipy
 
 import json
 from cryptography.fernet import Fernet
-from sympy.parsing.sympy_parser import parse_expr
+
+"""Common Tokens used for executable Programs."""
+
+from fractions import Fraction
+
+"""Classes for Token and Library"""
+
+from collections import defaultdict
+
+import numpy as np
 import time
 
 # call a million batch of dataset. compute the time.
@@ -70,7 +79,7 @@ class Equation_evaluator(object):
         # evaluate the y_true from given input X
         nvar, batch_size = X.shape
         if self.true_equation is None:
-            self._load_random_equation()
+            raise NotImplementedError('no equation is available')
         y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
 
         return y_true
@@ -161,7 +170,6 @@ def evaluate_accuracy_r2(y, y_hat, tau=0.95):
     return score
 
 
-
 def decrypt_equation(eq_file, key_filename=None):
     with open(eq_file, 'rb') as enc_file:
         encrypted = enc_file.readline()
@@ -172,9 +180,449 @@ def decrypt_equation(eq_file, key_filename=None):
         elif encrypted == b'0\n':
             decrypted = enc_file.readline()
     one_equation = json.loads(decrypted)
-    one_equation['eq_expression'] = parse_expr(one_equation['eq_expression'])
+    list_of_tokens = eval(one_equation['eq_expression'])
+    list_of_tokens = [tt[0] for tt in list_of_tokens]
+    one_equation['eq_expression'] = sciProgram(list_of_tokens)
     print("-" * 20)
     for key in one_equation:
         print(key, "\t", one_equation[key])
     print("-" * 20)
     return one_equation
+
+
+def is_float(s):
+    """Determine whether the input variable can be cast to float."""
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
+class sciToken(object):
+    """
+    An arbitrary token or "building block" of a Program object.
+
+    Attributes
+    ----------
+    name : str
+        Name of token.
+
+    arity : int
+        Arity (number of arguments) of token.
+
+    complexity : float
+        Complexity of token.
+
+    function : callable
+        Function associated with the token; used for exectuable Programs.
+
+    input_var : int or None
+        Index of input if this Token is an input variable, otherwise None.
+
+    Methods
+    __call__(input)
+        Call the Token's function according to input.
+    """
+
+    def __init__(self, function, name, arity, complexity, input_var=None):
+        self.function = function
+        self.name = name
+        self.arity = arity
+        self.complexity = complexity
+        self.input_var = input_var
+
+        if input_var is not None:
+            assert function is None, "Input variables should not have functions."
+            assert arity == 0, "Input variables should have arity zero."
+
+    def __call__(self, *args):
+        assert self.function is not None, "Token {} is not callable.".format(self.name)
+
+        return self.function(*args)
+
+    def __repr__(self):
+        return self.name
+
+
+class sciLibrary(object):
+    """
+    Library of Tokens. We use a list of Tokens (instead of set or dict) since
+    we so often index by integers given by the Controller.
+
+    Attributes
+    ----------
+    tokens : list of sciToken
+        List of available Tokens in the library.
+
+    names : list of str
+        Names corresponding to Tokens in the library.
+
+    arities : list of int
+        Arities corresponding to Tokens in the library.
+
+    allowed_input_tokens: the same size as input_tokens, 1 if allowed
+        in the current computation, 0 otherwise. (initially all allowed).
+
+    allowed_tokens: the same size as tokens, 1 if the token is allowed,
+        0 otherwise. (initially all allowed).
+    """
+
+    def __init__(self, tokens):
+
+        self.tokens = tokens
+        self.L = len(tokens)
+        self.names = [t.name for t in tokens]
+        self.arities = np.array([t.arity for t in tokens], dtype=np.int32)
+
+        self.input_tokens = np.array(
+            [i for i, t in enumerate(self.tokens) if t.input_var is not None],
+            dtype=np.int32)
+
+        self.allowed_input_tokens = np.ones(self.input_tokens.size, dtype=np.int32)
+        self.allowed_tokens = np.ones(self.L, dtype=np.int32)
+
+        def get_tokens_of_arity(arity):
+            _tokens = [i for i in range(self.L) if self.arities[i] == arity]
+            return np.array(_tokens, dtype=np.int32)
+
+        self.tokens_of_arity = defaultdict(lambda: np.array([], dtype=np.int32))
+        for arity in self.arities:
+            self.tokens_of_arity[arity] = get_tokens_of_arity(arity)
+        self.terminal_tokens = self.tokens_of_arity[0]
+        self.unary_tokens = self.tokens_of_arity[1]
+        self.binary_tokens = self.tokens_of_arity[2]
+
+        try:
+            self.const_token = self.names.index("const")
+        except ValueError:
+            self.const_token = None
+        self.parent_adjust = np.full_like(self.arities, -1)
+        count = 0
+        for i in range(len(self.arities)):
+            if self.arities[i] > 0:
+                self.parent_adjust[i] = count
+                count += 1
+
+        trig_names = ["sin", "cos", "tan", "csc", "sec", "cot"]
+        trig_names += ["arc" + name for name in trig_names]
+
+        self.float_tokens = np.array(
+            [i for i, t in enumerate(self.tokens) if t.arity == 0 and t.input_var is None],
+            dtype=np.int32)
+        self.trig_tokens = np.array(
+            [i for i, t in enumerate(self.tokens) if t.name in trig_names],
+            dtype=np.int32)
+
+        inverse_tokens = {
+            "inv": "inv",
+            "neg": "neg",
+            "exp": "log",
+            "log": "exp",
+            "sqrt": "n2",
+            "n2": "sqrt"
+        }
+        token_from_name = {t.name: i for i, t in enumerate(self.tokens)}
+        self.inverse_tokens = {token_from_name[k]: token_from_name[v] for k, v in inverse_tokens.items() if
+                               k in token_from_name and v in token_from_name}
+
+        self.n_action_inputs = self.L + 1  # Library tokens + empty token
+        self.n_parent_inputs = self.L + 1 - len(self.terminal_tokens)  # Parent sub-lib tokens + empty token
+        self.n_sibling_inputs = self.L + 1  # Library tokens + empty token
+        self.EMPTY_ACTION = self.n_action_inputs - 1
+        self.EMPTY_PARENT = self.n_parent_inputs - 1
+        self.EMPTY_SIBLING = self.n_sibling_inputs - 1
+
+    def print_library(self):
+        print('============== LIBRARY ==============')
+        print('{0: >8} {1: >10} {2: >8}'.format('ID', 'NAME', 'ARITY'))
+        for i in range(self.L):
+            print('{0: >8} {1: >10} {2: >8}'.format(i, self.names[i], self.arities[i]))
+
+    def __getitem__(self, val):
+        """Shortcut to get Token by name or index."""
+
+        if isinstance(val, str):
+            try:
+                i = self.names.index(val)
+            except ValueError:
+                raise TokenNotFoundError("Token {} does not exist.".format(val))
+        elif isinstance(val, (int, np.integer)):
+            i = val
+        else:
+            raise TokenNotFoundError("Library must be indexed by str or int, not {}.".format(type(val)))
+
+        try:
+            token = self.tokens[i]
+        except IndexError:
+            raise TokenNotFoundError("Token index {} does not exist".format(i))
+        return token
+
+    def tokenize(self, inputs):
+        """Convert inputs to list of Tokens."""
+
+        if isinstance(inputs, str):
+            inputs = inputs.split(',')
+        elif not isinstance(inputs, list) and not isinstance(inputs, np.ndarray):
+            inputs = [inputs]
+        tokens = [input_ if isinstance(input_, sciToken) else self[input_] for input_ in inputs]
+        return tokens
+
+    def actionize(self, inputs):
+        """Convert inputs to array of 'actions', i.e. ints corresponding to
+        Tokens in the Library."""
+
+        tokens = self.tokenize(inputs)
+        actions = np.array([self.tokens.index(t) for t in tokens], dtype=np.int32)
+        return actions
+
+
+class TokenNotFoundError(Exception):
+    pass
+
+
+GAMMA = 0.57721566490153286060651209008240243104215933593992
+
+"""Define custom unprotected operators"""
+
+
+def logabs(x1):
+    """Closure of log for non-positive arguments."""
+    return np.log(np.abs(x1))
+
+
+def expneg(x1):
+    return np.exp(-x1)
+
+
+def n3(x1):
+    return np.power(x1, 3)
+
+
+def n4(x1):
+    return np.power(x1, 4)
+
+
+def sigmoid(x1):
+    return 1 / (1 + np.exp(-x1))
+
+
+def harmonic(x1):
+    if all(val.is_integer() for val in x1):
+        return np.array([sum(Fraction(1, d) for d in range(1, int(val) + 1)) for val in x1], dtype=np.float32)
+    else:
+        return GAMMA + np.log(x1) + 0.5 / x1 - 1. / (12 * x1 ** 2) + 1. / (120 * x1 ** 4)
+
+
+# Annotate unprotected ops
+unprotected_ops = [
+    # Binary operators
+    sciToken(np.add, "add", arity=2, complexity=1),
+    sciToken(np.subtract, "sub", arity=2, complexity=1),
+    sciToken(np.multiply, "mul", arity=2, complexity=1),
+    sciToken(np.divide, "div", arity=2, complexity=2),
+
+    # Built-in unary operators
+    sciToken(np.sin, "sin", arity=1, complexity=3),
+    sciToken(np.cos, "cos", arity=1, complexity=3),
+    sciToken(np.tan, "tan", arity=1, complexity=4),
+    sciToken(np.exp, "exp", arity=1, complexity=4),
+    sciToken(np.log, "log", arity=1, complexity=4),
+    sciToken(np.sqrt, "sqrt", arity=1, complexity=4),
+    sciToken(np.square, "n2", arity=1, complexity=2),
+    sciToken(np.negative, "neg", arity=1, complexity=1),
+    sciToken(np.abs, "abs", arity=1, complexity=2),
+    sciToken(np.maximum, "max", arity=1, complexity=4),
+    sciToken(np.minimum, "min", arity=1, complexity=4),
+    sciToken(np.tanh, "tanh", arity=1, complexity=4),
+    sciToken(np.reciprocal, "inv", arity=1, complexity=2),
+
+    # Custom unary operators
+    sciToken(logabs, "logabs", arity=1, complexity=4),
+    sciToken(expneg, "expneg", arity=1, complexity=4),
+    sciToken(n3, "n3", arity=1, complexity=3),
+    sciToken(n4, "n4", arity=1, complexity=3),
+    sciToken(sigmoid, "sigmoid", arity=1, complexity=4),
+    sciToken(harmonic, "harmonic", arity=1, complexity=4)
+]
+
+"""Define custom protected operators"""
+
+
+def protected_div(x1, x2):
+    with np.errstate(divide='ignore', invalid='ignore', over='ignore'):
+        return np.where(np.abs(x2) > 0.001, np.divide(x1, x2), 1.)
+
+
+def protected_exp(x1):
+    with np.errstate(over='ignore'):
+        return np.where(x1 < 100, np.exp(x1), 0.0)
+
+
+def protected_log(x1):
+    """Closure of log for non-positive arguments."""
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return np.where(np.abs(x1) > 0.001, np.log(np.abs(x1)), 0.)
+
+
+def protected_sqrt(x1):
+    """Closure of sqrt for negative arguments."""
+    return np.sqrt(np.abs(x1))
+
+
+def protected_inv(x1):
+    """Closure of inverse for zero arguments."""
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return np.where(np.abs(x1) > 0.001, 1. / x1, 0.)
+
+
+def protected_expneg(x1):
+    with np.errstate(over='ignore'):
+        return np.where(x1 > -100, np.exp(-x1), 0.0)
+
+
+def protected_n2(x1):
+    with np.errstate(over='ignore'):
+        return np.where(np.abs(x1) < 1e6, np.square(x1), 0.0)
+
+
+def protected_n3(x1):
+    with np.errstate(over='ignore'):
+        return np.where(np.abs(x1) < 1e6, np.power(x1, 3), 0.0)
+
+
+def protected_n4(x1):
+    with np.errstate(over='ignore'):
+        return np.where(np.abs(x1) < 1e6, np.power(x1, 4), 0.0)
+
+
+def protected_sigmoid(x1):
+    return 1 / (1 + protected_expneg(x1))
+
+
+# Annotate protected ops
+protected_ops = [
+    # Protected binary operators
+    sciToken(protected_div, "div", arity=2, complexity=2),
+
+    # Protected unary operators
+    sciToken(protected_exp, "exp", arity=1, complexity=4),
+    sciToken(protected_log, "log", arity=1, complexity=4),
+    sciToken(protected_log, "logabs", arity=1, complexity=4),  # Protected logabs is support, but redundant
+    sciToken(protected_sqrt, "sqrt", arity=1, complexity=4),
+    sciToken(protected_inv, "inv", arity=1, complexity=2),
+    sciToken(protected_expneg, "expneg", arity=1, complexity=4),
+    sciToken(protected_n2, "n2", arity=1, complexity=2),
+    sciToken(protected_n3, "n3", arity=1, complexity=3),
+    sciToken(protected_n4, "n4", arity=1, complexity=3),
+    sciToken(protected_sigmoid, "sigmoid", arity=1, complexity=4)
+]
+
+# Add unprotected ops to function map
+function_map = {
+    op.name: op for op in unprotected_ops
+}
+
+# Add protected ops to function map
+function_map.update({
+    "protected_{}".format(op.name): op for op in protected_ops
+})
+
+TERMINAL_TOKENS = set([op.name for op in function_map.values() if op.arity == 0])
+UNARY_TOKENS = set([op.name for op in function_map.values() if op.arity == 1])
+BINARY_TOKENS = set([op.name for op in function_map.values() if op.arity == 2])
+
+
+class sciProgram(object):
+    """
+    The executable program representing the symbolic expression.
+
+    The program comprises unary/binary operators, constant placeholders
+    (to-be-optimized), input variables, and hard-coded constants.
+
+    Parameters
+    ----------
+    tokens : list of integers
+        A list of integers corresponding to tokens in the library. "Dangling"
+        programs are completed with repeated "x1" until the expression
+        completes.
+
+    Attributes
+    ----------
+    traversal : list
+        List of operators (type: Function) and terminals (type: int, float, or
+        str ("const")) encoding the pre-order traversal of the expression tree.
+
+    tokens : np.ndarry (dtype: int)
+        Array of integers whose values correspond to indices
+
+
+    float_pos : list of float
+        A list of indices of constants placeholders or floating-point constants
+        along the traversal.
+
+    sympy_expr : str
+        The (lazily calculated) SymPy expression corresponding to the program.
+        Used for pretty printing _only_.
+
+    complexity : float
+        The (lazily calcualted) complexity of the program.
+
+
+    expr_objs: array of floats
+        The objective functions done with opt_num_expr experiments during optimization.
+
+    expr_consts: 2-d array of floats
+        The optimized constant values with opt_num_expr experiments during optimization.
+
+    str : str
+        String representation of tokens. Useful as unique identifier.
+    """
+
+    library = None  # Library
+
+    def __init__(self, tokens=None):
+        """
+        Builds the Program from a list of of integers corresponding to Tokens.
+        """
+
+        # Can be empty if we are unpickling
+        if tokens is not None:
+            self._init(tokens)
+
+    def _init(self, tokens):
+        # pre-order of the program.
+        self.traversal = [sciProgram.library[t] for t in tokens]
+
+        self.len_traversal = len(self.traversal)
+
+        self.invalid = False  # always false.
+        self.str = tokens.tostring()
+        self.tokens = tokens
+
+    def execute(self, X):
+        """
+        Execute program on input X.
+
+        Parameters:
+        X : np.array. Input to execute the Program over.
+
+        Returns
+        =======
+        result : np.array or list of np.array
+            In a single-object Program, returns just an array. In a multi-object Program, returns a list of arrays.
+        """
+        if not sciProgram.protected:
+            # return some weired error.
+            result, self.invalid, self.error_node, self.error_type = sciProgram.execute_function(self.traversal, X)
+        else:
+            result = sciProgram.execute_function(self.traversal, X)
+            # always protected. 1/div
+        return result
+
+    def print_expression(self):
+        print("\tExpression {}: {}".format(0, self.traversal))
+
+    def __repr__(self):
+        """Prints the program's traversal"""
+        return ','.join([repr(t) for t in self.traversal])
