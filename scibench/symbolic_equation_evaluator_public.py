@@ -18,7 +18,6 @@ from collections import defaultdict
 import numpy as np
 import time
 
-# call a million batch of dataset. compute the time.
 # a class takes the input of a file, that a file is an equation.
 # the class will return a batch of data, everytime it was queried.
 # create a offline version to bitbucket.org
@@ -184,24 +183,6 @@ def decrypt_equation(eq_file, key_filename=None):
     list_of_tokens = [tt[0] for tt in list_of_tokens]
 
     #
-    var_x = []
-    for i in range(one_equation['nvar']):
-        xi = sciToken(None, 'X_' + str(i), 0, 0., i)
-        var_x.append(xi)
-
-    ops = [
-        # Binary operators
-        sciToken(np.add, "add", arity=2, complexity=1),
-        sciToken(np.subtract, "sub", arity=2, complexity=1),
-        sciToken(np.multiply, "mul", arity=2, complexity=1),
-        sciToken(np.sin, "sin", arity=1, complexity=3),
-        sciToken(np.cos, "cos", arity=1, complexity=3),
-        # functions.protected_ops[0],  # 'div'
-        functions.protected_ops[5]  # 'inv' '1/x'
-    ]
-    protected_library = sciLibrary(ops + var_x)
-    #
-    sciProgram.library = protected_library
     one_equation['eq_expression'] = sciProgram(list_of_tokens)
     print("-" * 20)
     for key in one_equation:
@@ -264,6 +245,27 @@ class sciToken(object):
     def __repr__(self):
         return self.name
 
+class HardCodedConstant(sciToken):
+    """
+    A Token with a "value" attribute, whose function returns the value.
+
+    Parameters
+    ----------
+    value : float
+        Value of the constant.
+    """
+
+    def __init__(self, value=None, name=None):
+        assert value is not None, "Constant is not callable with value None. Must provide a floating point number or string of a float."
+        assert is_float(value)
+        value = np.atleast_1d(np.float32(value))
+        self.value = value
+        if name is None:
+            name = str(self.value[0])
+        super().__init__(function=self.function, name=name, arity=0, complexity=1)
+
+    def function(self):
+        return self.value
 
 class sciLibrary(object):
     """
@@ -271,7 +273,6 @@ class sciLibrary(object):
     we so often index by integers given by the Controller.
 
     Attributes
-    ----------
     tokens : list of sciToken
         List of available Tokens in the library.
 
@@ -547,6 +548,56 @@ UNARY_TOKENS = set([op.name for op in function_map.values() if op.arity == 1])
 BINARY_TOKENS = set([op.name for op in function_map.values() if op.arity == 2])
 
 
+
+def create_tokens(n_input_var, function_set, protected):
+    """
+    Helper function to create Tokens.
+
+    Parameters
+    ----------
+    n_input_var : int
+        Number of input variable Tokens.
+
+    function_set : list
+        Names of registered Tokens, or floats that will create new Tokens.
+
+    protected : bool
+        Whether to use protected versions of registered Tokens.
+
+    """
+
+    tokens = []
+
+    # Create input variable Tokens
+    for i in range(n_input_var):
+        token = Token(name="x{}".format(i + 1), arity=0, complexity=1,
+                      function=None, input_var=i)
+        tokens.append(token)
+
+    for op in function_set:
+
+        # Registered Token
+        if op in function_map:
+            # Overwrite available protected operators
+            if protected and not op.startswith("protected_"):
+                protected_op = "protected_{}".format(op)
+                if protected_op in function_map:
+                    op = protected_op
+
+            token = function_map[op]
+
+        # Hard-coded floating-point constant
+        elif is_float(op):
+            token = HardCodedConstant(op)
+
+        else:
+            raise ValueError("Operation {} not recognized.".format(op))
+
+        tokens.append(token)
+
+    return tokens
+
+
 class sciProgram(object):
     """
     The executable program representing the symbolic expression.
@@ -570,11 +621,6 @@ class sciProgram(object):
         Array of integers whose values correspond to indices
 
 
-    float_pos : list of float
-        A list of indices of constants placeholders or floating-point constants
-        along the traversal.
-
-
     complexity : float
         The (lazily calcualted) complexity of the program.
 
@@ -584,23 +630,17 @@ class sciProgram(object):
 
     library = None  # Library
 
-    def __init__(self, tokens=None):
+    def __init__(self, preorder_traversal=None):
         """
         Builds the Program from a list of of integers corresponding to Tokens.
         """
 
         # Can be empty if we are unpickling
-        if tokens is not None:
-            self._init(tokens)
-
-    def _init(self, tokens):
-        # pre-order of the program.
-        self.traversal = [sciProgram.library[t] for t in tokens]
+        self.traversal = create_tokens(preorder_traversal_expr)
 
         self.len_traversal = len(self.traversal)
 
         self.invalid = False  # always false.
-        self.str = tokens.tostring()
         self.tokens = tokens
 
     @classmethod
