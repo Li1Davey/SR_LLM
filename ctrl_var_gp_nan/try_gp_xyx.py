@@ -5,6 +5,7 @@ import argparse
 from program import Program
 import regress_task
 from const import ScipyMinimize
+from symbolic_equation_evaluator_public import Equation_evaluator
 
 import gp_xyx
 import gen_true_program
@@ -27,7 +28,7 @@ config = {'neg_mse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.01},
           }
 
 
-def run_expanding_gp(nvar, true_program_file, metric_name, noise_std):
+def run_expanding_gp(nvar, equation_name, metric_name, noise_scale):
     # nvar = 5
     regress_batchsize = 256
     opt_num_expr = 5
@@ -76,51 +77,7 @@ def run_expanding_gp(nvar, true_program_file, metric_name, noise_std):
 
     # set const_optimizer
     Program.const_optimizer = ScipyMinimize()
-    Program.noise_std = noise_std
-
-    # create the true program
-    # XYX: no more creating program. read program
-    # x_0 + 3 x_2 + 5 x_4 - 6 x_2 x_4 + 9 x_0 x_2
-    # preorder = ['add', \
-    #                  'add', 'add', 'X_0', 'mul', 'const', 'X_2', \
-    #                         'mul', 'const', 'X_4', \
-    #                  'sub', 'mul', 'const', 'mul', 'X_0', 'X_2', \
-    #                         'mul', 'const', 'mul', 'X_2', 'X_4']
-    # x_0 + 3 1/x_2 + 5 x_4 - 6 1/x_0 x_4 + 9 x_0 x_2
-    # preorder = ['add', \
-    #                   'add', 'add', 'X_0', 'mul', 'const', 'inv', 'X_2', \
-    #                          'mul', 'const', 'X_4', \
-    #                   'sub', 'mul', 'const', 'mul', 'X_0', 'X_2', \
-    #                          'mul', 'const', 'mul', 'inv', 'X_0', 'X_4']
-
-    # preorder_actions = protected_library.actionize(preorder)
-    # true_pr_allow_change = np.zeros(len(preorder), dtype=np.int32)
-    # true_pr = Program(preorder_actions, true_pr_allow_change)
-
-    # true_pr.traversal[5] = PlaceholderConstant(3.0) 
-    # true_pr.traversal[9] = PlaceholderConstant(5.0) 
-    # true_pr.traversal[13] = PlaceholderConstant(9.0) 
-    # true_pr.traversal[18] = PlaceholderConstant(6.0)
-    # true_pr.traversal[5] = PlaceholderConstant(3.0)
-    # true_pr.traversal[8] = PlaceholderConstant(5.0)
-    # true_pr.traversal[12] = PlaceholderConstant(9.0)
-    # true_pr.traversal[17] = PlaceholderConstant(6.0)
-
-    # # x_0 + 3 x_2
-    # preorder = ['add', 'X_0', 'mul', 'const', 'X_2']
-    # preorder_actions = protected_library.actionize(preorder)
-    # true_pr_allow_change = np.zeros(len(preorder), dtype=np.int32)
-    # true_pr = Program(preorder_actions, true_pr_allow_change)
-
-    # true_pr.traversal[3] = PlaceholderConstant(3.0) 
-
-    # x_0 + 3
-    # preorder = ['add', 'X_0', 'const']
-    # preorder_actions = protected_library.actionize(preorder)
-    # true_pr_allow_change = np.zeros(len(preorder), dtype=np.int32)
-    # true_pr = Program(preorder_actions, true_pr_allow_change)
-
-    # true_pr.traversal[2] = PlaceholderConstant(3.0) 
+    Program.noise_std = noise_scale
 
     # read the program
     prog = gen_true_program.read_true_program(true_program_file)
@@ -131,7 +88,7 @@ def run_expanding_gp(nvar, true_program_file, metric_name, noise_std):
     Program.task = regress_task.RegressTaskV1(regress_batchsize,
                                               allowed_input_tokens,
                                               true_pr,
-                                              noise_std,
+                                              noise_scale,
                                               metric=metric_name)
 
     # set gp helper
@@ -153,7 +110,9 @@ def run_expanding_gp(nvar, true_program_file, metric_name, noise_std):
     print('gp.timer_log=', gp.timer_log)
 
 
-def run_gp(nvar, true_program_file, metric_name, noise_std):
+def run_gp(equation_name, metric_name, noise_type, noise_scale):
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    nvar = data_query_oracle.get_nvars()
     # nvar = 5
     regress_batchsize = 256
     opt_num_expr = 1  # currently do not need to re-run the experiments multiple times.
@@ -199,51 +158,16 @@ def run_gp(nvar, true_program_file, metric_name, noise_std):
 
     # set const_optimizer
     Program.const_optimizer = ScipyMinimize()
-    Program.noise_std = noise_std
-
-    # create the true program
-    # XYX: no more creating program. read program
-    # x_0 + 3 1/x_2 + 5 x_4 - 6 1/x_2 x_4 + 9 x_0 x_2
-    # preorder = ['add', \
-    #                   'add', 'add', 'X_0', 'mul', 'const', 'inv', 'X_2', \
-    #                          'mul', 'const', 'X_4', \
-    #                   'sub', 'mul', 'const', 'mul', 'X_0', 'X_2', \
-    #                          'mul', 'const', 'mul', 'inv', 'X_2', 'X_4']
-    # preorder_actions = protected_library.actionize(preorder)
-    # true_pr_allow_change = np.zeros(len(preorder), dtype=np.int32)
-    # true_pr = Program(preorder_actions, true_pr_allow_change)
-
-    # true_pr.traversal[5] = PlaceholderConstant(3.0) 
-    # true_pr.traversal[9] = PlaceholderConstant(5.0) 
-    # true_pr.traversal[13] = PlaceholderConstant(9.0) 
-    # true_pr.traversal[18] = PlaceholderConstant(6.0)
-
-    # # x_0 + 3 x_2
-    # preorder = ['add', 'X_0', 'mul', 'const', 'X_2']
-    # preorder_actions = protected_library.actionize(preorder)
-    # true_pr_allow_change = np.zeros(len(preorder), dtype=np.int32)
-    # true_pr = Program(preorder_actions, true_pr_allow_change)
-
-    # true_pr.traversal[3] = PlaceholderConstant(3.0) 
-
-    # x_0 + 3
-    # preorder = ['add', 'X_0', 'const']
-    # preorder_actions = protected_library.actionize(preorder)
-    # true_pr_allow_change = np.zeros(len(preorder), dtype=np.int32)
-    # true_pr = Program(preorder_actions, true_pr_allow_change)
-
-    # true_pr.traversal[2] = PlaceholderConstant(3.0)
+    Program.noise_std = noise_scale
 
     # read the program
-    prog = gen_true_program.read_true_program(true_program_file)
-    true_pr = gen_true_program.build_program(prog, protected_library, 0)
+    # prog = gen_true_program.read_true_program(true_program_file)
+    # true_pr = gen_true_program.build_program(prog, protected_library, 0)
 
     # set the task
     Program.task = regress_task.RegressTaskV1(regress_batchsize,
                                               allowed_input_tokens,
-                                              true_pr,
-                                              noise_std,
-                                              metric=metric_name)
+                                              data_query_oracle)
 
     # set gp helper
     gp_helper = gp_xyx.GPHelper()
@@ -252,8 +176,7 @@ def run_gp(nvar, true_program_file, metric_name, noise_std):
     # set GP
     gp_xyx.GeneticProgram.library = protected_library
     gp_xyx.GeneticProgram.gp_helper = gp_helper
-    gp = gp_xyx.GeneticProgram(cxpb, mutpb, maxdepth, population_size, tour_size, \
-                               hof_size, n_generations)
+    gp = gp_xyx.GeneticProgram(cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations)
 
     # run GP
     gp.run()
@@ -266,11 +189,11 @@ def run_gp(nvar, true_program_file, metric_name, noise_std):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("nvar", type=int, help="number of variables.")
-    parser.add_argument("true_program_file", help="the filename of the true program (pickle dump).")
-    parser.add_argument("metric_name", type=str, help="The name of the metric.")
+    parser.add_argument("--equation_name", help="the filename of the true program (pickle dump).")
+    parser.add_argument("--metric_name", type=str, help="The name of the metric.")
+    parser.add_argument("--noise_type", type=str, help="The name of the noises.")
+    parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
     parser.add_argument("--expand_gp", action="store_true", help="whether run normal gp (expand_gp=False) or expand_gp.")
-    parser.add_argument("--noise_std", type=float,  default=0.0, help="running with Gaussian noise added. This parameter adds the standard deviation of the Gaussian. Default=0 (no noise)")
 
     args = parser.parse_args()
 
@@ -283,6 +206,6 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
 
     if args.expand_gp:
-        run_expanding_gp(args.nvar, args.true_program_file, args.metric_name, args.noise_std)
+        run_expanding_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
     else:
-        run_gp(args.nvar, args.true_program_file, args.metric_name, args.noise_std)
+        run_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)

@@ -1,7 +1,10 @@
 import pandas as pd
 import os
+from typing import List
 import numpy as np
 import click
+from sympy import preorder_traversal
+
 
 template = """@register_eq_class
 class {}(KnownEquation):
@@ -12,8 +15,13 @@ class {}(KnownEquation):
         super().__init__(num_vars={})
         x = self.x
         self.sympy_eq = {}
+         self.sympy_eq_preorder_traversal = {}
 """
 
+def symbolic_equation_into_preorder_traversal(expr)-> List:
+    for arg in preorder_traversal(expr):
+        print(arg)
+    return []
 
 def extract(row, function_set_dict):
     name = row['name'].replace('-', "_")

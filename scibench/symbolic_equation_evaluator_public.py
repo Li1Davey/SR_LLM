@@ -59,24 +59,28 @@ class Equation_evaluator(object):
         self.start = time.time()
 
     # Declaring private method. This function cannot be called outside the class.
-    def __load_equation(self, equation_name, equation_folder="encrypted_equtions"):
-        program_files = dict()
-        for root, dirs, files in os.walk(equation_folder, topdown=False):
-            for name in files:
-                if name.endswith(EQUATION_EXTENSION):
-                    program_files[name] = os.path.join(root, name)
-        if equation_name not in program_files.keys():
-            raise FileNotFoundError(f"{equation_name} is not a valid equation name!")
+    def __load_equation(self, equation_name):
+        # program_files = dict()
+        # for root, dirs, files in os.walk(equation_folder, topdown=False):
+        #     for name in files:
+        #         if name.endswith(EQUATION_EXTENSION):
+        #             program_files[name] = os.path.join(root, name)
+        # if equation_name not in program_files.keys():
+        #     raise FileNotFoundError(f"{equation_name} is not a valid equation name!")
 
         self.eq_name = equation_name
+        if not os.path.isfile(self.eq_name):
+            raise FileNotFoundError(f"{self.eq_name} not found!")
 
-        one_equation = decrypt_equation(program_files[self.eq_name], key_filename="ecrypted_equation/public.key")
+        one_equation = decrypt_equation(self.eq_name, key_filename="ecrypted_equation/public.key")
         return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set']
 
     def evaluate(self, X):
-
         # evaluate the y_true from given input X
-        nvar, batch_size = X.shape
+
+        batch_size,nvar = X.shape
+        assert self.num_vars == nvar, f"The number of variables in your input is {nvar}, but we expect {self.num_vars}"
+
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
         y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
@@ -179,16 +183,31 @@ def decrypt_equation(eq_file, key_filename=None):
         elif encrypted == b'0\n':
             decrypted = enc_file.readline()
     one_equation = json.loads(decrypted)
-    list_of_tokens = eval(one_equation['eq_expression'])
-    list_of_tokens = [tt[0] for tt in list_of_tokens]
-
+    preorder_traversal = eval(one_equation['eq_expression'])
+    preorder_traversal = [tt[0] for tt in preorder_traversal]
+    print(preorder_traversal)
+    list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
+    protected_library = sciLibrary(list_of_tokens)
+    sciProgram.library = protected_library
+    sciProgram.set_execute(protected=True)
     #
-    one_equation['eq_expression'] = sciProgram(list_of_tokens)
+    true_pr = build_program(preorder_traversal, protected_library)
+    one_equation['eq_expression'] = true_pr
     print("-" * 20)
     for key in one_equation:
         print(key, "\t", one_equation[key])
     print("-" * 20)
     return one_equation
+
+
+def build_program(preorder_traversal, library, allow_change_const=0):
+    preorder_actions = library.actionize(['const' if is_float(tok) else tok for tok in preorder_traversal])
+    true_pr_allow_change = allow_change_const * np.ones(len(preorder_traversal), dtype=np.int32)
+    true_pr = sciProgram(preorder_actions, true_pr_allow_change)
+    for loc, tok in enumerate(preorder_traversal):
+        if is_float(tok):
+            true_pr.traversal[loc] = PlaceholderConstant(tok)
+    return true_pr
 
 
 def is_float(s):
@@ -216,7 +235,7 @@ class sciToken(object):
         Complexity of token.
 
     function : callable
-        Function associated with the token; used for exectuable Programs.
+        Function associated with the token; used for executable Programs.
 
     input_var : int or None
         Index of input if this Token is an input variable, otherwise None.
@@ -245,6 +264,34 @@ class sciToken(object):
     def __repr__(self):
         return self.name
 
+
+class PlaceholderConstant(sciToken):
+    """
+    A Token for placeholder constants that will be optimized with respect to
+    the reward function. The function simply returns the "value" attribute.
+
+    Parameters
+    ----------
+    value : float or None
+        Current value of the constant, or None if not yet set.
+    """
+
+    def __init__(self, value=None):
+        if value is not None:
+            value = np.atleast_1d(value)
+        self.value = value
+        super().__init__(function=self.function, name="const", arity=0, complexity=1)
+
+    def function(self):
+        assert self.value is not None, "Constant is not callable with value None."
+        return self.value
+
+    def __repr__(self):
+        if self.value is None:
+            return self.name
+        return str(self.value[0])
+
+
 class HardCodedConstant(sciToken):
     """
     A Token with a "value" attribute, whose function returns the value.
@@ -266,6 +313,7 @@ class HardCodedConstant(sciToken):
 
     def function(self):
         return self.value
+
 
 class sciLibrary(object):
     """
@@ -293,9 +341,6 @@ class sciLibrary(object):
         self.input_tokens = np.array(
             [i for i, t in enumerate(self.tokens) if t.input_var is not None],
             dtype=np.int32)
-
-        self.allowed_input_tokens = np.ones(self.input_tokens.size, dtype=np.int32)
-        self.allowed_tokens = np.ones(self.L, dtype=np.int32)
 
         def get_tokens_of_arity(arity):
             _tokens = [i for i in range(self.L) if self.arities[i] == arity]
@@ -548,8 +593,7 @@ UNARY_TOKENS = set([op.name for op in function_map.values() if op.arity == 1])
 BINARY_TOKENS = set([op.name for op in function_map.values() if op.arity == 2])
 
 
-
-def create_tokens(n_input_var, function_set, protected):
+def create_tokens(n_input_var: int, function_set: List, protected) -> List:
     """
     Helper function to create Tokens.
 
@@ -570,12 +614,10 @@ def create_tokens(n_input_var, function_set, protected):
 
     # Create input variable Tokens
     for i in range(n_input_var):
-        token = Token(name="x{}".format(i + 1), arity=0, complexity=1,
-                      function=None, input_var=i)
+        token = sciToken(name="X_{}".format(i), arity=0, complexity=1, function=None, input_var=i)
         tokens.append(token)
 
     for op in function_set:
-
         # Registered Token
         if op in function_map:
             # Overwrite available protected operators
@@ -587,15 +629,15 @@ def create_tokens(n_input_var, function_set, protected):
             token = function_map[op]
 
         # Hard-coded floating-point constant
-        elif is_float(op):
-            token = HardCodedConstant(op)
+        elif op == 'const':
+            token = PlaceholderConstant(1.0)
 
         else:
             raise ValueError("Operation {} not recognized.".format(op))
 
         tokens.append(token)
 
-    return tokens
+    return list(set(tokens))
 
 
 class sciProgram(object):
@@ -607,9 +649,7 @@ class sciProgram(object):
     Parameters
     ----------
     tokens : list of integers
-        A list of integers corresponding to tokens in the library. "Dangling"
-        programs are completed with repeated "x1" until the expression
-        completes.
+        A list of integers corresponding to tokens in the library.
 
     Attributes
     ----------
@@ -620,27 +660,34 @@ class sciProgram(object):
     tokens : np.ndarry (dtype: int)
         Array of integers whose values correspond to indices
 
-
-    complexity : float
-        The (lazily calcualted) complexity of the program.
-
-    str : str
-        String representation of tokens. Useful as unique identifier.
     """
-
+    task = None  # Task
     library = None  # Library
+    execute = None  # Link to execute. Either cython or python
 
-    def __init__(self, preorder_traversal=None):
+    def __init__(self, tokens=None, allow_change_tokens=None):
         """
         Builds the Program from a list of of integers corresponding to Tokens.
         """
-
         # Can be empty if we are unpickling
-        self.traversal = create_tokens(preorder_traversal_expr)
+        if tokens is not None:
+            self._init(tokens, allow_change_tokens)
 
+    def _init(self, tokens, allow_change_tokens):
+        # pre-order of the program. the most important thing.
+        self.traversal = [sciProgram.library[t] for t in tokens]
+        # added part: which token is allowed to be token. 1 means allowed
+        self.allow_change_tokens = allow_change_tokens
+        # position of the constant
+        self.const_pos = [i for i, t in enumerate(self.traversal) if isinstance(t, PlaceholderConstant)]
+        self.num_changing_consts = 0
+        for pos in self.const_pos:  # compute num_changing_consts
+            if self.allow_change_tokens[pos]:
+                self.num_changing_consts += 1
         self.len_traversal = len(self.traversal)
 
         self.invalid = False  # always false.
+        self.str = tokens.tostring()
         self.tokens = tokens
 
     @classmethod

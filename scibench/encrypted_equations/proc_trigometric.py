@@ -34,7 +34,6 @@ def sympy_expr(traversal):
     tree = build_tree(traversal)
     tree = convert_to_sympy(tree)
     tree_str = tree.__repr__()
-    # print(tree_str)
     expr = parse_expr(tree_str)
     return expr
 
@@ -153,7 +152,7 @@ class {}(KnownEquation):
 
 
 def write_to_files(equations, template, output_folder):
-    fw = open("output.py", 'w')
+    fw = open(os.path.join(output_folder, "output.py"), 'w')
 
     for spl in equations:
         function_set = None
@@ -169,8 +168,7 @@ def write_to_files(equations, template, output_folder):
                 'X_4', 'x[4]').replace('X_5', 'x[5]').replace('X_6', 'x[6]').replace('X_7', 'x[7]').replace(
                 'log', 'sympy.log').replace('exp', 'sympy.exp').replace('sin', 'sympy.sin').replace(
                 'cos', 'sympy.cos').replace('div', 'sympy.div').replace('sqrt', 'sympy.sqrt').replace('pow', 'sympy.pow'),
-            spl[3]
-        )
+            spl[3])
         )
 
 

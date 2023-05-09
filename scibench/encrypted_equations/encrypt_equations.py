@@ -6,7 +6,6 @@ from typing import List, Dict, Set
 
 from cryptography.fernet import Fernet
 from sympy.parsing.sympy_parser import parse_expr
-from sympy import preorder_traversal
 
 
 def generate_new_key(saveto_filename):
@@ -37,12 +36,6 @@ def encrypt_equation(equation, output_eq_file, key_filename=None, is_encrypted=0
         with open(output_eq_file, 'wb') as encrypted_file:
             encrypted_file.write(b'0\n')
             encrypted_file.write(equation)
-
-
-# def symbolic_equation_into_preorder_traversal(expr)-> List:
-#     for arg in preorder_traversal(expr):
-#         print(arg)
-#     return []
 
 
 def decrypt_equation(eq_file, key_filename=None):
