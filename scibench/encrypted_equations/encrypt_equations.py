@@ -7,6 +7,9 @@ from typing import List, Dict, Set
 from cryptography.fernet import Fernet
 from sympy.parsing.sympy_parser import parse_expr
 
+import sympy
+from sympy import *
+
 
 def generate_new_key(saveto_filename):
     key = Fernet.generate_key()
@@ -56,6 +59,21 @@ def decrypt_equation(eq_file, key_filename=None):
     return one_equation
 
 
+def to_binary_expr_tree(expr):
+    if isinstance(expr, Symbol) or isinstance(expr, Float) or isinstance(expr, Integer):
+        return expr
+    else:
+        op = expr.func
+        args = expr.args
+        return [op.__name__] + [to_binary_expr_tree(arg) for arg in args]
+
+
+def symbolic_equation_to_preorder_traversal(expr) -> List:
+    # expr = parse_expr(expr)
+    pre_order_traversal = to_binary_expr_tree(expr)
+    return pre_order_traversal
+
+
 def main(private_key_folder='./', key_filename="private.key", output_folder="./"):
     if not os.path.isfile(os.path.join(private_key_folder, key_filename)):
         print('A new key is generated!')
@@ -63,7 +81,8 @@ def main(private_key_folder='./', key_filename="private.key", output_folder="./"
 
     for eqname in EQUATION_CLASS_DICT:
         one_equation = get_eq_obj(eqname)
-
+        if not hasattr(one_equation, 'sympy_eq_preorder_traversal'):
+            one_equation.sympy_eq_preorder_traversal = symbolic_equation_to_preorder_traversal(one_equation.sympy_eq)
         equation = {"eq_name": one_equation._eq_name,
                     "num_vars": one_equation.num_vars,
                     "function_set": one_equation._function_set,
@@ -88,15 +107,16 @@ def main(private_key_folder='./', key_filename="private.key", output_folder="./"
 
 
 if __name__ == '__main__':
-    # from equations_srsd_benchmark import *
+    from equations_feynman import *
+
     #
-    # main(output_folder='./equations_srsd_benchmark')
+    main(output_folder='./equations_feynman')
     # from equations_DSOs import *
     #
     # main(output_folder='./equations_DSOs')
 
-    from equations_trigometric import *
-
-    main(output_folder='./equations_trigometric')
+    # from equations_trigometric import *
+    #
+    # main(output_folder='./equations_trigometric')
 
 #
