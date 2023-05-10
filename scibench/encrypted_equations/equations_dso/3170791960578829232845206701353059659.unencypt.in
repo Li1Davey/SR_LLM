@@ -1,0 +1,2 @@
+0
+{"eq_name": "Livermore2_Vars5_14", "num_vars": 5, "function_set": ["add", "sub", "mul", "div", "sqrt", "n2", "log", "exp", "sin", "cos", "1"], "eq_expression": "[('add', 'binary'), ('mul', 'binary'), (-1, 'const'), ('X_0', 'var'), ('X_1', 'var'), (-1, 'const'), ('X_4', 'var'), (-1, 'const'), ('cos', 'unary'), ('mul', 'binary'), ('X_0', 'var'), ('X_2', 'var'), ('X_3', 'var'), ('exp', 'unary'), ('mul', 'binary'), (-1, 'const'), ('X_1', 'var')]"}

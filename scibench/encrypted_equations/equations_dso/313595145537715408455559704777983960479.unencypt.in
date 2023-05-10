@@ -1,0 +1,2 @@
+0
+{"eq_name": "Meier_4", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('mul', 'binary'), ('X_1', 'var'), (3, 'const'), (-1, 'const'), ('X_0', 'var'), (5, 'const')]"}

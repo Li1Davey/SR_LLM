@@ -1,0 +1,2 @@
+0
+{"eq_name": "Constant_7", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const"], "eq_expression": "[('mul', 'binary'), (2, 'const'), ('cos', 'unary'), ('X_1', 'var'), ('sin', 'unary'), ('mul', 'binary'), (1.3, 'const'), ('X_0', 'var')]"}

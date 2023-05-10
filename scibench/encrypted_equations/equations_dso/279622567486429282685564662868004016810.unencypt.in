@@ -1,0 +1,2 @@
+0
+{"eq_name": "Keijzer_8", "num_vars": 1, "function_set": ["add", "mul", "div", "exp", "log", "pow", "inv", "neg", "sqrt", "const"], "eq_expression": "[('X_0', 'var')]"}

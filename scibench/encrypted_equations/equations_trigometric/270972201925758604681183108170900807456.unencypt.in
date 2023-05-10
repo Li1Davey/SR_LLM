@@ -1,0 +1,2 @@
+0
+{"eq_name": "inv_nv3_nt22_prog_17", "num_vars": 3, "function_set": ["add", "sub", "mul", "div", "inv", "const"], "eq_expression": "[('add', 'binary'), ('add', 'binary'), ('add', 'binary'), ('add', 'binary'), (0.0917, 'const'), ('mul', 'binary'), (-0.9276, 'const'), ('inv', 'unary'), ('X_0', 'var'), ('mul', 'binary'), (0.0735, 'const'), ('inv', 'unary'), ('X_1', 'var'), ('mul', 'binary'), ('mul', 'binary'), (-0.1324, 'const'), ('X_0', 'var'), ('X_2', 'var'), ('mul', 'binary'), ('mul', 'binary'), (-0.2848, 'const'), ('X_0', 'var'), ('X_1', 'var')]"}

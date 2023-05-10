@@ -1,0 +1,2 @@
+0
+{"eq_name": "Vladislavleva_3", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "n2", "exp", "expneg", "sin", "cos"], "eq_expression": "[('mul', 'binary'), ('add', 'binary'), (-1, 'const'), ('mul', 'binary'), ('cos', 'unary'), ('X_0', 'var'), ('sin', 'unary'), ('X_0', 'var'), (2, 'const'), ('add', 'binary'), (-5, 'const'), ('X_1', 'var'), ('cos', 'unary'), ('X_0', 'var'), ('exp', 'unary'), ('mul', 'binary'), (-1, 'const'), ('X_0', 'var'), ('X_0', 'var'), (3, 'const'), ('sin', 'unary'), ('X_0', 'var')]"}

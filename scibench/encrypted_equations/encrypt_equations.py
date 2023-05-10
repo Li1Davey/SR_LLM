@@ -74,7 +74,7 @@ def symbolic_equation_to_preorder_traversal(expr) -> List:
     return pre_order_traversal
 
 
-def main(private_key_folder='./', key_filename="private.key", output_folder="./"):
+def main(private_key_folder='./', key_filename="public.key", output_folder="./"):
     if not os.path.isfile(os.path.join(private_key_folder, key_filename)):
         print('A new key is generated!')
         generate_new_key(key_filename)
@@ -111,12 +111,12 @@ if __name__ == '__main__':
 
     #
     main(output_folder='./equations_feynman')
-    # from equations_DSOs import *
-    #
-    # main(output_folder='./equations_DSOs')
+    from equations_dso import *
 
-    # from equations_trigometric import *
-    #
-    # main(output_folder='./equations_trigometric')
+    main(output_folder='./equations_dso')
+
+    from equations_trigometric import *
+
+    main(output_folder='./equations_trigometric')
 
 #

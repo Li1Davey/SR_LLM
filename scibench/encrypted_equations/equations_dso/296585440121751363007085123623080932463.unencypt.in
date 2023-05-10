@@ -1,0 +1,2 @@
+0
+{"eq_name": "Korns_8", "num_vars": 5, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "n2", "n3", "sqrt", "tan", "tanh", "const"], "eq_expression": "[('add', 'binary'), (6.87, 'const'), ('mul', 'binary'), (11, 'const'), ('mul', 'binary'), (7.23, 'const'), ('X_0', 'var'), ('X_3', 'var'), ('X_4', 'var')]"}

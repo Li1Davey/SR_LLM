@@ -1,0 +1,2 @@
+0
+{"eq_name": "Poly_3", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "sqrt", "poly"], "eq_expression": "[('mul', 'binary'), ('add', 'binary'), ('X_0', 'var'), ('mul', 'binary'), (2, 'const'), (3, 'const'), ('add', 'binary'), (0.108333333333333, 'const'), ('mul', 'binary'), ('X_0', 'var'), ('mul', 'binary'), (-0.00416666666666667, 'const'), ('X_1', 'var'), (2, 'const'), ('mul', 'binary'), ('X_0', 'var'), ('X_1', 'var'), (-1, 'const'), ('cos', 'unary'), ('X_1', 'var')]"}

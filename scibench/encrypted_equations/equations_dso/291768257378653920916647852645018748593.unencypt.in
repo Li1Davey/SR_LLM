@@ -1,0 +1,2 @@
+0
+{"eq_name": "GrammarVAE_1", "num_vars": 1, "function_set": ["add", "mul", "div", "sin", "exp", "1.0", "2.0", "3.0"], "eq_expression": "[('add', 'binary'), (0.333333333333333, 'const'), ('X_0', 'var'), ('sin', 'unary'), ('X_0', 'var'), (2, 'const')]"}

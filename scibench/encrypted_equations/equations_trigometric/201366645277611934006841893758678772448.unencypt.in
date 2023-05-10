@@ -1,0 +1,2 @@
+0
+{"eq_name": "inv_nv2_nt11_prog_8", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "inv", "const"], "eq_expression": "[('add', 'binary'), ('add', 'binary'), (-0.1929, 'const'), ('mul', 'binary'), (0.0639, 'const'), ('inv', 'unary'), ('X_0', 'var'), ('mul', 'binary'), ('mul', 'binary'), (0.1776, 'const'), ('inv', 'unary'), ('X_0', 'var'), ('X_1', 'var')]"}

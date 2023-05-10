@@ -1,0 +1,2 @@
+0
+{"eq_name": "Jin_1", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "n2", "n3", "const"], "eq_expression": "[('add', 'binary'), ('mul', 'binary'), (0.5, 'const'), ('X_1', 'var'), (2, 'const'), ('mul', 'binary'), (2.5, 'const'), ('X_0', 'var'), (4, 'const'), ('mul', 'binary'), (-1.3, 'const'), ('X_0', 'var'), (3, 'const'), ('mul', 'binary'), (-1.7, 'const'), ('X_1', 'var')]"}

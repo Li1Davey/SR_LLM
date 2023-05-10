@@ -1,0 +1,2 @@
+0
+{"eq_name": "Nguyen_11", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('X_0', 'var'), ('X_1', 'var')]"}

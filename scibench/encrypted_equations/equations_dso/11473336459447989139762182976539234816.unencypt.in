@@ -1,0 +1,2 @@
+0
+{"eq_name": "Neat_6", "num_vars": 1, "function_set": ["add", "mul", "inv", "neg", "sqrt", "1.0", "const"], "eq_expression": "[('X_0', 'var')]"}

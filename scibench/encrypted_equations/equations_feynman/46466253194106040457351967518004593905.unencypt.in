@@ -1,0 +1,2 @@
+0
+{"eq_name": "feynman-bonus.17", "num_vars": 6, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', ['Half'], ['Pow', x0, -1], ['Add', ['Pow', x1, 2], ['Mul', ['Pow', x0, 2], ['Pow', x2, 2], ['Pow', x3, 2], ['Add', 1, ['Mul', x3, x4, ['Pow', x5, -1]]]]]]"}

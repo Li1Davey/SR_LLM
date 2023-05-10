@@ -1,0 +1,2 @@
+0
+{"eq_name": "feynman-i.11.19", "num_vars": 6, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Add', ['Mul', x0, x1], ['Mul', x2, x3], ['Mul', x4, x5]]"}

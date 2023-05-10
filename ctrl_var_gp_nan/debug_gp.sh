@@ -1,0 +1,2 @@
+equation_name='/home/jiangnan/PycharmProjects/scibench/scibench/encrypted_equations/equations_trigometric/22166152459110949461061628456554646.unencypt.in'
+python try_gp_xyx.py --equation_name $equation_name --metric_name 'neg_mse' --noise_type 'normal' --noise_scale 0.0

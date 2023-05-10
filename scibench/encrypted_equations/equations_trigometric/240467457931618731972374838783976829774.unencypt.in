@@ -1,0 +1,2 @@
+0
+{"eq_name": "sincos_nv3_nt22_prog_29", "num_vars": 3, "function_set": ["add", "sub", "mul", "sin", "cos", "const"], "eq_expression": "[('add', 'binary'), ('add', 'binary'), ('add', 'binary'), ('add', 'binary'), (0.4654, 'const'), ('mul', 'binary'), (-0.3687, 'const'), ('X_2', 'var'), ('mul', 'binary'), (-0.8431, 'const'), ('sin', 'unary'), ('X_1', 'var'), ('mul', 'binary'), ('mul', 'binary'), (0.3211, 'const'), ('X_1', 'var'), ('X_2', 'var'), ('mul', 'binary'), ('mul', 'binary'), (0.7306, 'const'), ('sin', 'unary'), ('X_0', 'var'), ('sin', 'unary'), ('X_1', 'var')]"}

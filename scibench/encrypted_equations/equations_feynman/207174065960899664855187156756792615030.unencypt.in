@@ -1,0 +1,2 @@
+0
+{"eq_name": "feynman-iii.4.32", "num_vars": 2, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Pow', ['Add', -1, ['exp', ['Mul', 2.39959613196403e-11, x0, ['Pow', ['Pi'], -1], ['Pow', x1, -1]]]], -1]"}

@@ -1,0 +1,2 @@
+0
+{"eq_name": "Keijzer_9", "num_vars": 1, "function_set": ["add", "mul", "div", "exp", "log", "pow", "inv", "neg", "sqrt", "const"], "eq_expression": "[('log', 'unary'), ('add', 'binary'), ('X_0', 'var'), ('add', 'binary'), (1, 'const'), ('X_0', 'var'), (2, 'const')]"}

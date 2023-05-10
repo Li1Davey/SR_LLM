@@ -1,0 +1,2 @@
+0
+{"eq_name": "Neat_8", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "n2", "exp", "expneg"], "eq_expression": "[('mul', 'binary'), ('add', 'binary'), (1.2, 'const'), ('add', 'binary'), (-2.5, 'const'), ('X_1', 'var'), (2, 'const'), (-1, 'const'), ('exp', 'unary'), ('mul', 'binary'), (-1, 'const'), ('add', 'binary'), (-1, 'const'), ('X_0', 'var'), (2, 'const')]"}

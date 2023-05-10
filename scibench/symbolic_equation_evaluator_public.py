@@ -60,13 +60,6 @@ class Equation_evaluator(object):
 
     # Declaring private method. This function cannot be called outside the class.
     def __load_equation(self, equation_name):
-        # program_files = dict()
-        # for root, dirs, files in os.walk(equation_folder, topdown=False):
-        #     for name in files:
-        #         if name.endswith(EQUATION_EXTENSION):
-        #             program_files[name] = os.path.join(root, name)
-        # if equation_name not in program_files.keys():
-        #     raise FileNotFoundError(f"{equation_name} is not a valid equation name!")
 
         self.eq_name = equation_name
         if not os.path.isfile(self.eq_name):
@@ -107,11 +100,11 @@ class Equation_evaluator(object):
         loss_val_dict = {}
         metric_params = (1.0,)
         for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
-            metric = make_regression_metric(metric_name, *metric_params)
+            metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred, np.var(y_true))
             loss_val_dict[metric_name] = loss_val
         for metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
-            metric = make_regression_metric(metric_name, *metric_params)
+            metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred)
             loss_val_dict[metric_name] = loss_val
         return loss_val_dict
@@ -200,10 +193,9 @@ def decrypt_equation(eq_file, key_filename=None):
     return one_equation
 
 
-def build_program(preorder_traversal, library, allow_change_const=0):
+def build_program(preorder_traversal, library):
     preorder_actions = library.actionize(['const' if is_float(tok) else tok for tok in preorder_traversal])
-    true_pr_allow_change = allow_change_const * np.ones(len(preorder_traversal), dtype=np.int32)
-    true_pr = sciProgram(preorder_actions, true_pr_allow_change)
+    true_pr = sciProgram(preorder_actions)
     for loc, tok in enumerate(preorder_traversal):
         if is_float(tok):
             true_pr.traversal[loc] = PlaceholderConstant(tok)
@@ -665,25 +657,21 @@ class sciProgram(object):
     library = None  # Library
     execute = None  # Link to execute. Either cython or python
 
-    def __init__(self, tokens=None, allow_change_tokens=None):
+    def __init__(self, tokens=None):
         """
         Builds the Program from a list of of integers corresponding to Tokens.
         """
         # Can be empty if we are unpickling
         if tokens is not None:
-            self._init(tokens, allow_change_tokens)
+            self._init(tokens)
 
-    def _init(self, tokens, allow_change_tokens):
+    def _init(self, tokens):
         # pre-order of the program. the most important thing.
         self.traversal = [sciProgram.library[t] for t in tokens]
-        # added part: which token is allowed to be token. 1 means allowed
-        self.allow_change_tokens = allow_change_tokens
+
         # position of the constant
         self.const_pos = [i for i, t in enumerate(self.traversal) if isinstance(t, PlaceholderConstant)]
-        self.num_changing_consts = 0
-        for pos in self.const_pos:  # compute num_changing_consts
-            if self.allow_change_tokens[pos]:
-                self.num_changing_consts += 1
+
         self.len_traversal = len(self.traversal)
 
         self.invalid = False  # always false.

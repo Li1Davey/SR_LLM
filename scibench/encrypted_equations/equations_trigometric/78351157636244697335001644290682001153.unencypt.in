@@ -1,0 +1,2 @@
+0
+{"eq_name": "sincosinv_nv2_nt11_prog_44", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "[('add', 'binary'), ('add', 'binary'), (0.0382, 'const'), ('mul', 'binary'), (-0.3434, 'const'), ('cos', 'unary'), ('X_0', 'var'), ('mul', 'binary'), ('mul', 'binary'), (-0.6752, 'const'), ('X_0', 'var'), ('sin', 'unary'), ('X_1', 'var')]"}

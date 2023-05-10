@@ -1,0 +1,2 @@
+0
+{"eq_name": "Keijzer_15", "num_vars": 2, "function_set": ["add", "mul", "div", "exp", "log", "pow", "inv", "neg", "sqrt", "const"], "eq_expression": "[('add', 'binary'), ('mul', 'binary'), ('X_1', 'var'), (3, 'const'), ('mul', 'binary'), (-1, 'const'), ('X_0', 'var'), ('mul', 'binary'), (-1, 'const'), ('X_1', 'var'), ('mul', 'binary'), ('X_0', 'var'), (3, 'const')]"}

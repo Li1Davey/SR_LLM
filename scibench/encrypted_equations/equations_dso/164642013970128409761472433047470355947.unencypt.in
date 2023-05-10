@@ -1,0 +1,2 @@
+0
+{"eq_name": "Poly_4", "num_vars": 10, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "sqrt", "poly"], "eq_expression": "[('mul', 'binary'), (3, 'const'), ('add', 'binary'), (0.108333333333333, 'const'), ('mul', 'binary'), ('X_0', 'var'), ('X_1', 'var'), ('mul', 'binary'), (-0.00416666666666667, 'const'), ('X_2', 'var'), ('X_5', 'var'), ('X_9', 'var'), ('exp', 'unary'), ('mul', 'binary'), (-1, 'const'), ('X_6', 'var'), ('sin', 'unary'), ('X_3', 'var')]"}

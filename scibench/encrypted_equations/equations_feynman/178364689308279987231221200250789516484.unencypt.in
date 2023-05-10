@@ -1,0 +1,2 @@
+0
+{"eq_name": "feynman-bonus.19", "num_vars": 4, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', -1872855580.36049, ['Pow', ['Pi'], -1], ['Add', ['Mul', 8.98755178736818e+16, ['Pow', x2, 2], ['Add', 1, ['Mul', -2, x3]]], ['Mul', 8.07760871306249e+33, x0, ['Pow', x1, -2]]]]"}
