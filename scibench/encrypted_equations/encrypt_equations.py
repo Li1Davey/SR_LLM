@@ -74,7 +74,7 @@ def symbolic_equation_to_preorder_traversal(expr) -> List:
     return pre_order_traversal
 
 
-def main(private_key_folder='./', key_filename="public.key", output_folder="./"):
+def main(private_key_folder='./', key_filename="public.key", output_folder="./", folder_prefix='equation_family'):
     if not os.path.isfile(os.path.join(private_key_folder, key_filename)):
         print('A new key is generated!')
         generate_new_key(key_filename)
@@ -91,15 +91,17 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./")
         user_encode_data = json.dumps(equation).encode('utf-8')
         print(user_encode_data)
         # exit()
-        if not os.path.isdir(output_folder):
-            os.makedirs(output_folder)
+        if not os.path.isdir(os.path.join(output_folder, 'encrypted', folder_prefix)):
+            os.makedirs(os.path.join(output_folder, 'encrypted', folder_prefix))
         hashed_name = xxhash.xxh128(eqname, seed=42).intdigest()
         print(hashed_name)
-        output_eq_file = os.path.join(output_folder, str(hashed_name) + ".encypt.in")
+        output_eq_file = os.path.join(output_folder, 'encrypted', folder_prefix, str(hashed_name) + ".in")
 
         encrypt_equation(user_encode_data, output_eq_file, key_filename, is_encrypted=1)
         decrypt_equation(output_eq_file, key_filename)
-        output_eq_file = os.path.join(output_folder, str(hashed_name) + ".unencypt.in")
+        if not os.path.isdir(os.path.join(output_folder, 'unencrypted', folder_prefix)):
+            os.makedirs(os.path.join(output_folder, 'unencrypted', folder_prefix))
+        output_eq_file = os.path.join(output_folder, 'unencrypted', folder_prefix, eqname + ".in")
 
         encrypt_equation(user_encode_data, output_eq_file, is_encrypted=0)
 
@@ -110,13 +112,13 @@ if __name__ == '__main__':
     from equations_feynman import *
 
     #
-    main(output_folder='./equations_feynman')
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
     from equations_dso import *
 
-    main(output_folder='./equations_dso')
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_dso')
 
     from equations_trigometric import *
 
-    main(output_folder='./equations_trigometric')
+    main(output_folder='//home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
 
 #
