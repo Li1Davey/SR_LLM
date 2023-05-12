@@ -1,2 +1,2 @@
 0
-{"eq_name": "feynman-bonus.13", "num_vars": 5, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', 'Rational', 'X_1', 'Pow', 'Pi', -1, 'Pow', 'X_0', -1, 'Pow', 'Add', 'Pow', 'X_2', 2, 'Pow', 'X_3', 2, 'Mul', -2, 'X_2', 'X_3', 'cos', 'X_4', 'Rational']"}
+{"eq_name": "feynman-bonus.13", "num_vars": 5, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "[('mul', 'binary'), ('X_1', 'var'), (-1, 'const'), ('X_0', 'var'), (-1, 'const'), ('add', 'binary'), ('X_2', 'var'), (2, 'const'), ('X_3', 'var'), (2, 'const'), ('mul', 'binary'), (-2, 'const'), ('X_2', 'var'), ('X_3', 'var'), ('cos', 'unary'), ('X_4', 'var')]"}

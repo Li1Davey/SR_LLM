@@ -5,7 +5,6 @@ import xxhash
 from typing import List, Dict, Set
 
 from cryptography.fernet import Fernet
-from sympy.parsing.sympy_parser import parse_expr
 
 import sympy
 from sympy import *
@@ -71,25 +70,37 @@ def to_binary_expr_tree(expr):
         return [op.__name__] + [to_binary_expr_tree(arg) for arg in args]
 
 
+def is_float(s):
+    """Determine whether the input variable can be cast to float."""
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 def symbolic_equation_to_preorder_traversal(expr) -> List:
-    # expr = parse_expr(expr)
-    pre_order_traversal = to_binary_expr_tree(expr)
 
-    def flattenList(nestedList):
 
-        # check if list is empty
-        if not (bool(nestedList)):
-            return nestedList
+    def flatten(S):
+        if S == []:
+            return S
+        if isinstance(S[0], list):
+            return flatten(S[0]) + flatten(S[1:])
+        return S[:1] + flatten(S[1:])
 
-        # to check instance of list is empty or not
-        if isinstance(nestedList[0], list):
-            # call function with sublist as argument
-            return flattenList(*nestedList[:1]) + flattenList(nestedList[1:])
-
-        # call function with sublist as argument
-        return nestedList[:1] + flattenList(nestedList[1:])
-
-    return flattenList(pre_order_traversal)
+    preorder_traversal_expr = flatten(to_binary_expr_tree(expr))
+    preorder_traversal_tuple = []
+    for idx, it in enumerate(preorder_traversal_expr):
+        if is_float(it):
+            preorder_traversal_tuple.append((it, 'const'))
+        elif it.startswith('x') or it.startswith('X'):
+            preorder_traversal_tuple.append((it, 'var'))
+        elif it in ['add', 'Add', 'mul', 'Mul', 'sub', 'Sub', 'div', 'Div']:
+            preorder_traversal_tuple.append((it.lower(), 'binary'))
+        elif it in ['inv', 'Inv', 'sqrt', 'Sqrt', 'sin', 'Sin', 'cos', 'Cos', 'exp', 'Exp', 'log', 'Log', 'n2', 'n3', 'n4']:
+            preorder_traversal_tuple.append((it.lower(), 'unary'))
+    return preorder_traversal_tuple
 
 
 def main(private_key_folder='./', key_filename="public.key", output_folder="./", folder_prefix='equation_family'):

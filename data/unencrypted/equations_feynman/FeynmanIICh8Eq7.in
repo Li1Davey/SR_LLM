@@ -1,2 +1,2 @@
 0
-{"eq_name": "feynman-ii.8.7", "num_vars": 2, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', 16941495369.3246, 'Pow', 'Pi', -1, 'Pow', 'X_0', 2, 'Pow', 'X_1', -1]"}
+{"eq_name": "feynman-ii.8.7", "num_vars": 2, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "[('mul', 'binary'), (16941495369.3246, 'const'), (-1, 'const'), ('X_0', 'var'), (2, 'const'), ('X_1', 'var'), (-1, 'const')]"}
