@@ -11,7 +11,7 @@ class KnownEquation(object):
 
         assert len(kwargs_list) == num_vars
         self.num_vars = num_vars
-        self.x = [Symbol(f'x{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
+        self.x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
         self.sympy_eq = None
 
     def get_eq_name(self, prefix=None, suffix=None):

@@ -1,2 +1,2 @@
 0
-{"eq_name": "feynman-iii.9.52", "num_vars": 5, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', 1.20736492604890e+34, ['Pi'], x0, x1, ['Pow', x2, -1], ['Pow', ['Add', x3, ['Mul', -1, x4]], -2], ['Pow', ['sin', ['Mul', ['Half'], x2, ['Add', x3, ['Mul', -1, x4]]]], 2]]"}
+{"eq_name": "feynman-iii.9.52", "num_vars": 5, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', 1.20736492604890e+34, 'Pi', X_0, X_1, 'Pow', X_2, -1, 'Pow', 'Add', X_3, 'Mul', -1, X_4, -2, 'Pow', 'sin', 'Mul', 'Half', X_2, 'Add', X_3, 'Mul', -1, X_4, 2]"}

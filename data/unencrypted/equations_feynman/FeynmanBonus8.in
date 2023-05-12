@@ -1,2 +1,2 @@
 0
-{"eq_name": "feynman-bonus.8", "num_vars": 2, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', x0, ['Pow', ['Add', 1, ['Mul', 12214328760283.5, x0, ['Add', 1, ['Mul', -1, ['cos', x1]]]]], -1]]"}
+{"eq_name": "feynman-bonus.8", "num_vars": 2, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', X_0, 'Pow', 'Add', 1, 'Mul', 12214328760283.5, X_0, 'Add', 1, 'Mul', -1, 'cos', X_1, -1]"}

@@ -1,2 +1,2 @@
 0
-{"eq_name": "feynman-iii.17.37", "num_vars": 3, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', x0, ['Add', 1, ['Mul', x1, ['cos', x2]]]]"}
+{"eq_name": "feynman-iii.17.37", "num_vars": 3, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "['Mul', X_0, 'Add', 1, 'Mul', X_1, 'cos', X_2]"}

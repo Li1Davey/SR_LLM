@@ -71,7 +71,21 @@ def to_binary_expr_tree(expr):
 def symbolic_equation_to_preorder_traversal(expr) -> List:
     # expr = parse_expr(expr)
     pre_order_traversal = to_binary_expr_tree(expr)
-    return pre_order_traversal
+
+    def flattenList(nestedList):
+
+        # check if list is empty
+        if not (bool(nestedList)):
+            return nestedList
+
+        # to check instance of list is empty or not
+        if isinstance(nestedList[0], list):
+            # call function with sublist as argument
+            return flattenList(*nestedList[:1]) + flattenList(nestedList[1:])
+
+        # call function with sublist as argument
+        return nestedList[:1] + flattenList(nestedList[1:])
+    return flattenList(pre_order_traversal)
 
 
 def main(private_key_folder='./', key_filename="public.key", output_folder="./", folder_prefix='equation_family'):
