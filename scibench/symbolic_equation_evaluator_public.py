@@ -18,23 +18,6 @@ from collections import defaultdict
 import numpy as np
 import time
 
-# a class takes the input of a file, that a file is an equation.
-# the class will return a batch of data, everytime it was queried.
-# create a offline version to bitbucket.org
-#
-# future competition.
-# offline evaluation: that are not open.
-# type of noise, rate of noise.
-
-
-# init
-# 1nd way: the `eq_filename` that contains the equation
-# 2nd way is for compeition:
-# kill the program for more than 1 hour,
-# they need output the best equation vis STDOUT. save to a paticular filename in format '.out' in 1 hours.
-# as a participant, we give  them some eq_name_string, output_file_name, _time_limits.
-# when you get a better
-
 EQUATION_EXTENSION = ".in"
 
 
@@ -71,7 +54,7 @@ class Equation_evaluator(object):
     def evaluate(self, X):
         # evaluate the y_true from given input X
 
-        batch_size,nvar = X.shape
+        batch_size, nvar = X.shape
         assert self.num_vars == nvar, f"The number of variables in your input is {nvar}, but we expect {self.num_vars}"
 
         if self.true_equation is None:

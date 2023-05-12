@@ -3,7 +3,6 @@ import numpy as np
 import warnings
 
 from scibench.symbolic_equation_evaluator import Equation_evaluator
-# from feynman_family.physic_equations import get_eq_obj
 
 FLOAT32_MAX = np.finfo(np.float32).max
 FLOAT32_MIN = np.finfo(np.float32).min
@@ -20,6 +19,9 @@ def load_dataset_df(eq_name='prog_0', batch_size=256):
 #         self.eq_name = eq_name
 #         self.noise_type = noise_type
 #         self.noise_scale = noise_scale
+def check_if_valid(values):
+    return ~np.isnan(values) * ~np.isinf(values) * \
+        (FLOAT32_MIN <= values) * (values <= FLOAT32_MAX) * (np.abs(values) >= FLOAT32_TINY)
 
 
 class DataLoader(object):
@@ -30,10 +32,6 @@ class DataLoader(object):
         self.dataX_generator = get_eq_obj(self.eq_name)
         self.eq_evaulator = Equation_evaluator(eq_name_public)
 
-    def check_if_valid(self, values):
-        return ~np.isnan(values) * ~np.isinf(values) * \
-            (FLOAT32_MIN <= values) * (values <= FLOAT32_MAX) * (np.abs(values) >= FLOAT32_TINY)
-
     def random_uniform_data(self, sample_size, patience=30):
         warnings.filterwarnings('ignore')
         assert len(self.dataX_generator.sampling_objs) > 0, f'There should be at least one variable provided'
@@ -42,7 +40,7 @@ class DataLoader(object):
         y = self.eq_evaulator.evaluate(xs)
 
         # Check if y contains NaN, Infinity, etc
-        valid_sample_flags = self.check_if_valid(y)
+        valid_sample_flags = check_if_valid(y)
         valid_sample_size = sum(valid_sample_flags)
         if valid_sample_size == sample_size:
             return np.array([*xs, y]).T
@@ -53,7 +51,7 @@ class DataLoader(object):
         for _ in range(patience):
             xs = self.dataX_generator.obtain_dataX(missed_sample_size * 3)
             y = self.eq_evaulator.evaluate(xs)
-            valid_sample_flags = self.check_if_valid(y)
+            valid_sample_flags = check_if_valid(y)
             valid_xs = [np.concatenate([xs[i][valid_sample_flags], valid_xs[i]]) for i in range(len(xs))]
             valid_y = np.concatenate([y[valid_sample_flags], valid_y])
             valid_sample_size = len(valid_y)
