@@ -1,6 +1,8 @@
 #### Requirement:
 import json
 import os
+
+import numpy as np
 import xxhash
 from typing import List, Dict, Set
 
@@ -64,6 +66,10 @@ def to_binary_expr_tree(expr):
         return str(expr)
     elif isinstance(expr, Float) or isinstance(expr, Integer) or isinstance(expr, Rational):
         return expr
+    elif expr == sympy.pi:
+        return np.pi
+    elif expr == sympy.EulerGamma:
+        return np.euler_gamma
     else:
         op = expr.func
         args = expr.args
@@ -85,9 +91,9 @@ def is_float(s):
         return False
 
 
+
+
 def symbolic_equation_to_preorder_traversal(expr) -> List:
-
-
     def flatten(S):
         if S == []:
             return S
