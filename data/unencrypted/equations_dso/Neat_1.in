@@ -1,2 +1,2 @@
 0
-{"eq_name": "Neat_1", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "1.0"], "eq_expression": "[('add', 'binary'), ('X_0', 'var'), ('add', 'binary'), ('X_0', 'var'), (2, 'const'), ('add', 'binary'), ('X_0', 'var'), (3, 'const'), ('X_0', 'var'), (4, 'const')]"}
+{"eq_name": "Neat_1", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "1.0"], "eq_expression": "[('add', 'binary'), ('X_0', 'var'), ('add', 'binary'), ('pow', 'binary'), ('X_0', 'var'), (2, 'const'), ('add', 'binary'), ('pow', 'binary'), ('X_0', 'var'), (3, 'const'), ('pow', 'binary'), ('X_0', 'var'), (4, 'const')]"}

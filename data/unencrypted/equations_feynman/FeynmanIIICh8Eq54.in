@@ -1,2 +1,2 @@
 0
-{"eq_name": "feynman-iii.8.54", "num_vars": 2, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "[('sin', 'unary'), ('mul', 'binary'), (3018412315122245888053292650463232, 'const'), ('mul', 'binary'), (3.141592653589793, 'const'), ('mul', 'binary'), ('X_0', 'var'), ('X_1', 'var'), (2, 'const')]"}
+{"eq_name": "feynman-iii.8.54", "num_vars": 2, "function_set": ["exp", "log", "sqrt", "add", "sub", "mul", "div", "inv", "sin", "cos", "const"], "eq_expression": "[('pow', 'binary'), ('sin', 'unary'), ('mul', 'binary'), (3018412315122245888053292650463232, 'const'), ('mul', 'binary'), (3.141592653589793, 'const'), ('mul', 'binary'), ('X_0', 'var'), ('X_1', 'var'), (2, 'const')]"}

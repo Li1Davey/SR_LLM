@@ -1,2 +1,2 @@
 0
-{"eq_name": "Livermore_21", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('exp', 'unary'), ('mul', 'binary'), (-1, 'const'), ('X_0', 'var'), (2, 'const')]"}
+{"eq_name": "Livermore_21", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('exp', 'unary'), ('mul', 'binary'), (-1, 'const'), ('pow', 'binary'), ('X_0', 'var'), (2, 'const')]"}

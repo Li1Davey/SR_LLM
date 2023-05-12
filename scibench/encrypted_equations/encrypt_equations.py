@@ -108,7 +108,7 @@ def symbolic_equation_to_preorder_traversal(expr) -> List:
             preorder_traversal_tuple.append((it, 'const'))
         elif it.startswith('x') or it.startswith('X'):
             preorder_traversal_tuple.append((it, 'var'))
-        elif it in ['add', 'Add', 'mul', 'Mul', 'sub', 'Sub', 'div', 'Div']:
+        elif it in ['add', 'Add', 'mul', 'Mul', 'sub', 'Sub', 'div', 'Div', 'pow', 'Pow']:
             preorder_traversal_tuple.append((it.lower(), 'binary'))
         elif it in ['inv', 'Inv', 'sqrt', 'Sqrt', 'sin', 'Sin', 'cos', 'Cos', 'exp', 'Exp', 'log', 'Log', 'n2', 'n3', 'n4']:
             preorder_traversal_tuple.append((it.lower(), 'unary'))

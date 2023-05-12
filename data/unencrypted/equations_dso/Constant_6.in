@@ -1,2 +1,2 @@
 0
-{"eq_name": "Constant_6", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const"], "eq_expression": "[('X_0', 'var'), (0.426000000000000, 'const')]"}
+{"eq_name": "Constant_6", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const"], "eq_expression": "[('pow', 'binary'), ('X_0', 'var'), (0.426000000000000, 'const')]"}
