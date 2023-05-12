@@ -28,8 +28,10 @@ config = {'neg_mse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.01},
           }
 
 
-def run_expanding_gp(nvar, equation_name, metric_name, noise_scale):
-    # nvar = 5
+def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    nvar = data_query_oracle.get_nvars()
+    
     regress_batchsize = 256
     opt_num_expr = 5
 
@@ -80,16 +82,14 @@ def run_expanding_gp(nvar, equation_name, metric_name, noise_scale):
     Program.noise_std = noise_scale
 
     # read the program
-    prog = gen_true_program.read_true_program(true_program_file)
-    true_pr = gen_true_program.build_program(prog, protected_library, 0)
+    # prog = gen_true_program.read_true_program(true_program_file)
+    # true_pr = gen_true_program.build_program(prog, protected_library, 0)
 
     # set the task
     allowed_input_tokens = np.zeros(nvar, dtype=np.int32)  # set it for now. Will change in gp.run
     Program.task = regress_task.RegressTaskV1(regress_batchsize,
                                               allowed_input_tokens,
-                                              true_pr,
-                                              noise_scale,
-                                              metric=metric_name)
+                                              data_query_oracle)
 
     # set gp helper
     gp_helper = gp_xyx.GPHelper()

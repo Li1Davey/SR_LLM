@@ -1,5 +1,5 @@
 #!/bin/bash -l
-set -x
+
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 type=$1
 nv=$2
@@ -51,7 +51,7 @@ EOT
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="gp_${type}${nv}${nt}_${prog}"
+#SBATCH --job-name="egp_${type}${nv}${nt}_${prog}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.egp.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
@@ -64,7 +64,7 @@ module load anaconda
 
 python3 $thispath/try_gp_xyx.py --equation_name $data_path/$eq_name --expand_gp \
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
+        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.egp.out
 
 EOT
 
