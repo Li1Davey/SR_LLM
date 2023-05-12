@@ -1,2 +1,2 @@
 0
-{"eq_name": "R2", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('mul', 'binary'), ('add', 'binary'), (1, 'const'), ('X_0', 'var'), (2, 'const'), (-1, 'const'), ('add', 'binary'), (1, 'const'), ('mul', 'binary'), (-3, 'const'), ('X_0', 'var'), (3, 'const'), ('X_0', 'var'), (5, 'const')]"}
+{"eq_name": "R2", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('mul', 'binary'), ('add', 'binary'), (1, 'const'), ('X_0', 'var'), (2, 'const'), (-1, 'const'), ('add', 'binary'), (1, 'const'), ('add', 'binary'), ('X_0', 'var'), (5, 'const'), ('mul', 'binary'), (-3, 'const'), ('X_0', 'var'), (3, 'const')]"}

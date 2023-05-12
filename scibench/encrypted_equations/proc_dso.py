@@ -35,63 +35,12 @@ class {}(KnownEquation):
         super().__init__(num_vars={})
         x = self.x
         self.sympy_eq = {}
-        self.sympy_eq_preorder_traversal = {}
 """
-
-
-def to_binary_expr_tree(expr):
-    if isinstance(expr, Symbol):
-        return str(expr)
-    elif isinstance(expr, Float) or isinstance(expr, Integer):
-        return expr
-    else:
-        op = expr.func
-        args = expr.args
-        return [op.__name__] + [to_binary_expr_tree(arg) for arg in args]
-
-
-def is_float(s):
-    """Determine whether the input variable can be cast to float."""
-    try:
-        float(s)
-        return True
-    except ValueError:
-        return False
-
-
-def symbolic_equation_to_preorder_traversal(expr) -> List:
-    expr = parse_expr(expr)
-
-    def flatten(S):
-        if S == []:
-            return S
-        if isinstance(S[0], list):
-            return flatten(S[0]) + flatten(S[1:])
-        return S[:1] + flatten(S[1:])
-
-    preorder_traversal_expr = flatten(to_binary_expr_tree(expr))
-    preorder_traversal_tuple = []
-    for idx, it in enumerate(preorder_traversal_expr):
-        if is_float(it):
-            preorder_traversal_tuple.append((it, 'const'))
-        elif it.startswith('x') or it.startswith('X'):
-            preorder_traversal_tuple.append((it, 'var'))
-        elif it in ['add', 'Add', 'mul', 'Mul', 'sub', 'Sub', 'div', 'Div']:
-            preorder_traversal_tuple.append((it.lower(), 'binary'))
-        elif it in ['inv', 'Inv', 'sqrt', 'Sqrt', 'sin', 'Sin', 'cos', 'Cos', 'exp', 'Exp', 'log', 'Log', 'n2', 'n3', 'n4']:
-            preorder_traversal_tuple.append((it.lower(), 'unary'))
-    return preorder_traversal_tuple
 
 
 def extract(row, function_set_dict):
     name = row['name'].replace('-', "_")
     nvars = row['variables']
-    X_0, X_1, X_2, X_3, X_4, X_5, X_6, X_7, X_8, X_9 = symbols('X_0 X_1 X_2 X_3 X_4 X_5 X_6 X_7 X_8 X_9')
-    expr = row['expression'].replace('x10', 'X_9').replace('x1', 'X_0').replace('x2', 'X_1').replace('x3', 'X_2').replace(
-        'x4', 'X_3').replace('x5', 'X_4').replace('x6', 'X_5').replace('x7', 'X_6').replace('x8', 'X_7').replace(
-        'x9', 'X_8')
-
-    preorder_traversal = symbolic_equation_to_preorder_traversal(expr)
     sympy_eq = row['expression'].replace('x10', 'x[9]').replace('x1', 'x[0]').replace('x2', 'x[1]').replace('x3', 'x[2]').replace(
         'x4', 'x[3]').replace('x5', 'x[4]').replace('x6', 'x[5]').replace('x7', 'x[6]').replace('x8', 'x[7]').replace(
         'x9', 'x[8]').replace('pow', 'sympy.Pow').replace('log', 'sympy.log').replace('exp', 'sympy.exp').replace('sin',
@@ -102,7 +51,7 @@ def extract(row, function_set_dict):
 
     function_set = function_set_dict[row['function_set']]
 
-    return template.format(name, name, function_set, nvars, sympy_eq, preorder_traversal)
+    return template.format(name, name, function_set, nvars, sympy_eq)
 
 
 @click.command()

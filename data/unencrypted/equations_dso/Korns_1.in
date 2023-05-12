@@ -1,2 +1,2 @@
 0
-{"eq_name": "Korns_1", "num_vars": 5, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "n2", "n3", "sqrt", "tan", "tanh", "const"], "eq_expression": "[('add', 'binary'), (1.57, 'const'), ('mul', 'binary'), (24.3, 'const'), ('X_3', 'var')]"}
+{"eq_name": "Korns_1", "num_vars": 5, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "n2", "n3", "sqrt", "tan", "tanh", "const"], "eq_expression": "[('add', 'binary'), (1.57000000000000, 'const'), ('mul', 'binary'), (24.3000000000000, 'const'), ('X_3', 'var')]"}

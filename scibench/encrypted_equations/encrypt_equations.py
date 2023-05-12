@@ -62,12 +62,18 @@ def decrypt_equation(eq_file, key_filename=None):
 def to_binary_expr_tree(expr):
     if isinstance(expr, Symbol):
         return str(expr)
-    elif isinstance(expr, Float) or isinstance(expr, Integer):
+    elif isinstance(expr, Float) or isinstance(expr, Integer) or isinstance(expr, Rational):
         return expr
     else:
         op = expr.func
         args = expr.args
-        return [op.__name__] + [to_binary_expr_tree(arg) for arg in args]
+
+        if len(args) <= 2:
+            return [op.__name__] + [to_binary_expr_tree(arg) for arg in args]
+        else:
+            left = to_binary_expr_tree(args[0])
+            right = to_binary_expr_tree(op(*args[1:]))
+            return [op.__name__, left, right]
 
 
 def is_float(s):
@@ -143,9 +149,9 @@ if __name__ == '__main__':
 
     #
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
-    # from equations_dso import *
-    #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_dso')
+    from equations_dso import *
+
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_dso')
     #
     # from equations_trigometric import *
     #

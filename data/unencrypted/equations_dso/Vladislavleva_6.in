@@ -1,2 +1,2 @@
 0
-{"eq_name": "Vladislavleva_6", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "n2", "exp", "expneg"], "eq_expression": "[('mul', 'binary'), (6, 'const'), ('cos', 'unary'), ('X_1', 'var'), ('sin', 'unary'), ('X_0', 'var')]"}
+{"eq_name": "Vladislavleva_6", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "n2", "exp", "expneg"], "eq_expression": "[('mul', 'binary'), (6, 'const'), ('mul', 'binary'), ('cos', 'unary'), ('X_1', 'var'), ('sin', 'unary'), ('X_0', 'var')]"}

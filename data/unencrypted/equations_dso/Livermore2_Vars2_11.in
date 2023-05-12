@@ -1,2 +1,2 @@
 0
-{"eq_name": "Livermore2_Vars2_11", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sqrt", "n2", "log", "exp", "sin", "cos", "1"], "eq_expression": "[('add', 'binary'), ('X_1', 'var'), ('mul', 'binary'), (3.52, 'const'), ('sin', 'unary'), ('X_0', 'var'), ('mul', 'binary'), ('X_0', 'var'), ('X_1', 'var')]"}
+{"eq_name": "Livermore2_Vars2_11", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sqrt", "n2", "log", "exp", "sin", "cos", "1"], "eq_expression": "[('add', 'binary'), ('X_1', 'var'), (1/2, 'const'), ('add', 'binary'), ('mul', 'binary'), (3.52000000000000, 'const'), ('sin', 'unary'), ('X_0', 'var'), ('mul', 'binary'), ('X_0', 'var'), ('X_1', 'var')]"}

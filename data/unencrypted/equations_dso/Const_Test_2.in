@@ -1,2 +1,2 @@
 0
-{"eq_name": "Const_Test_2", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const"], "eq_expression": "[('mul', 'binary'), (3.141592653589793, 'const'), ('X_0', 'var'), (2, 'const')]"}
+{"eq_name": "Const_Test_2", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const"], "eq_expression": "[('mul', 'binary'), (3.14159265358979, 'const'), ('X_0', 'var'), (2, 'const')]"}

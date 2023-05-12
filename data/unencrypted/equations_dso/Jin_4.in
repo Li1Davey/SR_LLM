@@ -1,2 +1,2 @@
 0
-{"eq_name": "Jin_4", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "n2", "n3", "const"], "eq_expression": "[('add', 'binary'), ('mul', 'binary'), (1.5, 'const'), ('exp', 'unary'), ('X_0', 'var'), ('mul', 'binary'), (5.0, 'const'), ('cos', 'unary'), ('X_1', 'var')]"}
+{"eq_name": "Jin_4", "num_vars": 2, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "n2", "n3", "const"], "eq_expression": "[('add', 'binary'), ('mul', 'binary'), (1.50000000000000, 'const'), ('exp', 'unary'), ('X_0', 'var'), ('mul', 'binary'), (5.00000000000000, 'const'), ('cos', 'unary'), ('X_1', 'var')]"}

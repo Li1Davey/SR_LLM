@@ -1,2 +1,2 @@
 0
-{"eq_name": "Constant_8", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const"], "eq_expression": "[('add', 'binary'), ('log', 'unary'), ('add', 'binary'), (1.4, 'const'), ('X_0', 'var'), ('log', 'unary'), ('add', 'binary'), (1.3, 'const'), ('X_0', 'var'), (2, 'const')]"}
+{"eq_name": "Constant_8", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const"], "eq_expression": "[('add', 'binary'), ('log', 'unary'), ('add', 'binary'), (1.40000000000000, 'const'), ('X_0', 'var'), ('log', 'unary'), ('add', 'binary'), (1.30000000000000, 'const'), ('X_0', 'var'), (2, 'const')]"}

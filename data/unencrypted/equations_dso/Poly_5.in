@@ -1,2 +1,2 @@
 0
-{"eq_name": "Poly_5", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const", "poly"], "eq_expression": "[('mul', 'binary'), (-1, 'const'), ('sin', 'unary'), ('add', 'binary'), ('X_0', 'var'), ('mul', 'binary'), (-1, 'const'), ('X_0', 'var'), (3, 'const'), ('mul', 'binary')]"}
+{"eq_name": "Poly_5", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log", "const", "poly"], "eq_expression": "[('mul', 'binary'), (-1, 'const'), ('sin', 'unary'), ('add', 'binary'), ('X_0', 'var'), ('add', 'binary'), ('mul', 'binary'), (-1, 'const'), ('X_0', 'var'), (3, 'const'), ('mul', 'binary'), (1/6, 'const')]"}

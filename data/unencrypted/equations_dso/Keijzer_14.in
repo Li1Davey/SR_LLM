@@ -1,2 +1,2 @@
 0
-{"eq_name": "Keijzer_14", "num_vars": 2, "function_set": ["add", "mul", "div", "exp", "log", "pow", "inv", "neg", "sqrt", "const"], "eq_expression": "[('mul', 'binary'), (8, 'const'), ('add', 'binary'), (2, 'const'), ('X_0', 'var'), (2, 'const'), ('X_1', 'var'), (2, 'const'), (-1, 'const')]"}
+{"eq_name": "Keijzer_14", "num_vars": 2, "function_set": ["add", "mul", "div", "exp", "log", "pow", "inv", "neg", "sqrt", "const"], "eq_expression": "[('mul', 'binary'), (8, 'const'), ('add', 'binary'), (2, 'const'), ('add', 'binary'), ('X_0', 'var'), (2, 'const'), ('X_1', 'var'), (2, 'const'), (-1, 'const')]"}
