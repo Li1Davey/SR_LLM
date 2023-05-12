@@ -51,16 +51,19 @@ def decrypt_equation(eq_file, key_filename=None):
         elif encrypted == b'0\n':
             decrypted = enc_file.readline()
     one_equation = json.loads(decrypted)
-    one_equation['eq_expression'] = parse_expr(one_equation['eq_expression'])
+    preorder_traversal = eval(one_equation['eq_expression'])
     print("-" * 20)
     for key in one_equation:
         print(key, "\t", one_equation[key])
+    print("preorder:", preorder_traversal)
     print("-" * 20)
     return one_equation
 
 
 def to_binary_expr_tree(expr):
-    if isinstance(expr, Symbol) or isinstance(expr, Float) or isinstance(expr, Integer):
+    if isinstance(expr, Symbol):
+        return str(expr)
+    elif isinstance(expr, Float) or isinstance(expr, Integer):
         return expr
     else:
         op = expr.func
@@ -85,6 +88,7 @@ def symbolic_equation_to_preorder_traversal(expr) -> List:
 
         # call function with sublist as argument
         return nestedList[:1] + flattenList(nestedList[1:])
+
     return flattenList(pre_order_traversal)
 
 
@@ -120,6 +124,7 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
         encrypt_equation(user_encode_data, output_eq_file, is_encrypted=0)
 
         decrypt_equation(output_eq_file)
+        print('paused!')
 
 
 if __name__ == '__main__':
@@ -127,12 +132,12 @@ if __name__ == '__main__':
 
     #
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
-    from equations_dso import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_dso')
-
-    from equations_trigometric import *
-
-    main(output_folder='//home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
+    # from equations_dso import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_dso')
+    #
+    # from equations_trigometric import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
 
 #
