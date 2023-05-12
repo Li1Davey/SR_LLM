@@ -10,7 +10,7 @@ data_path=$basepath/data/unencrypted/equations_feynman
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
-all_equations=`ls $(data_path)/Feynman*.in`
+all_equations=`ls $data_path/Feynman*.in`
 for eq_name in $all_equations;
 do
     echo "submit $eq_name"
@@ -31,7 +31,7 @@ do
     sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="gp_$(trimed_name)"
+#SBATCH --job-name="gp_$trimed_name"
 #SBATCH --output=$log_dir/${short_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
@@ -51,7 +51,7 @@ EOT
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="egp_${trimed_name}"
+#SBATCH --job-name="egp_$trimed_name"
 #SBATCH --output=$log_dir/${short_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.egp.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
