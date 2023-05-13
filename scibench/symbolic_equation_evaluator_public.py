@@ -163,7 +163,10 @@ def decrypt_equation(eq_file, key_filename=None):
     preorder_traversal = [tt[0] for tt in preorder_traversal]
     print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
+    if 'pow' in preorder_traversal:
+        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1),]
     protected_library = sciLibrary(list_of_tokens)
+
     sciProgram.library = protected_library
     sciProgram.set_execute(protected=True)
     #
@@ -455,6 +458,7 @@ unprotected_ops = [
     sciToken(np.add, "add", arity=2, complexity=1),
     sciToken(np.subtract, "sub", arity=2, complexity=1),
     sciToken(np.multiply, "mul", arity=2, complexity=1),
+    sciToken(np.power, "pow", arity=2, complexity=1),
     sciToken(np.divide, "div", arity=2, complexity=2),
 
     # Built-in unary operators
