@@ -1,20 +1,13 @@
 import os
-import random
 from typing import List, Set
-import numpy as np
 import scipy
 
 import json
 from cryptography.fernet import Fernet
 
-"""Common Tokens used for executable Programs."""
 
 from fractions import Fraction
-
-"""Classes for Token and Library"""
-
 from collections import defaultdict
-
 import numpy as np
 import time
 
@@ -22,14 +15,14 @@ EQUATION_EXTENSION = ".in"
 
 
 class Equation_evaluator(object):
-    def __init__(self, equation_name, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
+    def __init__(self, true_equation_filename, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
         '''
-        true_equation: the program to map from X to Y
+        true_equation_filename: the program to map from X to Y
         noise_type, noise_scale: the type and scale of noise.
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
 
-        self.true_equation, self.num_vars, self.function_set = self.__load_equation(equation_name)
+        self.true_equation, self.num_vars, self.function_set = self.__load_equation(true_equation_filename)
 
         # metric
         self.metric_name = metric_name
@@ -63,7 +56,7 @@ class Equation_evaluator(object):
 
         return y_true
 
-    def evaluate_loss(self, X, y_pred):
+    def _evaluate_loss(self, X, y_pred):
         """
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
         """
@@ -74,7 +67,7 @@ class Equation_evaluator(object):
             loss_val = self.metric(y_true, y_pred)
         return loss_val
 
-    def evaluate_all_losses(self, X, y_pred):
+    def _evaluate_all_losses(self, X, y_pred):
         """
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_hat.
         Return a dictionary of all the loss values.
@@ -92,7 +85,7 @@ class Equation_evaluator(object):
             loss_val_dict[metric_name] = loss_val
         return loss_val_dict
 
-    def get_eq_name(self):
+    def _get_eq_name(self):
         return self.eq_name
 
     def get_nvars(self):
@@ -164,7 +157,7 @@ def decrypt_equation(eq_file, key_filename=None):
     print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
-        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1),]
+        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1)]
     protected_library = sciLibrary(list_of_tokens)
 
     sciProgram.library = protected_library
@@ -422,8 +415,6 @@ class TokenNotFoundError(Exception):
 GAMMA = 0.57721566490153286060651209008240243104215933593992
 
 """Define custom unprotected operators"""
-
-
 def logabs(x1):
     """Closure of log for non-positive arguments."""
     return np.log(np.abs(x1))
@@ -432,14 +423,17 @@ def logabs(x1):
 def expneg(x1):
     return np.exp(-x1)
 
+def n2(x1):
+    return np.power(x1, 2)
 
 def n3(x1):
     return np.power(x1, 3)
 
-
 def n4(x1):
     return np.power(x1, 4)
 
+def n5(x1):
+    return np.power(x1, 5)
 
 def sigmoid(x1):
     return 1 / (1 + np.exp(-x1))
@@ -458,7 +452,6 @@ unprotected_ops = [
     sciToken(np.add, "add", arity=2, complexity=1),
     sciToken(np.subtract, "sub", arity=2, complexity=1),
     sciToken(np.multiply, "mul", arity=2, complexity=1),
-    sciToken(np.power, "pow", arity=2, complexity=1),
     sciToken(np.divide, "div", arity=2, complexity=2),
 
     # Built-in unary operators
@@ -481,6 +474,7 @@ unprotected_ops = [
     sciToken(expneg, "expneg", arity=1, complexity=4),
     sciToken(n3, "n3", arity=1, complexity=3),
     sciToken(n4, "n4", arity=1, complexity=3),
+    sciToken(n5, "n5", arity=2, complexity=3),
     sciToken(sigmoid, "sigmoid", arity=1, complexity=4),
     sciToken(harmonic, "harmonic", arity=1, complexity=4)
 ]
