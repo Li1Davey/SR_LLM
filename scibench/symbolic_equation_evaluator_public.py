@@ -53,7 +53,6 @@ class Equation_evaluator(object):
 
     def evaluate(self, X):
         # evaluate the y_true from given input X
-
         batch_size, nvar = X.shape
         assert self.num_vars == nvar, f"The number of variables in your input is {nvar}, but we expect {self.num_vars}"
 
@@ -218,29 +217,16 @@ class sciToken(object):
     """
     An arbitrary token or "building block" of a Program object.
 
-    Attributes
-    ----------
-    name : str
-        Name of token.
-
-    arity : int
-        Arity (number of arguments) of token.
-
-    complexity : float
-        Complexity of token.
-
-    function : callable
-        Function associated with the token; used for executable Programs.
-
-    input_var : int or None
-        Index of input if this Token is an input variable, otherwise None.
-
-    Methods
-    __call__(input)
-        Call the Token's function according to input.
     """
 
     def __init__(self, function, name, arity, complexity, input_var=None):
+        """
+        name : str. Name of token.
+        arity : int. Arity (number of arguments) of token.
+        complexity : float. Complexity of token.
+        function : callable. Function associated with the token; used for executable Programs.
+        input_var : int or None. Index of input if this Token is an input variable, otherwise None.
+        """
         self.function = function
         self.name = name
         self.arity = arity
@@ -252,6 +238,7 @@ class sciToken(object):
             assert arity == 0, "Input variables should have arity zero."
 
     def __call__(self, *args):
+        """Call the Token's function according to input."""
         assert self.function is not None, "Token {} is not callable.".format(self.name)
 
         return self.function(*args)
@@ -290,14 +277,10 @@ class PlaceholderConstant(sciToken):
 class HardCodedConstant(sciToken):
     """
     A Token with a "value" attribute, whose function returns the value.
-
-    Parameters
-    ----------
-    value : float
-        Value of the constant.
     """
 
     def __init__(self, value=None, name=None):
+        """  Value of the constant. """
         assert value is not None, "Constant is not callable with value None. Must provide a floating point number or string of a float."
         assert is_float(value)
         value = np.atleast_1d(np.float32(value))
@@ -312,81 +295,21 @@ class HardCodedConstant(sciToken):
 
 class sciLibrary(object):
     """
-    Library of Tokens. We use a list of Tokens (instead of set or dict) since
+    Library of sciTokens. We use a list of sciTokens (instead of set or dict) since
     we so often index by integers given by the Controller.
-
-    Attributes
-    tokens : list of sciToken
-        List of available Tokens in the library.
-
-    names : list of str
-        Names corresponding to Tokens in the library.
-
-    arities : list of int
-        Arities corresponding to Tokens in the library.
     """
 
     def __init__(self, tokens):
+        """
+        tokens :List of available Tokens in the library.
+        names : list of str, Names corresponding to sciTokens in the library.
+        arities : list of int. Arities corresponding to sciTokens in the library.
+        """
 
         self.tokens = tokens
         self.L = len(tokens)
         self.names = [t.name for t in tokens]
         self.arities = np.array([t.arity for t in tokens], dtype=np.int32)
-
-        self.input_tokens = np.array(
-            [i for i, t in enumerate(self.tokens) if t.input_var is not None],
-            dtype=np.int32)
-
-        def get_tokens_of_arity(arity):
-            _tokens = [i for i in range(self.L) if self.arities[i] == arity]
-            return np.array(_tokens, dtype=np.int32)
-
-        self.tokens_of_arity = defaultdict(lambda: np.array([], dtype=np.int32))
-        for arity in self.arities:
-            self.tokens_of_arity[arity] = get_tokens_of_arity(arity)
-        self.terminal_tokens = self.tokens_of_arity[0]
-        self.unary_tokens = self.tokens_of_arity[1]
-        self.binary_tokens = self.tokens_of_arity[2]
-
-        try:
-            self.const_token = self.names.index("const")
-        except ValueError:
-            self.const_token = None
-        self.parent_adjust = np.full_like(self.arities, -1)
-        count = 0
-        for i in range(len(self.arities)):
-            if self.arities[i] > 0:
-                self.parent_adjust[i] = count
-                count += 1
-
-        trig_names = ["sin", "cos", "tan", "csc", "sec", "cot"]
-        trig_names += ["arc" + name for name in trig_names]
-
-        self.float_tokens = np.array(
-            [i for i, t in enumerate(self.tokens) if t.arity == 0 and t.input_var is None],
-            dtype=np.int32)
-        self.trig_tokens = np.array(
-            [i for i, t in enumerate(self.tokens) if t.name in trig_names],
-            dtype=np.int32)
-
-        inverse_tokens = {
-            "inv": "inv",
-            "neg": "neg",
-            "exp": "log",
-            "log": "exp",
-            "sqrt": "n2",
-            "n2": "sqrt"
-        }
-        token_from_name = {t.name: i for i, t in enumerate(self.tokens)}
-        self.inverse_tokens = {token_from_name[k]: token_from_name[v] for k, v in inverse_tokens.items() if
-                               k in token_from_name and v in token_from_name}
-
-        self.n_action_inputs = self.L + 1  # Library tokens + empty token
-        self.n_parent_inputs = self.L + 1 - len(self.terminal_tokens)  # Parent sub-lib tokens + empty token
-        self.n_sibling_inputs = self.L + 1  # Library tokens + empty token
-        self.EMPTY_ACTION = self.n_action_inputs - 1
-        self.EMPTY_PARENT = self.n_parent_inputs - 1
-        self.EMPTY_SIBLING = self.n_sibling_inputs - 1
 
     def print_library(self):
         print('============== LIBRARY ==============')
@@ -401,21 +324,20 @@ class sciLibrary(object):
             try:
                 i = self.names.index(val)
             except ValueError:
-                raise TokenNotFoundError("Token {} does not exist.".format(val))
+                raise ModuleNotFoundError("sciToken {} does not exist.".format(val))
         elif isinstance(val, (int, np.integer)):
             i = val
         else:
-            raise TokenNotFoundError("Library must be indexed by str or int, not {}.".format(type(val)))
+            raise ModuleNotFoundError("sciLibrary must be indexed by str or int, not {}.".format(type(val)))
 
         try:
             token = self.tokens[i]
         except IndexError:
-            raise TokenNotFoundError("Token index {} does not exist".format(i))
+            raise ModuleNotFoundError("sciToken index {} does not exist".format(i))
         return token
 
     def tokenize(self, inputs):
         """Convert inputs to list of Tokens."""
-
         if isinstance(inputs, str):
             inputs = inputs.split(',')
         elif not isinstance(inputs, list) and not isinstance(inputs, np.ndarray):
@@ -424,21 +346,13 @@ class sciLibrary(object):
         return tokens
 
     def actionize(self, inputs):
-        """Convert inputs to array of 'actions', i.e. ints corresponding to
-        Tokens in the Library."""
-
+        """Convert inputs to array of 'actions', i.e. ints corresponding to Tokens in the Library."""
         tokens = self.tokenize(inputs)
         actions = np.array([self.tokens.index(t) for t in tokens], dtype=np.int32)
         return actions
 
 
-class TokenNotFoundError(Exception):
-    pass
-
-
 GAMMA = 0.57721566490153286060651209008240243104215933593992
-
-"""Define custom unprotected operators"""
 
 
 def logabs(x1):
@@ -601,18 +515,9 @@ BINARY_TOKENS = set([op.name for op in function_map.values() if op.arity == 2])
 def create_tokens(n_input_var: int, function_set: List, protected) -> List:
     """
     Helper function to create Tokens.
-
-    Parameters
-    ----------
-    n_input_var : int
-        Number of input variable Tokens.
-
-    function_set : list
-        Names of registered Tokens, or floats that will create new Tokens.
-
-    protected : bool
-        Whether to use protected versions of registered Tokens.
-
+    n_input_var : int. Number of input variable Tokens.
+    function_set : list. Names of registered Tokens, or floats that will create new Tokens.
+    protected : bool. Whether to use protected versions of registered Tokens.
     """
 
     tokens = []
@@ -632,11 +537,9 @@ def create_tokens(n_input_var: int, function_set: List, protected) -> List:
                     op = protected_op
 
             token = function_map[op]
-
         # Hard-coded floating-point constant
         elif op == 'const':
             token = PlaceholderConstant(1.0)
-
         else:
             raise ValueError("Operation {} not recognized.".format(op))
 
@@ -780,9 +683,7 @@ def python_execute(traversal, X):
 
     Parameters
     ----------
-    X : array-like, shape = [n_samples, n_features]
-        Training vectors, where n_samples is the number of samples and
-        n_features is the number of features.
+    X : array-like, shape = [n_samples, n_features], where n_samples is the number of samples and n_features is the number of features.
 
     Returns
     -------

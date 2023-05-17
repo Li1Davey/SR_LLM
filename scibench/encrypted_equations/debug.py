@@ -1,6 +1,17 @@
 from encrypt_equations import to_binary_expr_tree
 import sympy
 
+GRAVITATIONAL_CONSTANT = 6.67430e-11
+GRAVITATIONAL_ACCELERATION = 9.80665
+SPEED_OF_LIGHT = 2.99792458e8
+ELECTRIC_CONSTANT = 8.854e-12
+PLANCK_CONSTANT = 6.626e-34
+BOLTZMANN_CONSTANT = 1.380649e-23
+BOHR_MAGNETON = 9.2740100783e-24
+DIRAC_CONSTANT = 1.054571817e-34
+ELECTRON_MASS = 9.10938356e-31
+FINE_STRUCTURE_CONSTANT = 7.2973525693e-3
 x = sympy.symbols("X_0 X_1")
-expr = sympy.exp(-(x[0] / x[1]) ** 2 / 2) / (sympy.sqrt(2 * sympy.pi) * x[1])
-to_binary_expr_tree(expr)
+expr = sympy.sin(x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))) ** 2
+out = to_binary_expr_tree(expr)
+print(out)
