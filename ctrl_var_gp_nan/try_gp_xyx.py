@@ -1,6 +1,5 @@
 import functions
 from library import Library, Token, PlaceholderConstant
-import execute
 import argparse
 from program import Program
 import regress_task
@@ -8,31 +7,29 @@ from const import ScipyMinimize
 from symbolic_equation_evaluator_public import Equation_evaluator
 
 import gp_xyx
-import gen_true_program
 
 import numpy as np
-# np.random.seed(42)
 import random
-# random.seed(42)
 import time
 
 averaged_var_y = 10  # 569
 
-config = {'neg_mse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.01},
-          'neg_nmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.01 / averaged_var_y},
-          'neg_nrmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': np.sqrt(0.01 / averaged_var_y)},
-          'neg_rmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.1},
-          'inv_mse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': -1 / (1 + 0.01)},
-          'inv_nmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': -1 / (1 + 0.01 / averaged_var_y)},
-          'inv_nrmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': -1 / (1 + np.sqrt(0.01 / averaged_var_y))},
-          }
+config = {
+    'neg_mse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.01},
+    'neg_nmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.01 / averaged_var_y},
+    'neg_nrmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': np.sqrt(0.01 / averaged_var_y)},
+    'neg_rmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.1},
+    'inv_mse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': -1 / (1 + 0.01)},
+    'inv_nmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': -1 / (1 + 0.01 / averaged_var_y)},
+    'inv_nrmse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': -1 / (1 + np.sqrt(0.01 / averaged_var_y))},
+}
 
 
 def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     nvar = data_query_oracle.get_nvars()
-    
-    regress_batchsize = 256
+
+    regress_batchsize = 4
     opt_num_expr = 5
 
     expr_obj_thres = config[metric_name]['expr_obj_thres']

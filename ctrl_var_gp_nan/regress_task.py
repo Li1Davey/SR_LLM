@@ -51,11 +51,11 @@ class RegressTaskV1(object):
     def reward_function_fixed_data(self, p):
         y_hat = p.execute(self.X)
 
-        return self.data_query_oracle.evaluate_loss(self.X, y_hat)
+        return self.data_query_oracle._evaluate_loss(self.X, y_hat)
 
     def reward_function_fixed_data_all_metrics(self, p):
         y_hat = p.execute(self.X)
-        dict_of_result = self.data_query_oracle.evaluate_all_losses(self.X, y_hat)
+        dict_of_result = self.data_query_oracle._evaluate_all_losses(self.X, y_hat)
         return dict_of_result
 
     def reward_function(self, p):
@@ -65,4 +65,4 @@ class RegressTaskV1(object):
         # fixec colum coresponds to the fixed random variables. every time you use the same value
         X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
         y_hat = p.execute(X)
-        return self.data_query_oracle.evaluate_loss(X, y_hat)
+        return self.data_query_oracle._evaluate_loss(X, y_hat)
