@@ -55,9 +55,6 @@ class FeynmanICh6Eq20(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.exp(-(x[0] / x[1]) ** 2 / 2) / (sympy.sqrt(2 * sympy.pi) * x[1])
 
-    def eq_func(self, x):
-        return np.exp(-(x[0] / x[1]) ** 2 / 2) / (np.sqrt(2 * np.pi) * x[1])
-
 
 @register_feynman_eq_class
 class FeynmanICh6Eq20a(KnownEquation):
@@ -76,9 +73,6 @@ class FeynmanICh6Eq20a(KnownEquation):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = sympy.exp(-x[0] ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
-
-    def eq_func(self, x):
-        return np.exp(-x[0] ** 2 / 2) / np.sqrt(2 * np.pi)
 
 
 @register_feynman_eq_class
@@ -102,9 +96,6 @@ class FeynmanICh6Eq20b(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.exp(-((x[0] - x[1]) / x[2]) ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
 
-    def eq_func(self, x):
-        return np.exp(-((x[0] - x[1]) / x[2]) ** 2 / 2) / (np.sqrt(2 * np.pi) * x[2])
-
 
 @register_feynman_eq_class
 class FeynmanICh8Eq14(KnownEquation):
@@ -126,9 +117,6 @@ class FeynmanICh8Eq14(KnownEquation):
         super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = sympy.sqrt((x[0] - x[1]) ** 2 + (x[2] - x[3]) ** 2)
-
-    def eq_func(self, x):
-        return np.sqrt((x[0] - x[1]) ** 2 + (x[2] - x[3]) ** 2)
 
 
 @register_feynman_eq_class
@@ -158,9 +146,6 @@ class FeynmanICh9Eq18(KnownEquation):
         self.sympy_eq = \
             GRAVITATIONAL_CONSTANT * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)
 
-    def eq_func(self, x):
-        return GRAVITATIONAL_CONSTANT * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanICh10Eq7(KnownEquation):
@@ -181,9 +166,6 @@ class FeynmanICh10Eq7(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return x[0] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -209,9 +191,6 @@ class FeynmanICh11Eq19(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] + x[2] * x[3] + x[4] * x[5]
 
-    def eq_func(self, x):
-        return x[0] * x[1] + x[2] * x[3] + x[4] * x[5]
-
 
 @register_feynman_eq_class
 class FeynmanICh12Eq1(KnownEquation):
@@ -231,9 +210,6 @@ class FeynmanICh12Eq1(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] * x[1]
-
-    def eq_func(self, x):
-        return x[0] * x[1]
 
 
 @register_feynman_eq_class
@@ -257,9 +233,6 @@ class FeynmanICh12Eq2(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[2] ** 3)
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / (4 * np.pi * ELECTRIC_CONSTANT * x[2] ** 3)
-
 
 @register_feynman_eq_class
 class FeynmanICh12Eq4(KnownEquation):
@@ -281,9 +254,6 @@ class FeynmanICh12Eq4(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] ** 3)
 
-    def eq_func(self, x):
-        return x[0] * x[1] / (4 * np.pi * ELECTRIC_CONSTANT * x[1] ** 3)
-
 
 @register_feynman_eq_class
 class FeynmanICh12Eq5(KnownEquation):
@@ -303,9 +273,6 @@ class FeynmanICh12Eq5(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] * x[1]
-
-    def eq_func(self, x):
-        return x[0] * x[1]
 
 
 @register_feynman_eq_class
@@ -330,9 +297,6 @@ class FeynmanICh12Eq11(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * (x[1] + x[2] * x[3] * sympy.sin(x[4]))
 
-    def eq_func(self, x):
-        return x[0] * (x[1] + x[2] * x[3] * np.sin(x[4]))
-
 
 @register_feynman_eq_class
 class FeynmanICh13Eq4(KnownEquation):
@@ -354,9 +318,6 @@ class FeynmanICh13Eq4(KnownEquation):
         super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
-
-    def eq_func(self, x):
-        return 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
 
 @register_feynman_eq_class
@@ -382,9 +343,6 @@ class FeynmanICh13Eq12(KnownEquation):
         x = self.x
         self.sympy_eq = GRAVITATIONAL_CONSTANT * x[0] * x[1] * (1 / x[2] - 1 / x[3])
 
-    def eq_func(self, x):
-        return GRAVITATIONAL_CONSTANT * x[0] * x[1] * (1 / x[2] - 1 / x[3])
-
 
 @register_feynman_eq_class
 class FeynmanICh14Eq3(KnownEquation):
@@ -404,9 +362,6 @@ class FeynmanICh14Eq3(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = GRAVITATIONAL_ACCELERATION * x[0] * x[1]
-
-    def eq_func(self, x):
-        return GRAVITATIONAL_ACCELERATION * x[0] * x[1]
 
 
 @register_feynman_eq_class
@@ -428,9 +383,6 @@ class FeynmanICh14Eq4(KnownEquation):
         x = self.x
         self.sympy_eq = 1 / 2 * x[0] * x[1] ** 2
 
-    def eq_func(self, x):
-        return 1 / 2 * x[0] * x[1] ** 2
-
 
 @register_feynman_eq_class
 class FeynmanICh15Eq10(KnownEquation):
@@ -451,9 +403,6 @@ class FeynmanICh15Eq10(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return x[0] * x[1] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -477,9 +426,6 @@ class FeynmanICh15Eq3t(KnownEquation):
         x = self.x
         self.sympy_eq = (x[0] - x[1] * x[2] / SPEED_OF_LIGHT ** 2) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return (x[0] - x[1] * x[2] / SPEED_OF_LIGHT ** 2) / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanICh15Eq3x(KnownEquation):
@@ -502,9 +448,6 @@ class FeynmanICh15Eq3x(KnownEquation):
         x = self.x
         self.sympy_eq = (x[0] - x[1] * x[2]) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return (x[0] - x[1] * x[2]) / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanICh16Eq6(KnownEquation):
@@ -525,9 +468,6 @@ class FeynmanICh16Eq6(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = (x[0] + x[1]) / (1 + x[0] * x[1] / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return (x[0] + x[1]) / (1 + x[0] * x[1] / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -552,9 +492,6 @@ class FeynmanICh18Eq4(KnownEquation):
         x = self.x
         self.sympy_eq = (x[0] * x[1] + x[2] * x[3]) / (x[0] + x[2])
 
-    def eq_func(self, x):
-        return (x[0] * x[1] + x[2] * x[3]) / (x[0] + x[2])
-
 
 @register_feynman_eq_class
 class FeynmanICh18Eq12(KnownEquation):
@@ -575,9 +512,6 @@ class FeynmanICh18Eq12(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * x[1] * sympy.sin(x[2])
-
-    def eq_func(self, x):
-        return x[0] * x[1] * np.sin(x[2])
 
 
 @register_feynman_eq_class
@@ -601,9 +535,6 @@ class FeynmanICh18Eq16(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] * sympy.sin(x[3])
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] * np.sin(x[3])
-
 
 @register_feynman_eq_class
 class FeynmanICh24Eq6(KnownEquation):
@@ -626,9 +557,6 @@ class FeynmanICh24Eq6(KnownEquation):
         x = self.x
         self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2) * 1 / 2 * x[3] ** 2
 
-    def eq_func(self, x):
-        return 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2) * 1 / 2 * x[3] ** 2
-
 
 @register_feynman_eq_class
 class FeynmanICh25Eq13(KnownEquation):
@@ -649,9 +577,6 @@ class FeynmanICh25Eq13(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / x[1]
-
-    def eq_func(self, x):
-        return x[0] / x[1]
 
 
 @register_feynman_eq_class
@@ -674,9 +599,6 @@ class FeynmanICh26Eq2(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = sympy.sin(x[0]) / sympy.sin(x[1])
-
-    def eq_func(self, x):
-        return np.sin(x[0]) / np.sin(x[1])
 
 
 @register_feynman_eq_class
@@ -701,9 +623,6 @@ class FeynmanICh27Eq6(KnownEquation):
         x = self.x
         self.sympy_eq = 1 / (1 / x[0] + x[1] / x[2])
 
-    def eq_func(self, x):
-        return 1 / (1 / x[0] + x[1] / x[2])
-
 
 @register_feynman_eq_class
 class FeynmanICh29Eq4(KnownEquation):
@@ -722,9 +641,6 @@ class FeynmanICh29Eq4(KnownEquation):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = x[0] / SPEED_OF_LIGHT
-
-    def eq_func(self, x):
-        return x[0] / SPEED_OF_LIGHT
 
 
 @register_feynman_eq_class
@@ -748,9 +664,6 @@ class FeynmanICh29Eq16(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.sqrt(x[0] ** 2 + x[1] ** 2 + 2 * x[0] * x[1] * sympy.cos(x[2] - x[3]))
 
-    def eq_func(self, x):
-        return np.sqrt(x[0] ** 2 + x[1] ** 2 + 2 * x[0] * x[1] * np.cos(x[2] - x[3]))
-
 
 @register_feynman_eq_class
 class FeynmanICh30Eq3(KnownEquation):
@@ -772,9 +685,6 @@ class FeynmanICh30Eq3(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * sympy.sin(x[1] * x[2] / 2) ** 2 / sympy.sin(x[2] / 2) ** 2
-
-    def eq_func(self, x):
-        return x[0] * np.sin(x[1] * x[2] / 2) ** 2 / np.sin(x[2] / 2) ** 2
 
 
 @register_feynman_eq_class
@@ -800,9 +710,6 @@ class FeynmanICh30Eq5(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] / (x[1] * sympy.sin(x[2]))
 
-    def eq_func(self, x):
-        return x[0] / (x[1] * np.sin(x[2]))
-
 
 @register_feynman_eq_class
 class FeynmanICh32Eq5(KnownEquation):
@@ -824,9 +731,6 @@ class FeynmanICh32Eq5(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] ** 2 * x[1] ** 2 / (6 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 3)
-
-    def eq_func(self, x):
-        return x[0] ** 2 * x[1] ** 2 / (6 * np.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 3)
 
 
 @register_feynman_eq_class
@@ -852,10 +756,6 @@ class FeynmanICh32Eq17(KnownEquation):
         self.sympy_eq = (1 / 2 * ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2) \
                         * (8 * sympy.pi * x[1] ** 2 / 3) * (x[2] ** 4 / (x[2] ** 2 - x[3] ** 2) ** 2)
 
-    def eq_func(self, x):
-        return (1 / 2 * ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2) \
-            * (8 * np.pi * x[1] ** 2 / 3) * (x[2] ** 4 / (x[2] ** 2 - x[3] ** 2) ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanICh34Eq10(KnownEquation):
@@ -876,9 +776,6 @@ class FeynmanICh34Eq10(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / (1 - x[1] / SPEED_OF_LIGHT)
-
-    def eq_func(self, x):
-        return x[0] / (1 - x[1] / SPEED_OF_LIGHT)
 
 
 @register_feynman_eq_class
@@ -903,9 +800,6 @@ class FeynmanICh34Eq8(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / x[3]
-
 
 @register_feynman_eq_class
 class FeynmanICh34Eq14(KnownEquation):
@@ -928,9 +822,6 @@ class FeynmanICh34Eq14(KnownEquation):
         x = self.x
         self.sympy_eq = (1 + x[0] / SPEED_OF_LIGHT) / sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1]
 
-    def eq_func(self, x):
-        return (1 + x[0] / x[1]) / np.sqrt(1 - x[0] ** 2 / x[1] ** 2) * x[1]
-
 
 @register_feynman_eq_class
 class FeynmanICh34Eq27(KnownEquation):
@@ -949,9 +840,6 @@ class FeynmanICh34Eq27(KnownEquation):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) * x[0]
-
-    def eq_func(self, x):
-        return (PLANCK_CONSTANT / (2 * np.pi)) * x[0]
 
 
 @register_feynman_eq_class
@@ -975,9 +863,6 @@ class FeynmanICh37Eq4(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] + x[1] + 2 * sympy.sqrt(x[0] * x[1]) * sympy.cos(x[2])
 
-    def eq_func(self, x):
-        return x[0] + x[1] + 2 * np.sqrt(x[0] * x[1]) * np.cos(x[2])
-
 
 @register_feynman_eq_class
 class FeynmanICh38Eq12(KnownEquation):
@@ -1000,9 +885,6 @@ class FeynmanICh38Eq12(KnownEquation):
         x = self.x
         self.sympy_eq = 4 * sympy.pi * ELECTRIC_CONSTANT * (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (x[0] * x[1] ** 2)
 
-    def eq_func(self, x):
-        return 4 * np.pi * ELECTRIC_CONSTANT * (PLANCK_CONSTANT / (2 * np.pi)) ** 2 / (x[0] * x[1] ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanICh39Eq10(KnownEquation):
@@ -1022,9 +904,6 @@ class FeynmanICh39Eq10(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = 3 / 2 * x[0] * x[1]
-
-    def eq_func(self, x):
-        return 3 / 2 * x[0] * x[1]
 
 
 @register_feynman_eq_class
@@ -1048,9 +927,6 @@ class FeynmanICh39Eq11(KnownEquation):
         x = self.x
         self.sympy_eq = 1 / (x[0] - 1) * x[1] * x[2]
 
-    def eq_func(self, x):
-        return 1 / (x[0] - 1) * x[1] * x[2]
-
 
 @register_feynman_eq_class
 class FeynmanICh39Eq22(KnownEquation):
@@ -1072,9 +948,6 @@ class FeynmanICh39Eq22(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] / x[2]
-
-    def eq_func(self, x):
-        return x[0] * BOLTZMANN_CONSTANT * x[1] / x[2]
 
 
 @register_feynman_eq_class
@@ -1099,9 +972,6 @@ class FeynmanICh40Eq1(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * sympy.exp(-x[1] * GRAVITATIONAL_ACCELERATION * x[2] / (BOLTZMANN_CONSTANT * x[3]))
 
-    def eq_func(self, x):
-        return x[0] * np.exp(-x[1] * GRAVITATIONAL_ACCELERATION * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-
 
 @register_feynman_eq_class
 class FeynmanICh41Eq16(KnownEquation):
@@ -1123,10 +993,6 @@ class FeynmanICh41Eq16(KnownEquation):
         x = self.x
         self.sympy_eq = PLANCK_CONSTANT / (2 * sympy.pi) * x[0] ** 3 / (sympy.pi ** 2 * SPEED_OF_LIGHT ** 2 * (
                 sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1))
-
-    def eq_func(self, x):
-        return PLANCK_CONSTANT / (2 * np.pi) * x[0] ** 3 / (
-                np.pi ** 2 * SPEED_OF_LIGHT ** 2 * (np.exp((PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1))
 
 
 @register_feynman_eq_class
@@ -1151,9 +1017,6 @@ class FeynmanICh43Eq16(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / x[3]
-
 
 @register_feynman_eq_class
 class FeynmanICh43Eq31(KnownEquation):
@@ -1173,9 +1036,6 @@ class FeynmanICh43Eq31(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1]
-
-    def eq_func(self, x):
-        return x[0] * BOLTZMANN_CONSTANT * x[1]
 
 
 @register_feynman_eq_class
@@ -1199,9 +1059,6 @@ class FeynmanICh43Eq43(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 1 / (x[0] - 1) * BOLTZMANN_CONSTANT * x[1] / x[2]
-
-    def eq_func(self, x):
-        return 1 / (x[0] - 1) * BOLTZMANN_CONSTANT * x[1] / x[2]
 
 
 @register_feynman_eq_class
@@ -1227,9 +1084,6 @@ class FeynmanICh44Eq4(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] * sympy.log(x[2] / x[3])
 
-    def eq_func(self, x):
-        return x[0] * BOLTZMANN_CONSTANT * x[1] * np.log(x[2] / x[3])
-
 
 @register_feynman_eq_class
 class FeynmanICh47Eq23(KnownEquation):
@@ -1253,9 +1107,6 @@ class FeynmanICh47Eq23(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.sqrt(x[0] * x[1] / x[2])
 
-    def eq_func(self, x):
-        return np.sqrt(x[0] * x[1] / x[2])
-
 
 @register_feynman_eq_class
 class FeynmanICh48Eq2(KnownEquation):
@@ -1276,9 +1127,6 @@ class FeynmanICh48Eq2(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] * SPEED_OF_LIGHT ** 2 / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return x[0] * SPEED_OF_LIGHT ** 2 / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -1301,9 +1149,6 @@ class FeynmanICh50Eq26(KnownEquation):
         super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * (sympy.cos(x[1] * x[2]) + x[3] * sympy.cos(x[1] * x[2]) ** 2)
-
-    def eq_func(self, x):
-        return x[0] * (np.cos(x[1] * x[2]) + x[3] * np.cos(x[1] * x[2]) ** 2)
 
 
 @register_feynman_eq_class
@@ -1329,9 +1174,6 @@ class FeynmanIICh2Eq42(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * (x[1] - x[2]) * x[3] / x[4]
 
-    def eq_func(self, x):
-        return x[0] * (x[1] - x[2]) * x[3] / x[4]
-
 
 @register_feynman_eq_class
 class FeynmanIICh3Eq24(KnownEquation):
@@ -1352,9 +1194,6 @@ class FeynmanIICh3Eq24(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / (4 * sympy.pi * x[1] ** 2)
-
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * x[1] ** 2)
 
 
 @register_feynman_eq_class
@@ -1377,9 +1216,6 @@ class FeynmanIICh4Eq23(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
 
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT * x[1])
-
 
 @register_feynman_eq_class
 class FeynmanIICh6Eq11(KnownEquation):
@@ -1401,9 +1237,6 @@ class FeynmanIICh6Eq11(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT) * x[0] * sympy.cos(x[1]) / x[2] ** 2
-
-    def eq_func(self, x):
-        return 1 / (4 * np.pi * ELECTRIC_CONSTANT) * x[0] * np.cos(x[1]) / x[2] ** 2
 
 
 @register_feynman_eq_class
@@ -1430,9 +1263,6 @@ class FeynmanIICh6Eq15a(KnownEquation):
         self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT) \
                         * 3 * x[1] / x[2] ** 5 * sympy.sqrt(x[3] ** 2 + x[4] ** 2)
 
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT) * 3 * x[1] / x[2] ** 5 * np.sqrt(x[3] ** 2 + x[4] ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanIICh6Eq15b(KnownEquation):
@@ -1455,9 +1285,6 @@ class FeynmanIICh6Eq15b(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT) * 3 * sympy.cos(x[1]) * sympy.sin(x[1]) / x[2] ** 3
 
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT) * 3 * np.cos(x[1]) * np.sin(x[1]) / x[2] ** 3
-
 
 @register_feynman_eq_class
 class FeynmanIICh8Eq7(KnownEquation):
@@ -1479,9 +1306,6 @@ class FeynmanIICh8Eq7(KnownEquation):
         x = self.x
         self.sympy_eq = 3 / 5 * x[0] ** 2 / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
 
-    def eq_func(self, x):
-        return 3 / 5 * x[0] ** 2 / (4 * np.pi * ELECTRIC_CONSTANT * x[1])
-
 
 @register_feynman_eq_class
 class FeynmanIICh8Eq31(KnownEquation):
@@ -1500,9 +1324,6 @@ class FeynmanIICh8Eq31(KnownEquation):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2 / 2
-
-    def eq_func(self, x):
-        return ELECTRIC_CONSTANT * x[0] ** 2 / 2
 
 
 @register_feynman_eq_class
@@ -1524,9 +1345,6 @@ class FeynmanIICh10Eq9(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / ELECTRIC_CONSTANT * 1 / (1 + x[1])
-
-    def eq_func(self, x):
-        return x[0] / ELECTRIC_CONSTANT * 1 / (1 + x[1])
 
 
 @register_feynman_eq_class
@@ -1553,9 +1371,6 @@ class FeynmanIICh11Eq3(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] / (x[2] * (x[3] ** 2 - x[4] ** 2))
 
-    def eq_func(self, x):
-        return x[0] * x[1] / (x[2] * (x[3] ** 2 - x[4] ** 2))
-
 
 @register_feynman_eq_class
 class FeynmanIICh11Eq17(KnownEquation):
@@ -1580,9 +1395,6 @@ class FeynmanIICh11Eq17(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * (1 + x[1] * x[2] * sympy.cos(x[3]) / (BOLTZMANN_CONSTANT * x[4]))
 
-    def eq_func(self, x):
-        return x[0] * (1 + x[1] * x[2] * np.cos(x[3]) / (BOLTZMANN_CONSTANT * x[4]))
-
 
 @register_feynman_eq_class
 class FeynmanIICh11Eq20(KnownEquation):
@@ -1606,9 +1418,6 @@ class FeynmanIICh11Eq20(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] ** 2 * x[2] / (3 * BOLTZMANN_CONSTANT * x[3])
 
-    def eq_func(self, x):
-        return x[0] * x[1] ** 2 * x[2] / (3 * BOLTZMANN_CONSTANT * x[3])
-
 
 @register_feynman_eq_class
 class FeynmanIICh11Eq27(KnownEquation):
@@ -1631,9 +1440,6 @@ class FeynmanIICh11Eq27(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] / (1 - (x[0] * x[1] / 3)) * ELECTRIC_CONSTANT * x[2]
 
-    def eq_func(self, x):
-        return x[0] * x[1] / (1 - (x[0] * x[1] / 3)) * ELECTRIC_CONSTANT * x[2]
-
 
 @register_feynman_eq_class
 class FeynmanIICh11Eq28(KnownEquation):
@@ -1654,9 +1460,6 @@ class FeynmanIICh11Eq28(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = 1 + x[0] * x[1] / (1 - (x[0] * x[1] / 3))
-
-    def eq_func(self, x):
-        return 1 + x[0] * x[1] / (1 - (x[0] * x[1] / 3))
 
 
 @register_feynman_eq_class
@@ -1679,9 +1482,6 @@ class FeynmanIICh13Eq17(KnownEquation):
         x = self.x
         self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2) * 2 * x[0] / x[1]
 
-    def eq_func(self, x):
-        return 1 / (4 * np.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2) * 2 * x[0] / x[1]
-
 
 @register_feynman_eq_class
 class FeynmanIICh13Eq23(KnownEquation):
@@ -1702,9 +1502,6 @@ class FeynmanIICh13Eq23(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
-    def eq_func(self, x):
-        return x[0] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
 @register_feynman_eq_class
@@ -1727,9 +1524,6 @@ class FeynmanIICh13Eq34(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
-    def eq_func(self, x):
-        return x[0] * x[1] / np.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanIICh15Eq4(KnownEquation):
@@ -1751,9 +1545,6 @@ class FeynmanIICh15Eq4(KnownEquation):
         x = self.x
         self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
 
-    def eq_func(self, x):
-        return -x[0] * x[1] * np.cos(x[2])
-
 
 @register_feynman_eq_class
 class FeynmanIICh15Eq5(KnownEquation):
@@ -1774,9 +1565,6 @@ class FeynmanIICh15Eq5(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
-
-    def eq_func(self, x):
-        return -x[0] * x[1] * np.cos(x[2])
 
 
 @register_feynman_eq_class
@@ -1801,9 +1589,6 @@ class FeynmanIICh21Eq32(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] * (1 - x[2] / SPEED_OF_LIGHT))
 
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * ELECTRIC_CONSTANT * x[1] * (1 - x[2] / SPEED_OF_LIGHT))
-
 
 @register_feynman_eq_class
 class FeynmanIICh24Eq17(KnownEquation):
@@ -1826,9 +1611,6 @@ class FeynmanIICh24Eq17(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.sqrt(x[0] ** 2 / SPEED_OF_LIGHT ** 2 - sympy.pi ** 2 / x[1] ** 2)
 
-    def eq_func(self, x):
-        return np.sqrt(x[0] ** 2 / SPEED_OF_LIGHT ** 2 - np.pi ** 2 / x[1] ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanIICh27Eq16(KnownEquation):
@@ -1848,9 +1630,6 @@ class FeynmanIICh27Eq16(KnownEquation):
         x = self.x
         self.sympy_eq = ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2
 
-    def eq_func(self, x):
-        return ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2
-
 
 @register_feynman_eq_class
 class FeynmanIICh27Eq18(KnownEquation):
@@ -1869,9 +1648,6 @@ class FeynmanIICh27Eq18(KnownEquation):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2
-
-    def eq_func(self, x):
-        return ELECTRIC_CONSTANT * x[0] ** 2
 
 
 @register_feynman_eq_class
@@ -1895,9 +1671,6 @@ class FeynmanIICh34Eq2a(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] / (2 * sympy.pi * x[2])
 
-    def eq_func(self, x):
-        return x[0] * x[1] / (2 * np.pi * x[2])
-
 
 @register_feynman_eq_class
 class FeynmanIICh34Eq2(KnownEquation):
@@ -1918,9 +1691,6 @@ class FeynmanIICh34Eq2(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / 2
-
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / 2
 
 
 @register_feynman_eq_class
@@ -1945,9 +1715,6 @@ class FeynmanIICh34Eq11(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / (2 * x[3])
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / (2 * x[3])
-
 
 @register_feynman_eq_class
 class FeynmanIICh34Eq29a(KnownEquation):
@@ -1969,9 +1736,6 @@ class FeynmanIICh34Eq29a(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * PLANCK_CONSTANT / (4 * sympy.pi * x[1])
 
-    def eq_func(self, x):
-        return x[0] * PLANCK_CONSTANT / (4 * np.pi * x[1])
-
 
 @register_feynman_eq_class
 class FeynmanIICh34Eq29b(KnownEquation):
@@ -1992,9 +1756,6 @@ class FeynmanIICh34Eq29b(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * BOHR_MAGNETON * x[1] * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
-
-    def eq_func(self, x):
-        return x[0] * BOHR_MAGNETON * x[1] * x[2] / (PLANCK_CONSTANT / (2 * np.pi))
 
 
 @register_feynman_eq_class
@@ -2020,10 +1781,6 @@ class FeynmanIICh35Eq18(KnownEquation):
         self.sympy_eq = x[0] / (sympy.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
                                 + sympy.exp(-x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])))
 
-    def eq_func(self, x):
-        return x[0] / (np.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-                       + np.exp(-x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])))
-
 
 @register_feynman_eq_class
 class FeynmanIICh35Eq21(KnownEquation):
@@ -2046,9 +1803,6 @@ class FeynmanIICh35Eq21(KnownEquation):
         super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * x[1] * sympy.tanh(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-
-    def eq_func(self, x):
-        return x[0] * x[1] * np.tanh(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
 
 
 @register_feynman_eq_class
@@ -2075,10 +1829,6 @@ class FeynmanIICh36Eq38(KnownEquation):
         self.sympy_eq = x[0] * x[1] / (BOLTZMANN_CONSTANT * x[2]) + (x[0] * x[3]) / (
                 ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2 * BOLTZMANN_CONSTANT * x[2]) * x[4]
 
-    def eq_func(self, x):
-        return x[0] * x[1] / (BOLTZMANN_CONSTANT * x[2]) + (x[0] * x[3]) / (
-                ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2 * BOLTZMANN_CONSTANT * x[2]) * x[4]
-
 
 @register_feynman_eq_class
 class FeynmanIICh37Eq1(KnownEquation):
@@ -2099,9 +1849,6 @@ class FeynmanIICh37Eq1(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * (1 + x[1]) * x[2]
-
-    def eq_func(self, x):
-        return x[0] * (1 + x[1]) * x[2]
 
 
 @register_feynman_eq_class
@@ -2126,9 +1873,6 @@ class FeynmanIICh38Eq3(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
-    def eq_func(self, x):
-        return x[0] * x[1] * x[2] / x[3]
-
 
 @register_feynman_eq_class
 class FeynmanIICh38Eq14(KnownEquation):
@@ -2149,9 +1893,6 @@ class FeynmanIICh38Eq14(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / (2 * (1 + x[1]))
-
-    def eq_func(self, x):
-        return x[0] / (2 * (1 + x[1]))
 
 
 @register_feynman_eq_class
@@ -2174,9 +1915,6 @@ class FeynmanIIICh4Eq32(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = 1 / (sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
-
-    def eq_func(self, x):
-        return 1 / (np.exp((PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
 
 
 @register_feynman_eq_class
@@ -2201,9 +1939,6 @@ class FeynmanIIICh4Eq33(KnownEquation):
         self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (
                 sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
 
-    def eq_func(self, x):
-        return (PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (np.exp((PLANCK_CONSTANT / (2 * np.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
-
 
 @register_feynman_eq_class
 class FeynmanIIICh7Eq38(KnownEquation):
@@ -2224,9 +1959,6 @@ class FeynmanIIICh7Eq38(KnownEquation):
         x = self.x
         self.sympy_eq = 2 * x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))
 
-    def eq_func(self, x):
-        return 2 * x[0] * x[1] / (PLANCK_CONSTANT / (2 * np.pi))
-
 
 @register_feynman_eq_class
 class FeynmanIIICh8Eq54(KnownEquation):
@@ -2246,9 +1978,6 @@ class FeynmanIIICh8Eq54(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = sympy.sin(x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))) ** 2
-
-    def eq_func(self, x):
-        return np.sin(x[0] * x[1] / (PLANCK_CONSTANT / (2 * np.pi))) ** 2
 
 
 @register_feynman_eq_class
@@ -2276,10 +2005,6 @@ class FeynmanIIICh9Eq52(KnownEquation):
         self.sympy_eq = (x[0] * x[1] * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))) * sympy.sin((x[3] - x[4]) * x[2] / 2) ** 2 / (
                 (x[3] - x[4]) * x[2] / 2) ** 2
 
-    def eq_func(self, x):
-        return (x[0] * x[1] * x[2] / (PLANCK_CONSTANT / (2 * np.pi))) ** 2 * np.sin((x[3] - x[4]) * x[2] / 2) ** 2 / (
-                (x[3] - x[4]) * x[2] / 2) ** 2
-
 
 @register_feynman_eq_class
 class FeynmanIIICh10Eq19(KnownEquation):
@@ -2302,9 +2027,6 @@ class FeynmanIIICh10Eq19(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * sympy.sqrt(x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
-    def eq_func(self, x):
-        return x[0] * np.sqrt(x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanIIICh12Eq43(KnownEquation):
@@ -2323,9 +2045,6 @@ class FeynmanIIICh12Eq43(KnownEquation):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = x[0] * (PLANCK_CONSTANT / (2 * sympy.pi))
-
-    def eq_func(self, x):
-        return x[0] * (PLANCK_CONSTANT / (2 * np.pi))
 
 
 @register_feynman_eq_class
@@ -2347,9 +2066,6 @@ class FeynmanIIICh13Eq18(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 2 * x[0] * x[1] ** 2 * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
-
-    def eq_func(self, x):
-        return 2 * x[0] * x[1] ** 2 * x[2] / (PLANCK_CONSTANT / (2 * np.pi))
 
 
 @register_feynman_eq_class
@@ -2374,9 +2090,6 @@ class FeynmanIIICh14Eq14(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * (sympy.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])) - 1)
 
-    def eq_func(self, x):
-        return x[0] * (np.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])) - 1)
-
 
 @register_feynman_eq_class
 class FeynmanIIICh15Eq12(KnownEquation):
@@ -2397,9 +2110,6 @@ class FeynmanIIICh15Eq12(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 2 * x[0] * (1 - sympy.cos(x[1] * x[2]))
-
-    def eq_func(self, x):
-        return 2 * x[0] * (1 - np.cos(x[1] * x[2]))
 
 
 @register_feynman_eq_class
@@ -2422,9 +2132,6 @@ class FeynmanIIICh15Eq14(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (2 * x[0] * x[1] ** 2)
-
-    def eq_func(self, x):
-        return (PLANCK_CONSTANT / (2 * np.pi)) ** 2 / (2 * x[0] * x[1] ** 2)
 
 
 @register_feynman_eq_class
@@ -2449,9 +2156,6 @@ class FeynmanIIICh15Eq27(KnownEquation):
         x = self.x
         self.sympy_eq = 2 * sympy.pi * x[0] / (x[1] * x[2])
 
-    def eq_func(self, x):
-        return 2 * np.pi * x[0] / (x[1] * x[2])
-
 
 @register_feynman_eq_class
 class FeynmanIIICh17Eq37(KnownEquation):
@@ -2472,9 +2176,6 @@ class FeynmanIIICh17Eq37(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * (1 + x[1] * sympy.cos(x[2]))
-
-    def eq_func(self, x):
-        return x[0] * (1 + x[1] * np.cos(x[2]))
 
 
 @register_feynman_eq_class
@@ -2499,9 +2200,6 @@ class FeynmanIIICh19Eq51(KnownEquation):
         self.sympy_eq = -x[0] * x[1] ** 4 / (2 * (4 * sympy.pi * ELECTRIC_CONSTANT) ** 2 * (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2) * (
                 1 / x[2] ** 2)
 
-    def eq_func(self, x):
-        return -x[0] * x[1] ** 4 / (2 * (4 * np.pi * ELECTRIC_CONSTANT) ** 2 * (PLANCK_CONSTANT / (2 * np.pi)) ** 2) * (1 / x[2] ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanIIICh21Eq20(KnownEquation):
@@ -2524,9 +2222,6 @@ class FeynmanIIICh21Eq20(KnownEquation):
         super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = -x[0] * x[1] * x[2] / x[3]
-
-    def eq_func(self, x):
-        return -x[0] * x[1] * x[2] / x[3]
 
 
 @register_feynman_eq_class
@@ -2552,10 +2247,6 @@ class FeynmanBonus1(KnownEquation):
         x = self.x
         self.sympy_eq = (x[0] * x[1] * FINE_STRUCTURE_CONSTANT * DIRAC_CONSTANT * SPEED_OF_LIGHT
                          / (4 * x[2] * sympy.sin(x[3] / 2) ** 2)) ** 2
-
-    def eq_func(self, x):
-        return (x[0] * x[1] * FINE_STRUCTURE_CONSTANT * DIRAC_CONSTANT * SPEED_OF_LIGHT
-                / (4 * x[2] * np.sin(x[3] / 2) ** 2)) ** 2
 
 
 @register_feynman_eq_class
@@ -2584,9 +2275,6 @@ class FeynmanBonus2(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * x[1] / x[2] ** 2 * (1 + sympy.sqrt(1 + 2 * x[3] * x[2] ** 2 / (x[0] * x[1] ** 2)) * sympy.cos(x[4] - x[5]))
 
-    def eq_func(self, x):
-        return x[0] * x[1] / x[2] ** 2 * (1 + np.sqrt(1 + 2 * x[3] * x[2] ** 2 / (x[0] * x[1] ** 2)) * np.cos(x[4] - x[5]))
-
 
 @register_feynman_eq_class
 class FeynmanBonus3(KnownEquation):
@@ -2609,9 +2297,6 @@ class FeynmanBonus3(KnownEquation):
         super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * (1 - x[1] ** 2) / (1 + x[1] * sympy.cos(x[2] - x[3]))
-
-    def eq_func(self, x):
-        return x[0] * (1 - x[1] ** 2) / (1 + x[1] * np.cos(x[2] - x[3]))
 
 
 @register_feynman_eq_class
@@ -2639,9 +2324,6 @@ class FeynmanBonus4(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.sqrt(2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2)))
 
-    def eq_func(self, x):
-        return np.sqrt(2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2)))
-
 
 @register_feynman_eq_class
 class FeynmanBonus5(KnownEquation):
@@ -2665,9 +2347,6 @@ class FeynmanBonus5(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 2 * sympy.pi * x[0] ** (3 / 2) / sympy.sqrt(GRAVITATIONAL_CONSTANT * (x[1] + x[2]))
-
-    def eq_func(self, x):
-        return 2 * np.pi * x[0] ** (3 / 2) / np.sqrt(GRAVITATIONAL_CONSTANT * (x[1] + x[2]))
 
 
 @register_feynman_eq_class
@@ -2700,9 +2379,6 @@ class FeynmanBonus6(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.sqrt(1 + 2 * x[0] * x[1] * x[2] ** 2 / (x[3] * (x[4] * x[5] * x[6] ** 2) ** 2))
 
-    def eq_func(self, x):
-        return np.sqrt(1 + 2 * x[0] * x[1] * x[2] ** 2 / (x[3] * (x[4] * x[5] * x[6] ** 2) ** 2))
-
 
 @register_feynman_eq_class
 class FeynmanBonus7(KnownEquation):
@@ -2726,9 +2402,6 @@ class FeynmanBonus7(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.sqrt(8 * sympy.pi * GRAVITATIONAL_CONSTANT * x[0] / 3 - x[1] * SPEED_OF_LIGHT ** 2 / x[2] ** 2)
 
-    def eq_func(self, x):
-        return np.sqrt(8 * np.pi * GRAVITATIONAL_CONSTANT * x[0] / 3 - x[1] * SPEED_OF_LIGHT ** 2 / x[2] ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanBonus8(KnownEquation):
@@ -2749,9 +2422,6 @@ class FeynmanBonus8(KnownEquation):
         super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / (1 + x[0] / (ELECTRON_MASS * SPEED_OF_LIGHT ** 2) * (1 - sympy.cos(x[1])))
-
-    def eq_func(self, x):
-        return x[0] / (1 + x[0] / (ELECTRON_MASS * SPEED_OF_LIGHT ** 2) * (1 - np.cos(x[1])))
 
 
 @register_feynman_eq_class
@@ -2774,9 +2444,6 @@ class FeynmanBonus9(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = -32 / 5 * GRAVITATIONAL_CONSTANT ** 4 / SPEED_OF_LIGHT ** 5 * (x[0] * x[1]) ** 2 * (x[0] + x[1]) / x[2] ** 5
-
-    def eq_func(self, x):
-        return -32 / 5 * GRAVITATIONAL_CONSTANT ** 4 / SPEED_OF_LIGHT ** 5 * (x[0] * x[1]) ** 2 * (x[0] + x[1]) / x[2] ** 5
 
 
 @register_feynman_eq_class
@@ -2801,9 +2468,6 @@ class FeynmanBonus10(KnownEquation):
         x = self.x
         self.sympy_eq = (sympy.cos(x[0]) - x[1] / SPEED_OF_LIGHT) / (1 - x[1] / SPEED_OF_LIGHT * sympy.cos(x[0]))
 
-    def eq_func(self, x):
-        return (np.cos(x[0]) - x[1] / SPEED_OF_LIGHT) / (1 - x[1] / SPEED_OF_LIGHT * np.cos(x[0]))
-
 
 @register_feynman_eq_class
 class FeynmanBonus11(KnownEquation):
@@ -2825,9 +2489,6 @@ class FeynmanBonus11(KnownEquation):
         super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * (sympy.sin(x[1] / 2) * sympy.sin(x[2] * x[3] / 2) / (x[1] / 2 * sympy.sin(x[3] / 2))) ** 2
-
-    def eq_func(self, x):
-        return x[0] * (np.sin(x[1] / 2) * np.sin(x[2] * x[3] / 2) / (x[1] / 2 * np.sin(x[3] / 2))) ** 2
 
 
 @register_feynman_eq_class
@@ -2854,10 +2515,6 @@ class FeynmanBonus12(KnownEquation):
         self.sympy_eq = x[0] / (4 * sympy.pi * x[1] * x[2] ** 2) \
                         * (4 * sympy.pi * x[1] * x[3] * x[4] - x[0] * x[4] * x[2] ** 3 / (x[2] ** 2 - x[4] ** 2) ** 2)
 
-    def eq_func(self, x):
-        return x[0] / (4 * np.pi * x[1] * x[2] ** 2) \
-            * (4 * np.pi * x[1] * x[3] * x[4] - x[0] * x[4] * x[2] ** 3 / (x[2] ** 2 - x[4] ** 2) ** 2)
-
 
 @register_feynman_eq_class
 class FeynmanBonus13(KnownEquation):
@@ -2882,10 +2539,6 @@ class FeynmanBonus13(KnownEquation):
         x = self.x
         self.sympy_eq = 1 / (4 * sympy.pi * x[0]) * x[1] \
                         / sympy.sqrt(x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * sympy.cos(x[4]))
-
-    def eq_func(self, x):
-        return 1 / (4 * np.pi * ELECTRIC_CONSTANT) * x[1] \
-            / np.sqrt(x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * np.cos(x[4]))
 
 
 @register_feynman_eq_class
@@ -2912,9 +2565,6 @@ class FeynmanBonus14(KnownEquation):
         x = self.x
         self.sympy_eq = x[0] * sympy.cos(x[1]) * (-x[2] + x[3] ** 3 / x[2] ** 2 * (x[4] - 1) / (x[4] + 2))
 
-    def eq_func(self, x):
-        return x[0] * np.cos(x[1]) * (-x[2] + x[3] ** 3 / x[2] ** 2 * (x[4] - 1) / (x[4] + 2))
-
 
 @register_feynman_eq_class
 class FeynmanBonus15(KnownEquation):
@@ -2937,9 +2587,6 @@ class FeynmanBonus15(KnownEquation):
         super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1] / (1 + x[0] / SPEED_OF_LIGHT * sympy.cos(x[2]))
-
-    def eq_func(self, x):
-        return np.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1] / (1 + x[0] / SPEED_OF_LIGHT * np.cos(x[2]))
 
 
 @register_feynman_eq_class
@@ -2964,9 +2611,6 @@ class FeynmanBonus16(KnownEquation):
         x = self.x
         self.sympy_eq = sympy.sqrt((x[0] - x[1] * x[2]) ** 2 * SPEED_OF_LIGHT ** 2 + x[3] ** 2 * SPEED_OF_LIGHT ** 4) \
                         + x[1] * x[4]
-
-    def eq_func(self, x):
-        return np.sqrt((x[0] - x[1] * x[2]) ** 2 * SPEED_OF_LIGHT ** 2 + x[3] ** 2 * SPEED_OF_LIGHT ** 4) + x[1] * x[4]
 
 
 @register_feynman_eq_class
@@ -2993,9 +2637,6 @@ class FeynmanBonus17(KnownEquation):
         super().__init__(num_vars=6)
         x = self.x
         self.sympy_eq = 1 / (2 * x[0]) * (x[1] ** 2 + x[0] ** 2 * x[2] ** 2 * x[3] ** 2 * (1 + x[4] * x[3] / x[5]))
-
-    def eq_func(self, x):
-        return 1 / (2 * x[0]) * (x[1] ** 2 + x[0] ** 2 * x[2] ** 2 * x[3] ** 2 * (1 + x[4] * x[3] / x[5]))
 
 
 @register_feynman_eq_class

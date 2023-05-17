@@ -4,7 +4,8 @@ import scipy
 
 import json
 from cryptography.fernet import Fernet
-
+from sympy import Symbol
+from sympy import parse_expr
 
 from fractions import Fraction
 from collections import defaultdict
@@ -15,14 +16,14 @@ EQUATION_EXTENSION = ".in"
 
 
 class Equation_evaluator(object):
-    def __init__(self, true_equation_filename, noise_type='normal', noise_scale=0.1, metric_name="neg_nmse"):
+    def __init__(self, true_equation_filename, noise_type='normal', noise_scale=0.0, metric_name="neg_nmse"):
         '''
         true_equation_filename: the program to map from X to Y
         noise_type, noise_scale: the type and scale of noise.
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
 
-        self.true_equation, self.num_vars, self.function_set = self.__load_equation(true_equation_filename)
+        self.true_equation, self.num_vars, self.function_set, self.expr = self.__load_equation(true_equation_filename)
 
         # metric
         self.metric_name = metric_name
@@ -41,8 +42,14 @@ class Equation_evaluator(object):
         if not os.path.isfile(self.eq_name):
             raise FileNotFoundError(f"{self.eq_name} not found!")
 
-        one_equation = decrypt_equation(self.eq_name, key_filename="ecrypted_equation/public.key")
-        return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set']
+        one_equation = decrypt_equation(self.eq_name, key_filename="encrypted_equation/public.key")
+        num_vars = int(one_equation['num_vars'])
+        kwargs_list = [{'real': True} for _ in range(num_vars)]
+
+        assert len(kwargs_list) == num_vars
+        self.num_vars = num_vars
+        x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
+        return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set'], parse_expr(one_equation['expr'])
 
     def evaluate(self, X):
         # evaluate the y_true from given input X
@@ -53,8 +60,25 @@ class Equation_evaluator(object):
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
         y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
+        y_hat = self.get_symbolic_output(X)
+        for y_i, y_hat_i in zip(y_true, y_hat):
+            if np.abs(y_i - y_hat_i) > 1e-10:
+                raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
 
         return y_true
+
+    def get_symbolic_output(self, X_test):
+        var_x = self.expr.free_symbols
+        y_hat = np.zeros(X_test.shape[0])
+        for idx in range(X_test.shape[0]):
+            X = X_test[idx, :]
+            val_dict = {}
+            for x in var_x:
+                i = int(x.name[2:])
+                val_dict[x] = X[i]
+            y_hat[idx] = self.expr.evalf(subs=val_dict)
+
+        return y_hat
 
     def _evaluate_loss(self, X, y_pred):
         """
@@ -415,6 +439,8 @@ class TokenNotFoundError(Exception):
 GAMMA = 0.57721566490153286060651209008240243104215933593992
 
 """Define custom unprotected operators"""
+
+
 def logabs(x1):
     """Closure of log for non-positive arguments."""
     return np.log(np.abs(x1))
@@ -423,17 +449,22 @@ def logabs(x1):
 def expneg(x1):
     return np.exp(-x1)
 
+
 def n2(x1):
     return np.power(x1, 2)
+
 
 def n3(x1):
     return np.power(x1, 3)
 
+
 def n4(x1):
     return np.power(x1, 4)
 
+
 def n5(x1):
     return np.power(x1, 5)
+
 
 def sigmoid(x1):
     return 1 / (1 + np.exp(-x1))
@@ -452,6 +483,7 @@ unprotected_ops = [
     sciToken(np.add, "add", arity=2, complexity=1),
     sciToken(np.subtract, "sub", arity=2, complexity=1),
     sciToken(np.multiply, "mul", arity=2, complexity=1),
+    sciToken(np.power, "pow", arity=2, complexity=1),
     sciToken(np.divide, "div", arity=2, complexity=2),
 
     # Built-in unary operators
