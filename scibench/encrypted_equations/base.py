@@ -16,28 +16,22 @@ class KnownEquation(object):
         self.sympy_eq = None
 
 
-class DefaultSampling(object):
-    def __init__(self, min_value, max_value, uses_positive=True, uses_negative=True):
+class LogUniformSampling(object):
+    def __init__(self, min_value, max_value, only_positive=True):
         self.min_value = min_value
         self.max_value = max_value
-        assert uses_positive or uses_negative
-        self.uses_positive = uses_positive
-        self.uses_negative = uses_negative
+        self.only_positive = only_positive
 
 
 class IntegerSampling(object):
-    def __init__(self, min_value, max_value, uses_positive=True, uses_negative=True):
+    def __init__(self, min_value, max_value, only_positive=True):
         self.min_value = int(min_value)
         self.max_value = int(max_value)
-        assert uses_positive or uses_negative
-        self.uses_positive = uses_positive
-        self.uses_negative = uses_negative
+        self.only_positive = only_positive
 
 
-class SimpleSampling(object):
-    def __init__(self, min_value, max_value, uses_positive=True, uses_negative=True):
+class UniformSampling(object):
+    def __init__(self, min_value, max_value, only_positive=True):
         self.min_value = min_value
         self.max_value = max_value
-        assert uses_positive or uses_negative
-        self.uses_positive = uses_positive
-        self.uses_negative = uses_negative
+        self.only_positive = only_positive

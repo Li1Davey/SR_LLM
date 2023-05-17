@@ -1,6 +1,6 @@
 from collections import OrderedDict
 import numpy as np
-from base import KnownEquation, DefaultSampling, IntegerSampling, SimpleSampling
+from base import KnownEquation, LogUniformSampling, IntegerSampling, UniformSampling
 import sympy
 
 FEYNMAN_EQUATION_CLASS_DICT = OrderedDict()
@@ -52,7 +52,7 @@ class FeynmanICh6Eq20(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -73,7 +73,7 @@ class FeynmanICh6Eq20a(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-1, 1.0e1)]
+            sampling_objs = [LogUniformSampling(1.0e-1, 1.0e1)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
         x = self.x
@@ -98,8 +98,8 @@ class FeynmanICh6Eq20b(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -125,8 +125,8 @@ class FeynmanICh8Eq14(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -158,10 +158,10 @@ class FeynmanICh9Eq18(KnownEquation):
         if sampling_objs is None:
             # Consider Cavendish experiment
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
             ]
 
         super().__init__(num_vars=8, sampling_objs=sampling_objs)
@@ -188,8 +188,8 @@ class FeynmanICh10Eq7(KnownEquation):
         if sampling_objs is None:
             # Consider Michelson-Morley experiment
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e5, 1.0e8, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e5, 1.0e8, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -217,8 +217,8 @@ class FeynmanICh11Eq19(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
             ]
 
         super().__init__(num_vars=6, sampling_objs=sampling_objs)
@@ -242,8 +242,8 @@ class FeynmanICh12Eq1(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False),
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False)
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True),
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -269,8 +269,8 @@ class FeynmanICh12Eq2(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -294,7 +294,7 @@ class FeynmanICh12Eq4(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -316,7 +316,7 @@ class FeynmanICh12Eq5(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)]
+            sampling_objs = [LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -342,10 +342,10 @@ class FeynmanICh12Eq11(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                SimpleSampling(0.0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                UniformSampling(0.0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -371,8 +371,8 @@ class FeynmanICh13Eq4(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -400,8 +400,8 @@ class FeynmanICh13Eq12(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-2, 1.0, uses_negative=False),
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-2, 1.0, uses_negative=False)
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True),
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -424,7 +424,7 @@ class FeynmanICh14Eq3(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-2, 1.0)]
+            sampling_objs = [LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-2, 1.0)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -446,7 +446,7 @@ class FeynmanICh14Eq4(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e2, 1.0e4, uses_negative=False), DefaultSampling(1.0e-2, 1.0)]
+            sampling_objs = [LogUniformSampling(1.0e2, 1.0e4, only_positive=True), LogUniformSampling(1.0e-2, 1.0)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -469,7 +469,7 @@ class FeynmanICh15Eq10(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e5, 1.0e7)]
+            sampling_objs = [LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e5, 1.0e7)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -494,8 +494,8 @@ class FeynmanICh15Eq3t(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-6, 1.0e-4, uses_negative=False),
-                DefaultSampling(1.0e5, 1.0e7), DefaultSampling(1.0, 1.0e2)
+                LogUniformSampling(1.0e-6, 1.0e-4, only_positive=True),
+                LogUniformSampling(1.0e5, 1.0e7), LogUniformSampling(1.0, 1.0e2)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -521,8 +521,8 @@ class FeynmanICh15Eq3x(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0, 1.0e2), DefaultSampling(1.0e6, 1.0e8),
-                DefaultSampling(1.0e-6, 1.0e-4, uses_negative=False)
+                LogUniformSampling(1.0, 1.0e2), LogUniformSampling(1.0e6, 1.0e8),
+                LogUniformSampling(1.0e-6, 1.0e-4, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -546,7 +546,7 @@ class FeynmanICh16Eq6(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e6, 1.0e8), DefaultSampling(1.0e6, 1.0e8)]
+            sampling_objs = [LogUniformSampling(1.0e6, 1.0e8), LogUniformSampling(1.0e6, 1.0e8)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -572,8 +572,8 @@ class FeynmanICh18Eq4(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e-1, 1.0e1)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -598,8 +598,8 @@ class FeynmanICh18Eq12(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -625,9 +625,9 @@ class FeynmanICh18Eq16(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -653,8 +653,8 @@ class FeynmanICh24Eq6(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-1, 1.0e1)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -678,7 +678,7 @@ class FeynmanICh25Eq13(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-5, 1.0e-3), DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-5, 1.0e-3), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -703,7 +703,7 @@ class FeynmanICh26Eq2(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                SimpleSampling(0, 2 * np.pi, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -730,9 +730,9 @@ class FeynmanICh27Eq6(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e1, uses_negative=False)
+                LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e1, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -755,7 +755,7 @@ class FeynmanICh29Eq4(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e9, 1.0e11, uses_negative=False)
+                LogUniformSampling(1.0e9, 1.0e11, only_positive=True)
             ]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
@@ -781,9 +781,9 @@ class FeynmanICh29Eq16(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -809,8 +809,8 @@ class FeynmanICh30Eq3(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False), IntegerSampling(1.0e1, 1.0e3, uses_negative=False),
-                SimpleSampling(-2 * np.pi, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True), IntegerSampling(1.0e1, 1.0e3, only_positive=True),
+                UniformSampling(-2 * np.pi, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -838,8 +838,8 @@ class FeynmanICh30Eq5(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-11, 1.0e-9, uses_negative=False), IntegerSampling(1.0, 1.0e2, uses_negative=False),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True), IntegerSampling(1.0, 1.0e2, only_positive=True),
+                UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -865,7 +865,7 @@ class FeynmanICh32Eq5(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e5, 1.0e7, uses_negative=False)
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e5, 1.0e7, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -892,8 +892,8 @@ class FeynmanICh32Eq17(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e1, 1.0e3), DefaultSampling(1.0e-2, 1.0, uses_negative=False),
-                DefaultSampling(1.0e9, 1.0e11), DefaultSampling(1.0e9, 1.0e11)
+                LogUniformSampling(1.0e1, 1.0e3), LogUniformSampling(1.0e-2, 1.0, only_positive=True),
+                LogUniformSampling(1.0e9, 1.0e11), LogUniformSampling(1.0e9, 1.0e11)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -918,7 +918,7 @@ class FeynmanICh34Eq10(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e9, 1.0e11, uses_negative=False), DefaultSampling(1.0e5, 1.0e7)]
+            sampling_objs = [LogUniformSampling(1.0e9, 1.0e11, only_positive=True), LogUniformSampling(1.0e5, 1.0e7)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -944,8 +944,8 @@ class FeynmanICh34Eq8(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e5, 1.0e7),
-                DefaultSampling(1.0e1, 1.0e3), DefaultSampling(1.0e9, 1.0e11)
+                LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e5, 1.0e7),
+                LogUniformSampling(1.0e1, 1.0e3), LogUniformSampling(1.0e9, 1.0e11)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -970,7 +970,7 @@ class FeynmanICh34Eq14(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e6, 1.0e8), DefaultSampling(1.0e9, 1.0e11, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e6, 1.0e8), LogUniformSampling(1.0e9, 1.0e11, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -991,7 +991,7 @@ class FeynmanICh34Eq27(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e9, 1.0e11, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e9, 1.0e11, only_positive=True)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
         x = self.x
@@ -1016,8 +1016,8 @@ class FeynmanICh37Eq4(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1043,8 +1043,8 @@ class FeynmanICh38Eq12(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-28, 1.0e-26, uses_negative=False),
-                DefaultSampling(1.0e-11, 1.0e-9)
+                LogUniformSampling(1.0e-28, 1.0e-26, only_positive=True),
+                LogUniformSampling(1.0e-11, 1.0e-9)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1068,7 +1068,7 @@ class FeynmanICh39Eq10(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e4, 1.0e6, uses_negative=False), DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False)
+                LogUniformSampling(1.0e4, 1.0e6, only_positive=True), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1094,8 +1094,8 @@ class FeynmanICh39Eq11(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                SimpleSampling(1, 2, uses_negative=False),
-                DefaultSampling(1.0e4, 1.0e6, uses_negative=False), DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False)
+                UniformSampling(1, 2, only_positive=True),
+                LogUniformSampling(1.0e4, 1.0e6, only_positive=True), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1121,8 +1121,8 @@ class FeynmanICh39Eq22(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False), DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1149,9 +1149,9 @@ class FeynmanICh40Eq1(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e25, 1.0e27, uses_negative=False),
-                DefaultSampling(1.0e-24, 1.0e-22, uses_negative=False),
-                DefaultSampling(1.0e-2, 1.0), DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e25, 1.0e27, only_positive=True),
+                LogUniformSampling(1.0e-24, 1.0e-22, only_positive=True),
+                LogUniformSampling(1.0e-2, 1.0), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -1176,7 +1176,7 @@ class FeynmanICh41Eq16(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1204,8 +1204,8 @@ class FeynmanICh43Eq16(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-6, 1.0e-4), DefaultSampling(1.0e-11, 1.0e-9),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False)
+                LogUniformSampling(1.0e-6, 1.0e-4), LogUniformSampling(1.0e-11, 1.0e-9),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -1229,7 +1229,7 @@ class FeynmanICh43Eq31(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e13, 1.0e15, uses_negative=False), DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e13, 1.0e15, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1256,9 +1256,9 @@ class FeynmanICh43Eq43(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                SimpleSampling(1, 2, uses_negative=False),
-                DefaultSampling(1.0e2, 1.0e4, uses_negative=False),
-                DefaultSampling(1.0e-21, 1.0e-19, uses_negative=False)
+                UniformSampling(1, 2, only_positive=True),
+                LogUniformSampling(1.0e2, 1.0e4, only_positive=True),
+                LogUniformSampling(1.0e-21, 1.0e-19, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1286,9 +1286,9 @@ class FeynmanICh44Eq4(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(10e23, 10e25, uses_negative=False), DefaultSampling(1.0e1, 1.0e3, uses_negative=False),
-                DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False),
-                DefaultSampling(1.0e-5, 1.0e-3, uses_negative=False)
+                LogUniformSampling(10e23, 10e25, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True),
+                LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True),
+                LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -1315,8 +1315,8 @@ class FeynmanICh47Eq23(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                SimpleSampling(1, 2, uses_negative=False), SimpleSampling(5.0e-6, 1.5e-5, uses_negative=False),
-                SimpleSampling(1, 2, uses_negative=False)
+                UniformSampling(1, 2, only_positive=True), UniformSampling(5.0e-6, 1.5e-5, only_positive=True),
+                UniformSampling(1, 2, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1341,8 +1341,8 @@ class FeynmanICh48Eq2(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-29, 1.0e-27, uses_negative=False),
-                DefaultSampling(1.0e6, 1.0e8, uses_negative=False)
+                LogUniformSampling(1.0e-29, 1.0e-27, only_positive=True),
+                LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1368,8 +1368,8 @@ class FeynmanICh50Eq26(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e1, 1.0e3),
-                DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False), DefaultSampling(1.0e-3, 1.0e-1)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3),
+                LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-3, 1.0e-1)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -1397,9 +1397,9 @@ class FeynmanIICh2Eq42(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False), DefaultSampling(1.0e1, 1.0e3, uses_negative=False),
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False),
-                DefaultSampling(1.0e-4, 1.0e-2, uses_negative=False), DefaultSampling(1.0e-2, 1.0, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True),
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True),
+                LogUniformSampling(1.0e-4, 1.0e-2, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -1423,7 +1423,7 @@ class FeynmanIICh3Eq24(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0, 1.0e2), DefaultSampling(1.0e-2, 1.0, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0, 1.0e2), LogUniformSampling(1.0e-2, 1.0, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -1446,7 +1446,7 @@ class FeynmanIICh4Eq23(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-2, 1.0, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-2, 1.0, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -1471,8 +1471,8 @@ class FeynmanIICh6Eq11(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-22, 1.0e-20), SimpleSampling(0, 2 * np.pi, uses_negative=False),
-                DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False)
+                LogUniformSampling(1.0e-22, 1.0e-20), UniformSampling(0, 2 * np.pi, only_positive=True),
+                LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1500,9 +1500,9 @@ class FeynmanIICh6Eq15a(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-22, 1.0e-20), DefaultSampling(1.0e-10, 1.0e-8),
-                DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False), DefaultSampling(1.0e-10, 1.0e-8),
-                DefaultSampling(1.0e-10, 1.0e-8)
+                LogUniformSampling(1.0e-22, 1.0e-20), LogUniformSampling(1.0e-10, 1.0e-8),
+                LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True), LogUniformSampling(1.0e-10, 1.0e-8),
+                LogUniformSampling(1.0e-10, 1.0e-8)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -1529,8 +1529,8 @@ class FeynmanIICh6Eq15b(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-22, 1.0e-20), SimpleSampling(0, np.pi, uses_negative=False),
-                DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False)
+                LogUniformSampling(1.0e-22, 1.0e-20), UniformSampling(0, np.pi, only_positive=True),
+                LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1554,7 +1554,7 @@ class FeynmanIICh8Eq7(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-12, 1.0e-10, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-12, 1.0e-10, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -1575,7 +1575,7 @@ class FeynmanIICh8Eq31(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e1, 1.0e3, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e1, 1.0e3, only_positive=True)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
         x = self.x
@@ -1598,7 +1598,7 @@ class FeynmanIICh10Eq9(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0, 1.0e2, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0, 1.0e2, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -1626,9 +1626,9 @@ class FeynmanIICh11Eq3(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-9, 1.0e-7, uses_negative=False),
-                DefaultSampling(1.0e-28, 1.0e-26, uses_negative=False), DefaultSampling(1.0e9, 1.0e11),
-                DefaultSampling(1.0e9, 1.0e11)
+                LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-9, 1.0e-7, only_positive=True),
+                LogUniformSampling(1.0e-28, 1.0e-26, only_positive=True), LogUniformSampling(1.0e9, 1.0e11),
+                LogUniformSampling(1.0e9, 1.0e11)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -1656,9 +1656,9 @@ class FeynmanIICh11Eq17(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e27, 1.0e29, uses_negative=False), DefaultSampling(1.0e-22, 1.0e-20),
-                DefaultSampling(1.0e1, 1.0e3), SimpleSampling(0, 2 * np.pi, uses_negative=False),
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e27, 1.0e29, only_positive=True), LogUniformSampling(1.0e-22, 1.0e-20),
+                LogUniformSampling(1.0e1, 1.0e3), UniformSampling(0, 2 * np.pi, only_positive=True),
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -1685,8 +1685,8 @@ class FeynmanIICh11Eq20(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False), DefaultSampling(1.0e-22, 1.0e-20),
-                DefaultSampling(1.0e1, 1.0e3), DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True), LogUniformSampling(1.0e-22, 1.0e-20),
+                LogUniformSampling(1.0e1, 1.0e3), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -1712,9 +1712,9 @@ class FeynmanIICh11Eq27(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e-33, 1.0e-31, uses_negative=False),
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e-33, 1.0e-31, only_positive=True),
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1739,8 +1739,8 @@ class FeynmanIICh11Eq28(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e-33, 1.0e-31, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e-33, 1.0e-31, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1764,7 +1764,7 @@ class FeynmanIICh13Eq17(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -1788,8 +1788,8 @@ class FeynmanIICh13Eq23(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e27, 1.0e29, uses_negative=False),
-                DefaultSampling(1.0e6, 1.0e8, uses_negative=False)
+                LogUniformSampling(1.0e27, 1.0e29, only_positive=True),
+                LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1814,8 +1814,8 @@ class FeynmanIICh13Eq34(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e27, 1.0e29, uses_negative=False),
-                DefaultSampling(1.0e6, 1.0e8, uses_negative=False)
+                LogUniformSampling(1.0e27, 1.0e29, only_positive=True),
+                LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -1840,8 +1840,8 @@ class FeynmanIICh15Eq4(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-25, 1.0e-23), DefaultSampling(1.0e-3, 1.0e-1),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-25, 1.0e-23), LogUniformSampling(1.0e-3, 1.0e-1),
+                UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1866,8 +1866,8 @@ class FeynmanIICh15Eq5(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-22, 1.0e-20), DefaultSampling(1.0e1, 1.0e3),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-22, 1.0e-20), LogUniformSampling(1.0e1, 1.0e3),
+                UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1894,8 +1894,8 @@ class FeynmanIICh21Eq32(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0, 1.0e2, uses_negative=False),
-                DefaultSampling(1.0e6, 1.0e8, uses_negative=False)
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0, 1.0e2, only_positive=True),
+                LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -1920,7 +1920,7 @@ class FeynmanIICh24Eq17(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e9, 1.0e11), DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e9, 1.0e11), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -1941,7 +1941,7 @@ class FeynmanIICh27Eq16(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
         x = self.x
@@ -1962,7 +1962,7 @@ class FeynmanIICh27Eq18(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
         x = self.x
@@ -1987,8 +1987,8 @@ class FeynmanIICh34Eq2a(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e5, 1.0e7),
-                DefaultSampling(1.0e-11, 1.0e-9, uses_negative=False)
+                LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e5, 1.0e7),
+                LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2013,8 +2013,8 @@ class FeynmanIICh34Eq2(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e5, 1.0e7),
-                DefaultSampling(1.0e-11, 1.0e-9, uses_negative=False)
+                LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e5, 1.0e7),
+                LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2041,9 +2041,9 @@ class FeynmanIICh34Eq11(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                SimpleSampling(-1.0, 1.0, uses_negative=False),
-                DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-9, 1.0e-7),
-                DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False)
+                UniformSampling(-1.0, 1.0, only_positive=True),
+                LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-9, 1.0e-7),
+                LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2067,7 +2067,7 @@ class FeynmanIICh34Eq29a(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -2091,8 +2091,8 @@ class FeynmanIICh34Eq29b(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                SimpleSampling(-1.0, 1.0, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-26, 1.0e-22)
+                UniformSampling(-1.0, 1.0, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-26, 1.0e-22)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2119,9 +2119,9 @@ class FeynmanIICh35Eq18(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e-25, 1.0e-23, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False), DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e-25, 1.0e-23, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2149,9 +2149,9 @@ class FeynmanIICh35Eq21(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e-25, 1.0e-23, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False), DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e-25, 1.0e-23, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2179,9 +2179,9 @@ class FeynmanIICh36Eq38(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-25, 1.0e-23), DefaultSampling(1.0e-3, 1.0e-1),
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False), SimpleSampling(0, 1, uses_negative=False),
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False)
+                LogUniformSampling(1.0e-25, 1.0e-23), LogUniformSampling(1.0e-3, 1.0e-1),
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True), UniformSampling(0, 1, only_positive=True),
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -2207,8 +2207,8 @@ class FeynmanIICh37Eq1(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-25, 1.0e-23), DefaultSampling(1.0e4, 1.0e6),
-                DefaultSampling(1.0e-3, 1.0e-1)
+                LogUniformSampling(1.0e-25, 1.0e-23), LogUniformSampling(1.0e4, 1.0e6),
+                LogUniformSampling(1.0e-3, 1.0e-1)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2235,9 +2235,9 @@ class FeynmanIICh38Eq3(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-4, 1.0e-2, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-2, 1.0, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-4, 1.0e-2, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-2, 1.0, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2262,8 +2262,8 @@ class FeynmanIICh38Eq14(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False)
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -2289,8 +2289,8 @@ class FeynmanIIICh4Eq32(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False),
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -2316,8 +2316,8 @@ class FeynmanIIICh4Eq33(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False),
-                DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
+                LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -2341,7 +2341,7 @@ class FeynmanIIICh7Eq38(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-11, 1.0e-9), DefaultSampling(1.0e-3, 1.0e-1)]
+            sampling_objs = [LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-3, 1.0e-1)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -2363,7 +2363,7 @@ class FeynmanIIICh8Eq54(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-18, 1.0e-16), DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False)]
+            sampling_objs = [LogUniformSampling(1.0e-18, 1.0e-16), LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -2391,9 +2391,9 @@ class FeynmanIIICh9Eq52(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-22, 1.0e-20), DefaultSampling(1.0e1, 1.0e3),
-                DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False),
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False), DefaultSampling(1.0e8, 1.0e10, uses_negative=False)
+                LogUniformSampling(1.0e-22, 1.0e-20), LogUniformSampling(1.0e1, 1.0e3),
+                LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True),
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True), LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -2420,8 +2420,8 @@ class FeynmanIIICh10Eq19(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-25, 1.0e-23), DefaultSampling(1.0e-3, 1.0e-1),
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-3, 1.0e-1)
+                LogUniformSampling(1.0e-25, 1.0e-23), LogUniformSampling(1.0e-3, 1.0e-1),
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-3, 1.0e-1)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2443,7 +2443,7 @@ class FeynmanIIICh12Eq43(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [IntegerSampling(1, 1.0e2, uses_negative=False)]
+            sampling_objs = [IntegerSampling(1, 1.0e2, only_positive=True)]
 
         super().__init__(num_vars=1, sampling_objs=sampling_objs)
         x = self.x
@@ -2467,8 +2467,8 @@ class FeynmanIIICh13Eq18(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-18, 1.0e-16), DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)
+                LogUniformSampling(1.0e-18, 1.0e-16), LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2495,8 +2495,8 @@ class FeynmanIIICh14Eq14(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-22, 1.0e-20, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e1, 1.0e3, uses_negative=False)
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-22, 1.0e-20, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2521,9 +2521,9 @@ class FeynmanIIICh15Eq12(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False)
+                LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2549,8 +2549,8 @@ class FeynmanIIICh15Eq14(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False),
-                DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False)
+                LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True),
+                LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -2577,8 +2577,8 @@ class FeynmanIIICh15Eq27(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                IntegerSampling(1, 1.0e2), IntegerSampling(1, 1.0e2, uses_negative=False),
-                DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False)
+                IntegerSampling(1, 1.0e2), IntegerSampling(1, 1.0e2, only_positive=True),
+                LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2603,8 +2603,8 @@ class FeynmanIIICh17Eq37(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False), DefaultSampling(1.0e-18, 1.0e-16),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True), LogUniformSampling(1.0e-18, 1.0e-16),
+                UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2630,8 +2630,8 @@ class FeynmanIIICh19Eq51(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False), DefaultSampling(1.0e-11, 1.0e-9),
-                IntegerSampling(1, 1.0e2, uses_negative=False)
+                LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True), LogUniformSampling(1.0e-11, 1.0e-9),
+                IntegerSampling(1, 1.0e2, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2659,9 +2659,9 @@ class FeynmanIIICh21Eq20(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e27, 1.0e29, uses_positive=False),
-                DefaultSampling(1.0e-11, 1.0e-9, uses_positive=False),
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False)
+                LogUniformSampling(1.0e27, 1.0e29),
+                LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2689,9 +2689,9 @@ class FeynmanBonus1(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                IntegerSampling(1.0, 1.0e1, uses_negative=False), IntegerSampling(1.0, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                IntegerSampling(1.0, 1.0e1, only_positive=True), IntegerSampling(1.0, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True),
+                UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2723,11 +2723,11 @@ class FeynmanBonus2(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e9, 1.0e11, uses_negative=False),
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False),
-                DefaultSampling(1.0e25, 1.0e27, uses_negative=False),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e9, 1.0e11, only_positive=True),
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
+                LogUniformSampling(1.0e25, 1.0e27, only_positive=True),
+                UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=6, sampling_objs=sampling_objs)
@@ -2754,8 +2754,8 @@ class FeynmanBonus3(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False), SimpleSampling(0.0, 1.0, uses_negative=False),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False), SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True), UniformSampling(0.0, 1.0, only_positive=True),
+                UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -2785,10 +2785,10 @@ class FeynmanBonus4(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e25, 1.0e27, uses_negative=False),
-                DefaultSampling(1.0e25, 1.0e27, uses_negative=False), DefaultSampling(1.0e8, 1.0e10),
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e25, 1.0e27, only_positive=True),
+                LogUniformSampling(1.0e25, 1.0e27, only_positive=True), LogUniformSampling(1.0e8, 1.0e10),
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -2816,9 +2816,9 @@ class FeynmanBonus5(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False),
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False)
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2853,11 +2853,11 @@ class FeynmanBonus6(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-18, 1.0e-16), DefaultSampling(1.0e-18, 1.0e-16, uses_negative=False),
-                DefaultSampling(1.0e-10, 1.0e-8, uses_negative=False),
-                DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False),
-                IntegerSampling(1.0, 1.0e1, uses_negative=False), IntegerSampling(1.0, 1.0e1, uses_negative=False),
-                DefaultSampling(1.0e-11, 1.0e-9)
+                LogUniformSampling(1.0e-18, 1.0e-16), LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True),
+                LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True),
+                LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True),
+                IntegerSampling(1.0, 1.0e1, only_positive=True), IntegerSampling(1.0, 1.0e1, only_positive=True),
+                LogUniformSampling(1.0e-11, 1.0e-9)
             ]
 
         super().__init__(num_vars=7, sampling_objs=sampling_objs)
@@ -2884,8 +2884,8 @@ class FeynmanBonus7(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-27, 1.0e-25, uses_negative=False), IntegerSampling(-1.0, 1.0),
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False)
+                LogUniformSampling(1.0e-27, 1.0e-25, only_positive=True), IntegerSampling(-1.0, 1.0),
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2909,7 +2909,7 @@ class FeynmanBonus8(KnownEquation):
 
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
-            sampling_objs = [DefaultSampling(1.0e-24, 1.0e-22, uses_negative=False), SimpleSampling(-np.pi, np.pi)]
+            sampling_objs = [LogUniformSampling(1.0e-24, 1.0e-22, only_positive=True), UniformSampling(-np.pi, np.pi)]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
         x = self.x
@@ -2934,9 +2934,9 @@ class FeynmanBonus9(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e23, 1.0e25, uses_negative=False),
-                DefaultSampling(1.0e8, 1.0e10, uses_negative=False)
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
+                LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -2963,8 +2963,8 @@ class FeynmanBonus10(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                SimpleSampling(0, 2 * np.pi, uses_negative=False),
-                DefaultSampling(1.0e5, 1.0e7, uses_negative=False)
+                UniformSampling(0, 2 * np.pi, only_positive=True),
+                LogUniformSampling(1.0e5, 1.0e7, only_positive=True)
             ]
 
         super().__init__(num_vars=2, sampling_objs=sampling_objs)
@@ -2990,9 +2990,9 @@ class FeynmanBonus11(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-3, 1.0e-1, uses_negative=False),
-                DefaultSampling(1.0e-11, 1.0e-9, uses_negative=False),
-                IntegerSampling(1.0, 1.0e2, uses_negative=False), DefaultSampling(1.0e-11, 1.0e-9, uses_negative=False)
+                LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True),
+                LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True),
+                IntegerSampling(1.0, 1.0e2, only_positive=True), LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -3020,9 +3020,9 @@ class FeynmanBonus12(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-12, 1.0e-10, uses_negative=False),
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-1, 1.0e1),
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False)
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-12, 1.0e-10, only_positive=True),
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1),
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -3051,9 +3051,9 @@ class FeynmanBonus13(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-12, 1.0e-10, uses_negative=False),
-                DefaultSampling(1.0e-3, 1.0e-1), DefaultSampling(1.0e-2, 1.0, uses_negative=False),
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False), SimpleSampling(0, np.pi, uses_negative=False)
+                LogUniformSampling(1.0e-12, 1.0e-10, only_positive=True),
+                LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-2, 1.0, only_positive=True),
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True), UniformSampling(0, np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -3083,9 +3083,9 @@ class FeynmanBonus14(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e1, 1.0e3), SimpleSampling(0, np.pi, uses_negative=False),
-                DefaultSampling(1.0e-2, 1.0, uses_negative=False), DefaultSampling(1.0e-2, 1.0, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1, uses_negative=False)
+                LogUniformSampling(1.0e1, 1.0e3), UniformSampling(0, np.pi, only_positive=True),
+                LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -3112,8 +3112,8 @@ class FeynmanBonus15(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e5, 1.0e7, uses_negative=False), DefaultSampling(1.0e9, 1.0e11, uses_negative=False),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e5, 1.0e7, only_positive=True), LogUniformSampling(1.0e9, 1.0e11, only_positive=True),
+                UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -3140,9 +3140,9 @@ class FeynmanBonus16(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-9, 1.0e-7), DefaultSampling(1.0e-11, 1.0e-9),
-                DefaultSampling(1.0e1, 1.0e3), DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False),
-                DefaultSampling(1.0e-1, 1.0e1)
+                LogUniformSampling(1.0e-9, 1.0e-7), LogUniformSampling(1.0e-11, 1.0e-9),
+                LogUniformSampling(1.0e1, 1.0e3), LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True),
+                LogUniformSampling(1.0e-1, 1.0e1)
             ]
 
         super().__init__(num_vars=5, sampling_objs=sampling_objs)
@@ -3173,9 +3173,9 @@ class FeynmanBonus17(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e-30, 1.0e-28, uses_negative=False), DefaultSampling(1.0e-9, 1.0e-7),
-                DefaultSampling(1.0e9, 1.0e11), DefaultSampling(1.0e-11, 1.0e-9),
-                DefaultSampling(1.0e-1, 1.0e1), DefaultSampling(1.0e-11, 1.0e-9, uses_negative=False)
+                LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True), LogUniformSampling(1.0e-9, 1.0e-7),
+                LogUniformSampling(1.0e9, 1.0e11), LogUniformSampling(1.0e-11, 1.0e-9),
+                LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
             ]
 
         super().__init__(num_vars=6, sampling_objs=sampling_objs)
@@ -3201,8 +3201,8 @@ class FeynmanBonus18(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e1, 1.0e3), DefaultSampling(1.0e8, 1.0e10, uses_negative=False),
-                DefaultSampling(1.0, 1.0e2)
+                LogUniformSampling(1.0e1, 1.0e3), LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
+                LogUniformSampling(1.0, 1.0e2)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
@@ -3229,8 +3229,8 @@ class FeynmanBonus19(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e1, 1.0e3), DefaultSampling(1.0e8, 1.0e10, uses_negative=False),
-                DefaultSampling(1.0, 1.0e2), SimpleSampling(-10, 10)
+                LogUniformSampling(1.0e1, 1.0e3), LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
+                LogUniformSampling(1.0, 1.0e2), UniformSampling(-10, 10)
             ]
 
         super().__init__(num_vars=4, sampling_objs=sampling_objs)
@@ -3256,9 +3256,9 @@ class FeynmanBonus20(KnownEquation):
     def __init__(self, sampling_objs=None):
         if sampling_objs is None:
             sampling_objs = [
-                DefaultSampling(1.0e9, 1.0e11, uses_negative=False),
-                DefaultSampling(1.0e9, 1.0e11, uses_negative=False),
-                SimpleSampling(0, 2 * np.pi, uses_negative=False)
+                LogUniformSampling(1.0e9, 1.0e11, only_positive=True),
+                LogUniformSampling(1.0e9, 1.0e11, only_positive=True),
+                UniformSampling(0, 2 * np.pi, only_positive=True)
             ]
 
         super().__init__(num_vars=3, sampling_objs=sampling_objs)
