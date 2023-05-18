@@ -1,229 +1,91 @@
-import pandas as pd
 import numpy as np
-import warnings
-
-from scibench.symbolic_equation_evaluator import Equation_evaluator
-
-FLOAT32_MAX = np.finfo(np.float32).max
-FLOAT32_MIN = np.finfo(np.float32).min
-FLOAT32_TINY = np.finfo(np.float32).tiny
+import json
 
 
-def load_dataset_df(eq_name='prog_0', batch_size=256):
-    return dataX_generator.random_uniform_dataset(eq_name, batch_size)
-
-
-# class DataLoader(object):
-#     def __init__(self, dataset_family_name, eq_name, noise_type='normal', noise_scale=0):
-#         self.dataset_family_name = dataset_family_name
-#         self.eq_name = eq_name
-#         self.noise_type = noise_type
-#         self.noise_scale = noise_scale
-def check_if_valid(values):
-    return ~np.isnan(values) * ~np.isinf(values) * \
-        (FLOAT32_MIN <= values) * (values <= FLOAT32_MAX) * (np.abs(values) >= FLOAT32_TINY)
-
-
-class DataLoader(object):
-    def __int__(self, eq_name_public, noise_type, noise_scale):
+class DataX(object):
+    def __init__(self, vars_range_and_types):
         """
-        dataset_family: symbolic_equation_evaluator-easy, symbolic_equation_evaluator-medium, symbolic_equation_evaluator-hard
         """
-        self.dataX_generator = get_eq_obj(self.eq_name)
-        self.eq_evaulator = Equation_evaluator(eq_name_public)
+        list_of_samplers = json.loads(vars_range_and_types)
+        self.data_X_samplers = []
+        for one_sample in list_of_samplers:
+            if one_sample['name'] == 'Uniform':
+                self.data_X_samplers.append(UniformSampling(one_sample['range'], one_sample['only_positive']))
+            elif one_sample['name'] == 'LogUniform':
+                self.data_X_samplers.append(LogUniformSampling(one_sample['range'], one_sample['only_positive']))
+            elif one_sample['name'] == 'IntegerUniform':
+                self.data_X_samplers.append(IntegerSampling(one_sample['range'], one_sample['only_positive']))
 
-    def random_uniform_data(self, sample_size, patience=30):
-        warnings.filterwarnings('ignore')
-        assert len(self.dataX_generator.sampling_objs) > 0, f'There should be at least one variable provided'
-
-        xs = self.dataX_generator.obtain_dataX(sample_size)
-        y = self.eq_evaulator.evaluate(xs)
-
-        # Check if y contains NaN, Infinity, etc
-        valid_sample_flags = check_if_valid(y)
-        valid_sample_size = sum(valid_sample_flags)
-        if valid_sample_size == sample_size:
-            return np.array([*xs, y]).T
-
-        valid_xs = [x[valid_sample_flags] for x in xs]
-        valid_y = y[valid_sample_flags]
-        missed_sample_size = sample_size - valid_sample_size
-        for _ in range(patience):
-            xs = self.dataX_generator.obtain_dataX(missed_sample_size * 3)
-            y = self.eq_evaulator.evaluate(xs)
-            valid_sample_flags = check_if_valid(y)
-            valid_xs = [np.concatenate([xs[i][valid_sample_flags], valid_xs[i]]) for i in range(len(xs))]
-            valid_y = np.concatenate([y[valid_sample_flags], valid_y])
-            valid_sample_size = len(valid_y)
-            if valid_sample_size >= sample_size:
-                xs = [x[:sample_size] for x in valid_xs]
-                y = valid_y[:sample_size]
-                return pd.DataFrame(np.array([*xs, y]).T)
-        raise TimeoutError(f'number of valid samples (`{len(valid_y)}`) did not reach to '
-                           f'{sample_size} within {patience} trials')
-
-    # def Control_variable_dataset(self, batch_size):
-    #     pass
-    #
-    # def Active_learning_dataset(self):
-    #     pass
+    def randn(self, sample_size):
+        list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
+        return np.stack(list_of_X, axis=0).transpose()
 
 
-@register_sampling_func
-def default_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
-    # x ~ either U(0.1, 10.0) or U(-10.0, -0.1) with 50% chance
-    num_positives = sum(np.random.uniform(0.0, 1.0, size=sample_size) > 0.5)
-    num_negatives = sample_size - num_positives
-    log10_min = np.log10(min_value)
-    log10_max = np.log10(max_value)
-    pos_samples = 10.0 ** np.random.uniform(log10_min, log10_max, size=num_positives)
-    neg_samples = -10.0 ** np.random.uniform(log10_min, log10_max, size=num_negatives)
-    all_samples = np.concatenate([pos_samples, neg_samples])
-    np.random.shuffle(all_samples)
-    return all_samples
-
-
-@register_sampling_func
-def default_positive_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
-    # x ~ U(0.1, 10.0)
-    log10_min = np.log10(min_value)
-    log10_max = np.log10(max_value)
-    return 10.0 ** np.random.uniform(log10_min, log10_max, size=sample_size)
-
-
-@register_sampling_func
-def default_negative_sampling(sample_size, min_value=1.0e-1, max_value=1.0e1):
-    # x ~ U(-10.0, -0.1)
-    log10_min = np.log10(abs(min_value))
-    log10_max = np.log10(abs(max_value))
-    return -10.0 ** np.random.uniform(log10_min, log10_max, size=sample_size)
-
-
-@register_sampling_func
-def simple_sampling(sample_size, min_value=0.0, max_value=1.0):
-    # x ~ either U(0.0, 1.0) or U(-1.0, 0.) with 50% chance
-    num_positives = sum(np.random.uniform(0.0, 1.0, size=sample_size) > 0.5)
-    num_negatives = sample_size - num_positives
-    pos_samples = np.random.uniform(min_value, max_value, size=num_positives)
-    neg_samples = -np.random.uniform(min_value, max_value, size=num_negatives)
-    all_samples = np.concatenate([pos_samples, neg_samples])
-    np.random.shuffle(all_samples)
-    return all_samples
-
-
-@register_sampling_func
-def simple_positive_sampling(sample_size, min_value=0.0, max_value=1.0):
-    # x ~ U(0.0, 1.0)
-    return np.random.uniform(min_value, max_value, size=sample_size)
-
-
-@register_sampling_func
-def simple_negative_sampling(sample_size, min_value=0.0, max_value=1.0):
-    # x ~ U(-1, 0.0)
-    return -np.random.uniform(min_value, max_value, size=sample_size)
-
-
-@register_sampling_func
-def integer_sampling(sample_size, min_value=1, max_value=100):
-    # x ~ either U(1, 100) or U(-100, -1) with 50% chance
-    num_positives = sum(np.random.uniform(0.0, 1.0, size=sample_size) > 0.5)
-    num_negatives = sample_size - num_positives
-    pos_samples = np.random.randint(min_value, max_value, size=num_positives)
-    neg_samples = -np.random.randint(min_value, max_value, size=num_negatives)
-    all_samples = np.concatenate([pos_samples, neg_samples])
-    np.random.shuffle(all_samples)
-    return all_samples
-
-
-@register_sampling_func
-def integer_positive_sampling(sample_size, min_value=1, max_value=100):
-    # x ~ U(1, 100)
-    return np.random.randint(min_value, max_value, size=sample_size)
-
-
-@register_sampling_func
-def integer_negative_sampling(sample_size, min_value=1, max_value=100):
-    # x ~ U(-100, -1)
-    return -np.random.randint(min_value, max_value, size=sample_size)
-
-
-@register_sampling_class
 class DefaultSampling(object):
-    def __init__(self, min_value, max_value, uses_positive=True, uses_negative=True):
-        self.min_value = min_value
-        self.max_value = max_value
-        assert uses_positive or uses_negative
-        self.uses_positive = uses_positive
-        self.uses_negative = uses_negative
+    def __init__(self, name, range, only_positive=False):
+        self.name = name
+        self.range = range
+        self.only_positive = only_positive
+
+
+class LogUniformSampling(DefaultSampling):
+    def __init__(self, ranges, only_positive=False):
+        super().__init__('LogUniform', ranges, only_positive)
 
     def __call__(self, sample_size):
-        if self.uses_positive and self.uses_negative:
-            return default_sampling(sample_size, self.min_value, self.max_value)
-        elif self.uses_positive:
-            return default_positive_sampling(sample_size, self.min_value, self.max_value)
-        elif self.uses_negative:
-            return default_negative_sampling(sample_size, self.min_value, self.max_value)
-        raise AttributeError(f'Either self.uses_positive ({self.uses_positive}) or '
-                             f'self.uses_negative({self.uses_negative}) must be True')
+        if self.only_positive:
+            # x ~ U(0.1, 10.0)
+            log10_min = np.log10(self.range[0])
+            log10_max = np.log10(self.range[1])
+            return 10.0 ** np.random.uniform(log10_min, log10_max, size=sample_size)
+        else:
+            # x ~ either U(0.0, 1.0) or U(-1.0, 0.) with 50% chance
+            num_positives = sum(np.random.uniform(0.0, 1.0, size=sample_size) > 0.5)
+            num_negatives = sample_size - num_positives
+            log10_min = np.log10(self.range[0])
+            log10_max = np.log10(self.range[1])
+            pos_samples = 10.0 ** np.random.uniform(log10_min, log10_max, size=num_positives)
+            neg_samples = -10.0 ** np.random.uniform(log10_min, log10_max, size=num_negatives)
+            all_samples = np.concatenate([pos_samples, neg_samples])
+            np.random.shuffle(all_samples)
+            return all_samples
 
 
-@register_sampling_class
-class SimpleSampling(object):
-    def __init__(self, min_value, max_value, uses_positive=True, uses_negative=True):
-        self.min_value = min_value
-        self.max_value = max_value
-        assert uses_positive or uses_negative
-        self.uses_positive = uses_positive
-        self.uses_negative = uses_negative
-
-    def __call__(self, sample_size):
-        if self.uses_positive and self.uses_negative:
-            return simple_sampling(sample_size, self.min_value, self.max_value)
-        elif self.uses_positive:
-            return simple_positive_sampling(sample_size, self.min_value, self.max_value)
-        elif self.uses_negative:
-            return simple_negative_sampling(sample_size, self.min_value, self.max_value)
-        raise AttributeError(f'Either self.uses_positive ({self.uses_positive}) or '
-                             f'self.uses_negative({self.uses_negative}) must be True')
-
-
-@register_sampling_class
-class IntegerSampling(object):
-    def __init__(self, min_value, max_value, uses_positive=True, uses_negative=True):
-        self.min_value = int(min_value)
-        self.max_value = int(max_value)
-        assert uses_positive or uses_negative
-        self.uses_positive = uses_positive
-        self.uses_negative = uses_negative
+class UniformSampling(DefaultSampling):
+    def __init__(self, ranges, only_positive=False):
+        super().__init__('Uniform', ranges, only_positive)
 
     def __call__(self, sample_size):
-        if self.uses_positive and self.uses_negative:
-            return integer_sampling(sample_size, self.min_value, self.max_value)
-        elif self.uses_positive:
-            return integer_positive_sampling(sample_size, self.min_value, self.max_value)
-        elif self.uses_negative:
-            return integer_negative_sampling(sample_size, self.min_value, self.max_value)
-        raise AttributeError(f'Either self.uses_positive ({self.uses_positive}) or '
-                             f'self.uses_negative({self.uses_negative}) must be True')
+        if self.only_positive:
+            # x ~ U(0.0, 1.0)
+            return np.random.uniform(self.range[0], self.range[1], size=sample_size)
+        else:
+            num_positives = sum(np.random.uniform(0.0, 1.0, size=sample_size) > 0.5)
+            num_negatives = sample_size - num_positives
+            pos_samples = np.random.uniform(self.range[0], self.range[1], size=num_positives)
+            neg_samples = -np.random.uniform(self.range[0], self.range[1], size=num_negatives)
+            all_samples = np.concatenate([pos_samples, neg_samples])
+            np.random.shuffle(all_samples)
+            return all_samples
 
 
-def build_sampling_objs(sampling_obj_configs):
-    sampling_obj_list = list()
-    for sampling_obj_config in sampling_obj_configs:
-        sampling_type = sampling_obj_config['type']
-        sampling_kwargs = sampling_obj_config.get('kwargs', dict())
-        sampling_obj = get_sampling_obj(sampling_type, **sampling_kwargs)
-        sampling_obj_list.append(sampling_obj)
-    return sampling_obj_list
+class IntegerSampling(DefaultSampling):
+    def __init__(self, ranges, only_positive=False):
+        ranges = [int(ranges[0]), int(ranges[1])]
+        super().__init__('IntegerUniform', ranges, only_positive)
 
-def make_data_sample_distribution(dataX_sampling_type):
-    _all_samplers = {
-        'normal': lambda scale, batch_size: np.random.normal(loc=0.0, scale=scale, size=batch_size),
-        'exponential': lambda scale, batch_size: np.random.exponential(scale=scale, size=batch_size),
-        'uniform': lambda scale, batch_size: np.random.uniform(low=-np.abs(scale), high=np.abs(scale), size=batch_size),
-        'laplace': lambda scale, batch_size: np.random.laplace(loc=0.0, scale=scale, size=batch_size),
-        'logistic': lambda scale, batch_size: np.random.logistic(loc=0.0, scale=scale, size=batch_size)
-    }
-    assert dataX_sampling_type in _all_samplers, "Unrecognized noise_type" + dataX_sampling_type
+    def __call__(self, sample_size):
+        if self.only_positive:
+            # x ~ U(1, 100)
+            return np.random.randint(self.range[0], self.range[1], size=sample_size)
+        else:
+            # x ~ either U(1, 100) or U(-100, -1) with 50% chance
+            num_positives = sum(np.random.uniform(0.0, 1.0, size=sample_size) > 0.5)
+            num_negatives = sample_size - num_positives
+            pos_samples = np.random.randint(self.range[0], self.range[1], size=num_positives)
+            neg_samples = -np.random.randint(self.range[0], self.range[1], size=num_negatives)
+            all_samples = np.concatenate([pos_samples, neg_samples])
+            np.random.shuffle(all_samples)
+            return all_samples
 
-    return _all_samplers[dataX_sampling_type]
+#

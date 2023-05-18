@@ -19,10 +19,11 @@ class RegressTaskV1(object):
     NOTE: nexpr should be left to program.optimize() (nexpr: number of experiments)
     """
 
-    def __init__(self, batchsize, allowed_input, data_query_oracle):
+    def __init__(self, batchsize, allowed_input, dataX, data_query_oracle):
         self.batchsize = batchsize
         self.allowed_input = allowed_input
         self.n_input = allowed_input.size
+        self.dataX = dataX
         self.data_query_oracle = data_query_oracle
 
         self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
@@ -37,15 +38,19 @@ class RegressTaskV1(object):
         self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
     def rand_draw_X_fixed(self):
-        self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
+        # self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
+        self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
 
     def rand_draw_data(self):
-        self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
-        self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        # self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
+        # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
+        self.X = self.dataX.randn(sample_size=self.batchsize)
         self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def rand_draw_X_nonfixed(self):
-        self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        self.X = self.dataX.randn(sample_size=self.batchsize)
         self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def reward_function_fixed_data(self, p):

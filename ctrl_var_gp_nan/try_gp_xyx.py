@@ -4,6 +4,7 @@ import argparse
 from program import Program
 import regress_task
 from const import ScipyMinimize
+from symbolic_data_generator import *
 from symbolic_equation_evaluator_public import Equation_evaluator
 
 import gp_xyx
@@ -27,6 +28,7 @@ config = {
 
 def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
 
     regress_batchsize = 4
@@ -86,6 +88,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     allowed_input_tokens = np.zeros(nvar, dtype=np.int32)  # set it for now. Will change in gp.run
     Program.task = regress_task.RegressTaskV1(regress_batchsize,
                                               allowed_input_tokens,
+                                              dataXgen,
                                               data_query_oracle)
 
     # set gp helper
@@ -109,6 +112,8 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
 
 def run_gp(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    temp=data_query_oracle.get_vars_range_and_types()
+    dataXgen = DataX(temp)
     nvar = data_query_oracle.get_nvars()
     # nvar = 5
     regress_batchsize = 256
@@ -164,6 +169,7 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     # set the task
     Program.task = regress_task.RegressTaskV1(regress_batchsize,
                                               allowed_input_tokens,
+                                              dataXgen,
                                               data_query_oracle)
 
     # set gp helper

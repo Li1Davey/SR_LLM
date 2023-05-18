@@ -1,2 +1,2 @@
 0
-{"eq_name": "Livermore_1", "num_vars": 1, "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('add', 'binary'), (0.333333333333333, 'const'), ('add', 'binary'), ('X_0', 'var'), ('sin', 'unary'), ('pow', 'binary'), ('X_0', 'var'), (2, 'const')]"}
+{"eq_name": "Livermore_1", "num_vars": 1, "vars_range_and_types": "[{\"name\": \"Uniform\", \"range\": [0.1, 10], \"only_positive\": true}]", "function_set": ["add", "sub", "mul", "div", "sin", "cos", "exp", "log"], "eq_expression": "[('add', 'binary'), (0.333333333333333, 'const'), ('add', 'binary'), ('X_0', 'var'), ('sin', 'unary'), ('pow', 'binary'), ('X_0', 'var'), (2, 'const')]", "expr": "X_0 + sin(X_0**2) + 0.333333333333333"}

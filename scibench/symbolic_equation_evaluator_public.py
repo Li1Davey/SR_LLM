@@ -8,7 +8,6 @@ from sympy import Symbol
 from sympy import parse_expr
 
 from fractions import Fraction
-from collections import defaultdict
 import numpy as np
 import time
 
@@ -23,7 +22,8 @@ class Equation_evaluator(object):
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
 
-        self.true_equation, self.num_vars, self.function_set, self.expr = self.__load_equation(true_equation_filename)
+        self.true_equation, self.num_vars, self.function_set, self.vars_range_and_types, self.expr = self.__load_equation(
+            true_equation_filename)
 
         # metric
         self.metric_name = metric_name
@@ -49,7 +49,8 @@ class Equation_evaluator(object):
         assert len(kwargs_list) == num_vars
         self.num_vars = num_vars
         x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
-        return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set'], parse_expr(one_equation['expr'])
+        return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set'], \
+            one_equation['vars_range_and_types'], parse_expr(one_equation['expr'])
 
     def evaluate(self, X):
         # evaluate the y_true from given input X
@@ -110,6 +111,9 @@ class Equation_evaluator(object):
 
     def _get_eq_name(self):
         return self.eq_name
+
+    def get_vars_range_and_types(self):
+        return self.vars_range_and_types
 
     def get_nvars(self):
         return self.num_vars
