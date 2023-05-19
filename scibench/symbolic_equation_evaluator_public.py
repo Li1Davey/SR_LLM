@@ -36,13 +36,15 @@ class Equation_evaluator(object):
         self.start = time.time()
 
     # Declaring private method. This function cannot be called outside the class.
-    def __load_equation(self, equation_name):
-
+    def __load_equation(self, equation_name, key_filename="encrypted_equation/public.key"):
+        """
+        load the equation. For encrypted equation extra key file is needed.
+        """
         self.eq_name = equation_name
         if not os.path.isfile(self.eq_name):
             raise FileNotFoundError(f"{self.eq_name} not found!")
 
-        one_equation = decrypt_equation(self.eq_name, key_filename="encrypted_equation/public.key")
+        one_equation = decrypt_equation(self.eq_name, key_filename=key_filename)
         num_vars = int(one_equation['num_vars'])
         kwargs_list = [{'real': True} for _ in range(num_vars)]
 
@@ -53,14 +55,19 @@ class Equation_evaluator(object):
             one_equation['vars_range_and_types'], parse_expr(one_equation['expr'])
 
     def evaluate(self, X):
-        # evaluate the y_true from given input X
+        """
+        evaluate the y_true from given input X
+        """
         batch_size, nvar = X.shape
         assert self.num_vars == nvar, f"The number of variables in your input is {nvar}, but we expect {self.num_vars}"
 
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
         y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
-        y_hat = self.get_symbolic_output(X)
+        """
+        the following part is used to double check if the preorder traversal correctly computes the output.
+        """
+        y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
         for y_i, y_hat_i in zip(y_true, y_hat):
             if np.abs(y_i - y_hat_i) > 1e-10:
                 raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
@@ -77,7 +84,6 @@ class Equation_evaluator(object):
                 i = int(x.name[2:])
                 val_dict[x] = X[i]
             y_hat[idx] = self.expr.evalf(subs=val_dict)
-
         return y_hat
 
     def _evaluate_loss(self, X, y_pred):
@@ -98,7 +104,6 @@ class Equation_evaluator(object):
         """
         y_true = self.evaluate(X)
         loss_val_dict = {}
-        metric_params = (1.0,)
         for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred, np.var(y_true))
@@ -524,12 +529,8 @@ def create_tokens(n_input_var: int, function_set: List, protected) -> List:
     protected : bool. Whether to use protected versions of registered Tokens.
     """
 
-    tokens = []
-
     # Create input variable Tokens
-    for i in range(n_input_var):
-        token = sciToken(name="X_{}".format(i), arity=0, complexity=1, function=None, input_var=i)
-        tokens.append(token)
+    tokens = [sciToken(name="X_{}".format(i), arity=0, complexity=1, function=None, input_var=i) for i in range(n_input_var)]
 
     for op in function_set:
         # Registered Token
@@ -539,7 +540,6 @@ def create_tokens(n_input_var: int, function_set: List, protected) -> List:
                 protected_op = "protected_{}".format(op)
                 if protected_op in function_map:
                     op = protected_op
-
             token = function_map[op]
         # Hard-coded floating-point constant
         elif op == 'const':

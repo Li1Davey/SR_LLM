@@ -78,27 +78,27 @@ class RegressionTask(HierarchicalTask):
 
         # Case 1: Named benchmark dataset (shortcut for Case 2)
         if isinstance(dataset, str) and not dataset.endswith(".csv"):
-            dataset = {"name" : dataset}
+            dataset = {"name": dataset}
 
         # Case 2: Benchmark dataset config
         if isinstance(dataset, dict):
-            benchmark = BenchmarkDataset(**dataset)
-            self.X_train = benchmark.X_train
-            self.y_train = benchmark.y_train
-            self.X_test = benchmark.X_test
-            self.y_test = benchmark.y_test
-            self.y_test_noiseless = benchmark.y_test_noiseless
-            self.name = benchmark.name
+            # benchmark = BenchmarkDataset(**dataset)
+            self.X_train = dataset['X_train']
+            self.y_train = dataset['y_train']
+            self.X_test = dataset['X_test']
+            self.y_test = dataset['y_test']
+            self.y_test_noiseless = dataset['y_test_noiseless']
+            self.name = dataset['name']
 
             # For benchmarks, always use the benchmark function_set.
             # Issue a warning if the user tried to supply a different one.
-            if function_set is not None and function_set != benchmark.function_set:
-                print("WARNING: function_set provided when running benchmark "
-                      "problem. The provided function_set will be ignored; the "
-                      "benchmark function_set will be used instead.\nProvided "
-                      "function_set:\n  {}\nBenchmark function_set:\n  {}."
-                      .format(function_set, benchmark.function_set))
-            function_set = benchmark.function_set
+            # if function_set is not None and function_set != benchmark.function_set:
+            #     print("WARNING: function_set provided when running benchmark "
+            #           "problem. The provided function_set will be ignored; the "
+            #           "benchmark function_set will be used instead.\nProvided "
+            #           "function_set:\n  {}\nBenchmark function_set:\n  {}."
+            #           .format(function_set, benchmark.function_set))
+            # function_set = benchmark.function_set
 
         # Case 3: Dataset filename
         elif isinstance(dataset, str) and dataset.endswith("csv"):

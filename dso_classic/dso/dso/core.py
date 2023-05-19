@@ -1,5 +1,5 @@
 """Core deep symbolic optimizer construct."""
-
+import copy
 import warnings
 
 warnings.filterwarnings('ignore', category=FutureWarning)
@@ -25,7 +25,7 @@ from dso.config import load_config
 from dso.tf_state_manager import make_state_manager as manager_make_state_manager
 
 
-class DeepSymbolicOptimizer():
+class DeepSymbolicOptimizer(object):
     """
     Deep symbolic optimization model. Includes model hyperparameters and
     training configuration.
@@ -46,9 +46,30 @@ class DeepSymbolicOptimizer():
         Builds and trains the model according to config.
     """
 
-    def __init__(self, config=None):
+    def __init__(self, config=None, dataX=None, data_query_oracle=None):
         self.set_config(config)
         self.sess = None
+        self.dataX = dataX
+        self.data_query_oracle = data_query_oracle
+        print(f'self.dataX {self.dataX}, self.data_query_oracle: {self.data_query_oracle}')
+        print('generate dataset!')
+        self.generate_and_set_Xy_pairs()
+
+    def generate_and_set_Xy_pairs(self):
+        self.n_samples, self.batch_size = self.config_training['n_samples'], self.config_training['batch_size']
+        X_train = self.dataX.randn(sample_size=self.n_samples)
+        y_train = self.data_query_oracle.evaluate(X_train)
+        X_test = self.dataX.randn(sample_size=self.batch_size)
+        y_test = self.data_query_oracle.evaluate(X_test)
+        y_test_noiseless = self.data_query_oracle.evaluate_noiseless(X_test)
+        self.config_task['dataset'] = {
+            'X_train': X_train,
+            'y_train': y_train,
+            'X_test': X_test,
+            'y_test': y_test,
+            'y_test_noiseless': y_test_noiseless,
+            'name': 'regression'
+        }
 
     def setup(self):
 
@@ -111,7 +132,9 @@ class DeepSymbolicOptimizer():
                     self.config_experiment["seed"] = self.config_experiment["starting_seed"]
                     del self.config_experiment["starting_seed"]
                 with open(path, 'w') as f:
-                    json.dump(self.config, f, indent=3)
+                    cp_config = copy.deepcopy(self.config)
+                    cp_config['task']['dataset'] = 'symbolic_equation_evaluator'
+                    json.dump(cp_config, f, indent=3)
             self.config_experiment["seed"] = backup_seed
 
     def set_seeds(self):

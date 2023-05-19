@@ -4,7 +4,6 @@ import sys
 from pathlib import Path
 import yaml
 import json
-import json
 from cryptography.fernet import Fernet
 from sympy.parsing.sympy_parser import parse_expr
 

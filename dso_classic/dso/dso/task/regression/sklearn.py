@@ -12,12 +12,12 @@ class DeepSymbolicRegressor(DeepSymbolicOptimizer,
     Sklearn interface for deep symbolic regression.
     """
 
-    def __init__(self, config=None):
+    def __init__(self, config=None, dataX=None, data_query_oracle=None):
         if config is None:
             config = {
                 "task": {"task_type": "regression"}
             }
-        DeepSymbolicOptimizer.__init__(self, config)
+        DeepSymbolicOptimizer.__init__(self, config, dataX=None, data_query_oracle=None)
 
     def fit(self, X, y):
         # Update the Task

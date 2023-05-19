@@ -14,8 +14,11 @@ from dso.logeval import LogEval
 from dso.config import load_config
 from dso.utils import safe_update_summary
 
+from dso.symbolic_data_generator import *
+from dso.symbolic_equation_evaluator_public import Equation_evaluator
 
-def train_dso(config):
+
+def train_dso(config, dataX, data_query_oracle):
     """Trains DSO and returns dict of reward, expression, and traversal"""
 
     print("\n== TRAINING SEED {} START ============".format(config["experiment"]["seed"]))
@@ -24,11 +27,11 @@ def train_dso(config):
     # before creating the pool. Otherwise, gym.make() hangs during the pool initializer
     if config["task"]["task_type"] == "control" and config["training"]["n_cores_batch"] > 1:
         import gym
-        import dso.task.control # Registers custom and third-party environments
+        import dso.task.control  # Registers custom and third-party environments
         gym.make(config["task"]["env"])
 
     # Train the model
-    model = DeepSymbolicOptimizer(deepcopy(config))
+    model = DeepSymbolicOptimizer(deepcopy(config), dataX, data_query_oracle)
     start = time.time()
     result = model.train()
     result["t"] = time.time() - start
@@ -61,11 +64,15 @@ def print_summary(config, runs, messages):
 
 @click.command()
 @click.argument('config_template', default="")
+@click.option('--equation_name', '--e', default=None, type=str, help="Name of equation")
+@click.option('--noise_type', '--nt', default='normal', type=str, help="")
+@click.option('--noise_scale', '--ns', default=0.0, type=float, help="")
 @click.option('--runs', '--r', default=1, type=int, help="Number of independent runs with different seeds")
 @click.option('--n_cores_task', '--n', default=1, help="Number of cores to spread out across tasks")
-@click.option('--seed', '--s', default=None, type=int, help="Starting seed (overwrites seed in config), incremented for each independent run")
+@click.option('--seed', '--s', default=None, type=int,
+              help="Starting seed (overwrites seed in config), incremented for each independent run")
 @click.option('--benchmark', '--b', default=None, type=str, help="Name of benchmark")
-def main(config_template, runs, n_cores_task, seed, benchmark):
+def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_task, seed, benchmark):
     """Runs DSO in parallel across multiple seeds using multiprocessing."""
 
     messages = []
@@ -73,6 +80,8 @@ def main(config_template, runs, n_cores_task, seed, benchmark):
     # Load the experiment config
     config_template = config_template if config_template != "" else None
     config = load_config(config_template)
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
 
     # Overwrite named benchmark (for tasks that support them)
     task_type = config["task"]["task_type"]
@@ -107,16 +116,16 @@ def main(config_template, runs, n_cores_task, seed, benchmark):
         n_cores_task = multiprocessing.cpu_count()
     if n_cores_task > runs:
         messages.append(
-                "INFO: Setting 'n_cores_task' to {} because there are only {} runs.".format(
-                    runs, runs))
+            "INFO: Setting 'n_cores_task' to {} because there are only {} runs.".format(
+                runs, runs))
         n_cores_task = runs
     if config["training"]["verbose"] and n_cores_task > 1:
         messages.append(
-                "INFO: Setting 'verbose' to False for parallelized run.")
+            "INFO: Setting 'verbose' to False for parallelized run.")
         config["training"]["verbose"] = False
     if config["training"]["n_cores_batch"] != 1 and n_cores_task > 1:
         messages.append(
-                "INFO: Setting 'n_cores_batch' to 1 to avoid nested child processes.")
+            "INFO: Setting 'n_cores_batch' to 1 to avoid nested child processes.")
         config["training"]["n_cores_batch"] = 1
 
     # Start training
@@ -130,13 +139,13 @@ def main(config_template, runs, n_cores_task, seed, benchmark):
     # Farm out the work
     if n_cores_task > 1:
         pool = multiprocessing.Pool(n_cores_task)
-        for i, (result, summary_path) in enumerate(pool.imap_unordered(train_dso, configs)):
+        for i, (result, summary_path) in enumerate(pool.imap_unordered(train_dso, configs, dataXgen, data_query_oracle)):
             if not safe_update_summary(summary_path, result):
                 print("Warning: Could not update summary stats at {}".format(summary_path))
             print("INFO: Completed run {} of {} in {:.0f} s".format(i + 1, runs, result["t"]))
     else:
         for i, config in enumerate(configs):
-            result, summary_path = train_dso(config)
+            result, summary_path = train_dso(config, dataXgen, data_query_oracle)
             if not safe_update_summary(summary_path, result):
                 print("Warning: Could not update summary stats at {}".format(summary_path))
             print("INFO: Completed run {} of {} in {:.0f} s".format(i + 1, runs, result["t"]))

@@ -5,7 +5,7 @@ from program import Program
 import regress_task
 from const import ScipyMinimize
 from symbolic_data_generator import *
-from symbolic_equation_evaluator_public import Equation_evaluator
+from symbolic_equation_evaluator_public import Equation_evaluator, create_tokens
 
 import gp_xyx
 
@@ -48,23 +48,21 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     n_generations = 100
 
     # get all the functions and variables ready
-    var_x = []
-    for i in range(nvar):
-        xi = Token(None, 'X_' + str(i), 0, 0., i)
-        var_x.append(xi)
-
-    ops = [
-        # Binary operators
-        Token(np.add, "add", arity=2, complexity=1),
-        Token(np.subtract, "sub", arity=2, complexity=1),
-        Token(np.multiply, "mul", arity=2, complexity=1),
-        Token(np.sin, "sin", arity=1, complexity=3),
-        Token(np.cos, "cos", arity=1, complexity=3),
-        # functions.protected_ops[0],  # 'div'
-        functions.protected_ops[5]  # 'inv' '1/x'
-    ]
-    named_const = [PlaceholderConstant(1.0)]
-    protected_library = Library(ops + var_x + named_const)
+    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
+    # var_x = [Token(None, 'X_' + str(i), 0, 0., i) for i in range(nvar)]
+    #
+    # function_set = [
+    #     # Binary operators
+    #     Token(np.add, "add", arity=2, complexity=1),
+    #     Token(np.subtract, "sub", arity=2, complexity=1),
+    #     Token(np.multiply, "mul", arity=2, complexity=1),
+    #     Token(np.sin, "sin", arity=1, complexity=3),
+    #     Token(np.cos, "cos", arity=1, complexity=3),
+    #     # functions.protected_ops[0],  # 'div'
+    #     functions.protected_ops[5]  # 'inv' '1/x'
+    # ]
+    # named_const = [PlaceholderConstant(1.0)]
+    protected_library = Library(all_tokens)
 
     protected_library.print_library()
 
@@ -79,10 +77,6 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     # set const_optimizer
     Program.const_optimizer = ScipyMinimize()
     Program.noise_std = noise_scale
-
-    # read the program
-    # prog = gen_true_program.read_true_program(true_program_file)
-    # true_pr = gen_true_program.build_program(prog, protected_library, 0)
 
     # set the task
     allowed_input_tokens = np.zeros(nvar, dtype=np.int32)  # set it for now. Will change in gp.run
@@ -112,10 +106,10 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
 
 def run_gp(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
-    temp=data_query_oracle.get_vars_range_and_types()
+    temp = data_query_oracle.get_vars_range_and_types()
     dataXgen = DataX(temp)
     nvar = data_query_oracle.get_nvars()
-    # nvar = 5
+
     regress_batchsize = 256
     opt_num_expr = 1  # currently do not need to re-run the experiments multiple times.
 
@@ -129,23 +123,21 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     n_generations = 100  # 00
 
     # get all the functions and variables ready
-    var_x = []
-    for i in range(nvar):
-        xi = Token(None, 'X_' + str(i), 0, 0., i)
-        var_x.append(xi)
-
-    ops = [
-        # Binary operators
-        Token(np.add, "add", arity=2, complexity=1),
-        Token(np.subtract, "sub", arity=2, complexity=1),
-        Token(np.multiply, "mul", arity=2, complexity=1),
-        Token(np.sin, "sin", arity=1, complexity=3),
-        Token(np.cos, "cos", arity=1, complexity=3),
-        # functions.protected_ops[0],  # 'div'
-        functions.protected_ops[5]  # 'inv' '1/x'
-    ]
-    named_const = [PlaceholderConstant(1.0)]
-    protected_library = Library(ops + var_x + named_const)
+    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
+    # var_x = [Token(None, 'X_' + str(i), 0, 0., i) for i in range(nvar)]
+    #
+    # ops = [
+    #     # Binary operators
+    #     Token(np.add, "add", arity=2, complexity=1),
+    #     Token(np.subtract, "sub", arity=2, complexity=1),
+    #     Token(np.multiply, "mul", arity=2, complexity=1),
+    #     Token(np.sin, "sin", arity=1, complexity=3),
+    #     Token(np.cos, "cos", arity=1, complexity=3),
+    #     # functions.protected_ops[0],  # 'div'
+    #     functions.protected_ops[5]  # 'inv' '1/x'
+    # ]
+    # named_const = [PlaceholderConstant(1.0)]
+    protected_library = Library(all_tokens)
 
     protected_library.print_library()
 
@@ -161,10 +153,6 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     # set const_optimizer
     Program.const_optimizer = ScipyMinimize()
     Program.noise_std = noise_scale
-
-    # read the program
-    # prog = gen_true_program.read_true_program(true_program_file)
-    # true_pr = gen_true_program.build_program(prog, protected_library, 0)
 
     # set the task
     Program.task = regress_task.RegressTaskV1(regress_batchsize,
@@ -192,8 +180,8 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument("--equation_name", help="the filename of the true program (pickle dump).")
-    parser.add_argument("--metric_name", type=str, help="The name of the metric.")
+    parser.add_argument("--equation_name", help="the filename of the true program.")
+    parser.add_argument("--metric_name", type=str, help="The name of the metric for loss.")
     parser.add_argument("--noise_type", type=str, help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
     parser.add_argument("--expand_gp", action="store_true", help="whether run normal gp (expand_gp=False) or expand_gp.")
