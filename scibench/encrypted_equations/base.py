@@ -4,7 +4,7 @@ import json
 
 class KnownEquation(object):
     _eq_name = None
-    _function_set = ['exp', 'log', 'sqrt', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['exp', 'log', 'sqrt', 'pow', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self, num_vars, vars_range_and_types=None, kwargs_list=None):
         if kwargs_list is None:
@@ -46,7 +46,6 @@ class LogUniformSampling(DefaultSampling):
 class IntegerUniformSampling(DefaultSampling):
     def __init__(self, min_value, max_value, only_positive=False):
         super().__init__('IntegerUniform', int(min_value), int(max_value), only_positive)
-
 
 
 class UniformSampling(DefaultSampling):

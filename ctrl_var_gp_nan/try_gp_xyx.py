@@ -49,6 +49,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
+    print("all tokens:", all_tokens)
     # var_x = [Token(None, 'X_' + str(i), 0, 0., i) for i in range(nvar)]
     #
     # function_set = [
@@ -124,6 +125,7 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
+    print("all tokens:", all_tokens)
     # var_x = [Token(None, 'X_' + str(i), 0, 0., i) for i in range(nvar)]
     #
     # ops = [
