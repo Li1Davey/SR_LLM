@@ -54,7 +54,7 @@ class Equation_evaluator(object):
         return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set'], \
             one_equation['vars_range_and_types'], parse_expr(one_equation['expr'])
 
-    def evaluate(self, X):
+    def evaluate(self, X, debug_mode=False):
         """
         evaluate the y_true from given input X
         """
@@ -67,10 +67,11 @@ class Equation_evaluator(object):
         """
         the following part is used to double check if the preorder traversal correctly computes the output.
         """
-        y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
-        for y_i, y_hat_i in zip(y_true, y_hat):
-            if np.abs(y_i - y_hat_i) > 1e-10:
-                raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
+        if debug_mode == True:
+            y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
+            for y_i, y_hat_i in zip(y_true, y_hat):
+                if np.abs(y_i - y_hat_i) > 1e-10:
+                    raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
 
         return y_true
 
@@ -530,7 +531,7 @@ def create_tokens(n_input_var: int, function_set: List, protected) -> List:
     """
 
     # Create input variable Tokens
-    tokens = [sciToken(name="X_{}".format(i), arity=0, complexity=1, function=None, input_var=i) for i in range(n_input_var)]
+    tokens = [sciToken(name="X_{}".format(i), arity=0, complexity=0.0, function=None, input_var=i) for i in range(n_input_var)]
 
     for op in function_set:
         # Registered Token
@@ -546,10 +547,10 @@ def create_tokens(n_input_var: int, function_set: List, protected) -> List:
             token = PlaceholderConstant(1.0)
         else:
             raise ValueError("Operation {} not recognized.".format(op))
+        if token not in tokens:
+            tokens.append(token)
 
-        tokens.append(token)
-
-    return list(set(tokens))
+    return tokens
 
 
 class sciProgram(object):

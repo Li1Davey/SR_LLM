@@ -31,7 +31,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
 
-    regress_batchsize = 4
+    regress_batchsize = 256
     opt_num_expr = 5
 
     expr_obj_thres = config[metric_name]['expr_obj_thres']
@@ -48,22 +48,22 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     n_generations = 100
 
     # get all the functions and variables ready
-    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
-    print("all tokens:", all_tokens)
-    # var_x = [Token(None, 'X_' + str(i), 0, 0., i) for i in range(nvar)]
-    #
-    # function_set = [
-    #     # Binary operators
-    #     Token(np.add, "add", arity=2, complexity=1),
-    #     Token(np.subtract, "sub", arity=2, complexity=1),
-    #     Token(np.multiply, "mul", arity=2, complexity=1),
-    #     Token(np.sin, "sin", arity=1, complexity=3),
-    #     Token(np.cos, "cos", arity=1, complexity=3),
-    #     # functions.protected_ops[0],  # 'div'
-    #     functions.protected_ops[5]  # 'inv' '1/x'
-    # ]
-    # named_const = [PlaceholderConstant(1.0)]
-    protected_library = Library(all_tokens)
+    # all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=False)
+    var_x = []
+    for i in range(nvar):
+        xi = Token(None, 'X_' + str(i), 0, 0., i)
+        var_x.append(xi)
+
+    ops = [
+        # Binary operators
+        Token(np.add, "add", arity=2, complexity=1),
+        Token(np.subtract, "sub", arity=2, complexity=1),
+        Token(np.multiply, "mul", arity=2, complexity=1),
+        Token(np.sin, "sin", arity=1, complexity=3),
+        Token(np.cos, "cos", arity=1, complexity=3),
+    ]
+    named_const = [PlaceholderConstant(1.0)]
+    protected_library = Library(ops + var_x + named_const)
 
     protected_library.print_library()
 
@@ -125,20 +125,7 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
-    print("all tokens:", all_tokens)
-    # var_x = [Token(None, 'X_' + str(i), 0, 0., i) for i in range(nvar)]
-    #
-    # ops = [
-    #     # Binary operators
-    #     Token(np.add, "add", arity=2, complexity=1),
-    #     Token(np.subtract, "sub", arity=2, complexity=1),
-    #     Token(np.multiply, "mul", arity=2, complexity=1),
-    #     Token(np.sin, "sin", arity=1, complexity=3),
-    #     Token(np.cos, "cos", arity=1, complexity=3),
-    #     # functions.protected_ops[0],  # 'div'
-    #     functions.protected_ops[5]  # 'inv' '1/x'
-    # ]
-    # named_const = [PlaceholderConstant(1.0)]
+
     protected_library = Library(all_tokens)
 
     protected_library.print_library()
