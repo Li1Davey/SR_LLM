@@ -38,19 +38,19 @@ class RegressTaskV1(object):
         self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
     def rand_draw_X_fixed(self):
-        self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
-        # self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
+        # self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
+        self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
 
     def rand_draw_data(self):
-        self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
-        self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
-        # self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
-        # self.X = self.dataX.randn(sample_size=self.batchsize)
+        # self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
+        # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
+        self.X = self.dataX.randn(sample_size=self.batchsize)
         self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def rand_draw_X_nonfixed(self):
-        self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
-        # self.X = self.dataX.randn(sample_size=self.batchsize)
+        # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        self.X = self.dataX.randn(sample_size=self.batchsize)
         self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def reward_function_fixed_data(self, p):
@@ -62,7 +62,6 @@ class RegressTaskV1(object):
         y_hat = p.execute(self.X)
         dict_of_result = self.data_query_oracle._evaluate_all_losses(self.X, y_hat)
         print('%' * 30)
-
         for mertic_name in dict_of_result:
             print(f"{mertic_name} {dict_of_result[mertic_name]}")
         print('%' * 30)
