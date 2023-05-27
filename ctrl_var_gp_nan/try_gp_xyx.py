@@ -50,21 +50,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=False)
     protected_library = Library(all_tokens)
-    # var_x = []
-    # for i in range(nvar):
-    #     xi = Token(None, 'X_' + str(i), 0, 0., i)
-    #     var_x.append(xi)
-    #
-    # ops = [
-    #     # Binary operators
-    #     Token(np.add, "add", arity=2, complexity=1),
-    #     Token(np.subtract, "sub", arity=2, complexity=1),
-    #     Token(np.multiply, "mul", arity=2, complexity=1),
-    #     Token(np.sin, "sin", arity=1, complexity=3),
-    #     Token(np.cos, "cos", arity=1, complexity=3),
-    # ]
-    # named_const = [PlaceholderConstant(1.0)]
-    # protected_library = Library(ops + var_x + named_const)
+
 
 
     protected_library.print_library()
@@ -104,7 +90,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     # print
     print('final hof=')
     gp.print_hof()
-    print('gp.timer_log=', gp.timer_log)
+    print('egp.timer_log=', gp.timer_log)
 
 
 def run_gp(equation_name, metric_name, noise_type, noise_scale):
