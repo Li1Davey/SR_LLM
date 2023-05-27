@@ -120,7 +120,7 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     cxpb = 0.5
     mutpb = 0.5
     maxdepth = 2
-    population_size = 25  # 00 #00
+    population_size = 25  # 00
     tour_size = 3
     hof_size = 10
     n_generations = 100  # 00
