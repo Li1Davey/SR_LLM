@@ -66,11 +66,11 @@ class RegressTaskV1(object):
             print(f"{mertic_name} {dict_of_result[mertic_name]}")
         print('%' * 30)
 
-
     def reward_function(self, p):
         # p is a program.
         #
-        X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        # X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
+        X = self.dataX.randn(sample_size=self.batchsize)
         # fixec colum coresponds to the fixed random variables. every time you use the same value
         X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
         y_hat = p.execute(X)
