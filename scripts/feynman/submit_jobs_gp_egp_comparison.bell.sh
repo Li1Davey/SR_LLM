@@ -2,10 +2,9 @@
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 
-
 thispath=$basepath/ctrl_var_gp_nan
 data_path=$basepath/data/unencrypted/equations_feynman
-
+py3615=/home/jiang631/workspace/miniconda3/envs/py3615/bin/python3
 
 noise_type=normal
 noise_scale=0.0
@@ -13,16 +12,16 @@ metric_name=neg_mse
 all_equations=`ls $data_path/Feynman*.in`
 for eq_name in $all_equations;
 do
-    echo "submit $eq_name"
+    echo "Submitted $eq_name"
     short_name=$(basename "$eq_name")
     trimed_name=${short_name:7:-3}
-   	dump_dir=$basepath/result/${eq_name}/$(date +%F)
+   	dump_dir=$basepath/result/Feynman/$(date +%F)
     if [ ! -d "$dump_dir" ]
     then
     	echo "create dir: $dump_dir"
     	mkdir -p $dump_dir
 	fi
-	log_dir=$basepath/log/$(date +%F)
+	log_dir=$basepath/log/Feynman/$(date +%F)/
 	if [ ! -d "$log_dir" ]
 	then
     	echo "create dir: $log_dir"
@@ -39,10 +38,7 @@ do
 
 hostname
 
-module load anaconda
-
-
-python3 $thispath/try_gp_xyx.py --equation_name $eq_name \
+$py3615  $thispath/try_gp_xyx.py --equation_name $eq_name \
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
         		 > $dump_dir/${short_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
 
@@ -59,12 +55,10 @@ EOT
 
 hostname
 
-module load anaconda
 
-
-python3 $thispath/try_gp_xyx.py --equation_name $eq_name --expand_gp \
+$py3615  $thispath/try_gp_xyx.py --equation_name $eq_name --expand_gp \
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/${short_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.egp.out
+        		 > $dump_dir/${short_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.egp.out
 
 EOT
 
