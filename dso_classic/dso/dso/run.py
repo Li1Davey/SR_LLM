@@ -18,7 +18,7 @@ from dso.symbolic_data_generator import *
 from dso.symbolic_equation_evaluator_public import Equation_evaluator
 
 
-def train_dso(config, dataX, data_query_oracle):
+def train_dso(config, dataX, data_query_oracle, config_filename):
     """Trains DSO and returns dict of reward, expression, and traversal"""
 
     print("\n== TRAINING SEED {} START ============".format(config["experiment"]["seed"]))
@@ -31,7 +31,7 @@ def train_dso(config, dataX, data_query_oracle):
         gym.make(config["task"]["env"])
 
     # Train the model
-    model = DeepSymbolicOptimizer(deepcopy(config), dataX, data_query_oracle)
+    model = DeepSymbolicOptimizer(deepcopy(config), dataX, data_query_oracle, config_filename)
     start = time.time()
     result = model.train()
     result["t"] = time.time() - start
