@@ -68,7 +68,8 @@ class DeepSymbolicOptimizer(object):
             'X_test': X_test,
             'y_test': y_test,
             'y_test_noiseless': y_test_noiseless,
-            'name': 'regression'
+            'name': "_".join(['regression', self.data_query_oracle._get_eq_name(), self.data_query_oracle.noise_type,
+                              str(self.data_query_oracle.noise_scale)])
         }
 
     def setup(self):
