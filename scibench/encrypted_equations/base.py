@@ -4,7 +4,7 @@ import json
 
 class KnownEquation(object):
     _eq_name = None
-    _function_set = ['exp', 'log', 'sqrt', 'pow', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set =  ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const'] #['exp', 'log', 'sqrt', 'pow', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self, num_vars, vars_range_and_types=None, kwargs_list=None):
         if kwargs_list is None:
@@ -20,7 +20,7 @@ class KnownEquation(object):
         if self.vars_range_and_types:
             return json.dumps([one.to_dict() for one in self.vars_range_and_types])
         else:
-            default = {'name': 'Uniform',
+            default = {'name': 'LogUniform',
                        'range': [0.1, 10],
                        'only_positive': True}
             return json.dumps([default for _ in range(self.num_vars)])

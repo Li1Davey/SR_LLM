@@ -1,11 +1,7 @@
 import pandas as pd
 import os
-from typing import List
-import numpy as np
 import click
-import sympy
-import itertools
-from sympy import *
+
 
 prefix = """from collections import OrderedDict
 import sympy

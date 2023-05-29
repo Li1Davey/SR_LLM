@@ -60,10 +60,10 @@ class Equation_evaluator(object):
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
         y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
-        y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
-        for y_i, y_hat_i in zip(y_true, y_hat):
-            if np.abs(y_i - y_hat_i) > 1e-10:
-                raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
+        # y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
+        # for y_i, y_hat_i in zip(y_true, y_hat):
+        #     if np.abs(y_i - y_hat_i) > 1e-10:
+        #         raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
 
         return y_true
 
@@ -75,10 +75,10 @@ class Equation_evaluator(object):
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
         y_true = self.true_equation.execute(X)
-        y_hat = self.get_symbolic_output(X)
-        for y_i, y_hat_i in zip(y_true, y_hat):
-            if np.abs(y_i - y_hat_i) > 1e-10:
-                raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
+        # y_hat = self.get_symbolic_output(X)
+        # for y_i, y_hat_i in zip(y_true, y_hat):
+        #     if np.abs(y_i - y_hat_i) > 1e-10:
+        #         raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
 
         return y_true
 

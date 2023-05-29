@@ -149,20 +149,20 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
         encrypt_equation(user_encode_data, output_eq_file, is_encrypted=0)
 
         decrypt_equation(output_eq_file)
-        print('paused!')
+
 
 
 if __name__ == '__main__':
     from equations_feynman import *
 
-    #
+
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
-    from equations_dso import *
+    # from equations_dso import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_dso')
 
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_dso')
-
-    from equations_trigometric import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
+    # from equations_trigometric import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
 
 #

@@ -67,7 +67,7 @@ class Equation_evaluator(object):
         """
         the following part is used to double check if the preorder traversal correctly computes the output.
         """
-        if debug_mode == True:
+        if debug_mode:
             y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
             for y_i, y_hat_i in zip(y_true, y_hat):
                 if np.abs(y_i - y_hat_i) > 1e-10:
@@ -188,7 +188,7 @@ def decrypt_equation(eq_file, key_filename=None):
     preorder_traversal = eval(one_equation['eq_expression'])
     preorder_traversal = [tt[0] for tt in preorder_traversal]
     print(preorder_traversal)
-    list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
+    list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=False)
     if 'pow' in preorder_traversal:
         list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1)]
     protected_library = sciLibrary(list_of_tokens)

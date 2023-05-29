@@ -17,7 +17,7 @@ class DeepSymbolicRegressor(DeepSymbolicOptimizer,
             config = {
                 "task": {"task_type": "regression"}
             }
-        DeepSymbolicOptimizer.__init__(self, config, dataX=None, data_query_oracle=None)
+        DeepSymbolicOptimizer.__init__(self, config, dataX=dataX, data_query_oracle=data_query_oracle)
 
     def fit(self, X, y):
         # Update the Task
