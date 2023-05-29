@@ -40,7 +40,7 @@ class Equation_evaluator(object):
 
         self.eq_name = equation_name
         if not os.path.isfile(self.eq_name):
-            raise FileNotFoundError(f"{self.eq_name} not found!")
+            raise FileNotFoundError("{} not found!".format(self.eq_name))
 
         one_equation = decrypt_equation(self.eq_name, key_filename="encrypted_equation/public.key")
         num_vars = int(one_equation['num_vars'])
