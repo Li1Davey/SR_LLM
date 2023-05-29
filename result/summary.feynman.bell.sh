@@ -2,7 +2,7 @@
 
 basepath=/home/jiang631/data/scibench
 datasource=Feynman
-dates=2023-05-12
+dates=2023-05-29
 metric=neg_mse
 python parse_results.py --fp $basepath/result/$datasource/$dates/ \
 --metric $metric \
