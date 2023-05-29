@@ -31,7 +31,7 @@ for pgn in FeynmanBonus10.in FeynmanBonus1.in FeynmanICh10Eq7.in FeynmanICh14Eq4
 
 hostname
 
-$py3615 -m dso.run $basepath/dso_classic/config/config_regression_${bsl}.json --equation_name equation_name --noise_type normal --noise_scale 0.0  > $dump_dir/$pgn.${bsl}.out
+$py3615 -m dso.run $basepath/dso_classic/config/config_regression_${bsl}.json --equation_name $equation_name --noise_type normal --noise_scale 0.0  > $dump_dir/$pgn.${bsl}.out
 
 EOT
 
