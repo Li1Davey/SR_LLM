@@ -46,12 +46,14 @@ class RegressTaskV1(object):
         # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
         self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
         self.X = self.dataX.randn(sample_size=self.batchsize)
-        self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
+        if len(self.fixed_column):
+            self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def rand_draw_X_nonfixed(self):
         # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
         self.X = self.dataX.randn(sample_size=self.batchsize)
-        self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
+        if len(self.fixed_column):
+            self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def reward_function_fixed_data(self, p):
         y_hat = p.execute(self.X)
@@ -72,6 +74,7 @@ class RegressTaskV1(object):
         # X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
         X = self.dataX.randn(sample_size=self.batchsize)
         # fixec colum coresponds to the fixed random variables. every time you use the same value
-        X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
+        if len(self.fixed_column):
+            X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
         y_hat = p.execute(X)
         return self.data_query_oracle._evaluate_loss(X, y_hat)
