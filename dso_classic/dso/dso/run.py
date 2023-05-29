@@ -49,7 +49,8 @@ def print_summary(config, runs, messages):
     text = '\n== EXPERIMENT SETUP START ===========\n'
     text += 'Task type            : {}\n'.format(config["task"]["task_type"])
     if config["task"]["task_type"] == "regression":
-        text += 'Dataset              : {}\n'.format(config["task"]["dataset"])
+        # text += 'Dataset              : {}\n'.format(config["task"]["dataset"])
+        pass
     elif config["task"]["task_type"] == "control":
         text += 'Environment          : {}\n'.format(config["task"]["env"])
     text += 'Starting seed        : {}\n'.format(config["experiment"]["seed"])
