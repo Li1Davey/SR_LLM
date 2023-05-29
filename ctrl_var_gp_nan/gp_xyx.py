@@ -215,7 +215,10 @@ class ExpandingGeneticProgram(object):
     def selectTournament(self, population_size, tour_size):
         offspring = []
         for pp in range(population_size):
-            spr = random.sample(self.population, tour_size)
+            if len(self.population) <= tour_size:
+                spr = self.population
+            else:
+                spr = random.sample(self.population, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
             # maxspri = copy.deepcopy(maxspr)
             # if "expr_objs" in maxspr.__dict__:
@@ -403,7 +406,10 @@ class GeneticProgram(object):
         # higher fitness score has higher chance to be survive in the next generation.
         for pp in range(population_size):
             # random sample  tor_size number of individual
-            spr = random.sample(self.population, tour_size)
+            if len(self.population)<= tour_size:
+                spr=self.population
+            else:
+                spr = random.sample(self.population, tour_size)
             # select the guys has the highest fit
             maxspr = max(spr, key=attrgetter('r'))
             # maxspri = copy.deepcopy(maxspr)

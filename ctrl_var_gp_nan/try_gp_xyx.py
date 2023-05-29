@@ -40,15 +40,15 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     # gp parameters
     cxpb = 0.5
     mutpb = 0.5
-    maxdepth = 2
-    tour_size = 3
-    hof_size = 10
+    maxdepth = 4
+    tour_size = 6
+    hof_size = 20
 
-    population_size = 25  # 00
+    population_size = 50  # 00
     n_generations = 100
 
     # get all the functions and variables ready
-    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=False)
+    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
     protected_library = Library(all_tokens)
 
 
@@ -81,16 +81,16 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     # set GP
     gp_xyx.ExpandingGeneticProgram.library = protected_library
     gp_xyx.ExpandingGeneticProgram.gp_helper = gp_helper
-    gp = gp_xyx.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
+    egp = gp_xyx.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
                                         tour_size, hof_size, n_generations, nvar)
 
     # run GP
-    gp.run()
+    egp.run()
 
     # print
     print('final hof=')
-    gp.print_hof()
-    print('egp.timer_log=', gp.timer_log)
+    egp.print_hof()
+    print('egp.timer_log=', egp.timer_log)
 
 
 def run_gp(equation_name, metric_name, noise_type, noise_scale):
@@ -105,10 +105,10 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     # gp parameters
     cxpb = 0.5
     mutpb = 0.5
-    maxdepth = 2
-    population_size = 25  # 00
-    tour_size = 3
-    hof_size = 10
+    maxdepth = 4
+    population_size = 50  # 00
+    tour_size = 6
+    hof_size = 20
     n_generations = 100  # 00
 
     # get all the functions and variables ready
