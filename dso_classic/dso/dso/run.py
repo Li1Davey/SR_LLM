@@ -140,13 +140,13 @@ def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_
     # Farm out the work
     if n_cores_task > 1:
         pool = multiprocessing.Pool(n_cores_task)
-        for i, (result, summary_path) in enumerate(pool.imap_unordered(train_dso, configs, dataXgen, data_query_oracle)):
+        for i, (result, summary_path) in enumerate(pool.imap_unordered(train_dso, configs, dataXgen, data_query_oracle, config_template)):
             if not safe_update_summary(summary_path, result):
                 print("Warning: Could not update summary stats at {}".format(summary_path))
             print("INFO: Completed run {} of {} in {:.0f} s".format(i + 1, runs, result["t"]))
     else:
         for i, config in enumerate(configs):
-            result, summary_path = train_dso(config, dataXgen, data_query_oracle)
+            result, summary_path = train_dso(config, dataXgen, data_query_oracle, config_template)
             if not safe_update_summary(summary_path, result):
                 print("Warning: Could not update summary stats at {}".format(summary_path))
             print("INFO: Completed run {} of {} in {:.0f} s".format(i + 1, runs, result["t"]))

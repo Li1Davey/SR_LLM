@@ -46,8 +46,8 @@ class DeepSymbolicOptimizer(object):
         Builds and trains the model according to config.
     """
 
-    def __init__(self, config=None, dataX=None, data_query_oracle=None):
-        self.config_filename=config
+    def __init__(self, config=None, dataX=None, data_query_oracle=None, config_filename=None):
+        self.config_filename = config_filename
         self.set_config(config)
         self.sess = None
         self.dataX = dataX
