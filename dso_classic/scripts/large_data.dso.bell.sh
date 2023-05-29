@@ -10,18 +10,19 @@ for pgn in FeynmanBonus10.in FeynmanBonus1.in FeynmanICh10Eq7.in FeynmanICh14Eq4
 		echo "create output dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	dump_dir=$basepath/result/Feynman/$(date +%F)
-	if [ ! -d "$dump_dir" ]; then
-		echo "create dir: $dump_dir"
-		mkdir -p $dump_dir
+	log_dir=$basepath/log/$(date +%F)
+	if [ ! -d "$log_dir" ]
+	then
+    	echo "create dir: $log_dir"
+    	mkdir -p $log_dir
 	fi
 	for bsl in DSR PQT VPG GPMELD; do
 		echo $bsl, $(date +'%R/%m/%d/%Y')
 		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=8 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="$bsl-medium${pgn}"
-#SBATCH --output=$log_dir/run_${bsl}_${pgn}_metric_${metric}.out
+#SBATCH --job-name="$bsl-{pgn}"
+#SBATCH --output=$log_dir/run_${bsl}_${pgn}.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
 #SBATCH --mem=4096MB
