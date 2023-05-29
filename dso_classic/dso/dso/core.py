@@ -47,6 +47,7 @@ class DeepSymbolicOptimizer(object):
     """
 
     def __init__(self, config=None, dataX=None, data_query_oracle=None):
+        self.config_filename=config
         self.set_config(config)
         self.sess = None
         self.dataX = dataX
@@ -62,13 +63,17 @@ class DeepSymbolicOptimizer(object):
         X_test = self.dataX.randn(sample_size=self.batch_size)
         y_test = self.data_query_oracle.evaluate(X_test)
         y_test_noiseless = self.data_query_oracle.evaluate_noiseless(X_test)
+        # print("_".join(['regression', self.data_query_oracle._get_eq_name().split('/')[-1], self.data_query_oracle.noise_type,
+        #                       str(self.data_query_oracle.noise_scale)])
         self.config_task['dataset'] = {
             'X_train': X_train,
             'y_train': y_train,
             'X_test': X_test,
             'y_test': y_test,
             'y_test_noiseless': y_test_noiseless,
-            'name': "_".join(['regression', self.data_query_oracle._get_eq_name(), self.data_query_oracle.noise_type,
+            'name': "_".join(['regression', self.config_filename.split("/")[-1],
+                              self.data_query_oracle._get_eq_name().split('/')[-1],
+                              self.data_query_oracle.noise_type,
                               str(self.data_query_oracle.noise_scale)])
         }
 
