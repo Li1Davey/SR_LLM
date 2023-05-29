@@ -1,4 +1,5 @@
 #!/usr/bin/zsh
+#basepath=/home/jiangnan/PycharmProjects/scibench
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 py3615=/home/jiangnan/anaconda3/envs/py3615/bin/python3
 
@@ -11,17 +12,16 @@ for pgn in FeynmanBonus10.in FeynmanBonus1.in FeynmanICh10Eq7.in FeynmanICh14Eq4
 		mkdir -p $dump_dir
 	fi
 	log_dir=$basepath/log/$(date +%F)
-	if [ ! -d "$log_dir" ]
-	then
-    	echo "create dir: $log_dir"
-    	mkdir -p $log_dir
+	if [ ! -d "$log_dir" ]; then
+		echo "create dir: $log_dir"
+		mkdir -p $log_dir
 	fi
 	for bsl in DSR PQT VPG GPMELD; do
 		echo $bsl, $(date +'%R/%m/%d/%Y')
 		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=8 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="$bsl-{pgn}"
+#SBATCH --job-name="$bsl-${pgn}"
 #SBATCH --output=$log_dir/run_${bsl}_${pgn}.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
@@ -33,9 +33,7 @@ $py3615 -m dso.run $basepath/dso_classic/config/config_regression_${bsl}.json --
 
 EOT
 
-        done
-    done
-done
 	done
 done
+
 #done
