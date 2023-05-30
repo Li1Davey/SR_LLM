@@ -53,7 +53,7 @@ def extract(row, function_set_dict):
 @click.command()
 @click.option('--benchmark_file', default="./dso_benchmarks.csv")
 @click.option('--function_set_file', default="dso_function_sets.csv")
-@click.option('--output_file', default="./equations_dso.py")
+@click.option('--output_file', default="./equations_others.py")
 def main(benchmark_file, function_set_file, output_file):
     all_bench_equations = pd.read_csv(benchmark_file)
     function_sets = pd.read_csv(function_set_file)

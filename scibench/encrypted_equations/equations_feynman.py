@@ -123,7 +123,7 @@ class FeynmanICh8Eq14(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.8.14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'n2']  #
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'const']  #
 
     def __init__(self, vars_range_and_types=None):
         if vars_range_and_types is None:
