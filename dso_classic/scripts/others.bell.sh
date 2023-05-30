@@ -8,12 +8,12 @@ for pgn in Constant_1.in Keijzer_1.in Livermore_10.in Livermore2_Vars2_17.in Liv
 	trimed_name=${pgn:-3}
 	echo "submit $trimed_name"
 	equation_name=$basepath/data/unencrypted/equations_others/$pgn
-	dump_dir=$basepath/result/Feynman/$(date +%F)
+	dump_dir=$basepath/result/Others/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create output dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	log_dir=$basepath/log/Feynman/$(date +%F)
+	log_dir=$basepath/log/Others/$(date +%F)
 	if [ ! -d "$log_dir" ]; then
 		echo "create dir: $log_dir"
 		mkdir -p $log_dir
