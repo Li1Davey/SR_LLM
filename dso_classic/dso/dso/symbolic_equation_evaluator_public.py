@@ -21,7 +21,6 @@ class Equation_evaluator(object):
         noise_type, noise_scale: the type and scale of noise.
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
-
         self.true_equation, self.num_vars, self.function_set, self.vars_range_and_types, self.expr = self.__load_equation(
             true_equation_filename)
 
@@ -37,10 +36,11 @@ class Equation_evaluator(object):
 
     # Declaring private method. This function cannot be called outside the class.
     def __load_equation(self, equation_name):
-
         self.eq_name = equation_name
         if not os.path.isfile(self.eq_name):
-            raise FileNotFoundError("{} not found!".format(self.eq_name))
+            print(self.eq_name, "file not found")
+            exit()
+            #raise FileNotFoundError("{} not found!".format(self.eq_name))
 
         one_equation = decrypt_equation(self.eq_name, key_filename="encrypted_equation/public.key")
         num_vars = int(one_equation['num_vars'])
