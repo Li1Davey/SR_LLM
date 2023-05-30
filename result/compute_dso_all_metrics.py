@@ -11,6 +11,8 @@ import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
 import scipy
 from sklearn.metrics import r2_score
+from symbolic_data_generator import DataX
+from symbolic_equation_evaluator_public import Equation_evaluator
 
 
 def read_dso_expression(csv_file, X_test):
@@ -33,64 +35,51 @@ def read_dso_expression(csv_file, X_test):
     return y_hat
 
 
-def load_true_program(true_program_file, allow_change_const=0):
-    def get_library(nvar=5):
-        # get all the functions and variables ready
-        var_x = []
-        for i in range(nvar):
-            xi = Token(None, 'X_' + str(i), 0, 0., i)
-            var_x.append(xi)
-
-        ops = [
-            # Binary operators
-            functions.unprotected_ops[0],
-            functions.unprotected_ops[1],
-            functions.unprotected_ops[2],
-            functions.unprotected_ops[3],
-            functions.unprotected_ops[4],
-            functions.unprotected_ops[5],
-            functions.protected_ops[0],  # 'div'
-            functions.protected_ops[5]  # 'inv' '1/x'
-        ]
-        named_const = [PlaceholderConstant(1.0)]
-        protected_library = Library(ops + var_x + named_const)
-
-        # protected_library.print_library()
-        return protected_library
-
-    prog = pickle.load(open(true_program_file, 'rb'))
-    # print('preorder=', prog['preorder'])
-    # print('const_loc=', prog['const_loc'])
-    # print('consts=', prog['consts'])
-
-    vars = set([x for x in prog["preorder"] if "X_" in x])
-    protected_library = get_library(len(vars))
-    # relevant hyper parameters
-    opt_num_expr = 5
-
-    # get program ready
-    Program.library = protected_library
-    Program.opt_num_expr = opt_num_expr
-
-    Program.set_execute(True)  # protected = True
-
-    # set const_optimizer
-    Program.const_optimizer = ScipyMinimize()
-
-    preorder_actions = protected_library.actionize(prog['preorder'])
-    true_pr_allow_change = allow_change_const * np.ones(len(prog['preorder']), dtype=np.int32)
-    true_pr = Program(tokens=preorder_actions)
-    # allow_change_tokens=true_pr_allow_change)
-    for loc, c in zip(prog['const_loc'], prog['consts']):
-        true_pr.traversal[loc] = PlaceholderConstant(c)
-    return true_pr, len(vars)
+def load_true_program(equation_name, metric_name, noise_type, noise_scale):
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    nvar = data_query_oracle.get_nvars()
 
 
-def compute_eureqa_all_metrics(true_program_file, expr_str, testset_size, noise_std=0.0):
-    true_pr, nvar = load_true_program(true_program_file)
-    print('true:\n', true_pr.pretty()[0])
-    X_test = np.random.randn(testset_size, nvar)
-    y_test = true_pr.execute(X_test) + np.random.normal(0.0, scale=noise_std, size=testset_size)
+def compute_dso_all_metrics(equation_name, noise_type, noise_scale, csv_file, testset_size, metric_name="neg_mse"):
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    nvar = data_query_oracle.get_nvars()
+
+    X_test = dataXgen.randn(testset_size)
+    y_test = data_query_oracle.evaluate(X_test)
+
+    # Compute predictions on test data
+    y_hat = read_dso_expression(csv_file, X_test)
+
+    ## add all metrics
+
+    print('%' * 30)
+    dict_of_rs = {}
+    for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
+        metric_params = (1.0,)
+        metric = make_regression_metric(metric_name, *metric_params)
+        r = metric(y_test, y_hat, np.var(y_test))
+        dict_of_rs[metric_name] = r
+        # print('{} {}'.format(metric_name, r))
+
+    for metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        metric_params = [1.0, ]
+        metric = make_regression_metric(metric_name, *metric_params)
+        r = metric(y_test, y_hat)
+        # print('{} {}'.format(metric_name, r))
+        dict_of_rs[metric_name] = r
+    # dict_of_rs['r2_score'] = r2_score(y_test, y_hat)
+    return dict_of_rs
+
+
+def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_str, testset_size, metric_name=""):
+    data_query_oracle = Equation_evaluator(equation_filename, noise_type, noise_scale, metric_name)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    nvar = data_query_oracle.get_nvars()
+
+    X_test = dataXgen.randn(testset_size)
+    y_test = data_query_oracle.evaluate(X_test)
     # y_test_noiseless = y_test
     expr_str = expr_str.replace("^", "**")
     print("orig expr string:", expr_str)
@@ -113,7 +102,6 @@ def compute_eureqa_all_metrics(true_program_file, expr_str, testset_size, noise_
         metric = make_regression_metric(metric_name, *metric_params)
         r = metric(y_test, y_hat, np.var(y_test))
         dict_of_rs[metric_name] = r
-        # print('{} {}'.format(metric_name, r))
 
     for metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
         metric_params = [1.0, ]
@@ -121,37 +109,6 @@ def compute_eureqa_all_metrics(true_program_file, expr_str, testset_size, noise_
         r = metric(y_test, y_hat)
         dict_of_rs[metric_name] = r
 
-    return dict_of_rs
-
-
-def compute_dso_all_metrics(true_program_file, csv_file, testset_size, noise_std=0.0):
-    true_pr, nvar = load_true_program(true_program_file)
-    print('true:\n', true_pr.pretty()[0])
-    X_test = np.random.randn(testset_size, nvar)
-    y_test = true_pr.execute(X_test) + np.random.normal(0.0, scale=noise_std, size=testset_size)
-    y_test_noiseless = y_test
-
-    # Compute predictions on test data
-    y_hat = read_dso_expression(csv_file, X_test)
-
-    ## add all metrics
-
-    print('%' * 30)
-    dict_of_rs = {}
-    for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
-        metric_params = (1.0,)
-        metric = make_regression_metric(metric_name, *metric_params)
-        r = metric(y_test, y_hat, np.var(y_test))
-        dict_of_rs[metric_name] = r
-        # print('{} {}'.format(metric_name, r))
-
-    for metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
-        metric_params = [1.0, ]
-        metric = make_regression_metric(metric_name, *metric_params)
-        r = metric(y_test, y_hat)
-        # print('{} {}'.format(metric_name, r))
-        dict_of_rs[metric_name] = r
-    dict_of_rs['r2_score'] = r2_score(y_test, y_hat)
     return dict_of_rs
 
 

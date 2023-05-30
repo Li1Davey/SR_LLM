@@ -1,6 +1,7 @@
 #!/bin/bash -l
-
-basepath=/home/jiang631/data/scibench
+set -x
+#basepath=/home/jiang631/data/scibench
+basepath=/home/jiangnan/PycharmProjects/scibench
 datasource=Feynman
 dates=2023-05-29
 metric=neg_mse
