@@ -50,9 +50,9 @@ def parse_gp_file(filename, verbose=False):
 
 def parse_dso_file(dso_log_filename, true_program_file, basepath, noise_std=0.0):
     if not os.path.isfile(dso_log_filename):
-        print(dso_log_filename + 'does not exist')
+        print(dso_log_filename + ' does not exist')
     if not os.path.isfile(true_program_file):
-        print(true_program_file + 'does not exisits')
+        print(true_program_file + ' does not exisits')
     # print(dso_log_filename)
     inp = open(dso_log_filename, 'r')
     l = read_until_line_starts_with(inp, 'Source path______')
@@ -76,6 +76,7 @@ def parse_dso_file(dso_log_filename, true_program_file, basepath, noise_std=0.0)
                 break
     if not os.path.isfile(csv_expr_path):
         print("cannot find hof file")
+        return None
     print(csv_expr_path)
     return compute_dso_all_metrics(true_program_file, 'normal', 0.0, csv_expr_path, testset_size=256)
 
@@ -127,7 +128,7 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
         for prog in dso_output_files[baseline_name]:
             filename = dso_output_files[baseline_name][prog]
             if not os.path.isfile(filename):
-                raise FileExistsError(filename, 'does not exists!')
+                print(filename, ' does not exists!')
             dso_r = parse_dso_file(filename, true_program_basepath + prog + '.in', dso_basepath)
             if dso_r != None:
                 all_dso_r[baseline_name][prog] = dso_r
@@ -151,7 +152,9 @@ def pretty_print_dso_family(all_rs, is_numbered=1):
             for prog in all_rs['DSR'].keys():
                 print(prog, end=", ")
                 for baseline_name in ['DSR', 'PQT', 'VPG', 'GPMELD']:
-                    if key in all_rs[baseline_name][prog]:
+                    if prog in all_rs[baseline_name]:
+                        print(",", end=" ")
+                    elif key in all_rs[baseline_name][prog]:
                         print(all_rs[baseline_name][prog][key], end=", ")
                     else:
                         print(",", end=" ")
