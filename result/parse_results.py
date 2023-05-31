@@ -152,7 +152,7 @@ def pretty_print_dso_family(all_rs, is_numbered=1):
             for prog in all_rs['DSR'].keys():
                 print(prog, end=", ")
                 for baseline_name in ['DSR', 'PQT', 'VPG', 'GPMELD']:
-                    if prog in all_rs[baseline_name]:
+                    if prog not in all_rs[baseline_name]:
                         print(",", end=" ")
                     elif key in all_rs[baseline_name][prog]:
                         print(all_rs[baseline_name][prog][key], end=", ")
