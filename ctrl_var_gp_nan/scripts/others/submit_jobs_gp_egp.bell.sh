@@ -19,7 +19,7 @@ for eq_name in $all_equations; do
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	log_dir=$basepath/log/Ohters/$(date +%F)/
+	log_dir=$basepath/log/Others/$(date +%F)/
 	if [ ! -d "$log_dir" ]; then
 		echo "create dir: $log_dir"
 		mkdir -p $log_dir
