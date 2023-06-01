@@ -1,2 +1,2 @@
 0
-{"eq_name": "Keijzer_7", "num_vars": 1, "vars_range_and_types": "[{\"name\": \"LogUniform\", \"range\": [0.1, 10], \"only_positive\": true}]", "function_set": ["add", "mul", "div", "exp", "log", "pow", "inv", "neg", "sqrt", "const"], "eq_expression": "[('log', 'unary'), ('X_0', 'var')]", "expr": "log(X_0)"}
+{"eq_name": "Keijzer_7", "num_vars": 1, "vars_range_and_types": "[{\"name\": \"LogUniform\", \"range\": [0.1, 10], \"only_positive\": true}]", "function_set": ["add", "sub", "mul", "div", "exp", "log", "pow", "inv", "sqrt", "const"], "eq_expression": "[('log', 'unary'), ('X_0', 'var')]", "expr": "log(X_0)"}
