@@ -1,5 +1,4 @@
-import functions
-from library import Library, Token, PlaceholderConstant
+from library import Library
 import argparse
 from program import Program
 import regress_task
@@ -40,8 +39,8 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     # gp parameters
     cxpb = 0.5
     mutpb = 0.5
-    maxdepth = 4
-    tour_size = 6
+    maxdepth = 2
+    tour_size = 3
     hof_size = 20
 
     population_size = 50  # 00
@@ -50,8 +49,6 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
     protected_library = Library(all_tokens)
-
-
 
     protected_library.print_library()
 
@@ -82,7 +79,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     gp_xyx.ExpandingGeneticProgram.library = protected_library
     gp_xyx.ExpandingGeneticProgram.gp_helper = gp_helper
     egp = gp_xyx.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
-                                        tour_size, hof_size, n_generations, nvar)
+                                         tour_size, hof_size, n_generations, nvar)
 
     # run GP
     egp.run()
@@ -105,9 +102,9 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     # gp parameters
     cxpb = 0.5
     mutpb = 0.5
-    maxdepth = 4
+    maxdepth = 2
     population_size = 50  # 00
-    tour_size = 6
+    tour_size = 3
     hof_size = 20
     n_generations = 100  # 00
 

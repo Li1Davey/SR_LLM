@@ -322,8 +322,8 @@ class Program(object):
         #     self.task.rand_draw_data()
         #     muliplie_rewards.append(self.task.reward_function_fixed_data(self))
 
-        state_dict = {'tokens': self.tokens,  # string rep comes out different if we cast to array, so we can get cache misses.
-                      'allow_change_tokens': self.allow_change_tokens,
+        state_dict = {'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
+                      'allow_change_tokens': self.allow_change_tokens.tolist(),
                       'have_r': bool(have_r),
                       'r': float(self.r) if have_r else float(-np.inf),
                       # 'multiply_r':muliplie_rewards,

@@ -2,7 +2,7 @@ import random
 import time
 import numpy as np
 from operator import attrgetter
-import copy
+
 
 from program import Program
 
@@ -71,7 +71,7 @@ class ExpandingGeneticProgram(object):
         self.hof_size = hof_size
 
         # self.n_generations = create_geometric_generations(n_generations, nvar)
-        self.n_generations = create_uniform_generations(n_generations, nvar)
+        self.n_generations = create_uniform_generations(n_generations, nvar+1)
 
         self.hof = []
         self.timer_log = []
@@ -92,9 +92,9 @@ class ExpandingGeneticProgram(object):
     def run(self):
         # for
         most_recent_timestamp = time.perf_counter()
-        for var in range(self.nvar):
+        for var in range(self.nvar+1):
 
-            if var == self.nvar - 1:
+            if var == self.nvar:
                 # XYX on Jan 5: in the last iteration there is no constants
                 #               that can be changed among different experiments.
                 Program.task.batchsize *= Program.opt_num_expr
@@ -116,16 +116,16 @@ class ExpandingGeneticProgram(object):
 
             # for fixed variable, do n generation
             for i in range(self.n_generations[var]):
-                print('++++++++++++ VAR {0} ITERATION {1} ++++++++++++'.format(var, i))
+                print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(var, i))
                 self.one_generation()
 
-                print('hof (VAR {0} ITERATION {1})='.format(var, i))
+                print('hof (VAR {} ITERATION {})='.format(var, i))
                 print_prs(self.hof)
                 print("")
 
                 now_time_stamp = time.perf_counter()
                 if now_time_stamp - most_recent_timestamp >= 900:  # 15 min
-                    print('print hof (VAR {0} ITERATION {1})='.format(var, i))
+                    print('print hof (VAR {} ITERATION {})='.format(var, i))
                     self.print_hof()
                     print("")
                     most_recent_timestamp = now_time_stamp
@@ -149,6 +149,7 @@ class ExpandingGeneticProgram(object):
                 pr.freeze_equation()
                 print('pr=', (pr.__getstate__()))
                 print('pr.r=', pr.r)
+                print(pr.print_expression())
 
             if var < self.nvar - 1:
                 # previous we only change x0,
@@ -238,8 +239,7 @@ class ExpandingGeneticProgram(object):
         # Apply crossover on the offspring
         for i in range(1, len(offspring), 2):
             if random.random() < self.cxpb:
-                self.gp_helper.mate(offspring[i - 1],
-                                    offspring[i])
+                self.gp_helper.mate(offspring[i - 1], offspring[i])
 
         # Apply mutation on the offspring
         for i in range(len(offspring)):

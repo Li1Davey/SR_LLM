@@ -4,7 +4,7 @@ import json
 
 class KnownEquation(object):
     _eq_name = None
-    _function_set =  ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const'] #['exp', 'log', 'sqrt', 'pow', 'add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'pow', 'sin', 'cos', 'exp', 'log', 'const']
 
     def __init__(self, num_vars, vars_range_and_types=None, kwargs_list=None):
         if kwargs_list is None:

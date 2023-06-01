@@ -188,7 +188,7 @@ def decrypt_equation(eq_file, key_filename=None):
     preorder_traversal = eval(one_equation['eq_expression'])
     preorder_traversal = [tt[0] for tt in preorder_traversal]
     print(preorder_traversal)
-    list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=False)
+    list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
         list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1)]
     protected_library = sciLibrary(list_of_tokens)
@@ -374,10 +374,6 @@ def expneg(x1):
     return np.exp(-x1)
 
 
-def n2(x1):
-    return np.power(x1, 2)
-
-
 def n3(x1):
     return np.power(x1, 3)
 
@@ -417,7 +413,7 @@ unprotected_ops = [
     sciToken(np.exp, "exp", arity=1, complexity=4),
     sciToken(np.log, "log", arity=1, complexity=4),
     sciToken(np.sqrt, "sqrt", arity=1, complexity=4),
-    sciToken(np.square, "n2", arity=1, complexity=2),
+
     sciToken(np.negative, "neg", arity=1, complexity=1),
     sciToken(np.abs, "abs", arity=1, complexity=2),
     sciToken(np.maximum, "max", arity=1, complexity=4),
@@ -428,6 +424,7 @@ unprotected_ops = [
     # Custom unary operators
     sciToken(logabs, "logabs", arity=1, complexity=4),
     sciToken(expneg, "expneg", arity=1, complexity=4),
+    sciToken(np.square, "n2", arity=1, complexity=2),
     sciToken(n3, "n3", arity=1, complexity=3),
     sciToken(n4, "n4", arity=1, complexity=3),
     sciToken(n5, "n5", arity=2, complexity=3),
@@ -501,6 +498,7 @@ protected_ops = [
     sciToken(protected_sqrt, "sqrt", arity=1, complexity=4),
     sciToken(protected_inv, "inv", arity=1, complexity=2),
     sciToken(protected_expneg, "expneg", arity=1, complexity=4),
+
     sciToken(protected_n2, "n2", arity=1, complexity=2),
     sciToken(protected_n3, "n3", arity=1, complexity=3),
     sciToken(protected_n4, "n4", arity=1, complexity=3),
