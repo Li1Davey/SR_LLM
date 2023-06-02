@@ -6,6 +6,46 @@ import pandas as pd
 from compute_dso_all_metrics import compute_dso_all_metrics, compute_eureqa_all_metrics
 
 
+# def read_until_line_starts_with(inp, line):
+#     l = inp.readline()
+#     while l != "" and not l.startswith(line):
+#         l = inp.readline()
+#     return l
+#
+#
+# def create_all_metrics_dict(inp):
+#     l = inp.readline()
+#     # print(l)
+#     l = inp.readline()
+#     # print(l)
+#     val_dict = {}
+#     while l != "" and not l.startswith("%%%%%"):
+#         spl = l.split(" ")
+#         val_dict[spl[0]] = float(spl[1].strip())
+#         l = inp.readline()
+#         # print(l)
+#     # print(val_dict)
+#     return val_dict
+#
+#
+# def parse_gp_file(filename, verbose=False):
+#     # print('filename=', filename)
+#     inp = open(filename, 'r')
+#     l = read_until_line_starts_with(inp, 'final hof')
+#     # print('l=', l)
+#     rs = []
+#     l = read_until_line_starts_with(inp, 'validate r=')
+#     while l != "":
+#
+#         tt = l[:-1].split()
+#         rs.append(-float(tt[2]))
+#         if verbose:
+#             print('l=', l.strip())
+#         l = read_until_line_starts_with(inp, 'validate r=')
+#     inp.close()
+#     if verbose: print(f"filename:{filename}, reward:{rs}")
+#     r = min(rs)
+#     return r
 def read_until_line_starts_with(inp, line):
     l = inp.readline()
     while l != "" and not l.startswith(line):
@@ -28,7 +68,7 @@ def create_all_metrics_dict(inp):
     return val_dict
 
 
-def parse_gp_file(filename, verbose=False):
+def parse_gp_file(filename):
     # print('filename=', filename)
     inp = open(filename, 'r')
     l = read_until_line_starts_with(inp, 'final hof')
@@ -36,17 +76,18 @@ def parse_gp_file(filename, verbose=False):
     rs = []
     l = read_until_line_starts_with(inp, 'validate r=')
     while l != "":
-
+        # print('l=', l.strip())
         tt = l[:-1].split()
-        rs.append(-float(tt[2]))
-        if verbose:
-            print('l=', l.strip())
+        val_dict = create_all_metrics_dict(inp)
+        rs.append([float(tt[2]), val_dict])
         l = read_until_line_starts_with(inp, 'validate r=')
-    inp.close()
-    if verbose: print(f"filename:{filename}, reward:{rs}")
-    r = min(rs)
-    return r
 
+    inp.close()
+    # print(rs)
+    rs.sort(key=lambda x: x[0], reverse=True)  # changes the list in-place (and returns None)
+    # print(rs[0])
+    r = rs[0]
+    return r
 
 def parse_dso_file(dso_log_filename, true_program_file, basepath, noise_std=0.0):
     if not os.path.isfile(dso_log_filename):
@@ -163,29 +204,30 @@ def pretty_print_dso_family(all_rs, is_numbered=1):
 
 
 def pretty_print_pair(all_gp_rs, all_egp_rs, metric_name, is_numbered=True):
-    # for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
-    print(f"{metric_name}\n GP, EGP")
-    if is_numbered:
-        for key in range(10):
-            key = 'prog_' + str(key)
-            if key in all_gp_rs:
-                print(all_gp_rs[key], end=", ")
-            else:
-                print(",", end=" ")
-            if key in all_egp_rs:
-                print(all_egp_rs[key])
-            else:
-                print()
-    else:
-        for key in all_gp_rs.keys():
-            if key in all_gp_rs:
-                print(all_gp_rs[key], end=", ")
-            else:
-                print(",", end=" ")
-            if key in all_egp_rs:
-                print(all_egp_rs[key])
-            else:
-                print()
+    for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        print(f"{metric_name}\n GP, EGP")
+        if is_numbered:
+            for key in range(10):
+                key = 'prog_' + str(key)
+                if key in all_gp_rs:
+                    print(all_gp_rs[key], end=", ")
+                else:
+                    print(",", end=" ")
+                if key in all_egp_rs:
+                    print(all_egp_rs[key])
+                else:
+                    print()
+        else:
+            for prog in all_gp_rs:
+                print(prog, end=", ")
+                if prog in all_gp_rs:
+                    print(all_gp_rs[prog][key], end=", ")
+                else:
+                    print(",", end=" ")
+                if prog in all_egp_rs:
+                    print(all_egp_rs[prog][key])
+                else:
+                    print()
 
 
 def pretty_print_eureqa(all_eureqa_rs):
@@ -218,10 +260,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     all_dso_r, all_gp_r, all_egp_r = parse_exp_set(args.fp, args.metric, args.noise_type, args.noise_scale,
-                                                   args.true_program_basepath, args.dso_basepath)
+                                                   args.true_program_basepath, None)# args.dso_basepath)
     # print(all_gp_r)
-    # print(all_egp_r)
-    print(all_dso_r)
+    print(all_egp_r)
+    # print(all_dso_r)
 
     if len(all_dso_r) != 0:
         pretty_print_dso_family(all_dso_r, is_numbered=args.is_numbered)
