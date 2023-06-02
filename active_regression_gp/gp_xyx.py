@@ -226,7 +226,7 @@ class ActiveRegressionGeneticProgram(object):
             print(pr.__getstate__())
             pr.task.rand_draw_data()
 
-            print('validate r=', pr.task.reward_function_fixed_data(pr))
+            print('validate r=', pr.task.reward_function(pr))
             pr.task.reward_function_fixed_data_all_metrics(pr)
 
             print(pr.print_expression())

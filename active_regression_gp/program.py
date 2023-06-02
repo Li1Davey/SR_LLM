@@ -317,10 +317,6 @@ class Program(object):
         have_r = "r" in self.__dict__
         have_evaluate = "evaluate" in self.__dict__
         possible_const = have_r or have_evaluate
-        # muliplie_rewards=[]
-        # for i in range(10):
-        #     self.task.rand_draw_data()
-        #     muliplie_rewards.append(self.task.reward_function_fixed_data(self))
 
         state_dict = {'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
                       'allow_change_tokens': self.allow_change_tokens.tolist(),

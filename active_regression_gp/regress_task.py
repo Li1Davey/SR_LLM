@@ -2,6 +2,10 @@ import numpy as np
 from sklearn.gaussian_process import GaussianProcessRegressor
 from sklearn.gaussian_process.kernels import WhiteKernel, RBF, Exponentiation
 from modAL.models import ActiveLearner
+import warnings
+
+warnings.filterwarnings("ignore")
+import os, sys
 
 
 class Active_RegressTaskV2(object):
@@ -46,15 +50,42 @@ class Active_RegressTaskV2(object):
         self.allowed_input[i] = flag
 
     def rand_draw_data(self):
-        # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
         self.X = self.dataX.randn(sample_size=self.batchsize)
-        self.y_true = self.data_query_oracle.evaluate(self.X)
+        # self.y_true = self.data_query_oracle.evaluate(self.X)
 
     def rand_draw_X_nonfixed(self):
         self.X = self.dataX.randn(sample_size=self.batchsize)
-        self.y_true = self.data_query_oracle.evaluate(self.X)
+        # self.y_true = self.data_query_oracle.evaluate(self.X)
 
     def reward_function_fixed_data(self, p):
+
+        # X = self.dataX.randn(sample_size=self.batchsize)
+        y_hat = p.execute(self.X)
+        if self.init:
+            self.init = False
+            y_true = self.data_query_oracle.evaluate(self.X)
+            self.regressor = ActiveLearner(
+                estimator=GaussianProcessRegressor(kernel=self.kernel),
+                query_strategy=GP_regression_std,
+                X_training=self.X, y_training=y_true
+            )
+            self.call_idx = 1
+        if np.random.randn() > 0.5:
+            query_idxes, _ = self.regressor.query(self.X_grid, self.batchsize)
+            self.X = self.X_grid[query_idxes]
+            self.call_idx += 1
+
+        if self.call_idx % 50 == 0:
+            y_true = self.data_query_oracle.evaluate(self.X)
+            self.regressor.teach(self.X, y_true)
+
+        print(self.call_idx, end=" ")
+        sys.stdout.flush()
+
+        return self.data_query_oracle._evaluate_loss(self.X, y_hat)
+
+    def reward_function(self, p):
+
         y_hat = p.execute(self.X)
         return self.data_query_oracle._evaluate_loss(self.X, y_hat)
 
@@ -65,30 +96,6 @@ class Active_RegressTaskV2(object):
         for mertic_name in dict_of_result:
             print(f"{mertic_name} {dict_of_result[mertic_name]}")
         print('%' * 30)
-
-    def reward_function(self, p):
-        # p is a program.
-        # X = self.dataX.randn(sample_size=self.batchsize)
-        # fixec colum coresponds to the fixed random variables. every time you use the same value
-
-        if self.init:
-            self.init = False
-            X = self.dataX.randn(sample_size=self.batchsize)
-            y_true = self.data_query_oracle.evaluate(self.X)
-            print("init active regression learner")
-            self.regressor = ActiveLearner(
-                estimator=GaussianProcessRegressor(kernel=self.kernel),
-                query_strategy=GP_regression_std,
-                X_training=X, y_training=y_true
-            )
-        else:
-            query_idxes, _ = self.regressor.query(self.X_grid, self.batchsize)
-            X = self.X_grid[query_idxes]
-            print("active learner return {}".format(query_idxes))
-            y_true = self.data_query_oracle.evaluate(X)
-            self.regressor.teach(X, y_true)
-        y_hat = p.execute(X)
-        return self.data_query_oracle._evaluate_loss(X, y_hat)
 
 
 def GP_regression_std(regressor, X, batch_size):
