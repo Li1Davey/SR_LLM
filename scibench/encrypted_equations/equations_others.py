@@ -201,7 +201,7 @@ class Korns_2(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = 0.23 + 14.2 * ((x[3] + x[1])) / ((3 * x[4]))
+        self.sympy_eq = 0.23 + 14.2 * (x[3] + x[1]) / (3 * x[4])
 
 
 @register_eq_class
@@ -212,7 +212,7 @@ class Korns_3(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = 4.9 * ((x[3] - x[0] + (x[1]) / (x[4]))) / ((3 * x[4])) - 5.41
+        self.sympy_eq = 4.9 * (x[3] - x[0] + (x[1]) / (x[4])) / (3 * x[4]) - 5.41
 
 
 @register_eq_class
@@ -229,7 +229,7 @@ class Korns_4(KnownEquation):
 @register_eq_class
 class Korns_5(KnownEquation):
     _eq_name = 'Korns_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'exp', 'log', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'abs', 'log', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -240,7 +240,7 @@ class Korns_5(KnownEquation):
 @register_eq_class
 class Korns_6(KnownEquation):
     _eq_name = 'Korns_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'sqrt', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'abs', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -361,7 +361,7 @@ class Meier_4(KnownEquation):
 @register_eq_class
 class Nguyen_1(KnownEquation):
     _eq_name = 'Nguyen_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -372,7 +372,7 @@ class Nguyen_1(KnownEquation):
 @register_eq_class
 class Nguyen_2(KnownEquation):
     _eq_name = 'Nguyen_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'n4', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -383,7 +383,7 @@ class Nguyen_2(KnownEquation):
 @register_eq_class
 class Nguyen_3(KnownEquation):
     _eq_name = 'Nguyen_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'n4', 'n5', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -405,7 +405,7 @@ class Nguyen_4(KnownEquation):
 @register_eq_class
 class Nguyen_5(KnownEquation):
     _eq_name = 'Nguyen_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -416,7 +416,7 @@ class Nguyen_5(KnownEquation):
 @register_eq_class
 class Nguyen_6(KnownEquation):
     _eq_name = 'Nguyen_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -427,7 +427,7 @@ class Nguyen_6(KnownEquation):
 @register_eq_class
 class Nguyen_7(KnownEquation):
     _eq_name = 'Nguyen_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -449,7 +449,7 @@ class Nguyen_8(KnownEquation):
 @register_eq_class
 class Nguyen_9(KnownEquation):
     _eq_name = 'Nguyen_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -471,7 +471,7 @@ class Nguyen_10(KnownEquation):
 @register_eq_class
 class Nguyen_11(KnownEquation):
     _eq_name = 'Nguyen_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'exp', 'log']
+    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'exp']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -482,7 +482,7 @@ class Nguyen_11(KnownEquation):
 @register_eq_class
 class Nguyen_12(KnownEquation):
     _eq_name = 'Nguyen_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'pow']
+    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'n2', 'n3', 'n4', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -493,7 +493,7 @@ class Nguyen_12(KnownEquation):
 @register_eq_class
 class Nguyen_12a(KnownEquation):
     _eq_name = 'Nguyen_12a'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'pow']
+    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'n2', 'n3', 'n4','const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -504,7 +504,7 @@ class Nguyen_12a(KnownEquation):
 @register_eq_class
 class Constant_1(KnownEquation):
     _eq_name = 'Constant_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n3', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -515,7 +515,7 @@ class Constant_1(KnownEquation):
 @register_eq_class
 class Constant_2(KnownEquation):
     _eq_name = 'Constant_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos','n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -537,7 +537,7 @@ class Constant_3(KnownEquation):
 @register_eq_class
 class Constant_4(KnownEquation):
     _eq_name = 'Constant_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'pow', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -559,7 +559,7 @@ class Constant_5(KnownEquation):
 @register_eq_class
 class Constant_6(KnownEquation):
     _eq_name = 'Constant_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'exp', 'log', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'exp', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -581,7 +581,7 @@ class Constant_7(KnownEquation):
 @register_eq_class
 class Constant_8(KnownEquation):
     _eq_name = 'Constant_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'log', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
