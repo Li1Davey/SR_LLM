@@ -28,6 +28,9 @@ def n3(x1):
 def n4(x1):
     return np.power(x1, 4)
 
+def n5(x1):
+    return np.power(x1, 5)
+
 
 def sigmoid(x1):
     return 1 / (1 + np.exp(-x1))
@@ -47,6 +50,7 @@ unprotected_ops = [
     Token(np.subtract, "sub", arity=2, complexity=1),
     Token(np.multiply, "mul", arity=2, complexity=1),
     Token(np.divide, "div", arity=2, complexity=2),
+    Token(np.power, "pow", arity=2, complexity=1),   # add power token
 
     # Built-in unary operators
     Token(np.sin, "sin", arity=1, complexity=3),
@@ -69,6 +73,7 @@ unprotected_ops = [
     Token(np.square, "n2", arity=1, complexity=2),
     Token(n3, "n3", arity=1, complexity=3),
     Token(n4, "n4", arity=1, complexity=3),
+    Token(n5, "n5", arity=1, complexity=3),
     Token(sigmoid, "sigmoid", arity=1, complexity=4),
     Token(harmonic, "harmonic", arity=1, complexity=4)
 ]
@@ -121,7 +126,9 @@ def protected_n3(x1):
 def protected_n4(x1):
     with np.errstate(over='ignore'):
         return np.where(np.abs(x1) < 1e6, np.power(x1, 4), 0.0)
-
+def protected_n5(x1):
+    with np.errstate(over='ignore'):
+        return np.where(np.abs(x1) < 1e6, np.power(x1, 5), 0.0)
 
 def protected_sigmoid(x1):
     return 1 / (1 + protected_expneg(x1))
@@ -142,6 +149,7 @@ protected_ops = [
     Token(protected_n2, "n2", arity=1, complexity=2),
     Token(protected_n3, "n3", arity=1, complexity=3),
     Token(protected_n4, "n4", arity=1, complexity=3),
+    Token(protected_n5, "n5", arity=1, complexity=3),
     Token(protected_sigmoid, "sigmoid", arity=1, complexity=4)
 ]
 
@@ -187,7 +195,7 @@ def create_tokens(n_input_var: int, function_set: List, protected) -> List:
         elif op == 'const':
             token = PlaceholderConstant(1.0)
         else:
-            raise ValueError("Operation {} not recognized.".format(op))
+            raise ValueError(f"Operation {op} not recognized.")
         if token not in tokens:
             tokens.append(token)
 
