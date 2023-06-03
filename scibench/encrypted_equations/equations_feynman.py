@@ -2553,7 +2553,7 @@ class FeynmanIIICh13Eq18(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-iii.13.18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'pow', 'n2', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'n2', 'const']
 
     def __init__(self, vars_range_and_types=None):
         if vars_range_and_types is None:

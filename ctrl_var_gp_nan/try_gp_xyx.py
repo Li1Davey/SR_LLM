@@ -47,7 +47,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     n_generations = 100
 
     # get all the functions and variables ready
-    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=False)
+    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
     protected_library = Library(all_tokens)
 
     protected_library.print_library()
