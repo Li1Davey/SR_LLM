@@ -190,7 +190,9 @@ def decrypt_equation(eq_file, key_filename=None):
     print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
-        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1)]
+        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1),PlaceholderConstant(1.0)]
+    # if 'const' in preorder_traversal:
+    #     list_of_tokens = list_of_tokens + [PlaceholderConstant(1.0)]
     protected_library = sciLibrary(list_of_tokens)
 
     sciProgram.library = protected_library
