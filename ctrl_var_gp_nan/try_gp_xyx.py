@@ -4,8 +4,8 @@ from program import Program
 import regress_task
 from const import ScipyMinimize
 from symbolic_data_generator import *
-from symbolic_equation_evaluator_public import Equation_evaluator, create_tokens
-
+from symbolic_equation_evaluator_public import Equation_evaluator
+from functions import create_tokens
 import gp_xyx
 
 import numpy as np

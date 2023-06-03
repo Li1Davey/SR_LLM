@@ -136,8 +136,8 @@ class ExpandingGeneticProgram(object):
                 if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
                     # only expand at those constant node. if there are no constant node,then we are done
                     # if we do not want num_changing_consts, then we also quit.
-                    # print('pr.r=', pr.r)
-                    pass
+                    print('there are no constant node. we are done.')
+                    # pass
                 else:
                     if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
                         print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
@@ -147,7 +147,7 @@ class ExpandingGeneticProgram(object):
                         print('pr.expr_consts=', pr.expr_consts)
                 # whether you get very different value for different constant.
                 pr.freeze_equation()
-                print('pr=', (pr.__getstate__()))
+                print('pr=', pr.__getstate__())
                 print('pr.r=', pr.r)
                 print(pr.print_expression())
 
@@ -156,6 +156,7 @@ class ExpandingGeneticProgram(object):
                 # the next round, we are not allow to change x0.
                 self.library.set_allowed_input_token(var, 0)  # XYX commented out this on Jan 16; trying to run noisy experiments.
                 self.library.set_allowed_input_token(var + 1, 1)
+                # set the next variable to be free
                 Program.task.set_allowed_input(var + 1, 1)
 
     def one_generation(self, iter=None):
@@ -288,7 +289,6 @@ class ExpandingGeneticProgram(object):
             pr.task.rand_draw_data()
             print('validate r=', pr.task.reward_function_fixed_data(pr))
             pr.task.reward_function_fixed_data_all_metrics(pr)
-
             print(pr.print_expression())
 
 

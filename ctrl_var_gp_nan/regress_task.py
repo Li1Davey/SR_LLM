@@ -10,11 +10,9 @@ class RegressTaskV1(object):
     n_input: num of vars in X
     true_program: the program to map from X to Y
 
-    reward_function(self, p) # in reward function need to decide on 
-                             # non-varying parameters
+    reward_function(self, p) # in reward function need to decide on non-varying parameters
 
-    evaluate(self, p)        # this is the inference task 
-                               (evaluate the program on the test set).
+    evaluate(self, p)        # this is the inference task (evaluate the program on the test set).
 
     NOTE: nexpr should be left to program.optimize() (nexpr: number of experiments)
     """
@@ -38,26 +36,21 @@ class RegressTaskV1(object):
         self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
     def rand_draw_X_fixed(self):
-        # self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
         self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
 
     def rand_draw_data(self):
-        # self.X_fixed = np.random.rand(self.n_input) * 9.5 + 0.5
-        # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
         self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
         self.X = self.dataX.randn(sample_size=self.batchsize)
         if len(self.fixed_column):
             self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def rand_draw_X_nonfixed(self):
-        # self.X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
         self.X = self.dataX.randn(sample_size=self.batchsize)
         if len(self.fixed_column):
             self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def reward_function_fixed_data(self, p):
         y_hat = p.execute(self.X)
-
         return self.data_query_oracle._evaluate_loss(self.X, y_hat)
 
     def reward_function_fixed_data_all_metrics(self, p):
@@ -71,9 +64,8 @@ class RegressTaskV1(object):
     def reward_function(self, p):
         # p is a program.
         #
-        # X = np.random.rand(self.batchsize, self.n_input) * 9.5 + 0.5
         X = self.dataX.randn(sample_size=self.batchsize)
-        # fixec colum coresponds to the fixed random variables. every time you use the same value
+        # fixed colum corresponds to the fixed random variables. every time you use the same value
         if len(self.fixed_column):
             X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
         y_hat = p.execute(X)

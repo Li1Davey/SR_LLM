@@ -15,6 +15,7 @@ import utils as U
 
 from scipy.optimize import minimize
 
+
 def _finish_tokens(tokens):
     """
     Complete a possibly unfinished string of tokens.
@@ -294,7 +295,7 @@ class Program(object):
 
     def clone(self):
         new_me = Program(self.tokens, self.allow_change_tokens)
-        
+
         for i in range(len(self.traversal)):
             if isinstance(self.traversal[i], PlaceholderConstant):
                 new_me.traversal[i] = PlaceholderConstant(self.traversal[i].value)
@@ -310,32 +311,33 @@ class Program(object):
             new_me.expr_consts = np.copy(self.expr_consts)
 
         return new_me
-        
 
-    def __getstate__(self):
+    def __getstate__(self, verbse=False):
         # for printing purpose
         have_r = "r" in self.__dict__
         have_evaluate = "evaluate" in self.__dict__
         possible_const = have_r or have_evaluate
-        # muliplie_rewards=[]
-        # for i in range(10):
-        #     self.task.rand_draw_data()
-        #     muliplie_rewards.append(self.task.reward_function_fixed_data(self))
 
-        state_dict = {'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
-                      'allow_change_tokens': self.allow_change_tokens.tolist(),
-                      'have_r': bool(have_r),
-                      'r': float(self.r) if have_r else float(-np.inf),
-                      # 'multiply_r':muliplie_rewards,
-                      'fixed_column': self.task.fixed_column,
-                      'have_evaluate': bool(have_evaluate),
-                      'evaluate': self.evaluate if have_evaluate else float(-np.inf),
-                      'const': array.array('d', self.get_constants()) if possible_const else float(-np.inf),
-                      'invalid': bool(self.invalid),
-                      'error_node': array.array('u', "" if not self.invalid else self.error_node),
-                      'error_type': array.array('u', "" if not self.invalid else self.error_type)}
-
-        # In the future we might also return sympy_expr and complexity if we ever need to compute in parallel 
+        if verbse:
+            state_dict = {
+                'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
+                'allow_change_tokens': self.allow_change_tokens.tolist(),
+                'have_r': bool(have_r),
+                'r': float(self.r) if have_r else float(-np.inf),
+                'fixed_column': self.task.fixed_column,
+                'have_evaluate': bool(have_evaluate),
+                'evaluate': self.evaluate if have_evaluate else float(-np.inf),
+                'const': array.array('d', self.get_constants()) if possible_const else float(-np.inf),
+                'invalid': bool(self.invalid),
+                'error_node': array.array('u', "" if not self.invalid else self.error_node),
+                'error_type': array.array('u', "" if not self.invalid else self.error_type)
+            }
+        else:
+            state_dict = {
+                'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
+                'allow_change_tokens': self.allow_change_tokens.tolist(),
+                'r': float(self.r) if have_r else float(-np.inf)
+            }
 
         return state_dict
 
@@ -468,10 +470,10 @@ class Program(object):
             # the returned constant, and the objective function.
             # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
             if Program.noise_std > 0:
-                opt_result = minimize(f, x0, method='BFGS', options={'eps':Program.noise_std})
+                opt_result = minimize(f, x0, method='BFGS', options={'eps': Program.noise_std})
             else:
                 opt_result = minimize(f, x0, method='BFGS')
-                
+
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']
 
@@ -504,11 +506,11 @@ class Program(object):
 
     def freeze_equation(self):
         if len(self.const_pos) == 0 or self.num_changing_consts == 0:
-            assert "r" in self.__dict__
+            assert "r" in self.__dict__, 'reward is not included'
             if self.r >= -self.expr_obj_thres:
                 for pos, t in enumerate(self.traversal):
                     self.allow_change_tokens[pos] = 0
-            print("allow_change_tokens: {}".format(self.allow_change_tokens))
+            print("freeze_equation->allow_change_tokens: {}".format(self.allow_change_tokens))
             return
 
         assert 'expr_objs' in self.__dict__
@@ -527,8 +529,7 @@ class Program(object):
             for pos, t in enumerate(self.traversal):
                 # if t is a constant
                 if isinstance(t, PlaceholderConstant):
-                    if self.allow_change_tokens[pos] and \
-                            np.std(self.expr_consts[consts_tp]) <= self.expr_consts_thres:
+                    if self.allow_change_tokens[pos] and np.std(self.expr_consts[consts_tp]) <= self.expr_consts_thres:
                         # std of x. 
                         # freeze it.
                         # the last step is allow to change (everything) x1 to x5 and every part of equation.
@@ -756,10 +757,8 @@ class Program(object):
         print("\tExpression {}: {}".format(0, self.traversal))
         print("{}\n".format(self.pretty()[0]))
 
-
     def print_stats(self):
         """Prints the statistics of the program
-        
             We will print the most honest reward possible when using validation.
         """
 

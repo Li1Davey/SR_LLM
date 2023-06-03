@@ -7,7 +7,7 @@ import numpy as np
 import utils as U
 
 
-class Token():
+class Token(object):
     """
     An arbitrary token or "building block" of a Program object.
 
