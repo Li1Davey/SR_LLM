@@ -1,8 +1,7 @@
-import random
+# import random
 import time
 import numpy as np
 from operator import attrgetter
-
 
 from program import Program
 
@@ -71,7 +70,7 @@ class ExpandingGeneticProgram(object):
         self.hof_size = hof_size
 
         # self.n_generations = create_geometric_generations(n_generations, nvar)
-        self.n_generations = create_uniform_generations(n_generations, nvar+1)
+        self.n_generations = create_uniform_generations(n_generations, nvar + 1)
 
         self.hof = []
         self.timer_log = []
@@ -92,7 +91,7 @@ class ExpandingGeneticProgram(object):
     def run(self):
         # for
         most_recent_timestamp = time.perf_counter()
-        for var in range(self.nvar+1):
+        for var in range(self.nvar + 1):
 
             if var == self.nvar:
                 # XYX on Jan 5: in the last iteration there is no constants
@@ -220,7 +219,7 @@ class ExpandingGeneticProgram(object):
             if len(self.population) <= tour_size:
                 spr = self.population
             else:
-                spr = random.sample(self.population, tour_size)
+                spr = np.random.choice(self.population, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
             # maxspri = copy.deepcopy(maxspr)
             # if "expr_objs" in maxspr.__dict__:
@@ -238,13 +237,14 @@ class ExpandingGeneticProgram(object):
         """
 
         # Apply crossover on the offspring
+        np.random.shuffle(offspring)
         for i in range(1, len(offspring), 2):
-            if random.random() < self.cxpb:
+            if np.random.random() < self.cxpb:
                 self.gp_helper.mate(offspring[i - 1], offspring[i])
 
         # Apply mutation on the offspring
         for i in range(len(offspring)):
-            if random.random() < self.mutpb:
+            if np.random.random() < self.mutpb:
                 self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
 
         return offspring
@@ -406,10 +406,10 @@ class GeneticProgram(object):
         # higher fitness score has higher chance to be survive in the next generation.
         for pp in range(population_size):
             # random sample  tor_size number of individual
-            if len(self.population)<= tour_size:
-                spr=self.population
+            if len(self.population) <= tour_size:
+                spr = self.population
             else:
-                spr = random.sample(self.population, tour_size)
+                spr = np.random.sample(self.population, tour_size)
             # select the guys has the highest fit
             maxspr = max(spr, key=attrgetter('r'))
             # maxspri = copy.deepcopy(maxspr)
@@ -428,16 +428,16 @@ class GeneticProgram(object):
         given a constant probability. 
         """
         # offspring = [copy.deepcopy(pr) for pr in self.population]
-
+        np.random.shuffle(offspring)
         # Apply crossover on the offspring
         for i in range(1, len(offspring), 2):
-            if random.random() < self.cxpb:
+            if np.random.random() < self.cxpb:
                 self.gp_helper.mate(offspring[i - 1],
                                     offspring[i])
 
         # Apply mutation on the offspring
         for i in range(len(offspring)):
-            if random.random() < self.mutpb:
+            if np.random.random() < self.mutpb:
                 # for everyone you randomly mutate them.
                 self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
 
@@ -516,8 +516,10 @@ class GPHelper(object):
         if len(a_allowed) == 0 or len(b_allowed) == 0:
             return
 
-        a_start = random.sample(a_allowed, 1)[0]
-        b_start = random.sample(b_allowed, 1)[0]
+        # a_start = random.sample(a_allowed, 1)[0]
+        # b_start = random.sample(b_allowed, 1)[0]
+        a_start = np.random.choice(a_allowed)
+        b_start = np.random.choice(b_allowed)
 
         a_end = a.subtree_end(a_start)
         b_end = b.subtree_end(b_start)
@@ -556,7 +558,7 @@ class GPHelper(object):
             # more efficient implementation
             allowed_pos = [t for t in self.library.tokens_of_arity[0] \
                            if self.library.allowed_tokens[t] > 0]
-            t_idx = random.choice(allowed_pos)
+            t_idx = np.random.choice(allowed_pos)
             return [t_idx]
         else:
             # t_idx = random.randint(0, self.library.L-1)
@@ -565,7 +567,7 @@ class GPHelper(object):
 
             # more efficient implementation
             allowed_pos = self.library.allowed_tokens_pos()
-            t_idx = random.choice(allowed_pos)
+            t_idx = np.random.choice(allowed_pos)
 
             arity = self.library.tokens[t_idx].arity
             tree = [t_idx]
@@ -576,7 +578,7 @@ class GPHelper(object):
     def multi_mutate(self, individual, maxdepth):
         """Randomly select one of four types of mutation."""
 
-        v = np.random.randint(0, 4)
+        v = np.random.randint(0, 5)
 
         if v == 0:
             self.mutUniform(individual, maxdepth)
@@ -616,7 +618,7 @@ class GPHelper(object):
         allowed_pos = p.allow_change_pos()
         if len(allowed_pos) == 0:
             return
-        a_idx = allowed_pos[random.randint(0, len(allowed_pos) - 1)]
+        a_idx = allowed_pos[np.random.randint(0, len(allowed_pos))]
         arity = p.traversal[a_idx].arity
 
         # t_idx = np.random.choice(self.library.tokens_of_arity[arity])
@@ -625,7 +627,7 @@ class GPHelper(object):
         # more efficient implementation
         allowed_pos = [t for t in self.library.tokens_of_arity[arity] \
                        if self.library.allowed_tokens[t] > 0]
-        t_idx = random.choice(allowed_pos)
+        t_idx = np.random.choice(allowed_pos)
 
         p.tokens[a_idx] = t_idx
         p.__init__(p.tokens, p.allow_change_tokens)
@@ -636,7 +638,7 @@ class GPHelper(object):
             insert a node at a random position, the original subtree at the location 
             becomes one of its subtrees.
         """
-        insert_pos = random.randint(0, len(p.tokens) - 1)
+        insert_pos = np.random.randint(0, len(p.tokens))
         subtree_start = insert_pos
         subtree_end = p.subtree_end(subtree_start)
         # print('subtree_start=', subtree_start, 'subtree_end=', subtree_end)
@@ -649,11 +651,11 @@ class GPHelper(object):
 
         # more efficient implementation
         non_term_allowed = self.library.allowed_non_terminal_tokens_pos()
-        t_idx = random.choice(non_term_allowed)
+        t_idx = np.random.choice(non_term_allowed)
 
         root_arity = self.library.tokens[t_idx].arity
 
-        which_old_tree = random.randint(0, root_arity - 1)
+        which_old_tree = np.random.randint(0, root_arity)
 
         # generate other subtrees
         np_tokens = np.concatenate((p.tokens[:subtree_start], np.array([t_idx])))
@@ -685,7 +687,7 @@ class GPHelper(object):
         allowed_pos = p.allow_change_pos()
         if len(allowed_pos) == 0:
             return
-        a_idx = allowed_pos[random.randint(0, len(allowed_pos) - 1)]
+        a_idx = allowed_pos[np.random.randint(0, len(allowed_pos))]
         arity = p.traversal[a_idx].arity
 
         # print('arity=', arity)
@@ -706,7 +708,7 @@ class GPHelper(object):
                 k = k_end
 
             # pick one of the subtrees, and re-assemble
-            sp = random.randint(0, len(subtrees_start) - 1)
+            sp = np.random.randint(0, len(subtrees_start))
 
             np_tokens = np.concatenate((p.tokens[:a_idx],
                                         p.tokens[subtrees_start[sp]:subtrees_end[sp]],

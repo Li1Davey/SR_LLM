@@ -52,24 +52,64 @@ class Debug_3(KnownEquation):
 @register_eq_class
 class Debug_4(KnownEquation):
     _eq_name = 'Debug_4'
-    _function_set = ['add','sub',  'mul', 'div', 'inv','const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = 30 * x[0] / (x[0] - 10)
 
-    @register_eq_class
-    class Debug_5(KnownEquation):
-        _eq_name = 'Debug_5'
-        _function_set = ['add','sub', 'mul', 'div', 'inv', 'const']
 
-        def __init__(self):
-            super().__init__(num_vars=1)
-            x = self.x
-            self.sympy_eq = x[0] / (x[0] - 1)
+@register_eq_class
+class Debug_5(KnownEquation):
+    _eq_name = 'Debug_5'
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
 
-    #
+    def __init__(self):
+        super().__init__(num_vars=1)
+        x = self.x
+        self.sympy_eq = x[0] / (x[0] - 1)
+@register_eq_class
+class Debug_6(KnownEquation):
+    _eq_name = 'Debug_6'
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+
+    def __init__(self):
+        super().__init__(num_vars=1)
+        x = self.x
+        self.sympy_eq = -2.1*sympy.cos(9.8*x[0]) + 2
+@register_eq_class
+class Debug_7(KnownEquation):
+    _eq_name = 'Debug_7'
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+
+    def __init__(self):
+        super().__init__(num_vars=1)
+        x = self.x
+        self.sympy_eq = -2.1*sympy.cos(9.8*x[0])
+
+#
+@register_eq_class
+class Debug_8(KnownEquation):
+    _eq_name = 'Debug_8'
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+
+    def __init__(self):
+        super().__init__(num_vars=1)
+        x = self.x
+        self.sympy_eq = -sympy.cos(9.8*x[0])
+
+#
+@register_eq_class
+class Debug_9(KnownEquation):
+    _eq_name = 'Debug_9'
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+
+    def __init__(self):
+        super().__init__(num_vars=1)
+        x = self.x
+        self.sympy_eq = sympy.cos(9.8*x[0])
+#
 #
 # @register_eq_class
 # class Keijzer_11(KnownEquation):

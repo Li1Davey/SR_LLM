@@ -37,13 +37,13 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     expr_consts_thres = config[metric_name]['expr_consts_thres']
 
     # gp parameters
-    cxpb = 0.5
-    mutpb = 0.5
+    cxpb = 0.7
+    mutpb = 0.7
     maxdepth = 2
     tour_size = 3
-    hof_size = 20
+    hof_size = 50
 
-    population_size = 50  # 00
+    population_size = 200  # 00
     n_generations = 100
 
     # get all the functions and variables ready
