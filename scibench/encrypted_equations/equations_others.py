@@ -997,7 +997,7 @@ class Vladislavleva_1(KnownEquation):
 @register_eq_class
 class Vladislavleva_2(KnownEquation):
     _eq_name = 'Vladislavleva_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'exp', 'expneg', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'n2', 'n3', 'exp', 'expneg', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1009,7 +1009,7 @@ class Vladislavleva_2(KnownEquation):
 @register_eq_class
 class Vladislavleva_3(KnownEquation):
     _eq_name = 'Vladislavleva_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'exp', 'n3','expneg', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'n2', 'n3', 'exp', 'n3','expneg', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
