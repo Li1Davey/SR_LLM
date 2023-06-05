@@ -44,7 +44,7 @@ def run_expanding_gp(equation_name, metric_name,expr_obj_thres, noise_type, nois
     hof_size = 300
 
     population_size = 1000  # 00
-    n_generations = 50
+    n_generations = 100
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
@@ -100,12 +100,12 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     opt_num_expr = 1  # currently do not need to re-run the experiments multiple times.
 
     # gp parameters
-    cxpb = 0.5
-    mutpb = 0.5
+    cxpb = 0.8
+    mutpb = 0.8
     maxdepth = 2
-    population_size = 50  # 00
+    population_size = 1000  # 00
     tour_size = 3
-    hof_size = 20
+    hof_size = 300
     n_generations = 100  # 00
 
     # get all the functions and variables ready
