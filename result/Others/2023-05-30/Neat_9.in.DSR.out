@@ -1,0 +1,216 @@
+['add', 'pow', 'add', 1, 'pow', 'X_0', -4, -1, 'pow', 'add', 1, 'pow', 'X_1', -4, -1]
+--------------------
+eq_name 	 Neat_9
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'pow', 'const']
+eq_expression 	 add,pow,add,1,pow,X_0,-4,-1,pow,add,1,pow,X_1,-4,-1
+expr 	 1/(1 + X_1**(-4)) + 1/(1 + X_0**(-4))
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2ac93b1c09e8>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2ac925a5ad68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:11.09] Training epoch 1/14, current best R: 0.6669
+
+	** New best
+	Reward: 0.6669072033359198
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: inv,add,0.6175233630389552,inv,sub,x1,mul,x2,mul,sub,1.5605911871604803,div,x1,mul,x1,x2,sub,-0.17936483183585103,x2
+	Expression:
+	                                          1                                     
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                                     1                          
+	  0.6175233630389552 + ─────────────────────────────────────────────────────────
+	                               ⎛                     1 ⎞                        
+	                       x₁ - x₂⋅⎜1.5605911871604803 - ──⎟⋅(-x₂ - 0.17936483183585
+	                               ⎝                     x₂⎠                        
+
+    
+	  ────
+    
+	  ────
+    
+	  103)
+    
+
+[00:00:00:23.33] Training epoch 2/14, current best R: 0.7382
+
+	** New best
+	Reward: 0.7382259511047743
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,div,inv,div,div,add,mul,inv,x2,add,mul,x1,div,x1,92.23834118807738,0.8420372890202559,x1,x2,x1,x2,1.9419005233483444
+	Expression:
+	                1.9419005233483444⋅x₁              
+	  ─────────────────────────────────────────────────
+	                             2                     
+	       0.01084147857734088⋅x₁  + 0.8420372890202559
+	  x₁ + ────────────────────────────────────────────
+	                            x₂                     
+
+[00:00:00:59.14] Training epoch 5/14, current best R: 0.7406
+
+	** New best
+	Reward: 0.7405809868893787
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,x1,div,div,add,inv,div,sub,x1,sub,add,1.5796026107461316,div,sub,x2,169.6374463461396,x2,0.4389938055583726,x1,0.0042283063127113866,x2,0.010590780567778981
+	Expression:
+	                         0.010590780567778981⋅x₁⋅x₂                      
+	  ───────────────────────────────────────────────────────────────────────
+	                         x₁                                              
+	  ─────────────────────────────────────────────── + 0.0042283063127113866
+	                           x₂ - 169.6374463461396                        
+	  x₁ - 1.140608805187759 - ──────────────────────                        
+	                                     x₂                                  
+
+[00:00:01:12.79] Training epoch 6/14, current best R: 0.7452
+
+	** New best
+	Reward: 0.7451520737617061
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,mul,2.0607651707514942,div,add,div,x1,add,mul,sub,div,add,x2,add,5.423935843788024,x1,x2,-0.03173660453836477,0.12779197317500415,x1,0.010853905356508166,x2,x2
+	Expression:
+	                              2.0607651707514942⋅x₁                             
+	  ──────────────────────────────────────────────────────────────────────────────
+	                               0.12779197317500415⋅(x₁ + x₂ + 5.423935843788024)
+	  x₁ + 0.0040556833158324257 + ─────────────────────────────────────────────────
+	                                                       x₂                       
+
+                       
+	   + 0.022367350125325108
+                       
+                       
+                       
+
+[00:00:01:40.59] Training epoch 8/14, current best R: 0.7533
+
+	** New best
+	Reward: 0.7533184775940892
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,x1,sub,sub,mul,add,11.136738828109538,x1,div,sub,div,add,div,add,x1,-0.0820331814834791,x2,x1,x1,-36.17196232868372,25.175105807914722,16.381593258398382,x1
+	Expression:
+	                                                                 x₁             
+	  ──────────────────────────────────────────────────────────────────────────────
+	        ⎛                                          ⎛     x₁ - 0.0820331814834791
+	        ⎜                     0.039721779428852019⋅⎜x₁ + ───────────────────────
+	        ⎜                                          ⎝                x₂          
+	  -x₁ + ⎜1.4368147091287192 + ──────────────────────────────────────────────────
+	        ⎝                                              x₁                       
+
+                                                 
+	  ─────────────────────────────────────────────────
+	  ⎞⎞                                               
+	  ⎟⎟                                               
+	  ⎠⎟                                               
+	  ─⎟⋅(x₁ + 11.136738828109538) - 16.381593258398382
+	   ⎠                                               
+
+[00:00:02:14.93] Training epoch 10/14, current best R: 0.7533
+[00:00:03:00.99] Training epoch 12/14, current best R: 0.7679
+
+	** New best
+	Reward: 0.7678913706177296
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: inv,div,add,div,sub,sub,-2.8485384892574466,sub,inv,div,add,add,0.5582395633330376,mul,-0.05843970526683798,x2,x1,-25.850789873108553,x1,4.980452389634777,x2,9.252484609712342,19.058020532458336
+	Expression:
+	                                                                          1     
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                             ⎛                                  
+	                        0.052471346554426647⋅⎜x₁ - 7.8289908788922236 - ────────
+	                                             ⎝                          -0.03868
+	  0.48549032644571528 + ────────────────────────────────────────────────────────
+                                                                              
+
+                                                                   
+	  ───────────────────────────────────────────────────────────────────
+	                              1                                     ⎞
+	  ──────────────────────────────────────────────────────────────────⎟
+	  3537520849848⋅x₁ + 0.0022606545313971335⋅x₂ - 0.021594681093816395⎠
+	  ───────────────────────────────────────────────────────────────────
+	       x₂                                                            
+
+[00:00:03:55.11] Ending training after epoch 14/14, current best R: 0.7679
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_DSR.json_Neat_9.in_normal_0.0_2023-05-30-030840/dso_regression_config_regression_DSR.json_Neat_9.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_DSR.json_Neat_9.in_normal_0.0_2023-05-30-030840/dso_regression_config_regression_DSR.json_Neat_9.in_normal_0.0_0_pf.csv
+Invalid expressions: 279 of 14336 (1.9%).
+Error type counts:
+  true_divide: 103 (36.9%)
+  reciprocal: 176 (63.1%)
+Error node counts:
+  divide: 278 (99.6%)
+  invalid: 1 (0.4%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 237 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_DSR.json_Neat_9.in_normal_0.0_2023-05-30-030840
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.767891 <-- [1/(0.48549032644571528 + 0.052471346554426647*(x1 - 7.8289908788922236 - 1/(-0.038683537520849848*x1 + 0.0022606545313971335*x2 - 0.021594681093816395))/x2)]
+    1: S=000 R=0.765322 <-- [-67.38230692519109 + 1/(x1*(7.98351582798063e-6*x1 - 9.1084895698384437e-5) + 0.014566180400761308) - 1.5745157200841757/(x2 + 0.9903284001520563)]
+    2: S=000 R=0.765297 <-- [x2/(0.5237948170363029*x2 - 0.13514894643059853 + 0.5237948170363029/(1.7971032261154414 + 1/(x1 + 1/(x1 - 1.3726546252942453))))]
+    3: S=000 R=0.756159 <-- [x1*(-0.029010268795416499*x1 + 0.3087223085082299 + 1.217859827220764/(x1 + 0.7940263496229527/x2**2))]
+    4: S=000 R=0.753318 <-- [x1/(-x1 + (1.4368147091287192 + 0.039721779428852019*(x1 + (x1 - 0.0820331814834791)/x2)/x1)*(x1 + 11.136738828109538) - 16.381593258398382)]
+  Saving Hall of Fame plot to ./log/regression_config_regression_DSR.json_Neat_9.in_normal_0.0_2023-05-30-030840/dso_regression_config_regression_DSR.json_Neat_9.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 12)____
+    0: S=000 R=0.767891 C=28.00 <-- [1/(0.48549032644571528 + 0.052471346554426647*(x1 - 7.8289908788922236 - 1/(-0.038683537520849848*x1 + 0.0022606545313971335*x2 - 0.021594681093816395))/x2)]
+    1: S=000 R=0.765322 C=25.00 <-- [-67.38230692519109 + 1/(x1*(7.98351582798063e-6*x1 - 9.1084895698384437e-5) + 0.014566180400761308) - 1.5745157200841757/(x2 + 0.9903284001520563)]
+    2: S=000 R=0.745064 C=24.00 <-- [x2/((7.790162820909014 + 1/x1)*(0.061911960501438275*x2 + 0.31765232042738159) - 2.4145109995930731)]
+    3: S=000 R=0.735635 C=19.00 <-- [1/(0.5205910765724282 - 1/(x2*(-1.9184830482686757*x1 - 0.12603643928552784)))]
+    4: S=000 R=0.735635 C=18.00 <-- [1/(0.52069993948314775 + 0.52069993948314775/(x2*(x1 + 0.06546919948729721)))]
+  Saving Pareto Front plot to ./log/regression_config_regression_DSR.json_Neat_9.in_normal_0.0_2023-05-30-030840/dso_regression_config_regression_DSR.json_Neat_9.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

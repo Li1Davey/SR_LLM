@@ -1,0 +1,134 @@
+['add', 2.1380940889, 'mul', -2.1380940889, 'exp', 'mul', -0.54723748542, 'X_0']
+--------------------
+eq_name 	 Korns_7
+num_vars 	 5
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'n2', 'n3', 'sqrt', 'tan', 'tanh', 'const']
+eq_expression 	 add,2.1380940889,mul,-2.1380940889,exp,mul,-0.54723748542,X_0
+expr 	 2.1380940889 - 2.1380940889*exp(-0.54723748542*X_0)
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b6a9882a400>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b6a7f066d68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:04.99] Training epoch 1/14, current best R: 0.8689
+
+	** New best
+	Reward: 0.868866265448946
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,22.805618068241092,add,x1,div,28.22467861464279,x1
+	Expression:
+	    22.805618068241092  
+	  ──────────────────────
+	       28.22467861464279
+	  x₁ + ─────────────────
+	               x₁       
+
+[00:00:00:08.48] Training epoch 2/14, current best R: 0.9373
+
+	** New best
+	Reward: 0.9372990581906934
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: inv,sub,0.3674779419425236,inv,mul,sub,x1,div,add,1381.9940953766427,add,x1,x5,mul,inv,x1,3.6516682996809013,0.0036901438373232016
+	Expression:
+	                                                     1                          
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                                                1               
+	  0.3674779419425236 - ─────────────────────────────────────────────────────────
+	                       -0.0010105364273216334⋅x₁⋅(x₁ + x₅ + 1381.9940953766427) 
+
+                          
+	  ──────────────────────────
+                          
+	  ──────────────────────────
+	  + 0.0036901438373232016⋅x₁
+
+[00:00:00:36.42] Training epoch 10/14, current best R: 0.9373
+[00:00:00:40.03] Training epoch 11/14, current best R: 0.9893
+
+	** New best
+	Reward: 0.9892560992793468
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,78.4467984253811,add,21.02519701932192,add,x1,add,div,-0.16142758354846617,add,x2,8.192896181869635,div,65.02858684819913,x1
+	Expression:
+	                            78.4467984253811                         
+	  ───────────────────────────────────────────────────────────────────
+	                            0.16142758354846617     65.02858684819913
+	  x₁ + 21.02519701932192 - ────────────────────── + ─────────────────
+	                           x₂ + 8.192896181869635           x₁       
+
+[00:00:00:53.58] Ending training after epoch 14/14, current best R: 0.9893
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_VPG.json_Korns_7.in_normal_0.0_2023-05-30-042128/dso_regression_config_regression_VPG.json_Korns_7.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_VPG.json_Korns_7.in_normal_0.0_2023-05-30-042128/dso_regression_config_regression_VPG.json_Korns_7.in_normal_0.0_0_pf.csv
+Invalid expressions: 204 of 14336 (1.4%).
+Error type counts:
+  reciprocal: 119 (58.3%)
+  true_divide: 85 (41.7%)
+Error node counts:
+  divide: 204 (100.0%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 55 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_VPG.json_Korns_7.in_normal_0.0_2023-05-30-042128
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.989256 <-- [78.4467984253811/(x1 + 21.02519701932192 - 0.16142758354846617/(x2 + 8.192896181869635) + 65.02858684819913/x1)]
+    1: S=000 R=0.937299 <-- [1/(0.3674779419425236 - 1/(-0.0010105364273216334*x1*(x1 + x5 + 1381.9940953766427) + 0.0036901438373232016*x1))]
+    2: S=000 R=0.937295 <-- [1.4205591681968603*x1/(0.521305152371126*x1 + 0.521305152371126/(0.5123095709382968 - 0.00015625987375179003*x3))]
+    3: S=000 R=0.937294 <-- [x1*x5/(x5*(0.36696701441217964*x1 + 0.71637231658421945) + 0.00019620335685944414)]
+    4: S=000 R=0.937293 <-- [2.72502936020551*x1/(x1 + 1.953268043010688)]
+  Saving Hall of Fame plot to ./log/regression_config_regression_VPG.json_Korns_7.in_normal_0.0_2023-05-30-042128/dso_regression_config_regression_VPG.json_Korns_7.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 7)____
+    0: S=000 R=0.989256 C=18.00 <-- [78.4467984253811/(x1 + 21.02519701932192 - 0.16142758354846617/(x2 + 8.192896181869635) + 65.02858684819913/x1)]
+    1: S=000 R=0.937293 C=10.00 <-- [2.72502936020551*x1/(x1 + 1.953268043010688)]
+    2: S=000 R=0.868866 C=9.00 <-- [22.805618068241092/(x1 + 28.22467861464279/x1)]
+    3: S=000 R=0.635380 C=8.00 <-- [x1/(x5 + 3.6232003665617056) + 0.6025517690228299]
+    4: S=000 R=0.622879 C=7.00 <-- [1.5166248825684536 - 0.2256213205753101/x1]
+  Saving Pareto Front plot to ./log/regression_config_regression_VPG.json_Korns_7.in_normal_0.0_2023-05-30-042128/dso_regression_config_regression_VPG.json_Korns_7.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

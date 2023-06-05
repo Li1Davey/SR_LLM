@@ -1,0 +1,201 @@
+debug /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh30Eq5.in
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!i /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh30Eq5.in
+['mul', 'X_0', 'mul', 'pow', 'X_1', -1, 'pow', 'sin', 'X_2', -1]
+--------------------
+eq_name 	 feynman-i.30.5
+num_vars 	 3
+vars_range_and_types 	 [{"name": "LogUniform", "range": [1e-11, 1e-09], "only_positive": true}, {"name": "IntegerUniform", "range": [1, 100], "only_positive": true}, {"name": "Uniform", "range": [0, 6.283185307179586], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 mul,X_0,mul,pow,X_1,-1,pow,sin,X_2,-1
+expr 	 X_0/(X_1*sin(X_2))
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2afc751ba550>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2afcb5a90d68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+gen	iter	pop_size	nevals	uncached_size	best_val              	timer  
+0  	0   	1024    	1024  	1024         	(-0.5708486066208451,)	2.61679
+1  	1   	1024    	769   	667          	(-0.5711803990906046,)	1.36085
+2  	2   	1024    	747   	638          	(-0.5711803990906046,)	3.26803
+3  	3   	1024    	761   	652          	(-0.5717729760416151,)	3.80404
+4  	4   	1024    	738   	645          	(-0.5719028930907261,)	6.18838
+5  	5   	1024    	751   	643          	(-0.5719028930907261,)	7.14883
+6  	6   	1024    	769   	629          	(-0.5807471590333321,)	9.61118
+7  	7   	1024    	753   	612          	(-0.6441392301502871,)	12.222 
+8  	8   	1024    	787   	632          	(-0.6441392301502871,)	13.0828
+9  	9   	1024    	770   	612          	(-0.6441392301502871,)	18.6936
+
+--------------------------------------------------
+GP Time: 78.2521
+
+Unique expressions evaluated: 7683
+Total expression evaluations: 7869
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: 0.6441392301502871
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: div,mul,x1,sub,inv,x3,div,add,x3,x2,add,add,44.9823278417359,add,mul,x3,-15.318173652053526,x3,44.982327842606786,x2
+	Expression:
+	     ⎛                   x₂ + x₃                     1 ⎞
+	  x₁⋅⎜- ────────────────────────────────────────── + ──⎟
+	     ⎝  89.964655684342688 - 14.318173652053526⋅x₃   x₃⎠
+	  ──────────────────────────────────────────────────────
+	                            x₂                          
+
+None
+
+--------------------------------------------------
+
+[00:00:01:24.52] Training epoch 1/14, current best R: 0.6441
+
+	** New best
+	Reward: 0.6441392301502871
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: div,mul,x1,sub,inv,x3,div,add,x3,x2,add,add,44.9823278417359,add,mul,x3,-15.318173652053526,x3,44.982327842606786,x2
+	Expression:
+	     ⎛                   x₂ + x₃                     1 ⎞
+	  x₁⋅⎜- ────────────────────────────────────────── + ──⎟
+	     ⎝  89.964655684342688 - 14.318173652053526⋅x₃   x₃⎠
+	  ──────────────────────────────────────────────────────
+	                            x₂                          
+
+10 	0   	1024    	1024  	1015         	(-0.5708486066157711,)	0.76257
+11 	1   	1024    	758   	668          	(-0.5708486194793075,)	0.833139
+12 	2   	1024    	758   	645          	(-0.5711835960852384,)	1.79596 
+13 	3   	1024    	782   	653          	(-0.5711835960852827,)	2.44912 
+14 	4   	1024    	758   	640          	(-0.572097725469904,) 	3.58272 
+15 	5   	1024    	744   	608          	(-0.5723519452018101,)	3.96209 
+16 	6   	1024    	784   	644          	(-0.6576929696647119,)	5.64267 
+17 	7   	1024    	759   	619          	(-0.6576929696647119,)	7.3674  
+18 	8   	1024    	746   	637          	(-0.6576929696647119,)	9.60559 
+19 	9   	1024    	796   	667          	(-0.6576929696647119,)	15.7452 
+
+--------------------------------------------------
+GP Time: 52.0047
+
+Unique expressions evaluated: 15425
+Total expression evaluations: 15778
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: 0.6576929696647119
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: div,x1,div,x2,inv,div,mul,x2,inv,x2,div,0.6078105729911775,sub,mul,x3,sub,1.2518966324348353,inv,sub,x3,2.313315985680391,x3
+	Expression:
+	                                                x₁                              
+	  ──────────────────────────────────────────────────────────────────────────────
+	     ⎛                     ⎛                               1           ⎞        
+	  x₂⋅⎜1.645249432037299⋅x₃⋅⎜1.2518966324348353 - ──────────────────────⎟ - 1.645
+	     ⎝                     ⎝                     x₃ - 2.313315985680391⎠        
+
+                
+	  ────────────────
+	                 ⎞
+	  249432037299⋅x₃⎟
+	                 ⎠
+
+None
+
+--------------------------------------------------
+
+[00:00:02:20.32] Training epoch 2/14, current best R: 0.6577
+
+	** New best
+	Reward: 0.6576929696647119
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: div,x1,div,x2,inv,div,mul,x2,inv,x2,div,0.6078105729911775,sub,mul,x3,sub,1.2518966324348353,inv,sub,x3,2.313315985680391,x3
+	Expression:
+	                                                x₁                              
+	  ──────────────────────────────────────────────────────────────────────────────
+	     ⎛                     ⎛                               1           ⎞        
+	  x₂⋅⎜1.645249432037299⋅x₃⋅⎜1.2518966324348353 - ──────────────────────⎟ - 1.645
+	     ⎝                     ⎝                     x₃ - 2.313315985680391⎠        
+
+                
+	  ────────────────
+	                 ⎞
+	  249432037299⋅x₃⎟
+	                 ⎠
+
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_2023-05-29-051702/dso_regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_2023-05-29-051702/dso_regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_0_pf.csv
+Invalid expressions: 368 of 17826 (2.1%).
+Error type counts:
+  reciprocal: 214 (58.2%)
+  true_divide: 154 (41.8%)
+Error node counts:
+  divide: 366 (99.5%)
+  invalid: 2 (0.5%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 142 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+json configure file: ./log/regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_2023-05-29-051702
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_2023-05-29-051702
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.657693 <-- [x1/(x2*(1.645249432037299*x3*(1.2518966324348353 - 1/(x3 - 2.313315985680391)) - 1.645249432037299*x3))]
+    1: S=000 R=0.657693 <-- [x1/(x2*(1.645249432037299*x3*(1.2518966324348353 - 1/(x3 - 2.313315985680391)) - 1.645249432037299*x3))]
+    2: S=000 R=0.644139 <-- [x1*(-(x2 + x3)/(89.964655684342688 - 14.318173652053526*x3) + 1/x3)/x2]
+    3: S=000 R=0.644139 <-- [x1*(-(x2 + x3)/(89.964655684342688 - 14.318173652053526*x3) + 1/x3)/x2]
+    4: S=000 R=0.641048 <-- [x1*(-(x2 + x3)/(-13.55433832387915*x3 + 85.131957086390304 + 1/(-1.0*x1 + 29.806443315702513 + 1/x3)) + 1/x3)/x2]
+  Saving Hall of Fame plot to ./log/regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_2023-05-29-051702/dso_regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 11)____
+    0: S=000 R=0.657693 C=29.00 <-- [x1/(x2*(1.645249432037299*x3*(1.2518966324348353 - 1/(x3 - 2.313315985680391)) - 1.645249432037299*x3))]
+    1: S=000 R=0.644139 C=23.00 <-- [x1*(-(x2 + x3)/(89.964655684342688 - 14.318173652053526*x3) + 1/x3)/x2]
+    2: S=000 R=0.579521 C=18.00 <-- [x1*(-x3/(-16.956310485561634 + 106.60589022085313/x3) + 1/x3)/x2]
+    3: S=000 R=0.572444 C=17.00 <-- [x1*(-0.2995020999259664*x3 - 0.2688768245214279/x3)*(x3 - 3.728761168599092)/x2]
+    4: S=000 R=0.572035 C=14.00 <-- [x1*(-0.7186468285788368*x3 + 1.4835797250355762 + 1/x3)/x2]
+  Saving Pareto Front plot to ./log/regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_2023-05-29-051702/dso_regression_config_regression_GPMELD.json_FeynmanICh30Eq5.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

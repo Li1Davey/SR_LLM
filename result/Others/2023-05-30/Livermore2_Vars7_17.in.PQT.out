@@ -1,0 +1,34 @@
+['mul', 'pow', 'X_4', -0.5, 'add', 'mul', -1, 'X_6', 'cos', 'pow', 'mul', 'X_0', 'mul', 'X_4', 'mul', 'add', 1.42, 'X_0', 'add', 'mul', -1, 'pow', 'add', 'X_1', 'X_5', 0.5, 'mul', 'pow', 'X_2', -1, 'add', 'mul', -1, 'X_3', 'mul', 'X_4', 'X_6', 0.5]
+--------------------
+eq_name 	 Livermore2_Vars7_17
+num_vars 	 7
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sqrt', 'sin', 'cos', 'const']
+eq_expression 	 mul,pow,X_4,-0.5,add,mul,-1,X_6,cos,pow,mul,X_0,mul,X_4,mul,add,1.42,X_0,add,mul,-1,pow,add,X_1,X_5,0.5,mul,pow,X_2,-1,add,mul,-1,X_3,mul,X_4,X_6,0.5
+expr 	 (-X_6 + cos(sqrt(X_0*X_4*(X_0 + 1.42)*(-sqrt(X_1 + X_5) + (-X_3 + X_4*X_6)/X_2))))/sqrt(X_4)
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b7c6102b080>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b7c4789bcf8>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------

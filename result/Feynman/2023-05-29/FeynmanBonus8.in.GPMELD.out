@@ -1,0 +1,130 @@
+debug /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanBonus8.in
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!i /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanBonus8.in
+['mul', 'X_0', 'pow', 'add', 1, 'mul', 12214328760283.5, 'mul', 'X_0', 'add', 1, 'mul', -1, 'cos', 'X_1', -1]
+--------------------
+eq_name 	 feynman-bonus.8
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [1e-24, 1e-22], "only_positive": true}, {"name": "Uniform", "range": [-3.141592653589793, 3.141592653589793], "only_positive": false}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 mul,X_0,pow,add,1,mul,12214328760283.5,mul,X_0,add,1,mul,-1,cos,X_1,-1
+expr 	 X_0/(12214328760283.5*X_0*(1 - cos(X_1)) + 1)
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2aacca19fa20>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2aacb08bfd68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+gen	iter	pop_size	nevals	uncached_size	best_val              	timer  
+0  	0   	1024    	1024  	1024         	(-0.9999999990964767,)	3.26754
+1  	1   	1024    	757   	651          	(-0.9999999990967849,)	2.19913
+2  	2   	1024    	764   	629          	(-0.9999999990967849,)	3.05447
+3  	3   	1024    	802   	631          	(-0.9999999990967849,)	4.38508
+4  	4   	1024    	766   	602          	(-0.9999999990967849,)	2.57605
+5  	5   	1024    	783   	595          	(-0.9999999990967849,)	3.11913
+6  	6   	1024    	749   	559          	(-0.9999999990967849,)	2.9296 
+7  	7   	1024    	779   	567          	(-0.9999999990967849,)	4.15787
+8  	8   	1024    	768   	538          	(-0.9999999990967849,)	4.51113
+9  	9   	1024    	781   	539          	(-0.9999999990967849,)	6.26185
+
+--------------------------------------------------
+GP Time: 36.7066
+
+Unique expressions evaluated: 7252
+Total expression evaluations: 7973
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: 0.9999999990967849
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: div,add,mul,x1,add,0.5999999994156102,add,0.5999999994156102,sub,mul,mul,sub,1.0,x2,1.0,x1,x1,x1,2.2000000006858333
+	Expression:
+	  0.45454545440375345⋅x₁⋅(x₁⋅(1.0 - x₂) - x₁ + 1.19999999883122) + 0.45454545440
+	  375345⋅x₁
+
+None
+
+--------------------------------------------------
+
+[00:00:00:40.35] Training epoch 1/14, current best R: 1.0000
+
+	** New best
+	Reward: 0.9999999990967849
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: div,add,mul,x1,add,0.5999999994156102,add,0.5999999994156102,sub,mul,mul,sub,1.0,x2,1.0,x1,x1,x1,2.2000000006858333
+	Expression:
+	  0.45454545440375345⋅x₁⋅(x₁⋅(1.0 - x₂) - x₁ + 1.19999999883122) + 0.45454545440
+	  375345⋅x₁
+
+[00:00:00:40.35] Early stopping criteria met; breaking early.
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_2023-05-29-052146/dso_regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_2023-05-29-052146/dso_regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_0_pf.csv
+Invalid expressions: 203 of 8997 (2.3%).
+Error type counts:
+  true_divide: 82 (40.4%)
+  reciprocal: 121 (59.6%)
+Error node counts:
+  divide: 203 (100.0%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 42 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+json configure file: ./log/regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_2023-05-29-052146
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_2023-05-29-052146
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____1.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=1.000000 <-- [0.45454545440375345*x1*(x1 + 1.19999999883122) + 0.45454545440375345*x1]
+    1: S=000 R=1.000000 <-- [2.19999999883122*x1/(2.2000000006858333 - x1)]
+    2: S=000 R=1.000000 <-- [(x1*(1.0*x1 + 1.19999999883122) + x1)/(2.2000000006858333 - x1)]
+    3: S=000 R=1.000000 <-- [0.45454545440375345*x1*(x1**2 - x1 + 1.19999999883122) + 0.45454545440375345*x1]
+    4: S=000 R=1.000000 <-- [0.45454545440375345*x1*(1.0*x1/(x1 - x2) + 1.19999999883122 + 1/(3.0 - 1.0*(x1 + x2)/x1)) + 0.45454545440375345*x1]
+  Saving Hall of Fame plot to ./log/regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_2023-05-29-052146/dso_regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 6)____
+    0: S=000 R=1.000000 C=17.00 <-- [0.45454545440375345*x1*(x1 + 1.19999999883122) + 0.45454545440375345*x1]
+    1: S=000 R=1.000000 C=16.00 <-- [x1*(0.99999999914354607 - 0.3819660082725551*x1)]
+    2: S=000 R=1.000000 C=11.00 <-- [x1*(-x1 + 0.4234267532371537 + 1/(1.7343850185649423 - x1))]
+    3: S=000 R=1.000000 C=10.00 <-- [0.59854308152987039*x1*(x1 + 1.670723511595851)]
+    4: S=000 R=1.000000 C=8.00 <-- [0.99999999971307077*x1]
+  Saving Pareto Front plot to ./log/regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_2023-05-29-052146/dso_regression_config_regression_GPMELD.json_FeynmanBonus8.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

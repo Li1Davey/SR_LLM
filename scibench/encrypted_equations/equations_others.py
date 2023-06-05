@@ -1041,7 +1041,7 @@ class Vladislavleva_5(KnownEquation):
 @register_eq_class
 class Vladislavleva_6(KnownEquation):
     _eq_name = 'Vladislavleva_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'cos', 'sin', 'const']
+    _function_set = ['add', 'sub', 'mul', 'cos', 'sin', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1052,7 +1052,7 @@ class Vladislavleva_6(KnownEquation):
 @register_eq_class
 class Vladislavleva_7(KnownEquation):
     _eq_name = 'Vladislavleva_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div',  'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1074,7 +1074,7 @@ class Vladislavleva_8(KnownEquation):
 @register_eq_class
 class Jin_1(KnownEquation):
     _eq_name = 'Jin_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'n2', 'n3', 'n4', 'const']
+    _function_set = ['add', 'sub', 'mul',  'n2', 'n3', 'n4', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1085,7 +1085,7 @@ class Jin_1(KnownEquation):
 @register_eq_class
 class Jin_2(KnownEquation):
     _eq_name = 'Jin_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'exp', 'n2', 'n3', 'const']
+    _function_set = ['add', 'sub', 'mul', 'n2', 'n3', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1096,7 +1096,7 @@ class Jin_2(KnownEquation):
 @register_eq_class
 class Jin_3(KnownEquation):
     _eq_name = 'Jin_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'const']
+    _function_set = ['add', 'sub', 'mul', 'n2', 'n3', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1107,7 +1107,7 @@ class Jin_3(KnownEquation):
 @register_eq_class
 class Jin_4(KnownEquation):
     _eq_name = 'Jin_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos','exp', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1140,7 +1140,7 @@ class Jin_6(KnownEquation):
 @register_eq_class
 class Neat_1(KnownEquation):
     _eq_name = 'Neat_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log']
+    _function_set = ['add', 'sub', 'mul', 'div', 'pow']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1151,7 +1151,7 @@ class Neat_1(KnownEquation):
 @register_eq_class
 class Neat_2(KnownEquation):
     _eq_name = 'Neat_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log']
+    _function_set = ['add', 'sub', 'mul', 'div', 'pow']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1162,7 +1162,7 @@ class Neat_2(KnownEquation):
 @register_eq_class
 class Neat_3(KnownEquation):
     _eq_name = 'Neat_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'n2']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1184,7 +1184,7 @@ class Neat_4(KnownEquation):
 @register_eq_class
 class Neat_5(KnownEquation):
     _eq_name = 'Neat_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1206,7 +1206,7 @@ class Neat_6(KnownEquation):
 @register_eq_class
 class Neat_7(KnownEquation):
     _eq_name = 'Neat_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'n2', 'n3', 'sqrt', 'tan', 'tanh', 'const']
+    _function_set = ['add', 'sub', 'mul',  'sin', 'cos',  'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1233,7 +1233,7 @@ class Neat_9(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = (1) / ((1 + sympy.Pow(x[0], -4))) + (1) / ((1 + sympy.Pow(x[1], -4)))
+        self.sympy_eq = 1 / (1 + sympy.Pow(x[0], -4)) + 1 / (1 + sympy.Pow(x[1], -4))
 
 
 @register_eq_class

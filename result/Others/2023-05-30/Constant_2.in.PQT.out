@@ -1,0 +1,299 @@
+['add', -0.75, 'mul', 'cos', 'X_0', 'sin', 'pow', 'X_0', 2]
+--------------------
+eq_name 	 Constant_2
+num_vars 	 1
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 add,-0.75,mul,cos,X_0,sin,pow,X_0,2
+expr 	 sin(X_0**2)*cos(X_0) - 0.75
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b8dc91177f0>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b8daf97fda0>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:24.21] Training epoch 1/14, current best R: 0.5318
+
+	** New best
+	Reward: 0.5317806789216651
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,div,sub,div,mul,add,mul,7.29136130401704,x1,-18.417520678392282,-2.309270390026217,sub,mul,add,x1,-5.336524962332616,x1,-7.1359440473511455,x1,158.97258763773087,-0.6186154889728112
+	Expression:
+	                              0.0062903926699539865⋅(42.531035160306861 - 16.837
+	  -0.0062903926699539865⋅x₁ + ──────────────────────────────────────────────────
+	                                      x₁⋅(x₁ - 5.336524962332616) + 7.1359440473
+
+	  7247623495⋅x₁)                     
+	  ────────────── - 0.6186154889728112
+	  511455                             
+
+[00:00:04:21.57] Training epoch 10/14, current best R: 0.5318
+[00:00:06:24.94] Ending training after epoch 14/14, current best R: 0.5318
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_PQT.json_Constant_2.in_normal_0.0_2023-05-30-030407/dso_regression_config_regression_PQT.json_Constant_2.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_PQT.json_Constant_2.in_normal_0.0_2023-05-30-030407/dso_regression_config_regression_PQT.json_Constant_2.in_normal_0.0_0_pf.csv
+Invalid expressions: 393 of 14336 (2.7%).
+Error type counts:
+  reciprocal: 267 (67.9%)
+  true_divide: 126 (32.1%)
+Error node counts:
+  divide: 391 (99.5%)
+  invalid: 2 (0.5%)
+
+Priority queue entry 0:
+	Reward: 0.5317806789216651
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,div,sub,div,mul,add,mul,7.29136130401704,x1,-18.417520678392282,-2.309270390026217,sub,mul,add,x1,-5.336524962332616,x1,-7.1359440473511455,x1,158.97258763773087,-0.6186154889728112
+	Expression:
+	                              0.0062903926699539865⋅(42.531035160306861 - 16.837
+	  -0.0062903926699539865⋅x₁ + ──────────────────────────────────────────────────
+	                                      x₁⋅(x₁ - 5.336524962332616) + 7.1359440473
+
+	  7247623495⋅x₁)                     
+	  ────────────── - 0.6186154889728112
+	  511455                             
+
+
+Priority queue entry 1:
+	Reward: 0.5315725147881637
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,3.2648646548048337,sub,inv,add,x1,sub,inv,add,-18.73036722940171,sub,mul,mul,x1,x1,6.198760014905513,20.802464140635877,2.5589834371520612,5.105604078150567
+	Expression:
+	                                      3.2648646548048337                        
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                                        1                       
+	  -5.105604078150567 + ─────────────────────────────────────────────────────────
+	                                                                     1          
+	                       x₁ - 2.5589834371520612 + ───────────────────────────────
+	                                                                     2          
+	                                                 6.198760014905513⋅x₁  - 39.5328
+
+           
+	  ───────────
+           
+	  ───────────
+           
+	  ───────────
+           
+	  31370037587
+
+
+Priority queue entry 2:
+	Reward: 0.5302761617973789
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,add,sub,div,inv,sub,add,sub,sub,mul,mul,0.34095437609942325,x1,mul,sub,-2.984524285553402,x1,0.3406887805641664,0.3070503941426274,0.307050394168904,x1,0.30705039421277824,x1,x1,-62.18429553899377,0.008773797764033807
+	Expression:
+                                                                              
+	  -0.008773797764033807⋅x₁ - 0.545592433158041 + ───────────────────────────────
+	                                                 x₁⋅(0.34095437609942325⋅x₁⋅(-0.
+
+	           0.008773797764033807                                       
+	  ────────────────────────────────────────────────────────────────────
+	  3406887805641664⋅x₁ - 1.016793939409328) + x₁ - 0.92115118252430965)
+
+
+Priority queue entry 3:
+	Reward: 0.5279491690022972
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,-0.5943250809950106,div,x1,sub,div,sub,div,sub,inv,div,div,add,x1,1.0970408689705522,2.8892866217617907,x1,1.4885396890986924,x1,0.20971270115972684,0.0001310956638102553,x1
+	Expression:
+	                                                         x₁                     
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                               ⎛                     x₁         
+	                             7628.017364841112⋅⎜────────────────────────────────
+	                                               ⎝0.3461061953729718⋅x₁ + 0.379692
+	  -x₁ - 1599.6921260741312 + ───────────────────────────────────────────────────
+	                                                                      x₁        
+
+                                                      
+	  ───────────────────────────────── - 0.5943250809950106
+	                                  ⎞                     
+	  ─────────── - 1.4885396890986924⎟                     
+	  64132805669                     ⎠                     
+	  ─────────────────────────────────                     
+                                                      
+
+
+Priority queue entry 4:
+	Reward: 0.5274730346201558
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,sub,mul,inv,add,x1,add,2.962245902611714,sub,div,mul,add,add,add,div,7.790382312531272,x1,x1,-2.785190843693909,-2.7851908442863236,0.8294567994483578,-0.0019005545608516622,x1,x1,0.29839025402607156,0.29839025402674046
+	Expression:
+	                                 x₁                                             
+	  ─────────────────────────────────────────────────────────────── - 0.5967805080
+	                                               3399.9474219438765               
+	  -436.42882795044193⋅x₁ + 2434.037397224429 - ──────────────────               
+	                                                       x₁                       
+
+       
+	  5281202
+       
+       
+       
+
+
+Priority queue entry 5:
+	Reward: 0.5274730311570323
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,mul,div,div,mul,0.06037551493475955,x1,sub,sub,mul,add,mul,1.723285837603673,sub,0.6262887553274922,inv,x1,0.526379787765046,4.520831676968011,x1,1.681613033458038,1.5915800713607278,0.060380174889323075,0.5967626364919791
+	Expression:
+	           0.0022904811491369061⋅x₁                              
+	  ────────────────────────────────────────── - 0.5967626364919791
+	                           7.790685203109036                     
+	  -x₁ + 5.57727992418935 - ─────────────────                     
+	                                   x₁                            
+
+
+Priority queue entry 6:
+	Reward: 0.5274730192840436
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,mul,0.018367256917253785,mul,add,sub,div,x1,sub,x1,mul,add,add,inv,x1,x1,-0.7158689723930771,1.1472503188216758,0.8656681383086338,1.1343262447273401,0.018367256924729083,0.5968817916877694
+	Expression:
+	                      0.00033735612680170773⋅x₁                                 
+	  ───────────────────────────────────────────────────────────────── - 0.59679115
+	                                                 1.1472503188216758             
+	  -0.1472503188216758⋅x₁ + 0.82128090681250314 - ──────────────────             
+	                                                         x₁                     
+
+         
+	  822955411
+         
+         
+         
+
+
+Priority queue entry 7:
+	Reward: 0.5274729641603629
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,sub,x1,mul,0.7148262980900342,mul,add,div,mul,0.00057555899890382,x1,add,inv,x1,sub,-0.7159663664139081,mul,-0.12838581953730693,x1,1.1680937361585744,0.7148262969678231,x1
+	Expression:
+	                0.0002940972008715767⋅x₁                                  
+	  - ──────────────────────────────────────────────── - 0.59686860741320045
+	                                                  1                       
+	    0.12838581953730693⋅x₁ - 0.7159663664139081 + ──                      
+	                                                  x₁                      
+
+
+Priority queue entry 8:
+	Reward: 0.5268340323734102
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,inv,div,sub,mul,div,sub,mul,div,add,inv,div,sub,x1,add,-1.0575468738362224,x1,-48.018789194721705,44.78538938034318,x1,12.535896479914705,x1,-0.01442568249324094,-4.373084513372036,-1688.5340644650742,x1,0.5906252454932186
+	Expression:
+	                                 x₁                                             
+	  ─────────────────────────────────────────────────────────────── - 0.5906252454
+	                                               2357.7851338956035               
+	  -303.1457621101127⋅x₁ + 1688.5340644650742 - ──────────────────               
+	                                                       x₁                       
+
+      
+	  932186
+      
+      
+      
+
+
+Priority queue entry 9:
+	Reward: 0.5230301824650867
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,-0.3796316761055532,sub,-0.37963167610555326,div,-0.3263761949641001,add,mul,2.1205030720441256,mul,add,-1.1511749193202554,x1,x1,inv,add,-0.04763853048120596,x1
+	Expression:
+	                                                     0.3263761949641001         
+	  -0.75926335221110646 + ───────────────────────────────────────────────────────
+                                                                              
+	                         2.1205030720441256⋅x₁⋅(x₁ - 1.1511749193202554) + ─────
+	                                                                           x₁ - 
+
+                   
+	  ───────────────────
+	        1            
+	  ───────────────────
+	  0.04763853048120596
+
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 387 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_PQT.json_Constant_2.in_normal_0.0_2023-05-30-030407
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.531781 <-- [-0.0062903926699539865*x1 + 0.0062903926699539865*(42.531035160306861 - 16.8377247623495*x1)/(x1*(x1 - 5.336524962332616) + 7.1359440473511455) - 0.6186154889728112]
+    1: S=000 R=0.531573 <-- [3.2648646548048337/(-5.105604078150567 + 1/(x1 - 2.5589834371520612 + 1/(6.198760014905513*x1**2 - 39.532831370037587)))]
+    2: S=000 R=0.531572 <-- [-0.9931828019319893 + 1/(2.8274054552338539 + 1/(x1 - 3.1145511261876362 + 0.031898489617365564/(x1 - 2.5253812720823428)))]
+    3: S=000 R=0.530276 <-- [-0.008773797764033807*x1 - 0.545592433158041 + 0.008773797764033807/(x1*(0.34095437609942325*x1*(-0.3406887805641664*x1 - 1.016793939409328) + x1 - 0.92115118252430965))]
+    4: S=000 R=0.527949 <-- [x1/(-x1 - 1599.6921260741312 + 7628.017364841112*(x1/(0.3461061953729718*x1 + 0.37969264132805669) - 1.4885396890986924)/x1) - 0.5943250809950106]
+  Saving Hall of Fame plot to ./log/regression_config_regression_PQT.json_Constant_2.in_normal_0.0_2023-05-30-030407/dso_regression_config_regression_PQT.json_Constant_2.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 11)____
+    0: S=000 R=0.531781 C=23.00 <-- [-0.0062903926699539865*x1 + 0.0062903926699539865*(42.531035160306861 - 16.8377247623495*x1)/(x1*(x1 - 5.336524962332616) + 7.1359440473511455) - 0.6186154889728112]
+    1: S=000 R=0.531573 C=22.00 <-- [3.2648646548048337/(-5.105604078150567 + 1/(x1 - 2.5589834371520612 + 1/(6.198760014905513*x1**2 - 39.532831370037587)))]
+    2: S=000 R=0.527616 C=21.00 <-- [-0.0003193133457565237*x1/(0.09201707996125608*x1 - 0.384485952270694 + x1**(-2)) - 0.5965671176114238]
+    3: S=000 R=0.523030 C=20.00 <-- [-0.75926335221110646 + 0.3263761949641001/(2.1205030720441256*x1*(x1 - 1.1511749193202554) + 1/(x1 - 0.04763853048120596))]
+    4: S=000 R=0.522120 C=18.00 <-- [-0.7625992557317075 + 1/(15.855730327011496*x1**2 - 29.927519010256315*x1 + 16.111926184678944)]
+  Saving Pareto Front plot to ./log/regression_config_regression_PQT.json_Constant_2.in_normal_0.0_2023-05-30-030407/dso_regression_config_regression_PQT.json_Constant_2.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

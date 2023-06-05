@@ -1,0 +1,115 @@
+['add', 'mul', 4.73, 'X_0', 'cos', 'mul', 'X_5', 'mul', 'pow', 'mul', 'X_2', 'mul', 'pow', 'X_4', -1, 'pow', 'add', 'X_1', 'X_6', -1, 0.5, 'mul', 'X_1', 'add', 'X_3', 'X_5']
+--------------------
+eq_name 	 Livermore2_Vars7_8
+num_vars 	 7
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'sin', 'cos', 'const']
+eq_expression 	 add,mul,4.73,X_0,cos,mul,X_5,mul,pow,mul,X_2,mul,pow,X_4,-1,pow,add,X_1,X_6,-1,0.5,mul,X_1,add,X_3,X_5
+expr 	 4.73*X_0 + cos(X_5*sqrt(X_2/(X_4*(X_1 + X_6)))*Abs(X_1)*Abs(X_3 + X_5))
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b25ca5a4c50>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b25b0e10d68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:03.32] Training epoch 1/14, current best R: 0.9434
+
+	** New best
+	Reward: 0.943377610410428
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,inv,div,inv,x1,4.727947811802678,0.34983948979993534
+	Expression:
+	  4.727947811802678⋅x₁ + 0.34983948979993534
+
+[00:00:00:23.22] Training epoch 8/14, current best R: 0.9434
+
+	** New best
+	Reward: 0.9433776104121608
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,x1,inv,mul,0.26824421229942963,inv,add,0.09384435956110192,x1
+	Expression:
+	  4.7279462301454707⋅x₁ + 0.34984672644622597
+
+[00:00:00:29.13] Training epoch 10/14, current best R: 0.9469
+
+	** New best
+	Reward: 0.9468548102932389
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,mul,x6,-0.10087501812390462,sub,0.7164911216168819,add,1.2835088439696427,mul,x1,4.72790536617552
+	Expression:
+	  4.72790536617552⋅x₁ - 0.10087501812390462⋅x₆ + 0.5670177223527608
+
+[00:00:00:29.14] Training epoch 10/14, current best R: 0.9469
+[00:00:00:42.70] Ending training after epoch 14/14, current best R: 0.9469
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_2023-05-30-031750/dso_regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_2023-05-30-031750/dso_regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_0_pf.csv
+Invalid expressions: 135 of 14336 (0.9%).
+Error type counts:
+  reciprocal: 68 (50.4%)
+  true_divide: 67 (49.6%)
+Error node counts:
+  divide: 135 (100.0%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 44 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_2023-05-30-031750
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.946855 <-- [4.72790536617552*x1 - 0.10087501812390462*x6 + 0.5670177223527608]
+    1: S=000 R=0.943794 <-- [4.697752906937486*x1 - 4.697752906937486*x1/(-230.03289074548777*x2 - 230.03289074548777/(x1 + x7)) + 0.3601586314888551]
+    2: S=000 R=0.943691 <-- [4.7251507213839385*x1 - 4.7251507213839385/(-x3 - 11.2307466658395)]
+    3: S=000 R=0.943422 <-- [(0.003519955489092376*x1 + 0.0002606787170654316)*(x7 + 1340.9696509304204)]
+    4: S=000 R=0.943378 <-- [4.7279462301454707*x1 + 0.34984672644622597]
+  Saving Hall of Fame plot to ./log/regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_2023-05-30-031750/dso_regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_plot_hof.png
+Pareto Front (4 of 4)____
+    0: S=000 R=0.946855 C=11.00 <-- [4.72790536617552*x1 - 0.10087501812390462*x6 + 0.5670177223527608]
+    1: S=000 R=0.943378 C=8.00 <-- [4.7279462829482007*x1 + 0.34984610895347507]
+    2: S=000 R=0.939809 C=7.00 <-- [4.797018814456212*x1]
+    3: S=000 R=0.939809 C=5.00 <-- [4.79702335885774*x1]
+  Saving Pareto Front plot to ./log/regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_2023-05-30-031750/dso_regression_config_regression_VPG.json_Livermore2_Vars7_8.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

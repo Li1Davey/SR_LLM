@@ -1,0 +1,94 @@
+debug /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh12Eq5.in
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!i /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh12Eq5.in
+['mul', 'X_0', 'X_1']
+--------------------
+eq_name 	 feynman-i.12.5
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10.0], "only_positive": false}, {"name": "LogUniform", "range": [0.1, 10.0], "only_positive": false}]
+function_set 	 ['add', 'sub', 'mul', 'div']
+eq_expression 	 mul,X_0,X_1
+expr 	 X_0*X_1
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b7b882f50f0>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b7ba7397d68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:11.82] Training epoch 1/14, current best R: 1.0000
+
+	** New best
+	Reward: 1.0
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: inv,div,1.0,div,x2,inv,x1
+	Expression:
+	  1.0⋅x₁⋅x₂
+
+[00:00:00:12.17] Early stopping criteria met; breaking early.
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_2023-05-29-051815/dso_regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_2023-05-29-051815/dso_regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_0_pf.csv
+Invalid expressions: 32 of 1024 (3.1%).
+Error type counts:
+  true_divide: 16 (50.0%)
+  reciprocal: 16 (50.0%)
+Error node counts:
+  divide: 32 (100.0%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 13 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+json configure file: ./log/regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_2023-05-29-051815
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_2023-05-29-051815
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____1.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=1.000000 <-- [1.0*x1*x2]
+    1: S=000 R=1.000000 <-- [x1*x2]
+    2: S=000 R=1.000000 <-- [0.135625443893399*x2*(7.373247759432988*x1 + 4.312877581468727e-9)]
+    3: S=000 R=1.000000 <-- [x2*(x1 + 5.9892516855671337e-9 - 7.939008368619648e-9/x2)]
+    4: S=000 R=1.000000 <-- [x1*x2*(1.0000000024777735 + 1.2739202799283803e-9/(x1 + 0.106602135349457 + 1/(x2*(1.0005104729804728 - x2))))]
+  Saving Hall of Fame plot to ./log/regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_2023-05-29-051815/dso_regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 5)____
+    0: S=000 R=1.000000 C=11.00 <-- [1.0*x1*x2]
+    1: S=000 R=1.000000 C=10.00 <-- [x2/(-2.0672159921353295e-9 + 1/x1)]
+    2: S=000 R=0.501077 C=8.00 <-- [0.093469341916403012*x1/x2]
+    3: S=000 R=0.501052 C=7.00 <-- [0.09288847929169486*x2/x1]
+    4: S=000 R=0.489553 C=5.00 <-- [-x2 - 0.01871969973899992]
+  Saving Pareto Front plot to ./log/regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_2023-05-29-051815/dso_regression_config_regression_VPG.json_FeynmanICh12Eq5.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

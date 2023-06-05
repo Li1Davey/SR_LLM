@@ -1,0 +1,74 @@
+debug /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanIICh24Eq17.in
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!i /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanIICh24Eq17.in
+['pow', 'add', 'mul', 1.11265005605362e-17, 'pow', 'X_0', 2, 'mul', -1, 'mul', 'pow', 3.141592653589793, 2, 'pow', 'X_1', -2, 0.5]
+--------------------
+eq_name 	 feynman-ii.24.17
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [1000000000.0, 100000000000.0], "only_positive": false}, {"name": "LogUniform", "range": [0.001, 0.1], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 pow,add,mul,1.11265005605362e-17,pow,X_0,2,mul,-1,mul,pow,3.141592653589793,2,pow,X_1,-2,0.5
+expr 	 sqrt(1.11265005605362e-17*X_0**2 - pi**2/X_1**2)
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b4698c630b8>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b46b7d05da0>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+gen	iter	pop_size	nevals	uncached_size	best_val	timer  
+0  	0   	1024    	1024  	1024         	(nan,)  	1.72978
+1  	1   	1024    	783   	659          	(nan,)  	0.337861
+2  	2   	1024    	759   	638          	(nan,)  	0.334605
+3  	3   	1024    	782   	665          	(nan,)  	0.342983
+4  	4   	1024    	783   	651          	(nan,)  	0.477172
+5  	5   	1024    	760   	614          	(nan,)  	0.331181
+6  	6   	1024    	770   	633          	(nan,)  	0.32893 
+7  	7   	1024    	739   	590          	(nan,)  	0.340296
+8  	8   	1024    	789   	629          	(nan,)  	0.350515
+9  	9   	1024    	787   	632          	(nan,)  	0.375069
+
+--------------------------------------------------
+GP Time: 5.1975
+
+Unique expressions evaluated: 7705
+Total expression evaluations: 7976
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: nan
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: div,x1,sub,inv,mul,1.0,inv,sub,add,1.0,x2,1.0,div,x2,x1
+	Expression:
+	       x₁    
+	  ───────────
+	           x₂
+	  1.0⋅x₂ - ──
+	           x₁
+
+None
+
+--------------------------------------------------
+

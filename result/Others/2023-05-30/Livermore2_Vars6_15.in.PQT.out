@@ -1,0 +1,268 @@
+['mul', 'X_0', 'mul', 'pow', 'X_3', -1, 'add', 'X_0', 'cos', 'mul', 'X_2', 'mul', 'X_3', 'mul', 'pow', 'X_1', 2, 'add', 'X_4', 'mul', -0.43, 'pow', 'X_5', 2]
+--------------------
+eq_name 	 Livermore2_Vars6_15
+num_vars 	 6
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'sin', 'cos', 'const']
+eq_expression 	 mul,X_0,mul,pow,X_3,-1,add,X_0,cos,mul,X_2,mul,X_3,mul,pow,X_1,2,add,X_4,mul,-0.43,pow,X_5,2
+expr 	 X_0*(X_0 + cos(X_1**2*X_2*X_3*(X_4 - 0.43*X_5**2)))/X_3
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b77870d0898>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b7771915d68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:03.16] Training epoch 1/14, current best R: 0.8720
+
+	** New best
+	Reward: 0.8720240788459964
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,x1,add,div,x1,x4,sub,inv,x6,1.0404838331593105
+	Expression:
+	     ⎛x₁                        1 ⎞
+	  x₁⋅⎜── - 1.0404838331593105 + ──⎟
+	     ⎝x₄                        x₆⎠
+
+[00:00:00:10.91] Training epoch 5/14, current best R: 0.8953
+
+	** New best
+	Reward: 0.8953230225920157
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,add,add,div,mul,x1,x1,x4,x3,x1,x6
+	Expression:
+	    2               
+	  x₁                
+	  ─── + x₁ + x₃ - x₆
+	   x₄               
+
+[00:00:00:18.78] Training epoch 9/14, current best R: 0.9123
+
+	** New best
+	Reward: 0.9122632474879246
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,x1,div,x1,div,div,x4,-1.0503849290309064,x1
+	Expression:
+	                       2     
+	  1.0503849290309064⋅x₁      
+	  ────────────────────── + x₁
+	            x₄               
+
+[00:00:00:20.92] Training epoch 10/14, current best R: 0.9123
+[00:00:00:29.79] Ending training after epoch 14/14, current best R: 0.9123
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_2023-05-30-033530/dso_regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_2023-05-30-033530/dso_regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_0_pf.csv
+Invalid expressions: 208 of 14336 (1.5%).
+Error type counts:
+  reciprocal: 123 (59.1%)
+  true_divide: 85 (40.9%)
+Error node counts:
+  divide: 208 (100.0%)
+
+Priority queue entry 0:
+	Reward: 0.9122632474879246
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,x1,div,x1,div,div,x4,-1.0503849290309064,x1
+	Expression:
+	                       2     
+	  1.0503849290309064⋅x₁      
+	  ────────────────────── + x₁
+	            x₄               
+
+
+Priority queue entry 1:
+	Reward: 0.9099459927823728
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,mul,div,sub,x1,x4,x4,x1,0.9052230189689376
+	Expression:
+	  1.104700144654977⋅x₁⋅(x₁ - x₄)
+	  ──────────────────────────────
+	                x₄              
+
+
+Priority queue entry 2:
+	Reward: 0.8953230225920157
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,add,add,div,mul,x1,x1,x4,x3,x1,x6
+	Expression:
+	    2               
+	  x₁                
+	  ─── + x₁ + x₃ - x₆
+	   x₄               
+
+
+Priority queue entry 3:
+	Reward: 0.8720240788459964
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,x1,add,div,x1,x4,sub,inv,x6,1.0404838331593105
+	Expression:
+	     ⎛x₁                        1 ⎞
+	  x₁⋅⎜── - 1.0404838331593105 + ──⎟
+	     ⎝x₄                        x₆⎠
+
+
+Priority queue entry 4:
+	Reward: 0.7806734769098582
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,x5,inv,div,x4,mul,-8.514355687154351,sub,0.7804780108382369,x1
+	Expression:
+	       8.514355687154351⋅x₁ - 6.645267390279458
+	  x₅ + ────────────────────────────────────────
+	                          x₄                   
+
+
+Priority queue entry 5:
+	Reward: 0.7650141702342764
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: inv,mul,sub,-0.06391681317520034,inv,sub,-4.049078704939475,x1,sub,add,add,x4,mul,mul,x6,0.0003154371482223416,x2,x4,x4
+	Expression:
+	                                           1                                    
+	  ──────────────────────────────────────────────────────────────────────────────
+	  ⎛                                  1           ⎞                              
+	  ⎜-0.06391681317520034 - ───────────────────────⎟⋅(0.0003154371482223416⋅x₂⋅x₆ 
+	  ⎝                       -x₁ - 4.049078704939475⎠                              
+
+     
+	  ─────
+     
+	  + x₄)
+     
+
+
+Priority queue entry 6:
+	Reward: 0.7542599354562446
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,x1,mul,1.7031812891574591,add,x2,div,mul,add,div,div,x1,x4,x3,-0.20123107655294317,x3,-0.23171534684122275
+	Expression:
+	                                                     ⎛  x₁                      
+	  x₁ - 1.7031812891574591⋅x₂ + 7.3503171558356998⋅x₃⋅⎜───── - 0.2012310765529431
+	                                                     ⎝x₃⋅x₄                     
+
+	   ⎞
+	  7⎟
+	   ⎠
+
+
+Priority queue entry 7:
+	Reward: 0.7471908841932178
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,mul,7.297678709808252,div,x1,x4,mul,inv,x1,0.8986307623985635
+	Expression:
+	  7.297678709808252⋅x₁   0.8986307623985635
+	  ──────────────────── - ──────────────────
+	           x₄                    x₁        
+
+
+Priority queue entry 8:
+	Reward: 0.7471755416217195
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,mul,div,x1,x4,7.299774864678802,inv,x1
+	Expression:
+	  7.299774864678802⋅x₁   1 
+	  ──────────────────── - ──
+	           x₄            x₁
+
+
+Priority queue entry 9:
+	Reward: 0.7449159467629296
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,x1,div,x1,mul,0.14122303790101007,x4
+	Expression:
+	       7.0809976535198702⋅x₁
+	  x₁ + ─────────────────────
+	                 x₄         
+
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 31 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_2023-05-30-033530
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.912263 <-- [1.0503849290309064*x1**2/x4 + x1]
+    1: S=000 R=0.909946 <-- [1.104700144654977*x1*(x1 - x4)/x4]
+    2: S=000 R=0.895323 <-- [x1**2/x4 + x1 + x3 - x6]
+    3: S=000 R=0.872024 <-- [x1*(x1/x4 - 1.0404838331593105 + 1/x6)]
+    4: S=000 R=0.780673 <-- [x5 + (8.514355687154351*x1 - 6.645267390279458)/x4]
+  Saving Hall of Fame plot to ./log/regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_2023-05-30-033530/dso_regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 5)____
+    0: S=000 R=0.912263 C=12.00 <-- [1.0503849290309064*x1**2/x4 + x1]
+    1: S=000 R=0.909946 C=11.00 <-- [1.104700144654977*x1*(x1 - x4)/x4]
+    2: S=000 R=0.747176 C=10.00 <-- [7.299774864678802*x1/x4 - 1/x1]
+    3: S=000 R=0.746013 C=6.00 <-- [7.281194329194207*x1/x4]
+    4: S=000 R=0.550472 C=5.00 <-- [18.250199413176247*x1 - 13.213718893412833]
+  Saving Pareto Front plot to ./log/regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_2023-05-30-033530/dso_regression_config_regression_PQT.json_Livermore2_Vars6_15.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

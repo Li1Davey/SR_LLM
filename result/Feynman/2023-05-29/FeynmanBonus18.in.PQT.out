@@ -1,0 +1,295 @@
+debug /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanBonus18.in
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!i /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanBonus18.in
+['mul', 5618566741.08146, 'mul', 'pow', 3.141592653589793, -1, 'add', 'pow', 'X_2', 2, 'mul', 8.98755178736818e+16, 'mul', 'X_0', 'pow', 'X_1', -2]
+--------------------
+eq_name 	 feynman-bonus.18
+num_vars 	 3
+vars_range_and_types 	 [{"name": "LogUniform", "range": [10.0, 1000.0], "only_positive": false}, {"name": "LogUniform", "range": [100000000.0, 10000000000.0], "only_positive": true}, {"name": "LogUniform", "range": [1.0, 100.0], "only_positive": false}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 mul,5618566741.08146,mul,pow,3.141592653589793,-1,add,pow,X_2,2,mul,8.98755178736818e+16,mul,X_0,pow,X_1,-2
+expr 	 5618566741.08146*(8.98755178736818e+16*X_0/X_1**2 + X_2**2)/pi
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b7ae428d898>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b7acaab4d68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:02.24] Training epoch 1/14, current best R: 0.5324
+
+	** New best
+	Reward: 0.5324473161615
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,div,mul,x2,div,x3,inv,add,div,div,x2,x2,x2,div,x3,div,2.8404647508221923,x1,x1,x3
+	Expression:
+	             ⎛                            1 ⎞
+	       x₂⋅x₃⋅⎜0.35205506412658106⋅x₁⋅x₃ + ──⎟
+	             ⎝                            x₂⎠
+	  x₃ + ──────────────────────────────────────
+	                         x₁                  
+
+[00:00:00:03.50] Training epoch 2/14, current best R: 0.5324
+
+	** New best
+	Reward: 0.532449289262923
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,div,x2,x1,sub,x1,add,x2,mul,mul,mul,x2,sub,add,x3,1.1854437087070293,0.8145224273189647,x3,0.35184901955819375
+	Expression:
+	                                                                    x₂
+	  -x₁ + 0.35184901955819375⋅x₂⋅x₃⋅(x₃ + 0.37092128138806461) + x₂ + ──
+	                                                                    x₁
+
+[00:00:00:05.81] Training epoch 4/14, current best R: 0.5324
+
+	** New best
+	Reward: 0.5324493900798484
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,mul,-1.1688885367406363,mul,sub,-0.6956101326668102,add,inv,x3,x3,x3,div,add,inv,x3,3.3208714408600994,x2
+	Expression:
+	                            ⎛                           1 ⎞ 
+	  -1.1688885367406363⋅x₂⋅x₃⋅⎜-x₃ - 0.6956101326668102 - ──⎟ 
+	                            ⎝                           x₃⎠ 
+	  ──────────────────────────────────────────────────────────
+	                                        1                   
+	                   3.3208714408600994 + ──                  
+	                                        x₃                  
+
+[00:00:00:10.28] Training epoch 8/14, current best R: 0.5325
+
+	** New best
+	Reward: 0.5324918699756179
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,x2,mul,x3,mul,x3,inv,div,sub,2.8397339451072834,inv,x1,x2
+	Expression:
+	                2             
+	           x₂⋅x₃              
+	  ─────────────────────── + x₂
+	                       1      
+	  2.8397339451072834 - ──     
+	                       x₁     
+
+[00:00:00:12.72] Training epoch 10/14, current best R: 0.5325
+[00:00:00:17.45] Ending training after epoch 14/14, current best R: 0.5325
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_2023-05-29-052140/dso_regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_2023-05-29-052140/dso_regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_0_pf.csv
+Invalid expressions: 336 of 14336 (2.3%).
+Error type counts:
+  reciprocal: 198 (58.9%)
+  true_divide: 138 (41.1%)
+Error node counts:
+  divide: 334 (99.4%)
+  invalid: 2 (0.6%)
+
+Priority queue entry 0:
+	Reward: 0.5324918699756179
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,x2,mul,x3,mul,x3,inv,div,sub,2.8397339451072834,inv,x1,x2
+	Expression:
+	                2             
+	           x₂⋅x₃              
+	  ─────────────────────── + x₂
+	                       1      
+	  2.8397339451072834 - ──     
+	                       x₁     
+
+
+Priority queue entry 1:
+	Reward: 0.5324905084260091
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,x3,mul,add,x3,inv,x1,sub,div,x2,sub,2.8381677985014115,inv,x1,x1
+	Expression:
+	     ⎛                 x₂          ⎞ ⎛     1 ⎞
+	  x₃⋅⎜-x₁ + ───────────────────────⎟⋅⎜x₃ + ──⎟
+	     ⎜                           1 ⎟ ⎝     x₁⎠
+	     ⎜      2.8381677985014115 - ──⎟          
+	     ⎝                           x₁⎠          
+
+
+Priority queue entry 2:
+	Reward: 0.5324493900798484
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: div,mul,-1.1688885367406363,mul,sub,-0.6956101326668102,add,inv,x3,x3,x3,div,add,inv,x3,3.3208714408600994,x2
+	Expression:
+	                            ⎛                           1 ⎞ 
+	  -1.1688885367406363⋅x₂⋅x₃⋅⎜-x₃ - 0.6956101326668102 - ──⎟ 
+	                            ⎝                           x₃⎠ 
+	  ──────────────────────────────────────────────────────────
+	                                        1                   
+	                   3.3208714408600994 + ──                  
+	                                        x₃                  
+
+
+Priority queue entry 3:
+	Reward: 0.532449289262923
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,div,x2,x1,sub,x1,add,x2,mul,mul,mul,x2,sub,add,x3,1.1854437087070293,0.8145224273189647,x3,0.35184901955819375
+	Expression:
+	                                                                    x₂
+	  -x₁ + 0.35184901955819375⋅x₂⋅x₃⋅(x₃ + 0.37092128138806461) + x₂ + ──
+	                                                                    x₁
+
+
+Priority queue entry 4:
+	Reward: 0.5324473901263547
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,mul,1.0001307662440329,sub,x1,x2,mul,mul,0.3522557852680339,add,mul,x2,x3,x3,x3
+	Expression:
+	  1.0001307662440329⋅x₁ - 1.0001307662440329⋅x₂ + x₃⋅(0.3522557852680339⋅x₂⋅x₃ +
+	   0.3522557852680339⋅x₃)
+
+
+Priority queue entry 5:
+	Reward: 0.5324473162478186
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,x3,add,x3,sub,x1,mul,x3,add,x2,sub,mul,-0.3520538434265811,x2,x2
+	Expression:
+	  x₃⋅(x₁ + 0.3520538434265811⋅x₂⋅x₃ + x₃)
+
+
+Priority queue entry 6:
+	Reward: 0.5324473161655772
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,inv,x2,add,x1,mul,x3,div,x3,div,2.840464510209295,x2
+	Expression:
+	                               2   1 
+	  x₁ + 0.3520550939488121⋅x₂⋅x₃  + ──
+	                                   x₂
+
+
+Priority queue entry 7:
+	Reward: 0.5324473161625045
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,0.3520538319246709,add,mul,mul,sub,x2,div,div,inv,sub,sub,x3,div,x1,1.0,1.0,1.0,x1,x3,x3,1.0
+	Expression:
+	                       2 ⎛              1         ⎞                     
+	  0.3520538319246709⋅x₃ ⋅⎜x₂ - ───────────────────⎟ + 0.3520538319246709
+	                         ⎝     x₁⋅(-x₁ + x₃ - 1.0)⎠                     
+
+
+Priority queue entry 8:
+	Reward: 0.5324473161615
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,div,mul,x2,div,x3,inv,add,div,div,x2,x2,x2,div,x3,div,2.8404647508221923,x1,x1,x3
+	Expression:
+	             ⎛                            1 ⎞
+	       x₂⋅x₃⋅⎜0.35205506412658106⋅x₁⋅x₃ + ──⎟
+	             ⎝                            x₂⎠
+	  x₃ + ──────────────────────────────────────
+	                         x₁                  
+
+
+Priority queue entry 9:
+	Reward: 0.5324431533786498
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: mul,x3,div,sub,add,sub,mul,mul,div,add,x2,sub,mul,inv,x3,x2,1.0,2.8408307802988366,x2,x3,x1,1.0,x3,x2
+	Expression:
+	     ⎛            ⎛                         0.35200970326532671⋅x₂              
+	  x₃⋅⎜-x₁ + x₂⋅x₃⋅⎜0.35200970326532671⋅x₂ + ────────────────────── - 0.352009703
+	     ⎝            ⎝                                   x₃                        
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                                   x₂                           
+
+	          ⎞           ⎞
+	  26532671⎟ - x₃ + 1.0⎟
+	          ⎠           ⎠
+	  ─────────────────────
+                     
+
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 19 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+json configure file: ./log/regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_2023-05-29-052140
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_2023-05-29-052140
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.532492 <-- [x2*x3**2/(2.8397339451072834 - 1/x1) + x2]
+    1: S=000 R=0.532491 <-- [x3*(-x1 + x2/(2.8381677985014115 - 1/x1))*(x3 + 1/x1)]
+    2: S=000 R=0.532449 <-- [-1.1688885367406363*x2*x3*(-x3 - 0.6956101326668102 - 1/x3)/(3.3208714408600994 + 1/x3)]
+    3: S=000 R=0.532449 <-- [-x1 + 0.35184901955819375*x2*x3*(x3 + 0.37092128138806461) + x2 + x2/x1]
+    4: S=000 R=0.532449 <-- [x2 - x3*(x1 - 0.13322759321690186*x2 + 0.35184866496806518*x3*(1.0 - x2) - 1.0)]
+  Saving Hall of Fame plot to ./log/regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_2023-05-29-052140/dso_regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 7)____
+    0: S=000 R=0.532492 C=16.00 <-- [x2*x3**2/(2.8397339451072834 - 1/x1) + x2]
+    1: S=000 R=0.532447 C=15.00 <-- [1.0001307662440329*x1 - 1.0001307662440329*x2 + x3*(0.3522557852680339*x2*x3 + 0.3522557852680339*x3)]
+    2: S=000 R=0.532447 C=12.00 <-- [0.352055040642477*x2*x3**2]
+    3: S=000 R=0.483077 C=11.00 <-- [-x1 + 398.4057997409181*x2 + x2/x1]
+    4: S=000 R=0.483077 C=8.00 <-- [398.4055144635829*x2 + 398.4055144635829]
+  Saving Pareto Front plot to ./log/regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_2023-05-29-052140/dso_regression_config_regression_PQT.json_FeynmanBonus18.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

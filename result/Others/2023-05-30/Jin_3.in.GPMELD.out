@@ -1,0 +1,214 @@
+['add', 'mul', 0.5, 'pow', 'X_1', 3, 'add', 'mul', 0.2, 'pow', 'X_0', 3, 'add', 'mul', -0.5, 'X_0', 'mul', -1.2, 'X_1']
+--------------------
+eq_name 	 Jin_3
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'n2', 'n3', 'const']
+eq_expression 	 add,mul,0.5,pow,X_1,3,add,mul,0.2,pow,X_0,3,add,mul,-0.5,X_0,mul,-1.2,X_1
+expr 	 0.2*X_0**3 - 0.5*X_0 + 0.5*X_1**3 - 1.2*X_1
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b2b140a1630>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b2afa90acf8>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+gen	iter	pop_size	nevals	uncached_size	best_val              	timer  
+0  	0   	1024    	1024  	1024         	(-0.8333342221730172,)	13.8353
+1  	1   	1024    	793   	666          	(-0.9226861069787597,)	11.0131
+2  	2   	1024    	750   	638          	(-0.9226861069787597,)	12.1409
+3  	3   	1024    	773   	631          	(-0.9226861069787597,)	17.7664
+4  	4   	1024    	756   	628          	(-0.9233548675305915,)	32.1818
+5  	5   	1024    	760   	591          	(-0.9625070615862125,)	33.3105
+6  	6   	1024    	764   	607          	(-0.9905100352020615,)	40.6218
+7  	7   	1024    	780   	585          	(-0.9905100352020615,)	52.4511
+8  	8   	1024    	781   	585          	(-0.9936189462626709,)	52.5661
+9  	9   	1024    	766   	580          	(-0.9936189462626709,)	56.2613
+
+--------------------------------------------------
+GP Time: 322.406
+
+Unique expressions evaluated: 7460
+Total expression evaluations: 7947
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: 0.9936189462626709
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: mul,mul,0.006324979158892023,add,mul,sub,mul,mul,-253.31681262593034,x1,x1,mul,sub,x2,sub,sub,mul,sub,x2,1.752094331132076,mul,mul,sub,-1.015655449206635,x2,inv,x2,div,sub,x2,-0.8319035521356336,mul,0.0015447188622505974,x1,x1,add,x1,mul,x2,div,add,56.51354892788416,mul,sub,div,x2,2.3710133214799516,x2,x2,-2.512127804069081,x2,-0.12087266534551958,x1,x1
+	Expression:
+	     ⎛                      2                                                   
+	  x₁⋅⎜0.19366503223170073⋅x₁  + 0.006324979158892023⋅x₁ + 0.00076451708919014141
+	     ⎝                                                                          
+
+	      ⎛          ⎛                      2                    ⎞        647.366989
+	  ⋅x₂⋅⎜2⋅x₁ + x₂⋅⎝0.23017913321007563⋅x₂  - 22.49628734507255⎠ + x₂ - ──────────
+	      ⎝                                                                         
+
+	  83725591⋅(-x₂ - 1.015655449206635)⋅(x₂ - 1.752094331132076)⋅(x₂ + 0.8319035521
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                     x₁⋅x₂                                      
+
+	  356336)⎞⎞
+	  ───────⎟⎟
+	         ⎠⎠
+
+None
+
+--------------------------------------------------
+
+[00:00:05:44.14] Training epoch 1/14, current best R: 0.9936
+
+	** New best
+	Reward: 0.9936189462626709
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: mul,mul,0.006324979158892023,add,mul,sub,mul,mul,-253.31681262593034,x1,x1,mul,sub,x2,sub,sub,mul,sub,x2,1.752094331132076,mul,mul,sub,-1.015655449206635,x2,inv,x2,div,sub,x2,-0.8319035521356336,mul,0.0015447188622505974,x1,x1,add,x1,mul,x2,div,add,56.51354892788416,mul,sub,div,x2,2.3710133214799516,x2,x2,-2.512127804069081,x2,-0.12087266534551958,x1,x1
+	Expression:
+	     ⎛                      2                                                   
+	  x₁⋅⎜0.19366503223170073⋅x₁  + 0.006324979158892023⋅x₁ + 0.00076451708919014141
+	     ⎝                                                                          
+
+	      ⎛          ⎛                      2                    ⎞        647.366989
+	  ⋅x₂⋅⎜2⋅x₁ + x₂⋅⎝0.23017913321007563⋅x₂  - 22.49628734507255⎠ + x₂ - ──────────
+	      ⎝                                                                         
+
+	  83725591⋅(-x₂ - 1.015655449206635)⋅(x₂ - 1.752094331132076)⋅(x₂ + 0.8319035521
+	  ──────────────────────────────────────────────────────────────────────────────
+	                                     x₁⋅x₂                                      
+
+	  356336)⎞⎞
+	  ───────⎟⎟
+	         ⎠⎠
+
+10 	0   	1024    	1024  	1017         	(-0.7655404023542216,)	10.3266
+11 	1   	1024    	755   	622          	(-0.7856960589289014,)	11.2455
+12 	2   	1024    	769   	641          	(-0.8379494919293997,)	13.5922
+13 	3   	1024    	760   	623          	(-0.8467072381399072,)	17.1933
+14 	4   	1024    	759   	608          	(-0.8467073374025109,)	24.2702
+15 	5   	1024    	752   	613          	(-0.9349846795088372,)	28.7025
+16 	6   	1024    	775   	654          	(-0.9349846795088372,)	36.2862
+17 	7   	1024    	760   	603          	(-0.9947678485601472,)	40.4709
+18 	8   	1024    	747   	597          	(-0.9947678485601472,)	57.6557
+19 	9   	1024    	738   	604          	(-0.9947678485601472,)	71.133 
+
+--------------------------------------------------
+GP Time: 311.136
+
+Unique expressions evaluated: 14989
+Total expression evaluations: 15786
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: 0.9947678485601472
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: add,x1,mul,mul,add,div,inv,x1,inv,sub,-0.8589482070307513,add,sub,2.85896214549709,x2,mul,div,-2.6380304265524828,div,inv,div,mul,x1,add,-0.7435894487125623,x2,x1,x2,x2,mul,x1,add,x1,div,-7.49940278111693,x1,x1,0.19997515690413584
+	Expression:
+	                         ⎛                                                  2   
+	                         ⎜   ⎛     7.49940278111693⎞   2.6380304265524828⋅x₂ ⋅(x
+	  0.19997515690413584⋅x₁⋅⎜x₁⋅⎜x₁ - ────────────────⎟ + ─────────────────────────
+	                         ⎝   ⎝            x₁       ⎠                            
+
+	                                                  ⎞     
+	  ₂ - 0.7435894487125623) + x₂ - 3.717910352527841⎟     
+	  ────────────────────────────────────────────────⎟ + x₁
+	             x₁                                   ⎠     
+
+None
+
+--------------------------------------------------
+
+[00:00:11:09.43] Training epoch 2/14, current best R: 0.9948
+
+	** New best
+	Reward: 0.9947678485601472
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: add,x1,mul,mul,add,div,inv,x1,inv,sub,-0.8589482070307513,add,sub,2.85896214549709,x2,mul,div,-2.6380304265524828,div,inv,div,mul,x1,add,-0.7435894487125623,x2,x1,x2,x2,mul,x1,add,x1,div,-7.49940278111693,x1,x1,0.19997515690413584
+	Expression:
+	                         ⎛                                                  2   
+	                         ⎜   ⎛     7.49940278111693⎞   2.6380304265524828⋅x₂ ⋅(x
+	  0.19997515690413584⋅x₁⋅⎜x₁⋅⎜x₁ - ────────────────⎟ + ─────────────────────────
+	                         ⎝   ⎝            x₁       ⎠                            
+
+	                                                  ⎞     
+	  ₂ - 0.7435894487125623) + x₂ - 3.717910352527841⎟     
+	  ────────────────────────────────────────────────⎟ + x₁
+	             x₁                                   ⎠     
+
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_2023-05-30-040556/dso_regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_2023-05-30-040556/dso_regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_0_pf.csv
+Invalid expressions: 187 of 17834 (1.0%).
+Error type counts:
+  reciprocal: 103 (55.1%)
+  true_divide: 84 (44.9%)
+Error node counts:
+  divide: 186 (99.5%)
+  invalid: 1 (0.5%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 671 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_2023-05-30-040556
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.994768 <-- [0.19997515690413584*x1*(x1*(x1 - 7.49940278111693/x1) + (2.6380304265524828*x2**2*(x2 - 0.7435894487125623) + x2 - 3.717910352527841)/x1) + x1]
+    1: S=000 R=0.994768 <-- [0.19997515690413584*x1*(x1*(x1 - 7.49940278111693/x1) + (2.6380304265524828*x2**2*(x2 - 0.7435894487125623) + x2 - 3.717910352527841)/x1) + x1]
+    2: S=000 R=0.993619 <-- [x1*(0.19366503223170073*x1**2 + 0.006324979158892023*x1 + 0.00076451708919014141*x2*(2*x1 + x2*(0.23017913321007563*x2**2 - 22.49628734507255) + x2 - 647.36698983725591*(-x2 - 1.015655449206635)*(x2 - 1.752094331132076)*(x2 + 0.8319035521356336)/(x1*x2)))]
+    3: S=000 R=0.993619 <-- [x1*(0.19366503223170073*x1**2 + 0.006324979158892023*x1 + 0.00076451708919014141*x2*(2*x1 + x2*(0.23017913321007563*x2**2 - 22.49628734507255) + x2 - 647.36698983725591*(-x2 - 1.015655449206635)*(x2 - 1.752094331132076)*(x2 + 0.8319035521356336)/(x1*x2)))]
+    4: S=000 R=0.993006 <-- [(0.1935372541888171*x1**3/x2 + 0.390731852056216*x2*(0.00903455664067751*x2 + 1.086962031737653)*(x2 + 1.1072628562562823) - 2.290949629315749)*(-1.799195701583313e-5*x1 - 3.468089695208982e-5*x2**2 + 1.000017991957016*x2 - 1.343577974674887e-5)]
+  Saving Hall of Fame plot to ./log/regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_2023-05-30-040556/dso_regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 20)____
+    0: S=000 R=0.994768 C=46.00 <-- [0.19997515690413584*x1*(x1*(x1 - 7.49940278111693/x1) + (2.6380304265524828*x2**2*(x2 - 0.7435894487125623) + x2 - 3.717910352527841)/x1) + x1]
+    1: S=000 R=0.990510 C=45.00 <-- [x1*(0.60729387634776*x1 + 0.75877305790629149*x2*(x2 - 1.6989505969929013 - 0.31822496776755421*(-x1 + x2)*(-x1 + x2 + 1.5961272618589766)*(-x1 - 2.071621600171949*x2 + 3.2948167879301247 - 0.009279125771997103/x2)/(x1*x2)))]
+    2: S=000 R=0.990483 C=44.00 <-- [x1*(-1.756386829961107*x1 + 0.75958616630952246*x2*(x2 + 1.4059158494461952 - 0.31807498079233997*(-x1 + x2)*(-x1 - 2.0670615748681067*x2 - 3.327801747080351)*(-x1 + x2 - 1.5888831468049143)/(x1*x2)))]
+    3: S=000 R=0.990014 C=42.00 <-- [x1*(-1.8720093136469032*x1 + 0.75189498227131508*x2*(x2 + 1.6412857800064766 - 0.3315522589165476*(-x1 + x2)*(-x1 - 2*x2 - 3.3249912878738945)*(-x1 + x2 - 1.6318411293333657)/(x1*x2)))]
+    4: S=000 R=0.969748 C=40.00 <-- [0.46205533518301256*(x1 + x2 + 0.49914651240434393)*(x2*(-x1 + x2 - 2.267373822291474) - 3.779868976495255 + 71.08063501675323/(0.0447157754421463*x2 + (35.04401310967763 - x1)/(x1 + x2) - 0.9794232802298417))]
+  Saving Pareto Front plot to ./log/regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_2023-05-30-040556/dso_regression_config_regression_GPMELD.json_Jin_3.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

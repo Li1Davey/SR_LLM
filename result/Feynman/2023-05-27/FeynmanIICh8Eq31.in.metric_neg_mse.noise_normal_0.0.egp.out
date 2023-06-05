@@ -1,0 +1,26 @@
+random seed= 965791
+np.random seed= 965791
+['mul', 4.427e-12, 'pow', 'X_0', 2]
+--------------------
+eq_name 	 feynman-ii.8.31
+num_vars 	 1
+vars_range_and_types 	 [{"name": "LogUniform", "range": [10.0, 1000.0], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 mul,4.427e-12,pow,X_0,2
+expr 	 4.427e-12*X_0**2
+--------------------
+============== LIBRARY ==============
+      ID       NAME    ARITY  ALLOWED
+       0        X_0        0        1
+       1        add        2        1
+       2        sub        2        1
+       3        mul        2        1
+       4        div        2        1
+       5        sin        1        1
+       6        cos        1        1
+       7        exp        1        1
+       8        log        1        1
+       9      const        0        1
+allowed_input_tokens= [1]
+========== END OF LIBRARY ===========
+generation #: [100] sum= 100

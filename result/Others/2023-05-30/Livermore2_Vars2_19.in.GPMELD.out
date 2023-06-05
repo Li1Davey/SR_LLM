@@ -1,0 +1,71 @@
+['mul', 'add', 'X_0', 'mul', -0.48, 'mul', 'pow', 'add', 1, 'add', 'mul', 0.23, 'X_0', 'mul', 0.23, 'mul', 'X_0', 'add', 'pow', 'X_1', 2, 'log', 'X_1', -0.5, 'cos', 'X_0', 'add', 'X_0', 'sin', 1]
+--------------------
+eq_name 	 Livermore2_Vars2_19
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'log', 'sin', 'cos', 'const']
+eq_expression 	 mul,add,X_0,mul,-0.48,mul,pow,add,1,add,mul,0.23,X_0,mul,0.23,mul,X_0,add,pow,X_1,2,log,X_1,-0.5,cos,X_0,add,X_0,sin,1
+expr 	 (X_0 - 0.48*cos(X_0)/sqrt(0.23*X_0*(X_1**2 + log(X_1)) + 0.23*X_0 + 1))*(X_0 + sin(1))
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b88698067f0>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b8850084d68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+gen	iter	pop_size	nevals	uncached_size	best_val	timer  
+0  	0   	1024    	1024  	1024         	(nan,)  	1.88398
+1  	1   	1024    	757   	638          	(nan,)  	0.365783
+2  	2   	1024    	778   	670          	(nan,)  	0.356895
+3  	3   	1024    	782   	652          	(nan,)  	0.353474
+4  	4   	1024    	779   	630          	(nan,)  	0.355633
+5  	5   	1024    	714   	589          	(nan,)  	0.475528
+6  	6   	1024    	765   	627          	(nan,)  	0.349526
+7  	7   	1024    	754   	612          	(nan,)  	0.346262
+8  	8   	1024    	808   	686          	(nan,)  	0.404159
+9  	9   	1024    	781   	635          	(nan,)  	0.384745
+
+--------------------------------------------------
+GP Time: 5.55678
+
+Unique expressions evaluated: 7725
+Total expression evaluations: 7942
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: nan
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: sub,mul,x1,add,add,sub,x2,inv,mul,mul,1.0,div,x2,inv,x2,1.0,1.0,x2,1.0
+	Expression:
+	     ⎛              1 ⎞      
+	  x₁⋅⎜2⋅x₂ + 1.0 - ───⎟ - 1.0
+	     ⎜               2⎟      
+	     ⎝             x₂ ⎠      
+
+None
+
+--------------------------------------------------
+

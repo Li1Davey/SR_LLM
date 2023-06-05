@@ -1,0 +1,1 @@
+['add', 'X_0', 'add', 'X_1', 'mul', 'X_0', 'add', 'X_0', 'add', 'X_1', 'add', 'X_5', 'add', 'mul', 'X_1', 'pow', 'add', 'mul', -1, 'X_4', 'mul', 8.07, 'mul', 'X_1', 'mul', 'X_2', 'mul', 'X_3', 'mul', 'X_4', 'mul', 'pow', 'X_0', 2, 'add', 'X_2', 'X_3', -1, 'log', 'cos', 'X_6']

@@ -1,0 +1,111 @@
+['add', 6.21, 'add', 'X_0', 'add', 'X_1', 'pow', 'add', 2.08, 'add', 'X_2', 'mul', 'X_2', 'X_3', -1]
+--------------------
+eq_name 	 Livermore2_Vars4_20
+num_vars 	 4
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'log', 'exp', 'sin', 'cos', 'const']
+eq_expression 	 add,6.21,add,X_0,add,X_1,pow,add,2.08,add,X_2,mul,X_2,X_3,-1
+expr 	 X_0 + X_1 + 6.21 + 1/(X_2*X_3 + X_2 + 2.08)
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2aefbae74b70>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2aefa570ed68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:05.36] Training epoch 1/14, current best R: 0.9663
+
+	** New best
+	Reward: 0.9662968161596347
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,6.46621489544258,add,x1,sub,x2,div,x3,div,add,x3,add,sub,158.55638526726403,x3,x2,x2
+	Expression:
+	                x₂⋅x₃                                 
+	  x₁ - ─────────────────────── + x₂ + 6.46621489544258
+	       x₂ + 158.55638526726403                        
+
+[00:00:00:18.30] Training epoch 4/14, current best R: 0.9787
+
+	** New best
+	Reward: 0.9787371519877008
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: sub,add,add,div,sub,sub,div,add,add,x4,x2,-4.311578522373937,div,div,312.33818098256944,x1,x1,x3,x4,31.199683805506304,x2,x1,-6.575913084605941
+	Expression:
+	                          2                                                     
+	  0.0001026182798897785⋅x₁ ⋅(x₂ + x₄ - 4.311578522373937) + x₁ + x₂ - 0.03205160
+
+                                                           
+	  6876333603⋅x₃ - 0.032051606876333603⋅x₄ + 6.575913084605941
+
+[00:00:00:48.49] Training epoch 10/14, current best R: 0.9787
+[00:00:01:16.38] Ending training after epoch 14/14, current best R: 0.9787
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_2023-05-30-034521/dso_regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_2023-05-30-034521/dso_regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_0_pf.csv
+Invalid expressions: 217 of 14336 (1.5%).
+Error type counts:
+  reciprocal: 123 (56.7%)
+  true_divide: 94 (43.3%)
+Error node counts:
+  divide: 215 (99.1%)
+  invalid: 2 (0.9%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 78 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_2023-05-30-034521
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.978737 <-- [0.0001026182798897785*x1**2*(x2 + x4 - 4.311578522373937) + x1 + x2 - 0.032051606876333603*x3 - 0.032051606876333603*x4 + 6.575913084605941]
+    1: S=000 R=0.975712 <-- [0.9998167344865567*x1 + x2 - 0.0416904940834083*x3 + 6.527388169008997]
+    2: S=000 R=0.966297 <-- [x1 - x2*x3/(x2 + 158.55638526726403) + x2 + 6.46621489544258]
+    3: S=000 R=0.966078 <-- [x1 + x2 - 0.022236561929172228*x4 + 6.4865597772642825]
+    4: S=000 R=0.966078 <-- [x1 + x2 - 0.022236689489859147*x4 + 6.486560174105366]
+  Saving Hall of Fame plot to ./log/regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_2023-05-30-034521/dso_regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 6)____
+    0: S=000 R=0.978737 C=27.00 <-- [0.0001026182798897785*x1**2*(x2 + x4 - 4.311578522373937) + x1 + x2 - 0.032051606876333603*x3 - 0.032051606876333603*x4 + 6.575913084605941]
+    1: S=000 R=0.975712 C=13.00 <-- [0.9998167344865567*x1 + x2 - 0.0416904940834083*x3 + 6.527388169008997]
+    2: S=000 R=0.966078 C=11.00 <-- [x1 + x2 - 0.022236561929172228*x4 + 6.4865597772642825]
+    3: S=000 R=0.962931 C=9.00 <-- [x1 + 1.0001254477414352*x2 + 6.4381467771269704]
+    4: S=000 R=0.962931 C=7.00 <-- [x1 + 1.0001261830107384*x2 + 6.4381455555463445]
+  Saving Pareto Front plot to ./log/regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_2023-05-30-034521/dso_regression_config_regression_DSR.json_Livermore2_Vars4_20.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

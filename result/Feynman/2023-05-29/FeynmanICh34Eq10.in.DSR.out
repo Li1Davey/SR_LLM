@@ -1,0 +1,120 @@
+debug /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh34Eq10.in
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!i /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh34Eq10.in
+['mul', 'X_0', 'pow', 'add', 1, 'mul', -3.33564095198152e-09, 'X_1', -1]
+--------------------
+eq_name 	 feynman-i.34.10
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [1000000000.0, 100000000000.0], "only_positive": true}, {"name": "LogUniform", "range": [100000.0, 10000000.0], "only_positive": false}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 mul,X_0,pow,add,1,mul,-3.33564095198152e-09,X_1,-1
+expr 	 X_0/(1 - 3.33564095198152e-9*X_1)
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b4dd2b80898>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b4db93dbd68>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:02.17] Training epoch 1/14, current best R: 0.9889
+
+	** New best
+	Reward: 0.988871239789416
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,1.0,add,div,mul,mul,sub,mul,sub,-1.9562523485898083e-07,div,x1,mul,x2,x1,x2,34.17531903025597,-3203.232105822346,x2,1572.6797243703738,x1
+	Expression:
+	                                 ⎛                       ⎛                      
+	  x₁ + 0.00063585737420271789⋅x₂⋅⎜- 3203.232105822346⋅x₂⋅⎜-1.9562523485898083e-7
+	                                 ⎝                       ⎝                      
+
+	     1 ⎞                    ⎞      
+	   - ──⎟ + 109471.4791444373⎟ + 1.0
+	     x₂⎠                    ⎠      
+
+[00:00:00:13.17] Training epoch 6/14, current best R: 0.9997
+
+	** New best
+	Reward: 0.9996871317280087
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,x1,mul,inv,div,sub,div,21810.14096449004,sub,mul,add,x2,3.273936851524149,inv,x2,0.9999270966164764,1.0003048044147211,x1,x2
+	Expression:
+	                                x₁⋅x₂                                    
+	  ────────────────────────────────────────────────────────────────── + x₁
+	                                     21810.14096449004                   
+	  -1.0003048044147211 + ────────────────────────────────────────────     
+	                                              x₂ + 3.273936851524149     
+	                        -0.9999270966164764 + ──────────────────────     
+	                                                        x₂               
+
+[00:00:00:26.19] Training epoch 10/14, current best R: 0.9997
+[00:00:00:37.96] Ending training after epoch 14/14, current best R: 0.9997
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052202/dso_regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052202/dso_regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_0_pf.csv
+Invalid expressions: 410 of 14336 (2.9%).
+Error type counts:
+  true_divide: 176 (42.9%)
+  reciprocal: 234 (57.1%)
+Error node counts:
+  divide: 407 (99.3%)
+  invalid: 3 (0.7%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 39 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+json configure file: ./log/regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052202
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052202
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.999687 <-- [x1*x2/(-1.0003048044147211 + 21810.14096449004/(-0.9999270966164764 + (x2 + 3.273936851524149)/x2)) + x1]
+    1: S=000 R=0.988893 <-- [1.000210459198532*x1 + 169.23547612737805*x1/(x2 - 1.0) + 71.31986641006967*x2 + 2.000420918397064]
+    2: S=000 R=0.988872 <-- [1.0001306520759337*x1 + 1.0001306520759337*(3.3554055228153405e-7*x2 + 71.63530574630643)*(x2 + 1.000000327556426) + 1.0001306520759337 - 1.0001306520759337/x1]
+    3: S=000 R=0.988872 <-- [8.152670533786527*x1 + 71.56437516300575*x2*(-0.099945261512730992*x1/x2 + 4.4718866447054504e-9*x2) + 71.56437516300575*x2]
+    4: S=000 R=0.988871 <-- [x1 + 3.9786755283100109e-7*x2**2 + 71.649254812195488*x2 + 143.29850962439098 + 1/x1]
+  Saving Hall of Fame plot to ./log/regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052202/dso_regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 6)____
+    0: S=000 R=0.999687 C=23.00 <-- [x1*x2/(-1.0003048044147211 + 21810.14096449004/(-0.9999270966164764 + (x2 + 3.273936851524149)/x2)) + x1]
+    1: S=000 R=0.988872 C=19.00 <-- [1.0001306520759337*x1 + 1.0001306520759337*(3.3554055228153405e-7*x2 + 71.63530574630643)*(x2 + 1.000000327556426) + 1.0001306520759337 - 1.0001306520759337/x1]
+    2: S=000 R=0.988871 C=18.00 <-- [x1 + 4.018928453585497e-7*x2**2 + 71.67604357471404*x2 + 70.67604357471404/x1]
+    3: S=000 R=0.988868 C=12.00 <-- [1.0002061848731207*x1 + 71.647148988075754*x2]
+    4: S=000 R=0.988868 C=7.00 <-- [1.0002061946579843*x1 + 71.645417792815009*x2]
+  Saving Pareto Front plot to ./log/regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052202/dso_regression_config_regression_DSR.json_FeynmanICh34Eq10.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

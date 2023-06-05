@@ -1,0 +1,107 @@
+['pow', 'X_0', 'X_1']
+--------------------
+eq_name 	 Nguyen_11
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [0.1, 10], "only_positive": true}, {"name": "LogUniform", "range": [0.1, 10], "only_positive": true}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'pow', 'exp', 'log']
+eq_expression 	 pow,X_0,X_1
+expr 	 X_0**X_1
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b04f99b8128>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b0518a5ada0>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+[00:00:00:01.88] Training epoch 1/14, current best R: 0.5821
+
+	** New best
+	Reward: 0.5820617128268482
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,mul,mul,add,mul,mul,add,mul,sub,mul,mul,x2,150.91600133610467,x1,x2,x1,x2,x1,x2,x2,x2,x2,x1
+	Expression:
+	         2                                                       
+	  x₁ + x₂ ⋅(x₁⋅x₂⋅(x₁⋅(150.91600133610467⋅x₁⋅x₂ - x₂) + x₂) + x₂)
+
+[00:00:00:06.31] Training epoch 5/14, current best R: 0.5962
+
+	** New best
+	Reward: 0.5961975695626685
+	Count Off-policy: False
+	Count On-policy: True
+	Originally on Policy: True
+	Invalid: False
+	Traversal: add,x2,mul,add,x1,mul,mul,x1,x1,mul,add,add,x2,-14.066992382079167,x1,mul,30209.52225239586,x2,x2
+	Expression:
+	     ⎛                    2                                       ⎞     
+	  x₂⋅⎝30209.52225239586⋅x₁ ⋅x₂⋅(x₁ + x₂ - 14.066992382079167) + x₁⎠ + x₂
+
+[00:00:00:11.93] Training epoch 10/14, current best R: 0.5962
+[00:00:00:16.20] Ending training after epoch 14/14, current best R: 0.5962
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_2023-05-30-031801/dso_regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_2023-05-30-031801/dso_regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_0_pf.csv
+Invalid expressions: 383 of 14336 (2.7%).
+Error type counts:
+  true_divide: 158 (41.3%)
+  reciprocal: 225 (58.7%)
+Error node counts:
+  divide: 381 (99.5%)
+  invalid: 2 (0.5%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 17 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_2023-05-30-031801
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.596198 <-- [x2*(30209.52225239586*x1**2*x2*(x1 + x2 - 14.066992382079167) + x1) + x2]
+    1: S=000 R=0.592165 <-- [6883.632880179545*x1*x2**3*(x1*(x1 - 9.178367749927531 + 9.212615628289711/x1) + x2)]
+    2: S=000 R=0.587566 <-- [-5212.021676181729*x1*x2**4*(-x1 + 6.870099978562456*x1/x2)]
+    3: S=000 R=0.586960 <-- [167.26709090720007*x1**3*x2**2*(-0.5354818253455211*x1 + x2)*(x1 + x2)]
+    4: S=000 R=0.582062 <-- [x1 + x2**2*(x1*x2*(x1*(150.91600133610467*x1*x2 - x2) + x2) + x2)]
+  Saving Hall of Fame plot to ./log/regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_2023-05-30-031801/dso_regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 8)____
+    0: S=000 R=0.596198 C=19.00 <-- [x2*(30209.52225239586*x1**2*x2*(x1 + x2 - 14.066992382079167) + x1) + x2]
+    1: S=000 R=0.546393 C=18.00 <-- [7750.9229624129493*x1*x2**2*(x1*x2 + x1)]
+    2: S=000 R=0.523413 C=17.00 <-- [40181.06191049986*x1**3*x2*(0.007055118175986753*x2 + 1)**2]
+    3: S=000 R=0.499868 C=13.00 <-- [2167.2469023342913*x1*x2 + x1]
+    4: S=000 R=0.499852 C=10.00 <-- [6502.5357107653266*x2]
+  Saving Pareto Front plot to ./log/regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_2023-05-30-031801/dso_regression_config_regression_DSR.json_Nguyen_11.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

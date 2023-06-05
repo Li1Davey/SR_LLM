@@ -64,7 +64,7 @@ def create_all_metrics_dict(inp):
         val_dict[spl[0]] = float(spl[1].strip())
         l = inp.readline()
         # print(l)
-    # print(val_dict)
+    print(val_dict)
     return val_dict
 
 

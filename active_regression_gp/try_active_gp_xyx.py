@@ -4,7 +4,8 @@ from program import Program
 import regress_task
 from const import ScipyMinimize
 from symbolic_data_generator import *
-from symbolic_equation_evaluator_public import Equation_evaluator, create_tokens
+from symbolic_equation_evaluator_public import Equation_evaluator
+from functions import create_tokens
 
 import gp_xyx
 
@@ -21,17 +22,14 @@ def run_active_regression_gp(equation_name, metric_name, noise_type, noise_scale
     regress_batchsize = 256
     opt_num_expr = 5
 
-    # expr_obj_thres = config[metric_name]['expr_obj_thres']
-    # expr_consts_thres = config[metric_name]['expr_consts_thres']
-
     # gp parameters
-    cxpb = 0.5
-    mutpb = 0.5
+    cxpb = 0.7
+    mutpb = 0.7
     maxdepth = 2
     tour_size = 3
-    hof_size = 20
+    hof_size = 30
 
-    population_size = 50  # 00
+    population_size = 100  # 00
     n_generations = 100
 
     # get all the functions and variables ready

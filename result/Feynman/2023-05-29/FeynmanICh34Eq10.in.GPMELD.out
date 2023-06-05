@@ -1,0 +1,198 @@
+debug /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh34Eq10.in
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!i /depot/yexiang/apps/jiang631/data/scibench/data/unencrypted/equations_feynman/FeynmanICh34Eq10.in
+['mul', 'X_0', 'pow', 'add', 1, 'mul', -3.33564095198152e-09, 'X_1', -1]
+--------------------
+eq_name 	 feynman-i.34.10
+num_vars 	 2
+vars_range_and_types 	 [{"name": "LogUniform", "range": [1000000000.0, 100000000000.0], "only_positive": true}, {"name": "LogUniform", "range": [100000.0, 10000000.0], "only_positive": false}]
+function_set 	 ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log', 'const']
+eq_expression 	 mul,X_0,pow,add,1,mul,-3.33564095198152e-09,X_1,-1
+expr 	 X_0/(1 - 3.33564095198152e-9*X_1)
+--------------------
+
+== EXPERIMENT SETUP START ===========
+Task type            : regression
+Starting seed        : 0
+Runs                 : 1
+== EXPERIMENT SETUP END =============
+
+== TRAINING SEED 0 START ============
+self.dataX <dso.symbolic_data_generator.DataX object at 0x2b451d5a50f0>, self.data_query_oracle: <dso.symbolic_equation_evaluator_public.Equation_evaluator object at 0x2b453c647da0>
+generate dataset!
+-- BUILDING PRIOR START -------------
+WARNING: Skipping invalid 'RelationalConstraint' with arguments {'targets': [], 'effectors': [], 'relationship': None}. Reason: Prior disabled.
+WARNING: Skipping invalid 'TrigConstraint' with arguments {}. Reason: There are no target Tokens.
+WARNING: Skipping invalid 'UniformArityPrior' with arguments {}. Reason: Prior disabled.
+WARNING: Skipping invalid 'LanguageModelPrior' with arguments {'weight': None}. Reason: Prior disabled.
+LengthConstraint: Sequences have minimum length 4.
+                  Sequences have maximum length 256.
+RepeatConstraint: [const] cannot occur more than 10 times.
+RelationalConstraint: [inv] cannot be a child of [inv].
+ConstConstraint: [const] cannot be the only unique child of [inv, add, sub, mul, div].
+NoInputsConstraint: Sequences contain at least one input variable Token.
+SoftLengthPrior: No description available.
+-- BUILDING PRIOR END ---------------
+
+-- RUNNING EPOCHS START -------------
+gen	iter	pop_size	nevals	uncached_size	best_val              	timer  
+0  	0   	1024    	1024  	1024         	(-0.9892228528598177,)	2.08492
+1  	1   	1024    	770   	650          	(-0.9892228528598177,)	1.06199
+2  	2   	1024    	786   	655          	(-0.9892228530871892,)	5.44586
+3  	3   	1024    	749   	601          	(-0.9892389778874606,)	3.17436
+4  	4   	1024    	770   	631          	(-0.9959692013030762,)	4.92918
+5  	5   	1024    	749   	595          	(-0.9959692013030762,)	6.59101
+6  	6   	1024    	762   	573          	(-0.9996797288949887,)	8.4899 
+7  	7   	1024    	762   	568          	(-0.9996797288949887,)	10.6952
+8  	8   	1024    	795   	557          	(-0.9997054211662593,)	15.5228
+9  	9   	1024    	790   	580          	(-0.9997055215529003,)	21.9877
+
+--------------------------------------------------
+GP Time: 80.2403
+
+Unique expressions evaluated: 7357
+Total expression evaluations: 7957
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: 0.9997055215529003
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: sub,add,1.0,x1,mul,add,sub,mul,x2,sub,sub,mul,sub,0.9999976592701031,div,0.45717786932064924,x2,x1,x1,1.0000076135116696,inv,add,mul,x1,1.0,x1,sub,sub,mul,sub,1.3855893775014667,div,1.0000003461010103,x2,x1,x2,x1,0.0014293797641983708
+	Expression:
+	                             ⎛                     1.0000003461010103⎞          
+	  - 0.0014293797641983708⋅x₁⋅⎜1.3855893775014667 - ──────────────────⎟ + 1.00142
+	                             ⎝                             x₂        ⎠          
+
+	                                            ⎛   ⎛                     0.45717786
+	  93797641984⋅x₁ - 0.0014293797641983708⋅x₂⋅⎜x₁⋅⎜0.9999976592701031 - ──────────
+	                                            ⎝   ⎝                              x
+
+	  932064924⎞                          ⎞                                    0.000
+	  ─────────⎟ - x₁ - 1.0000076135116696⎟ + 0.0014293797641983708⋅x₂ + 1.0 + ─────
+	  ₂        ⎠                          ⎠                                         
+
+	  7146898820991854
+	  ────────────────
+	       x₁         
+
+None
+
+--------------------------------------------------
+
+[00:00:01:26.75] Training epoch 1/14, current best R: 0.9997
+
+	** New best
+	Reward: 0.9997055215529003
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: sub,add,1.0,x1,mul,add,sub,mul,x2,sub,sub,mul,sub,0.9999976592701031,div,0.45717786932064924,x2,x1,x1,1.0000076135116696,inv,add,mul,x1,1.0,x1,sub,sub,mul,sub,1.3855893775014667,div,1.0000003461010103,x2,x1,x2,x1,0.0014293797641983708
+	Expression:
+	                             ⎛                     1.0000003461010103⎞          
+	  - 0.0014293797641983708⋅x₁⋅⎜1.3855893775014667 - ──────────────────⎟ + 1.00142
+	                             ⎝                             x₂        ⎠          
+
+	                                            ⎛   ⎛                     0.45717786
+	  93797641984⋅x₁ - 0.0014293797641983708⋅x₂⋅⎜x₁⋅⎜0.9999976592701031 - ──────────
+	                                            ⎝   ⎝                              x
+
+	  932064924⎞                          ⎞                                    0.000
+	  ─────────⎟ - x₁ - 1.0000076135116696⎟ + 0.0014293797641983708⋅x₂ + 1.0 + ─────
+	  ₂        ⎠                          ⎠                                         
+
+	  7146898820991854
+	  ────────────────
+	       x₁         
+
+10 	0   	1024    	1024  	1019         	(-0.9892185178192036,)	2.00641
+11 	1   	1024    	759   	638          	(-0.9892188244670831,)	1.86549
+12 	2   	1024    	766   	625          	(-0.9892191256646866,)	5.70596
+13 	3   	1024    	768   	603          	(-0.9892306436744585,)	7.12841
+14 	4   	1024    	779   	609          	(-0.9892406984820633,)	14.3072
+15 	5   	1024    	773   	583          	(-0.9927000837791686,)	8.27668
+16 	6   	1024    	751   	538          	(-0.9927000837791686,)	9.77565
+17 	7   	1024    	764   	550          	(-0.9927001760439649,)	14.8269
+18 	8   	1024    	772   	602          	(-0.9927023624126367,)	27.2041
+19 	9   	1024    	790   	597          	(-0.992702362413411,) 	25.3271
+
+--------------------------------------------------
+GP Time: 116.674
+
+Unique expressions evaluated: 14622
+Total expression evaluations: 15903
+--------------------------------------------------
+
+GP -> best program this epoch:
+
+	Reward: 0.992702362413411
+	Count Off-policy: 1
+	Count On-policy: 0
+	Originally on Policy: False
+	Invalid: False
+	Traversal: add,div,x1,div,add,mul,sub,mul,sub,add,add,inv,div,add,x1,x2,1.0,mul,inv,x2,add,x2,x1,x2,1.0269029207725127,1.0006520869914988,x2,0.022283662590914473,-1.7610477498077115,4.662695419257877,x1
+	Expression:
+	                                                          x₁                    
+	  x₁ + ─────────────────────────────────────────────────────────────────────────
+	                                                       0.0047822539266272678   0
+	       3.116413402957494e-6⋅x₂ - 0.38259969168253188 + ───────────────────── + ─
+	                                                          1.0⋅x₁ + 1.0⋅x₂       
+
+                              
+	  ──────────────────────────────
+	  .0047822539266272678⋅(x₁ + x₂)
+	  ──────────────────────────────
+	                x₂              
+
+None
+
+--------------------------------------------------
+
+-- RUNNING EPOCHS END ---------------
+
+-- EVALUATION START ----------------
+Saving Hall of Fame to ./log/regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052213/dso_regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_0_hof.csv
+Saving Pareto Front to ./log/regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052213/dso_regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_0_pf.csv
+Invalid expressions: 243 of 17951 (1.4%).
+Error type counts:
+  true_divide: 99 (40.7%)
+  reciprocal: 144 (59.3%)
+Error node counts:
+  divide: 243 (100.0%)
+-- EVALUATION END ------------------
+== TRAINING SEED 0 END ==============
+INFO: Completed run 1 of 1 in 207 s
+
+== POST-PROCESS START =================
+-- LOADING LOGS START ----------------
+json configure file: ./log/regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052213
+Successfully loaded summary data
+Successfully loaded Hall of Fame data
+Successfully loaded Pareto Front data
+-- LOADING LOGS END ------------------
+
+-- ANALYZING LOG START --------------
+Task_____________regression
+Source path______./log/regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052213
+Runs_____________1
+Max Samples/run__15000
+Success_rate_____0.0
+Hall of Fame (Top 5 of 100)____
+    0: S=000 R=0.999706 <-- [-0.0014293797641983708*x1*(1.3855893775014667 - 1.0000003461010103/x2) + 1.0014293797641984*x1 - 0.0014293797641983708*x2*(x1*(0.9999976592701031 - 0.45717786932064924/x2) - x1 - 1.0000076135116696) + 0.0014293797641983708*x2 + 1.0 + 0.0007146898820991854/x1]
+    1: S=000 R=0.999706 <-- [-0.0014293797641983708*x1*(1.3855893775014667 - 1.0000003461010103/x2) + 1.0014293797641984*x1 - 0.0014293797641983708*x2*(x1*(0.9999976592701031 - 0.45717786932064924/x2) - x1 - 1.0000076135116696) + 0.0014293797641983708*x2 + 1.0 + 0.0007146898820991854/x1]
+    2: S=000 R=0.999705 <-- [-0.001423858362343447*x1*(1.3733116920180022 - 0.9999866265533911/x2) + 1.001423858362343*x1 - 0.001423858362343447*x2*(x1*(0.9999976544215365 - 0.4677778244590271/x2) - x1 - 1.00000473805697) + 0.001423858362343447*x2 + 1.001423858362343 + 0.0007119291811717235/x1]
+    3: S=000 R=0.999705 <-- [-0.001423858362343447*x1*(1.3733116920180022 - 0.9999866265533911/x2) + 1.001423858362343*x1 - 0.001423858362343447*x2*(x1*(0.9999976544215365 - 0.4677778244590271/x2) - x1 - 1.00000473805697) + 0.001423858362343447*x2 + 1.001423858362343 + 0.0007119291811717235/x1]
+    4: S=000 R=0.999701 <-- [-0.0013427838350453787*x1*(1.3710878462175906 - 1.0000001694286884/x2) + 1.0013427838350454*x1 - 0.0013427838350453787*x2*(x1*(0.999997521168997 - 0.46539435553675546/x2) - x1 - 1.0000076178048105) + 0.0013427838350453787*x2 + 1.0 + 0.00067139191752268935/x1]
+  Saving Hall of Fame plot to ./log/regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052213/dso_regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_plot_hof.png
+Pareto Front (5 of 10)____
+    0: S=000 R=0.999706 C=41.00 <-- [-0.0014293797641983708*x1*(1.3855893775014667 - 1.0000003461010103/x2) + 1.0014293797641984*x1 - 0.0014293797641983708*x2*(x1*(0.9999976592701031 - 0.45717786932064924/x2) - x1 - 1.0000076135116696) + 0.0014293797641983708*x2 + 1.0 + 0.0007146898820991854/x1]
+    1: S=000 R=0.999686 C=22.00 <-- [3.366388202112531e-9*x1*x2 + 1.000144578356339*x1]
+    2: S=000 R=0.999669 C=19.00 <-- [3.3434828287041853e-9*x1*x2 + x1]
+    3: S=000 R=0.989246 C=18.00 <-- [-34.75629473513497*x1*(-1.2039391169767557e-5 - 5.186344900876688/x2) + x1 + 69.51258947026994*x2 + 34.75629473513497]
+    4: S=000 R=0.989236 C=16.00 <-- [1.00040863670694*x1 + 69.85509931412318*x1/x2 + 69.85509931412318*x2]
+  Saving Pareto Front plot to ./log/regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_2023-05-29-052213/dso_regression_config_regression_GPMELD.json_FeynmanICh34Eq10.in_normal_0.0_plot_pf.png
+-- ANALYZING LOG END ----------------
+== POST-PROCESS END ===================

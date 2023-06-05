@@ -35,7 +35,7 @@ class Active_RegressTaskV2(object):
 
         self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
-        self.init = True
+        self.call_idx = 0
         self.X_grid = self.dataX.get_X_grids()
         if kernel_type == 'rbf':
             self.kernel = RBF(length_scale=1.0, length_scale_bounds=(1e-2, 1e3)) + WhiteKernel(noise_level=1,
@@ -51,38 +51,40 @@ class Active_RegressTaskV2(object):
 
     def rand_draw_data(self):
         self.X = self.dataX.randn(sample_size=self.batchsize)
-        # self.y_true = self.data_query_oracle.evaluate(self.X)
 
     def rand_draw_X_nonfixed(self):
         self.X = self.dataX.randn(sample_size=self.batchsize)
-        # self.y_true = self.data_query_oracle.evaluate(self.X)
 
     def reward_function_fixed_data(self, p):
 
-        # X = self.dataX.randn(sample_size=self.batchsize)
         y_hat = p.execute(self.X)
-        if self.init:
-            self.init = False
-            y_true = self.data_query_oracle.evaluate(self.X)
-            self.regressor = ActiveLearner(
-                estimator=GaussianProcessRegressor(kernel=self.kernel),
-                query_strategy=GP_regression_std,
-                X_training=self.X, y_training=y_true
-            )
-            self.call_idx = 1
-        if np.random.randn() > 0.5:
-            query_idxes, _ = self.regressor.query(self.X_grid, self.batchsize)
-            self.X = self.X_grid[query_idxes]
-            self.call_idx += 1
 
-        if self.call_idx % 50 == 0:
-            y_true = self.data_query_oracle.evaluate(self.X)
-            self.regressor.teach(self.X, y_true)
-
+        if np.random.randn() < 0.01:
+            self.update_active_regressor()
         print(self.call_idx, end=" ")
         sys.stdout.flush()
-
         return self.data_query_oracle._evaluate_loss(self.X, y_hat)
+
+    def teach_active_regressor(self):
+        if self.regressor is None:
+            return
+        X = self.dataX.randn(sample_size=self.batchsize)
+        y_true = self.data_query_oracle.evaluate(X)
+        self.regressor.teach(X, y_true)
+
+    def update_active_regressor(self):
+        # chose to genarte new data from active learner
+        y_true = self.data_query_oracle.evaluate(self.X)
+        self.regressor = ActiveLearner(
+            estimator=GaussianProcessRegressor(kernel=self.kernel),
+            query_strategy=GP_regression_std,
+            X_training=self.X, y_training=y_true
+        )
+        query_idxes, _ = self.regressor.query(self.X_grid, self.batchsize)
+        self.X = self.X_grid[query_idxes]
+        self.call_idx += 1
+
+
 
     def reward_function(self, p):
 

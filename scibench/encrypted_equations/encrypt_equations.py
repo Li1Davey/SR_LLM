@@ -155,10 +155,10 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
         print(name, name_map[name])
 
 if __name__ == '__main__':
-    # from equations_feynman import *
-    #
-    #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
+    from equations_feynman import *
+
+
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
     # from equations_others import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
