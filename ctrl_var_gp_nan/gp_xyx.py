@@ -152,7 +152,7 @@ class ExpandingGeneticProgram(object):
                 print('pr.r=', pr.r)
                 print('pr=', pr.__getstate__())
 
-                print(pr.print_expression())
+                pr.print_expression()
 
             if var < self.nvar - 1:
                 # previous we only change x0,
@@ -209,7 +209,8 @@ class ExpandingGeneticProgram(object):
         for i in range(self.hof_size):
             pr = new_hof[i]
             if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
-                print("filter:", pr.r, pr.print_expression(), pr.__getstate__())
+                print("filter:", pr.r, pr.__getstate__(), end="\t")
+                pr.print_expression()
                 continue
             self.hof.append(pr.clone())
 
@@ -219,7 +220,8 @@ class ExpandingGeneticProgram(object):
         filtered_population = []
         for pr in self.population:
             if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
-                print("filter:", pr.r, pr.print_expression(), pr.__getstate__())
+                print("filter:", pr.r, pr.__getstate__(), end="\t")
+                pr.print_expression()
                 continue
             filtered_population.append(pr)
         new_population = sorted(filtered_population, reverse=True, key=attrgetter('r'))
@@ -299,7 +301,7 @@ class ExpandingGeneticProgram(object):
             pr.task.rand_draw_X_non_fixed()
             print('validate r=', pr.task.reward_function(pr))
             pr.task.reward_function_all_metrics(pr)
-            print(pr.print_expression())
+            pr.print_expression()
 
 
 class GeneticProgram(object):
@@ -494,7 +496,7 @@ class GeneticProgram(object):
             print('validate r=', pr.task.reward_function(pr))
             pr.task.reward_function_all_metrics(pr)
 
-            print(pr.print_expression())
+            pr.print_expression()
 
 
 class GPHelper(object):

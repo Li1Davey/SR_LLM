@@ -1,6 +1,6 @@
 from collections import OrderedDict
 import sympy
-from base import KnownEquation
+from base import KnownEquation, LogUniformSampling, IntegerUniformSampling, UniformSampling
 
 EQUATION_CLASS_DICT = OrderedDict()
 
@@ -284,7 +284,7 @@ class Korns_9(KnownEquation):
 @register_eq_class
 class Korns_10(KnownEquation):
     _eq_name = 'Korns_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2','n3', 'n4',  'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'n4', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -515,7 +515,7 @@ class Constant_1(KnownEquation):
 @register_eq_class
 class Constant_2(KnownEquation):
     _eq_name = 'Constant_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'n2', 'const']
+    _function_set = ['add', 'sub', 'mul', 'sin', 'cos', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -526,7 +526,7 @@ class Constant_2(KnownEquation):
 @register_eq_class
 class Constant_3(KnownEquation):
     _eq_name = 'Constant_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -537,10 +537,14 @@ class Constant_3(KnownEquation):
 @register_eq_class
 class Constant_4(KnownEquation):
     _eq_name = 'Constant_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
+    _function_set = ['add', 'mul', 'pow', 'const']
+    expr_obj_thres = 1
+    expr_consts_thres = None
 
-    def __init__(self):
-        super().__init__(num_vars=2)
+    def __init__(self, vars_range_and_types=None):
+        if vars_range_and_types is None:
+            vars_range_and_types = [LogUniformSampling(0.1, 10, only_positive=True), LogUniformSampling(0.1, 5, only_positive=True)]
+        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
         x = self.x
         self.sympy_eq = 2.7 * sympy.Pow(x[0], x[1])
 
@@ -1140,7 +1144,7 @@ class Jin_6(KnownEquation):
 @register_eq_class
 class Neat_1(KnownEquation):
     _eq_name = 'Neat_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3','n4']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'n4']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1151,7 +1155,7 @@ class Neat_1(KnownEquation):
 @register_eq_class
 class Neat_2(KnownEquation):
     _eq_name = 'Neat_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3','n4','n5']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3', 'n4', 'n5']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1173,7 +1177,7 @@ class Neat_3(KnownEquation):
 @register_eq_class
 class Neat_4(KnownEquation):
     _eq_name = 'Neat_4'
-    _function_set = ['add', 'sub', 'mul', 'div',  'n2', 'log']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'log']
 
     def __init__(self):
         super().__init__(num_vars=1)
