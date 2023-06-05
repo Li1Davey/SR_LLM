@@ -323,7 +323,7 @@ class Program(object):
                 'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
                 'allow_change_tokens': self.allow_change_tokens.tolist(),
                 'have_r': bool(have_r),
-                'r': float(self.r) if have_r else float(-np.inf),
+                'r': float(self.r) if have_r else 'No r',
                 'fixed_column': self.task.fixed_column,
                 'have_evaluate': bool(have_evaluate),
                 'evaluate': self.evaluate if have_evaluate else float(-np.inf),
@@ -336,7 +336,7 @@ class Program(object):
             state_dict = {
                 'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
                 'allow_change_tokens': self.allow_change_tokens.tolist(),
-                'r': float(self.r) if have_r else float(-np.inf)
+                'r': float(self.r) if have_r else 'No r'
             }
 
         return state_dict
@@ -441,11 +441,9 @@ class Program(object):
             # replace all the constant in self.travasal with the given constant.
             self.set_constants(consts)
 
-            # r = self.task.reward_function(self)
             # evaluate the diffferent betwen predited y and the groundtruth y
-            r = self.task.reward_function_fixed_data(self)
-            # self.data_used["X"].append(self.task.X)
-            # self.data_used["y_true"].append(self.task.y_true)
+
+            r = self.task.reward_function(self)
             # minimize the objective function
             obj = -r  # Constant optimizer minimizes the objective function
 
@@ -463,10 +461,10 @@ class Program(object):
             # Do the optimization
             # x0 = np.ones(self.num_changing_consts) # Initial guess
             x0 = np.random.rand(self.num_changing_consts) * 10
-            # print('c0=', x0)
 
-            # self.task.rand_draw_X_fixed()
-            self.task.rand_draw_data()
+
+
+            self.task.rand_draw_X_fixed()
             # the returned constant, and the objective function.
             # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
             if Program.noise_std > 0:
@@ -480,8 +478,8 @@ class Program(object):
             optimized_constants.append(t_optimized_constants)
 
             # add validated data as the obj
-            self.task.rand_draw_X_nonfixed()
-            validate_obj = -self.task.reward_function_fixed_data(self)
+            self.task.rand_draw_X_fixed()
+            validate_obj = -self.task.reward_function(self)
             optimized_obj.append(validate_obj)
 
         optimized_obj = np.array(optimized_obj)
@@ -592,13 +590,10 @@ class Program(object):
         all_functions = {
             # No complexity
             None: lambda p: 0.0,
-
             # Length of sequence
             "length": lambda p: len(p.traversal),
-
             # Sum of token-wise complexities
             "token": lambda p: sum([t.complexity for t in p.traversal]),
-
         }
 
         assert name in all_functions, "Unrecognzied complexity function name."
@@ -690,19 +685,14 @@ class Program(object):
                 return -np.mean(self.expr_objs)
             else:
                 # this means there is no constants to be optimized.
-                # return self.task.reward_function(self)
                 self.expr_objs = []
                 for expr in range(self.opt_num_expr):
-                    self.task.rand_draw_data()
-                    self.expr_objs.append(self.task.reward_function_fixed_data(self))
+                    self.task.rand_draw_X_fixed()
+                    self.expr_objs.append(self.task.reward_function(self))
                 self.expr_objs = np.array(self.expr_objs)
                 return np.mean(self.expr_objs)
 
-    @cached_property
-    def complexity(self):
-        """Evaluates and returns the complexity of the program"""
 
-        return Program.complexity_function(self)
 
     @cached_property
     def evaluate(self):
@@ -754,8 +744,9 @@ class Program(object):
         return [pretty(self.sympy_expr[i]) for i in range(Program.n_objects)]
 
     def print_expression(self):
-        print("\tExpression {}: {}".format(0, self.traversal))
-        print("{}\n".format(self.pretty()[0]))
+
+        print("{}".format(self.traversal))
+
 
     def print_stats(self):
         """Prints the statistics of the program

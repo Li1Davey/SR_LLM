@@ -8,7 +8,8 @@ from program import Program
 
 def print_prs(prs):
     for pr in prs:
-        print('        ' + str(pr.__getstate__()))
+        print('        ' + str(pr.__getstate__()), end="\t")
+        pr.print_expression()
 
 
 def create_geometric_generations(n_generations, nvar):
@@ -73,6 +74,8 @@ class ExpandingGeneticProgram(object):
         self.n_generations = create_uniform_generations(n_generations, nvar + 1)
 
         self.hof = []
+        self.population = []
+
         self.timer_log = []
         self.gen_num = 0
 
@@ -86,18 +89,15 @@ class ExpandingGeneticProgram(object):
 
         Program.task.set_allowed_inputs(start_allowed_input_tokens)
 
-        self.create_init_population()
+        # self.create_init_population(nvar=0)
 
     def run(self):
         # for
-        most_recent_timestamp = time.perf_counter()
+        # most_recent_timestamp = time.perf_counter()
         for var in range(self.nvar + 1):
-
-            if var == self.nvar:
-                # XYX on Jan 5: in the last iteration there is no constants
-                #               that can be changed among different experiments.
-                Program.task.batchsize *= Program.opt_num_expr
-                Program.opt_num_expr = 1
+            self.create_init_population()
+            if var == 1:
+                print("for variable 2")
 
             # consider one variable at a time.
             for pr in self.population:
@@ -116,20 +116,12 @@ class ExpandingGeneticProgram(object):
             # for fixed variable, do n generation
             for i in range(self.n_generations[var]):
                 print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(var, i))
+
                 self.one_generation()
+            self.update_population()
 
-                print('hof (VAR {} ITERATION {})='.format(var, i))
-                print_prs(self.hof)
-                print("")
-
-                now_time_stamp = time.perf_counter()
-                if now_time_stamp - most_recent_timestamp >= 900:  # 15 min
-                    print('print hof (VAR {} ITERATION {})='.format(var, i))
-                    self.print_hof()
-                    print("")
-                    most_recent_timestamp = now_time_stamp
-
-            for pr in self.population:
+            for i, pr in enumerate(self.population):
+                print('{}-th in self.population'.format(i))
                 # evaluate r again, just incase it has not been evaluated.
                 this_r = pr.r
                 if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
@@ -146,8 +138,20 @@ class ExpandingGeneticProgram(object):
                         print('pr.expr_consts=', pr.expr_consts)
                 # whether you get very different value for different constant.
                 pr.freeze_equation()
-                print('pr=', pr.__getstate__())
+                pr.remove_r_evaluate()
+
                 print('pr.r=', pr.r)
+                print('pr=', pr.__getstate__())
+
+                print(pr.print_expression())
+
+            for i, pr in enumerate(self.hof):
+                print('{}-th in self.hof'.format(i))
+                # evaluate r again, just incase it has not been evaluated.
+                pr.remove_r_evaluate()
+                print('pr.r=', pr.r)
+                print('pr=', pr.__getstate__())
+
                 print(pr.print_expression())
 
             if var < self.nvar - 1:
@@ -158,7 +162,7 @@ class ExpandingGeneticProgram(object):
                 # set the next variable to be free
                 Program.task.set_allowed_input(var + 1, 1)
 
-    def one_generation(self, iter=None):
+    def one_generation(self):
         """
         One step of the genetic algorithm. 
         This wraps selection, mutation, crossover and hall of fame computation
@@ -187,31 +191,41 @@ class ExpandingGeneticProgram(object):
         print("")
 
         # Replace the current population by the offspring
-        self.population = offspring + self.hof
+        self.population = offspring + self.hof + self.population
 
         # Update hall of fame
         self.update_hof()
-
+        print("after update hof after sorted=")
+        print_prs(self.hof)
         timer = time.perf_counter() - t1
 
         self.timer_log.append(timer)
         self.gen_num += 1
 
     def update_hof(self):
-        # pop = [copy.deepcopy(pr) for pr in self.population]
-        # new_hof = sorted(self.hof + self.population, reverse=True, key=attrgetter('r'))
         new_hof = sorted(self.population, reverse=True, key=attrgetter('r'))
-        # XYX: remove duplicates?
-        # self.hof = new_hof[:self.hof_size]
+
         self.hof = []
         for i in range(self.hof_size):
-            # new_hofi = copy.deepcopy(new_hof[i])
-            # if "expr_objs" in new_hof[i].__dict__:
-            #     new_hofi.expr_objs = np.copy(new_hof[i].expr_objs)
-            # if "expr_consts" in new_hof[i].__dict__:
-            #     new_hofi.expr_consts = np.copy(new_hof[i].expr_consts)
-            new_hofi = new_hof[i].clone()
-            self.hof.append(new_hofi)
+            pr = new_hof[i]
+            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
+                print("filter:", pr.r, pr.print_expression(), pr.__getstate__())
+                continue
+            self.hof.append(pr.clone())
+
+        # self.hof = [new_hof[i].clone() for i in range(self.hof_size)]
+
+    def update_population(self):
+        filtered_population = []
+        for pr in self.population:
+            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
+                print("filter:", pr.r, pr.print_expression(), pr.__getstate__())
+                continue
+            filtered_population.append(pr)
+        new_population = sorted(filtered_population, reverse=True, key=attrgetter('r'))
+        self.population = []
+        for i in range(min(self.population_size, len(filtered_population))):
+            self.population.append(new_population[i].clone())
 
     def selectTournament(self, population_size, tour_size):
         offspring = []
@@ -221,11 +235,6 @@ class ExpandingGeneticProgram(object):
             else:
                 spr = np.random.choice(self.population, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
-            # maxspri = copy.deepcopy(maxspr)
-            # if "expr_objs" in maxspr.__dict__:
-            #     maxspri.expr_objs = np.copy(maxspr.expr_objs)
-            # if "expr_consts" in maxspr.__dict__:
-            #     maxspri.expr_consts = np.copy(maxspr.expr_consts)
             maxspri = maxspr.clone()
             offspring.append(maxspri)
         return offspring
@@ -254,7 +263,7 @@ class ExpandingGeneticProgram(object):
            create the initial population; look for every token in library, fill in
            the leaves with constants or inputs.
         """
-        self.population = []
+
         for i, t in enumerate(self.library.tokens):
             if self.library.allowed_tokens[i]:
                 # otherwise (not allowed) do not need to do anything
@@ -268,16 +277,16 @@ class ExpandingGeneticProgram(object):
 
                 pr = Program(tree, np.ones(tree.size, dtype=np.int32))
                 self.population.append(pr)
-
-        self.hof = []
-        for pr in self.population:
-            # new_pr = copy.deepcopy(pr)
-            # if "expr_objs" in pr.__dict__:
-            #     new_pr.expr_objs = np.copy(pr.expr_objs)
-            # if "expr_consts" in pr.__dict__:
-            #     new_pr.expr_consts = np.copy(pr.expr_consts)
-            new_pr = pr.clone()
-            self.hof.append(new_pr)
+                new_pr = pr.clone()
+                self.hof.append(new_pr)
+        if self.library.allowed_tokens[1] == 1:
+            for one_prog in [[3, 5, 4, 0, 1], [3, 4, 0, 1, 5]]:
+                # tree = [str(self.library.tokens[i]) for i in one_prog]
+                tree = np.array(one_prog)
+                pr = Program(tree, np.ones(tree.size, dtype=np.int32))
+                self.population.insert(0, pr)
+                new_pr = pr.clone()
+                self.hof.insert(0, new_pr)
 
     def print_population(self):
         for pr in self.population:
@@ -286,9 +295,9 @@ class ExpandingGeneticProgram(object):
     def print_hof(self):
         for pr in self.hof:
             print(pr.__getstate__())
-            pr.task.rand_draw_data()
-            print('validate r=', pr.task.reward_function_fixed_data(pr))
-            pr.task.reward_function_fixed_data_all_metrics(pr)
+            pr.task.rand_draw_X_non_fixed()
+            print('validate r=', pr.task.reward_function(pr))
+            pr.task.reward_function_all_metrics(pr)
             print(pr.print_expression())
 
 
@@ -386,20 +395,18 @@ class GeneticProgram(object):
         self.gen_num += 1
 
     def update_hof(self):
-        # pop = [copy.deepcopy(pr) for pr in self.population]
-        # new_hof = sorted(self.hof + self.population, reverse=True, key=attrgetter('r'))
         new_hof = sorted(self.population, reverse=True, key=attrgetter('r'))
-        # XYX: remove duplicates?
-        # self.hof = new_hof[:self.hof_size]
+
         self.hof = []
         for i in range(self.hof_size):
-            # new_hofi = copy.deepcopy(new_hof[i])
-            # if "expr_objs" in new_hof[i].__dict__:
-            #     new_hofi.expr_objs = np.copy(new_hof[i].expr_objs)
-            # if "expr_consts" in new_hof[i].__dict__:
-            #     new_hofi.expr_consts = np.copy(new_hof[i].expr_consts)
             new_hofi = new_hof[i].clone()
             self.hof.append(new_hofi)
+
+    def update_population(self):
+        new_population = sorted(self.population, reverse=True, key=attrgetter('r'))
+        self.population = []
+        for i in range(self.population_size):
+            self.population.append(new_population[i].clone())
 
     def selectTournament(self, population_size, tour_size):
         offspring = []
@@ -481,10 +488,10 @@ class GeneticProgram(object):
     def print_hof(self):
         for pr in self.hof:
             print(pr.__getstate__())
-            pr.task.rand_draw_data()
+            pr.task.rand_draw_X_non_fixed()
 
-            print('validate r=', pr.task.reward_function_fixed_data(pr))
-            pr.task.reward_function_fixed_data_all_metrics(pr)
+            print('validate r=', pr.task.reward_function(pr))
+            pr.task.reward_function_all_metrics(pr)
 
             print(pr.print_expression())
 
