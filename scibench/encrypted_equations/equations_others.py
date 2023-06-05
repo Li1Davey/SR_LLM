@@ -1173,7 +1173,7 @@ class Neat_3(KnownEquation):
 @register_eq_class
 class Neat_4(KnownEquation):
     _eq_name = 'Neat_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'log']
+    _function_set = ['add', 'sub', 'mul', 'div',  'n2', 'log']
 
     def __init__(self):
         super().__init__(num_vars=1)
