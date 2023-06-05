@@ -96,8 +96,6 @@ class ExpandingGeneticProgram(object):
         # most_recent_timestamp = time.perf_counter()
         for var in range(self.nvar + 1):
             self.create_init_population()
-            if var == 1:
-                print("for variable 2")
 
             # consider one variable at a time.
             for pr in self.population:
@@ -127,8 +125,8 @@ class ExpandingGeneticProgram(object):
                 if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
                     # only expand at those constant node. if there are no constant node,then we are done
                     # if we do not want num_changing_consts, then we also quit.
-                    print('there are no constant node. we are done.')
-                    # pass
+                    print('there are no constant node. we are done...')
+
                 else:
                     if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
                         print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
@@ -143,7 +141,7 @@ class ExpandingGeneticProgram(object):
                 print('pr.r=', pr.r)
                 print('pr=', pr.__getstate__())
 
-                print(pr.print_expression())
+                pr.print_expression()
 
             for i, pr in enumerate(self.hof):
                 print('{}-th in self.hof'.format(i))
@@ -281,14 +279,6 @@ class ExpandingGeneticProgram(object):
                 self.population.append(pr)
                 new_pr = pr.clone()
                 self.hof.append(new_pr)
-        # if self.library.allowed_tokens[1] == 1:
-        #     for one_prog in [[3, 5, 4, 0, 1], [3, 4, 0, 1, 5]]:
-        #         # tree = [str(self.library.tokens[i]) for i in one_prog]
-        #         tree = np.array(one_prog)
-        #         pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-        #         self.population.insert(0, pr)
-        #         new_pr = pr.clone()
-        #         self.hof.insert(0, new_pr)
 
     def print_population(self):
         for pr in self.population:
@@ -476,11 +466,6 @@ class GeneticProgram(object):
         # self.hof = [copy.deepcopy(pr) for pr in self.population]
         self.hof = []
         for pr in self.population:
-            # new_pr = copy.deepcopy(pr)
-            # if "expr_objs" in pr.__dict__:
-            #     new_pr.expr_objs = np.copy(pr.expr_objs)
-            # if "expr_consts" in pr.__dict__:
-            #     new_pr.expr_consts = np.copy(pr.expr_consts)
             new_pr = pr.clone()
             self.hof.append(new_pr)
 
