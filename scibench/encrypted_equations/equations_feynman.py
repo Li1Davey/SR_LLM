@@ -560,11 +560,11 @@ class FeynmanICh16Eq6(KnownEquation):
         - 1 + x[0] * x[1] != 0
     """
     _eq_name = 'feynman-i.16.6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'n2', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
 
     def __init__(self, vars_range_and_types=None):
         if vars_range_and_types is None:
-            vars_range_and_types = [LogUniformSampling(1.0e6, 1.0e8), LogUniformSampling(1.0e6, 1.0e8)]
+            vars_range_and_types = [LogUniformSampling(1.0e6, 1.0e8, only_positive=True), LogUniformSampling(1.0e6, 1.0e8, only_positive=True)]
 
         super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
         x = self.x
