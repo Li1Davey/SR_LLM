@@ -284,12 +284,12 @@ class Korns_9(KnownEquation):
 @register_eq_class
 class Korns_10(KnownEquation):
     _eq_name = 'Korns_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n4', 'n5', 'pow', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = 0.81 + 24.3 * (2 * x[1] + 3 * sympy.Pow(x[2], 2)) / (((4 * sympy.Pow(x[3], 3) + 5 * sympy.Pow(x[4], 4))))
+        self.sympy_eq = 0.81 + 24.3 * (2 * x[1] + 3 * sympy.Pow(x[2], 2)) / (4 * sympy.Pow(x[3], 3) + 5 * sympy.Pow(x[4], 4))
 
 
 @register_eq_class
@@ -493,7 +493,7 @@ class Nguyen_12(KnownEquation):
 @register_eq_class
 class Nguyen_12a(KnownEquation):
     _eq_name = 'Nguyen_12a'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'n2', 'n3', 'n4','const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'n2', 'n3', 'n4', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -515,7 +515,7 @@ class Constant_1(KnownEquation):
 @register_eq_class
 class Constant_2(KnownEquation):
     _eq_name = 'Constant_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos','n2', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1052,7 +1052,7 @@ class Vladislavleva_6(KnownEquation):
 @register_eq_class
 class Vladislavleva_7(KnownEquation):
     _eq_name = 'Vladislavleva_7'
-    _function_set = ['add', 'sub', 'mul', 'div',  'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1074,7 +1074,7 @@ class Vladislavleva_8(KnownEquation):
 @register_eq_class
 class Jin_1(KnownEquation):
     _eq_name = 'Jin_1'
-    _function_set = ['add', 'sub', 'mul',  'n2', 'n3', 'n4', 'const']
+    _function_set = ['add', 'sub', 'mul', 'n2', 'n3', 'n4', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1107,7 +1107,7 @@ class Jin_3(KnownEquation):
 @register_eq_class
 class Jin_4(KnownEquation):
     _eq_name = 'Jin_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos','exp', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1206,7 +1206,7 @@ class Neat_6(KnownEquation):
 @register_eq_class
 class Neat_7(KnownEquation):
     _eq_name = 'Neat_7'
-    _function_set = ['add', 'sub', 'mul',  'sin', 'cos',  'const']
+    _function_set = ['add', 'sub', 'mul', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)

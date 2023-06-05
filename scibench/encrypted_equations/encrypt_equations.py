@@ -159,9 +159,9 @@ if __name__ == '__main__':
 
 
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
-    # from equations_others import *
-    #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
+    from equations_others import *
+
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
 
     from equations_debug_cvgp import *
     #
