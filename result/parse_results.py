@@ -68,7 +68,7 @@ def create_all_metrics_dict(inp):
     return val_dict
 
 
-def parse_gp_file(filename):
+def parse_gp_file(filename, verbose=False):
     # print('filename=', filename)
     inp = open(filename, 'r')
     l = read_until_line_starts_with(inp, 'final hof')
@@ -122,7 +122,7 @@ def parse_dso_file(dso_log_filename, true_program_file, basepath, noise_std=0.0)
     return compute_dso_all_metrics(true_program_file, 'normal', 0.0, csv_expr_path, testset_size=256)
 
 
-def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_program_basepath, dso_basepath):
+def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_program_basepath, dso_basepath, keyword="Korns"):
     all_dso_r, all_gp_r, all_egp_r = {}, {}, {}
     gp_output_files, egp_output_files = {}, {}
     dso_output_files = {}
@@ -130,6 +130,8 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
         dso_output_files[key] = {}
     for root, dirs, files in os.walk(file_prefix, topdown=False):
         for name in files:
+            if keyword not in name:
+                continue
             if metric_name in name and noise_type in name and noise_scale in name:
                 if 'gp' in name and 'egp' not in name:
                     gp_output_files[name.split('.')[0]] = os.path.join(root, name)
@@ -144,8 +146,8 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
             if not os.path.isfile(filename):
                 raise FileExistsError(filename, 'does not exists!')
             gp_r = parse_gp_file(filename, verbose=True)
-            all_gp_r[prog] = gp_r
-            print('gp', gp_r)
+            all_gp_r[prog] = gp_r[-1]
+            #print('gp', gp_r)
         except:
             print(f'cannot parse GP {filename}')
 
@@ -156,8 +158,8 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
             if not os.path.isfile(filename):
                 raise FileExistsError(filename, 'does not exists!')
             egp_r = parse_gp_file(filename, verbose=False)
-            all_egp_r[prog] = egp_r
-            print('egp', egp_r)
+            all_egp_r[prog] = egp_r[-1]
+            #print('egp', egp_r)
         except:
             print(f'cannot parse EGP {filename}')
 
@@ -204,8 +206,8 @@ def pretty_print_dso_family(all_rs, is_numbered=1):
 
 
 def pretty_print_pair(all_gp_rs, all_egp_rs, metric_name, is_numbered=True):
-    for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
-        print(f"{metric_name}\n GP, EGP")
+    for key in ['neg_nmse']:# 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        print(f"{key} GP, EGP")
         if is_numbered:
             for key in range(10):
                 key = 'prog_' + str(key)
@@ -250,6 +252,7 @@ if __name__ == '__main__':
     parser.add_argument('--fp', type=str, required=True)
     parser.add_argument('--metric', type=str, default='neg_mse', required=True)
     parser.add_argument('--dso_basepath', type=str, required=False, default='None')
+    parser.add_argument("--keyword", type=str)
     parser.add_argument('--noise_type', type=str, required=True, default="None")
     parser.add_argument('--noise_scale', type=str, default='0.0')
     parser.add_argument('--is_numbered', type=int, default=0)
@@ -260,7 +263,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     all_dso_r, all_gp_r, all_egp_r = parse_exp_set(args.fp, args.metric, args.noise_type, args.noise_scale,
-                                                   args.true_program_basepath, None)# args.dso_basepath)
+                                                   args.true_program_basepath, None, args.keyword)# args.dso_basepath)
     # print(all_gp_r)
     print(all_egp_r)
     # print(all_dso_r)
