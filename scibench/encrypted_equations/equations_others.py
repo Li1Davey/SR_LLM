@@ -991,7 +991,7 @@ class Vladislavleva_1(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = (sympy.exp(-sympy.Pow(x[0] - 1, 2))) / ((1.2 + sympy.Pow((x[1] - 2.5), 2)))
+        self.sympy_eq = (sympy.exp(-sympy.Pow(x[0] - 1, 2))) / (1.2 + sympy.Pow((x[1] - 2.5), 2))
 
 
 @register_eq_class
@@ -1009,7 +1009,7 @@ class Vladislavleva_2(KnownEquation):
 @register_eq_class
 class Vladislavleva_3(KnownEquation):
     _eq_name = 'Vladislavleva_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'exp', 'expneg', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'exp', 'n3','expneg', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -1021,20 +1021,19 @@ class Vladislavleva_3(KnownEquation):
 @register_eq_class
 class Vladislavleva_4(KnownEquation):
     _eq_name = 'Vladislavleva_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = (10) / ((5 + (
-                sympy.Pow((x[0] - 3), 2) + sympy.Pow((x[1] - 3), 2) + sympy.Pow((x[2] - 3), 2) + sympy.Pow((x[3] - 3), 2) + sympy.Pow(
-            (x[4] - 3), 2))))
+        self.sympy_eq = 10 / (5 + (sympy.Pow((x[0] - 3), 2) + sympy.Pow((x[1] - 3), 2) + sympy.Pow((x[2] - 3), 2) +
+                                   sympy.Pow((x[3] - 3), 2) + sympy.Pow((x[4] - 3), 2)))
 
 
 @register_eq_class
 class Vladislavleva_5(KnownEquation):
     _eq_name = 'Vladislavleva_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'const', 'pow']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -1067,7 +1066,7 @@ class Vladislavleva_7(KnownEquation):
 @register_eq_class
 class Vladislavleva_8(KnownEquation):
     _eq_name = 'Vladislavleva_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n4', 'n3', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
