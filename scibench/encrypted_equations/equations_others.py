@@ -537,7 +537,7 @@ class Constant_3(KnownEquation):
 @register_eq_class
 class Constant_4(KnownEquation):
     _eq_name = 'Constant_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'exp', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'pow', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
