@@ -279,14 +279,14 @@ class ExpandingGeneticProgram(object):
                 self.population.append(pr)
                 new_pr = pr.clone()
                 self.hof.append(new_pr)
-        if self.library.allowed_tokens[1] == 1:
-            for one_prog in [[3, 5, 4, 0, 1], [3, 4, 0, 1, 5]]:
-                # tree = [str(self.library.tokens[i]) for i in one_prog]
-                tree = np.array(one_prog)
-                pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                self.population.insert(0, pr)
-                new_pr = pr.clone()
-                self.hof.insert(0, new_pr)
+        # if self.library.allowed_tokens[1] == 1:
+        #     for one_prog in [[3, 5, 4, 0, 1], [3, 4, 0, 1, 5]]:
+        #         # tree = [str(self.library.tokens[i]) for i in one_prog]
+        #         tree = np.array(one_prog)
+        #         pr = Program(tree, np.ones(tree.size, dtype=np.int32))
+        #         self.population.insert(0, pr)
+        #         new_pr = pr.clone()
+        #         self.hof.insert(0, new_pr)
 
     def print_population(self):
         for pr in self.population:
