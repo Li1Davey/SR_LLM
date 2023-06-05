@@ -1140,7 +1140,7 @@ class Jin_6(KnownEquation):
 @register_eq_class
 class Neat_1(KnownEquation):
     _eq_name = 'Neat_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3','n4']
 
     def __init__(self):
         super().__init__(num_vars=1)
@@ -1151,7 +1151,7 @@ class Neat_1(KnownEquation):
 @register_eq_class
 class Neat_2(KnownEquation):
     _eq_name = 'Neat_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'pow']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n3','n4','n5']
 
     def __init__(self):
         super().__init__(num_vars=1)
