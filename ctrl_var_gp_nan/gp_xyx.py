@@ -293,7 +293,8 @@ class ExpandingGeneticProgram(object):
             print(pr.__getstate__())
 
     def print_hof(self):
-        for pr in self.hof:
+        new_hof = sorted(self.hof, reverse=True, key=attrgetter('r'))
+        for pr in new_hof:
             print(pr.__getstate__())
             pr.task.rand_draw_X_non_fixed()
             print('validate r=', pr.task.reward_function(pr))
