@@ -273,7 +273,7 @@ class Korns_8(KnownEquation):
 @register_eq_class
 class Korns_9(KnownEquation):
     _eq_name = 'Korns_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'exp', 'log', 'n2', 'n3', 'sqrt', 'abs', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'exp', 'log', 'n2', 'sqrt', 'abs']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -284,7 +284,7 @@ class Korns_9(KnownEquation):
 @register_eq_class
 class Korns_10(KnownEquation):
     _eq_name = 'Korns_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'n4', 'n5', 'pow', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2','n3', 'n4',  'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
