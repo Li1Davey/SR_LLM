@@ -409,7 +409,7 @@ class GeneticProgram(object):
             if len(self.population) <= tour_size:
                 spr = self.population
             else:
-                spr = np.random.sample(self.population, tour_size)
+                spr = np.random.choice(self.population, tour_size)
             # select the guys has the highest fit
             maxspr = max(spr, key=attrgetter('r'))
             # maxspri = copy.deepcopy(maxspr)
