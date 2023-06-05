@@ -1,1 +1,0 @@
-['add', 'mul', 2.08, 'pow', 'X_1', 3, 'add', 'mul', -2.76, 'pow', 'X_1', 2, 'add', 'mul', -4.22, 'pow', 'X_0', 2, 'mul', 'pow', 'log', 'X_0', -1, 'mul', 'add', 'pow', 'X_0', 0.5, 'mul', -1, 'X_0', 'log', 'X_1']
