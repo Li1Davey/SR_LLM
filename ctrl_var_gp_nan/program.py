@@ -438,10 +438,10 @@ class Program(object):
 
         # Define the objective function: negative reward
         def f(consts):
-            # replace all the constant in self.travasal with the given constant.
+            # replace all the constant in self.traversal with the given constant.
             self.set_constants(consts)
 
-            # evaluate the diffferent betwen predited y and the groundtruth y
+            # evaluate the different between predicted y and the ground truth y
 
             r = self.task.reward_function(self)
             # minimize the objective function
@@ -455,16 +455,15 @@ class Program(object):
 
         optimized_constants = []
         optimized_obj = []
-        # how many time
+
         # do more than one experiment, so that we can set x2-x4 with different constant value.
+        self.task.rand_draw_X_fixed()
         for expr in range(self.opt_num_expr):
             # Do the optimization
             # x0 = np.ones(self.num_changing_consts) # Initial guess
             x0 = np.random.rand(self.num_changing_consts) * 10
 
-
-
-            self.task.rand_draw_X_fixed()
+            self.task.rand_draw_data_with_X_fixed()
             # the returned constant, and the objective function.
             # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
             if Program.noise_std > 0:
@@ -478,7 +477,7 @@ class Program(object):
             optimized_constants.append(t_optimized_constants)
 
             # add validated data as the obj
-            self.task.rand_draw_X_fixed()
+            self.task.rand_draw_data_with_X_fixed()
             validate_obj = -self.task.reward_function(self)
             optimized_obj.append(validate_obj)
 
@@ -499,7 +498,8 @@ class Program(object):
         # print('expr_consts=', self.expr_consts)
 
         # Set the optimized constants
-        # set the value of optimized constants with the last optimized constants (the values of the constants may change, so only the last one makes sense; the mean does not make sense).
+        # set the value of optimized constants with the last optimized constants
+        # (the values of the constants may change, so only the last one makes sense; the mean does not make sense). Nan Comments: Why not use average?
         self.set_constants(t_optimized_constants)
 
     def freeze_equation(self):
@@ -686,8 +686,10 @@ class Program(object):
             else:
                 # this means there is no constants to be optimized.
                 self.expr_objs = []
+                self.task.rand_draw_X_fixed()
+                # Nan: note that the values of controled variable stay the same for `opt_num_expr` tryouts.
                 for expr in range(self.opt_num_expr):
-                    self.task.rand_draw_X_fixed()
+                    self.task.rand_draw_data_with_X_fixed()
                     self.expr_objs.append(self.task.reward_function(self))
                 self.expr_objs = np.array(self.expr_objs)
                 return np.mean(self.expr_objs)

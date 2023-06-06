@@ -35,27 +35,27 @@ class RegressTaskV1(object):
         self.allowed_input[i] = flag
         self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
-
-
     def rand_draw_X_non_fixed(self):
         self.X = self.dataX.randn(sample_size=self.batchsize)
 
     def rand_draw_X_fixed(self):
+        self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
+
+    def rand_draw_data_with_X_fixed(self):
         self.X = self.dataX.randn(sample_size=self.batchsize)
         if len(self.fixed_column):
-            self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
             self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
+        # print("X is", self.X[:5, :])
 
-    def reward_function(self, p):
-        y_hat = p.execute(self.X)
-        return self.data_query_oracle._evaluate_loss(self.X, y_hat)
-
-
-
-    def reward_function_all_metrics(self, p):
+    def print_reward_function_all_metrics(self, p):
+        """used for print the error for all metrics between the predicted program `p` and true program."""
         y_hat = p.execute(self.X)
         dict_of_result = self.data_query_oracle._evaluate_all_losses(self.X, y_hat)
         print('%' * 30)
         for mertic_name in dict_of_result:
             print(f"{mertic_name} {dict_of_result[mertic_name]}")
         print('%' * 30)
+
+    def reward_function(self, p):
+        y_hat = p.execute(self.X)
+        return self.data_query_oracle._evaluate_loss(self.X, y_hat)

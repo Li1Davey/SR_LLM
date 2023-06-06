@@ -290,7 +290,7 @@ class ExpandingGeneticProgram(object):
             print(pr.__getstate__())
             pr.task.rand_draw_X_non_fixed()
             print('validate r=', pr.task.reward_function(pr))
-            pr.task.reward_function_all_metrics(pr)
+            pr.task.print_reward_function_all_metrics(pr)
             pr.print_expression()
 
 
@@ -479,7 +479,7 @@ class GeneticProgram(object):
             pr.task.rand_draw_X_non_fixed()
 
             print('validate r=', pr.task.reward_function(pr))
-            pr.task.reward_function_all_metrics(pr)
+            pr.task.print_reward_function_all_metrics(pr)
 
             pr.print_expression()
 
