@@ -41,10 +41,10 @@ def run_expanding_gp(equation_name, metric_name,expr_obj_thres, noise_type, nois
     mutpb = 0.8
     maxdepth = 2
     tour_size = 3
-    hof_size = 50
+    hof_size = 300
 
     population_size = 1000  # 00
-    n_generations = 15
+    n_generations = 100
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
