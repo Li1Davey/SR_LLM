@@ -405,27 +405,13 @@ class Program(object):
         result : np.array or list of np.array
             In a single-object Program, returns just an array. In a multi-object Program, returns a list of arrays.
         """
-        if Program.n_objects > 1:
-            # XYX: this part is useless. For our application, n_objects == 1.
-            if not Program.protected:
-                result = []
-                invalids = []
-                for trav in self.traversals:
-                    val, invalid, self.error_node, self.error_type = Program.execute_function(trav, X)
-                    result.append(val)
-                    invalids.append(invalid)
-                self.invalid = any(invalids)
-            else:
-                result = [Program.execute_function(trav, X) for trav in self.traversals]
-            return result
+        if not Program.protected:
+            # return some weired error.
+            result, self.invalid, self.error_node, self.error_type = Program.execute_function(self.traversal, X)
         else:
-            if not Program.protected:
-                # return some weired error.
-                result, self.invalid, self.error_node, self.error_type = Program.execute_function(self.traversal, X)
-            else:
-                result = Program.execute_function(self.traversal, X)
-                # always protected. 1/div
-            return result
+            result = Program.execute_function(self.traversal, X)
+            # always protected. 1/div
+        return result
 
     def optimize(self):
         """
@@ -467,9 +453,10 @@ class Program(object):
             # the returned constant, and the objective function.
             # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
             if Program.noise_std > 0:
-                opt_result = minimize(f, x0, method='BFGS', options={'eps': Program.noise_std})
+                opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
-                opt_result = minimize(f, x0, method='BFGS')
+                # changt the method from BFGS to Nelder-Mead to improve the precision.
+                opt_result = minimize(f, x0, method='Nelder-Mead', tol=1e-14)
 
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']
@@ -513,15 +500,17 @@ class Program(object):
 
         assert 'expr_objs' in self.__dict__
         # fitted objective  <= thereshold (residual is 0.01)
-        #
 
+
+        print("np.max(self.expr_objs) <= self.expr_obj_thres: {} {} {}".format(
+            np.max(self.expr_objs) <= self.expr_obj_thres,
+            self.expr_objs, self.expr_obj_thres)
+        )
         # the optimized result of negated reward should be smaller than the threshold
-        # if use neg_mse as reward: max{(y-y_pred)^2} < threshold, 
+        # if use neg_mse as reward: max{(y-y_pred)^2} < threshold,
         #     expr_obj_thres = 0.01
-        # if use inv_mse as reward: max{-1/(1+(y-y_pred)^2)} < threshold 
+        # if use inv_mse as reward: max{-1/(1+(y-y_pred)^2)} < threshold
         #     expr_obj_thres = - 0.99
-        print("np.max(self.expr_objs) <= self.expr_obj_thres: {} {} {}".format(np.max(self.expr_objs) <= self.expr_obj_thres,
-                                                                               self.expr_objs, self.expr_obj_thres))
         if np.max(self.expr_objs) <= self.expr_obj_thres:
             consts_tp = 0
             for pos, t in enumerate(self.traversal):
@@ -694,8 +683,6 @@ class Program(object):
                 self.expr_objs = np.array(self.expr_objs)
                 return np.mean(self.expr_objs)
 
-
-
     @cached_property
     def evaluate(self):
         """Evaluates and returns the evaluation metrics of the program."""
@@ -748,7 +735,6 @@ class Program(object):
     def print_expression(self):
 
         print("{}".format(self.traversal))
-
 
     def print_stats(self):
         """Prints the statistics of the program

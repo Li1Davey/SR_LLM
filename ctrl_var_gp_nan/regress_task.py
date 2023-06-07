@@ -45,7 +45,7 @@ class RegressTaskV1(object):
         self.X = self.dataX.randn(sample_size=self.batchsize)
         if len(self.fixed_column):
             self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
-        # print("X is", self.X[:5, :])
+
 
     def print_reward_function_all_metrics(self, p):
         """used for print the error for all metrics between the predicted program `p` and true program."""

@@ -25,7 +25,7 @@ config = {
 }
 
 
-def run_expanding_gp(equation_name, metric_name,expr_obj_thres, noise_type, noise_scale):
+def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -33,7 +33,7 @@ def run_expanding_gp(equation_name, metric_name,expr_obj_thres, noise_type, nois
     regress_batchsize = 256
     opt_num_expr = 5
 
-    # expr_obj_thres = expr_obj_thres
+    expr_obj_thres = data_query_oracle.expr_obj_thres
     expr_consts_thres = config[metric_name]['expr_consts_thres']
 
     # gp parameters
@@ -41,10 +41,10 @@ def run_expanding_gp(equation_name, metric_name,expr_obj_thres, noise_type, nois
     mutpb = 0.8
     maxdepth = 2
     tour_size = 3
-    hof_size = 300
+    hof_size = 70 #0
 
-    population_size = 1000  # 00
-    n_generations = 100
+    population_size = 100#0  # 0
+    n_generations = 20
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
@@ -171,6 +171,6 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
 
     if args.expand_gp:
-        run_expanding_gp(args.equation_name, args.metric_name,args.expr_obj_thres, args.noise_type, args.noise_scale)
+        run_expanding_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
     else:
         run_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)

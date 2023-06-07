@@ -117,20 +117,25 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
     if not os.path.isfile(os.path.join(private_key_folder, key_filename)):
         print('A new key is generated!')
         generate_new_key(key_filename)
-    name_map={}
+    name_map = {}
     for eqname in EQUATION_CLASS_DICT:
+        # if not eqname  == 'FeynmanBonus6':
+        #     continue
         one_equation = get_eq_obj(eqname)
         if not hasattr(one_equation, 'sympy_eq_preorder_traversal'):
             one_equation.sympy_eq_preorder_traversal = symbolic_equation_to_preorder_traversal(one_equation.sympy_eq)
-        # print(one_equation.vars_range_and_types_to_json_str())
-        # print("-*40")
-        name_map[one_equation._eq_name]=eqname
+        if hasattr(one_equation, 'expr_obj_thres'):
+            expr_obj_thres = one_equation.expr_obj_thres
+        else:
+            expr_obj_thres = 0.01
+        name_map[one_equation._eq_name] = eqname
         equation = {"eq_name": one_equation._eq_name,
                     "num_vars": one_equation.num_vars,
                     "vars_range_and_types": one_equation.vars_range_and_types_to_json_str(),
                     "function_set": one_equation._function_set,
                     "eq_expression": str(one_equation.sympy_eq_preorder_traversal),
-                    "expr": str(one_equation.sympy_eq)}
+                    "expr": str(one_equation.sympy_eq),
+                    "expr_obj_thres": expr_obj_thres}
         # print(equation)
         user_encode_data = json.dumps(equation).encode('utf-8')
         # print(user_encode_data)
@@ -154,9 +159,11 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
     for name in name_map:
         print(name, name_map[name])
 
-if __name__ == '__main__':
-    from equations_feynman import *
 
+if __name__ == '__main__':
+
+
+    from equations_feynman import *
 
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
     from equations_others import *
@@ -164,6 +171,7 @@ if __name__ == '__main__':
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
 
     from equations_debug_cvgp import *
+
     #
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_debug_cvgp')
 

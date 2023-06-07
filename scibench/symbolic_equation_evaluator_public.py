@@ -22,7 +22,7 @@ class Equation_evaluator(object):
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
 
-        self.true_equation, self.num_vars, self.function_set, self.vars_range_and_types, self.expr = self.__load_equation(
+        self.true_equation, self.num_vars, self.function_set, self.vars_range_and_types, self.expr, self.expr_obj_thres = self.__load_equation(
             true_equation_filename)
 
         # metric
@@ -52,7 +52,7 @@ class Equation_evaluator(object):
         self.num_vars = num_vars
         x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
         return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set'], \
-            one_equation['vars_range_and_types'], parse_expr(one_equation['expr'])
+            one_equation['vars_range_and_types'], parse_expr(one_equation['expr']), one_equation['expr_obj_thres']
 
     def evaluate(self, X, debug_mode=False):
         """
@@ -63,7 +63,13 @@ class Equation_evaluator(object):
 
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
+
         y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
+        if np.sum(np.isnan(y_true)) >= 1:
+            raise NotImplementedError("the true expression contains Nan value")
+        if np.sum(np.isinf(y_true)) >= 1:
+            raise NotImplementedError("the true expression contains inf value")
+
         """
         the following part is used to double check if the preorder traversal correctly computes the output.
         """
@@ -87,11 +93,15 @@ class Equation_evaluator(object):
             y_hat[idx] = self.expr.evalf(subs=val_dict)
         return y_hat
 
-    def _evaluate_loss(self, X, y_pred):
+    def _evaluate_loss(self, X, y_pred, verbose=False):
         """
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
         """
         y_true = self.evaluate(X)
+        # assert y_true.shape == y_pred.shape, "the dimension of the output mismatch!"
+        if verbose:
+            print("X=", X[:2, :])
+            print("y_true: {}, y_pred: {}".format(y_true[:5], y_pred[:5]))
         if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             loss_val = self.metric(y_true, y_pred, np.var(y_true))
         elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
@@ -190,7 +200,7 @@ def decrypt_equation(eq_file, key_filename=None):
     print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
-        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1),PlaceholderConstant(1.0)]
+        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1), PlaceholderConstant(1.0)]
     # if 'const' in preorder_traversal:
     #     list_of_tokens = list_of_tokens + [PlaceholderConstant(1.0)]
     protected_library = sciLibrary(list_of_tokens)

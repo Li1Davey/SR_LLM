@@ -280,6 +280,14 @@ class ExpandingGeneticProgram(object):
                 new_pr = pr.clone()
                 self.hof.append(new_pr)
 
+        # for tree in [[10,0,13], [10,13,0], [8, 10,13,0, 13], [8,13,10,13,0]]:
+        #     tree = np.array(tree)
+        #
+        #     pr = Program(tree, np.ones(tree.size, dtype=np.int32))
+        #     self.population.append(pr)
+        #     new_pr = pr.clone()
+        #     self.hof.append(new_pr)
+
     def print_population(self):
         for pr in self.population:
             print(pr.__getstate__())
