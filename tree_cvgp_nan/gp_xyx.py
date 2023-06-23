@@ -1,15 +1,14 @@
-import random
 import time
 import numpy as np
 from operator import attrgetter
-import copy
 
 from program import Program
 
 
 def print_prs(prs):
     for pr in prs:
-        print('        ' + str(pr.__getstate__()))
+        print('        ' + str(pr.__getstate__()), end="\t")
+        pr.print_expression()
 
 
 def create_geometric_generations(n_generations, nvar):
@@ -61,8 +60,7 @@ class ExpandingGeneticProgram(object):
     library = None
     gp_helper = None
 
-    def __init__(self, cxpb, mutpb, maxdepth, population_size, tour_size, hof_size,
-                 n_generations, nvar):
+    def __init__(self, cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations, nvar):
         self.cxpb = cxpb
         self.mutpb = mutpb
         self.maxdepth = maxdepth
@@ -70,10 +68,11 @@ class ExpandingGeneticProgram(object):
         self.tour_size = tour_size
         self.hof_size = hof_size
 
-        # self.n_generations = create_geometric_generations(n_generations, nvar)
-        self.n_generations = create_uniform_generations(n_generations, nvar)
+        self.n_generations = create_uniform_generations(n_generations, nvar + 1)
 
         self.hof = []
+        self.population = []
+
         self.timer_log = []
         self.gen_num = 0
 
@@ -81,24 +80,17 @@ class ExpandingGeneticProgram(object):
         assert self.library != None
         assert Program.task != None
 
-        # start_allowed_input_tokens = np.zeros(nvar, dtype=np.int32)
-        # start_allowed_input_tokens[0] = 1
-        # self.library.set_allowed_input_tokens(start_allowed_input_tokens)
-        #
-        # Program.task.set_allowed_inputs(start_allowed_input_tokens)
-        ### 1st round: generate all single variable equations by creating `nvar` pools.
-        self.populations, self.hofs = self.create_init_population(nvar)
+        start_allowed_input_tokens = np.zeros(nvar, dtype=np.int32)
+        start_allowed_input_tokens[0] = 1
+        self.library.set_allowed_input_tokens(start_allowed_input_tokens)
+
+        Program.task.set_allowed_inputs(start_allowed_input_tokens)
 
     def run(self):
-        # for
-        most_recent_timestamp = time.perf_counter()
-        for var in range(self.nvar):
 
-            if var == self.nvar - 1:
-                # XYX on Jan 5: in the last iteration there is no constants
-                #               that can be changed among different experiments.
-                Program.task.batchsize *= Program.opt_num_expr
-                Program.opt_num_expr = 1
+        # most_recent_timestamp = time.perf_counter()
+        for var in range(self.nvar + 1):
+            self.create_init_population()
 
             # consider one variable at a time.
             for pr in self.population:
@@ -116,28 +108,20 @@ class ExpandingGeneticProgram(object):
 
             # for fixed variable, do n generation
             for i in range(self.n_generations[var]):
-                print('++++++++++++ ROUND {0} ITERATION {1} ++++++++++++'.format(var, i))
+                print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(var, i))
+
                 self.one_generation()
+            self.update_population()
 
-                print('hof (ROUND {0} ITERATION {1})='.format(var, i))
-                print_prs(self.hof)
-                print("")
-
-                now_time_stamp = time.perf_counter()
-                if now_time_stamp - most_recent_timestamp >= 900:  # 15 min
-                    print('print hof (ROUND {0} ITERATION {1})='.format(var, i))
-                    self.print_hof()
-                    print("")
-                    most_recent_timestamp = now_time_stamp
-
-            for pr in self.population:
+            for i, pr in enumerate(self.population):
+                print('{}-th in self.population'.format(i))
                 # evaluate r again, just incase it has not been evaluated.
                 this_r = pr.r
                 if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
                     # only expand at those constant node. if there are no constant node,then we are done
                     # if we do not want num_changing_consts, then we also quit.
-                    # print('pr.r=', pr.r)
-                    pass
+                    print('there are no constant node. we are done...')
+
                 else:
                     if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
                         print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
@@ -147,21 +131,34 @@ class ExpandingGeneticProgram(object):
                         print('pr.expr_consts=', pr.expr_consts)
                 # whether you get very different value for different constant.
                 pr.freeze_equation()
-                print('pr=', (pr.__getstate__()))
+                pr.remove_r_evaluate()
+
                 print('pr.r=', pr.r)
+                print('pr=', pr.__getstate__())
+
+                pr.print_expression()
+
+            for i, pr in enumerate(self.hof):
+                print('{}-th in self.hof'.format(i))
+                # evaluate r again, just incase it has not been evaluated.
+                pr.remove_r_evaluate()
+                print('pr.r=', pr.r)
+                print('pr=', pr.__getstate__())
+
+                pr.print_expression()
 
             if var < self.nvar - 1:
                 # previous we only change x0,
                 # the next round, we are not allow to change x0.
-
-                self.library.set_allowed_input_token(var, 0)  # XYX commented out this on Jan 16; trying to run noisy experiments.
+                self.library.set_allowed_input_token(var,
+                                                     0)  # XYX commented out this on Jan 16; trying to run noisy experiments.
                 self.library.set_allowed_input_token(var + 1, 1)
+                # set the next variable to be free
                 Program.task.set_allowed_input(var + 1, 1)
 
-    def run_with_tree_based_randomized_vatriable_ordering(self):
-        """
-         run GP on every single pool
-        """
+    def run_with_tree_based_randomized_variable_ordering(self):
+        ### 1st round: generate all single variable equations by creating `nvar` pools.
+        self.populations, self.hofs = self.create_init_population()
         most_recent_timestamp = time.perf_counter()
         # apply GP for every pool
         for nvari in range(self.nvar):
@@ -258,233 +255,21 @@ class ExpandingGeneticProgram(object):
         else:
             return False
 
-    def one_generation(self, pool_idx):
+    def one_generation(self):
         """
-        One step of the genetic algorithm for all the expression in ``ONE POOL``
+        One step of the genetic algorithm.
         This wraps selection, mutation, crossover and hall of fame computation
-        over all the individuals in the population for this epoch/step.  
+        over all the individuals in the population for this epoch/step.
 
-        """
-        t1 = time.perf_counter()
-
-        # Select the next generation individuals for the chosen pool (identified by ``pool_idx``)
-        offspring = self.selectTournament(self.population_size, self.tour_size, pool_idx)
-        print('offspring after select=')
-        print_prs(offspring)
-        print("")
-
-        # Vary the pool of individuals
-        offspring = self._var_and(offspring)
-
-        print('offspring after _var_and=')
-        print_prs(offspring)
-        print("")
-
-        # Replace the current population by the offspring
-        self.populations[pool_idx] = offspring + self.hofs[pool_idx]
-
-        # Update hall of fame: rank equation by the value of fitness score
-        self.update_hof(pool_idx)
-
-        timer = time.perf_counter() - t1
-
-        self.timer_log.append(timer)
-        self.gen_num += 1
-
-    def update_hof(self, pool_idx):
-        '''
-        update the HOF for a specificied pool (identified by ``pool_idx``)
-        '''
-        # pop = [copy.deepcopy(pr) for pr in self.population]
-        # new_hof = sorted(self.hof + self.population, reverse=True, key=attrgetter('r'))
-        new_hof = sorted(self.populations[pool_idx], reverse=True, key=attrgetter('r'))
-        # XYX: remove duplicates?
-        # self.hof = new_hof[:self.hof_size]
-        self.hof = []
-        for i in range(self.hof_size):
-            # new_hofi = copy.deepcopy(new_hof[i])
-            # if "expr_objs" in new_hof[i].__dict__:
-            #     new_hofi.expr_objs = np.copy(new_hof[i].expr_objs)
-            # if "expr_consts" in new_hof[i].__dict__:
-            #     new_hofi.expr_consts = np.copy(new_hof[i].expr_consts)
-            new_hofi = new_hof[i].clone()
-            self.hof.append(new_hofi)
-
-    def selectTournament(self, population_size, tour_size, pool_idx):
-
-        offspring = []
-        for pp in range(population_size):
-            spr = random.sample(self.populations[pool_idx], tour_size)
-            maxspr = max(spr, key=attrgetter('r'))
-            # maxspri = copy.deepcopy(maxspr)
-            # if "expr_objs" in maxspr.__dict__:
-            #     maxspri.expr_objs = np.copy(maxspr.expr_objs)
-            # if "expr_consts" in maxspr.__dict__:
-            #     maxspri.expr_consts = np.copy(maxspr.expr_consts)
-            maxspri = maxspr.clone()
-            offspring.append(maxspri)
-        return offspring
-
-    def _var_and(self, offspring):
-        """
-        Apply crossover AND mutation to each individual in a population 
-        given a constant probability.
-
-        offspring: list of expressions.
-        """
-
-        # Apply mate on some pair of offspring
-        for i in range(1, len(offspring), 2):
-            if random.random() < self.cxpb:
-                #### Feb 27: add allow change token:
-                #### two expression should allow to have the unioned variable set as: allowed_to_be_changed=+1
-
-                new_allow_change_tokens = (offspring[i - 1].allow_change_tokens + offspring[i].allow_change_tokens) >= 1
-                print("{}-th {}, {}-th {} ==> {}".format(i - 1, offspring[i - 1].allow_change_tokens, i, offspring[i].allow_change_tokens,
-                                                         new_allow_change_tokens))
-
-                print("Before:", offspring[i - 1], " |||||| ", offspring[i])
-
-                self.gp_helper.mate(offspring[i - 1], offspring[i])
-                print("After:", offspring[i - 1], " |||||| ", offspring[i])
-                print("-" * 30)
-                offspring[i - 1].allow_change_tokens = new_allow_change_tokens
-                offspring[i].allow_change_tokens = new_allow_change_tokens
-                ####
-
-        # Apply mutation on the offspring
-        for i in range(len(offspring)):
-            if random.random() < self.mutpb:
-                self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
-
-        return offspring
-
-    def create_init_population(self, nvar):
-        """
-           create the initial population; for every variable, generate random equations.
-           save them self.populations, self.hofs
-           for every single pool: look for every token in library, fill in the leaves with constants or inputs.
-
-           return:
-           populations: dictionary. keys are variable, values are pools of single variable equations
-           hofs: dictionary. the same as the above.
-        """
-        populations = dict()
-        for vari in range(nvar):
-            one_pool = []
-            start_allowed_input_tokens = np.zeros(nvar, dtype=np.int32)
-            # only all the generate one variable equation at a
-            start_allowed_input_tokens[vari] = 1
-            # TODO: library.set_allowed_input_tokens, tasks.set_allowed_input_tokens
-            self.library.set_allowed_input_tokens(start_allowed_input_tokens)
-            # Program.task.set_allowed_inputs(start_allowed_input_tokens)
-
-            for i, t in enumerate(self.library.tokens):
-                if self.library.allowed_tokens[i]:
-                    # otherwise (not allowed) do not need to do anything
-                    tree = [i]
-                    for j in range(t.arity):
-                        t_idx = np.random.choice(self.library.tokens_of_arity[0])
-                        while self.library.allowed_tokens[t_idx] == 0:
-                            t_idx = np.random.choice(self.library.tokens_of_arity[0])
-                        tree.append(t_idx)
-                    tree = np.array(tree)
-
-                    pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                    ## add allow change input token
-                    pr.allow_change_tokens = start_allowed_input_tokens
-                    ##
-                    one_pool.append(pr)
-            populations[vari] = one_pool
-        hofs = dict()
-        for vari in populations:
-            one_pool = [pr.clone() for pr in self.populations[vari]]
-            hofs[vari] = one_pool
-        return populations, hofs
-
-    def print_population(self):
-        for vari in self.populations:
-            print(vari, self.populations[vari].__getstate__())
-
-    def print_hof(self):
-        for vari in self.hofs:
-            pr = self.hofs[vari]
-            print(pr.__getstate__())
-            pr.task.rand_draw_data()
-            print('validate r=', pr.task.reward_function_fixed_data(pr))
-            pr.task.reward_function_fixed_data_all_metrics(pr)
-
-            print(pr.print_expression())
-
-
-class GeneticProgram(object):
-    """
-    Parameters
-    ----------
-    cxpb: probability of mate
-    mutpb: probability of mutations
-    maxdepth: the maxdepth of the tree during mutation
-    population_size: the size of the selected populations (at the end of each generation)
-    tour_size: the size of the tournament for selection
-    hof_size: the size of the best programs retained
-
-    Variables
-    ---------
-    population: the current list of programs
-    hof: list of the best programs
-    timer_log: list of times
-    gen_num: number of generations, starting from 0.
-
-    """
-
-    # static variables
-    library = None
-    gp_helper = None
-
-    def __init__(self, cxpb, mutpb, maxdepth, population_size, tour_size, hof_size,
-                 n_generations):
-        self.cxpb = cxpb
-        self.mutpb = mutpb
-        self.maxdepth = maxdepth
-        self.population_size = population_size
-        self.tour_size = tour_size
-        self.hof_size = hof_size
-        self.n_generations = n_generations
-
-        self.hof = []
-        self.timer_log = []
-        self.gen_num = 0
-        self.create_init_population()
-
-    def run(self):
-        # run for n generations
-        most_recent_timestamp = time.perf_counter()
-        for i in range(self.n_generations):
-            print('++++++++++++++++++ ITERATION {0} ++++++++++++++++++'.format(i))
-            self.one_generation()
-
-            now_time_stamp = time.perf_counter()
-            if now_time_stamp - most_recent_timestamp >= 900:  # 15 min
-                print('print hof (ITERATION {0})='.format(i))
-                self.print_hof()
-                print("")
-                most_recent_timestamp = now_time_stamp
-
-    def one_generation(self, iter=None):
-        """
-        One step of the genetic algorithm. 
-        This wraps selection, mutation, crossover and hall of fame computation
-        over all the individuals in the population for this epoch/step.  
-        
         Parameters
-        ----------            
+        ----------
         iter : int
             The current iteration used for logging purposes.
 
         """
         t1 = time.perf_counter()
 
-        # Selection the next generation individuals
+        # Select the next generation individuals
         offspring = self.selectTournament(self.population_size, self.tour_size)
 
         print('offspring after select=')
@@ -492,7 +277,6 @@ class GeneticProgram(object):
         print("")
 
         # Vary the pool of individuals
-        # the crossover and mutation.
         offspring = self._var_and(offspring)
 
         print('offspring after _var_and=')
@@ -500,77 +284,81 @@ class GeneticProgram(object):
         print("")
 
         # Replace the current population by the offspring
-        self.population = offspring + self.hof
+        self.population = offspring + self.hof + self.population
 
         # Update hall of fame
         self.update_hof()
-
+        print("after update hof after sorted=")
+        print_prs(self.hof)
         timer = time.perf_counter() - t1
 
         self.timer_log.append(timer)
         self.gen_num += 1
 
     def update_hof(self):
-        # pop = [copy.deepcopy(pr) for pr in self.population]
-        # new_hof = sorted(self.hof + self.population, reverse=True, key=attrgetter('r'))
         new_hof = sorted(self.population, reverse=True, key=attrgetter('r'))
-        # XYX: remove duplicates?
-        # self.hof = new_hof[:self.hof_size]
+
         self.hof = []
         for i in range(self.hof_size):
-            # new_hofi = copy.deepcopy(new_hof[i])
-            # if "expr_objs" in new_hof[i].__dict__:
-            #     new_hofi.expr_objs = np.copy(new_hof[i].expr_objs)
-            # if "expr_consts" in new_hof[i].__dict__:
-            #     new_hofi.expr_consts = np.copy(new_hof[i].expr_consts)
-            new_hofi = new_hof[i].clone()
-            self.hof.append(new_hofi)
+            pr = new_hof[i]
+            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
+                print("filter:", pr.r, pr.__getstate__(), end="\t")
+                pr.print_expression()
+                continue
+            self.hof.append(pr.clone())
+
+
+    def update_population(self):
+        filtered_population = []
+        for pr in self.population:
+            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
+                print("filter:", pr.r, pr.__getstate__(), end="\t")
+                pr.print_expression()
+                continue
+            filtered_population.append(pr)
+        new_population = sorted(filtered_population, reverse=True, key=attrgetter('r'))
+        self.population = []
+        for i in range(min(self.population_size, len(filtered_population))):
+            self.population.append(new_population[i].clone())
 
     def selectTournament(self, population_size, tour_size):
         offspring = []
-        # higher fitness score has higher chance to be survive in the next generation.
         for pp in range(population_size):
-            # random sample  tor_size number of individual
-            spr = random.sample(self.population, tour_size)
-            # select the guys has the highest fit
+            if len(self.population) <= tour_size:
+                spr = self.population
+            else:
+                spr = np.random.choice(self.population, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
-            # maxspri = copy.deepcopy(maxspr)
-            # if "expr_objs" in maxspr.__dict__:
-            #     maxspri.expr_objs = np.copy(maxspr.expr_objs)
-            # if "expr_consts" in maxspr.__dict__:
-            #     maxspri.expr_consts = np.copy(maxspr.expr_consts)
             maxspri = maxspr.clone()
             offspring.append(maxspri)
-            # offspring may have duplicates,
         return offspring
 
     def _var_and(self, offspring):
         """
-        Apply crossover AND mutation to each individual in a population 
-        given a constant probability. 
+        Apply crossover AND mutation to each individual in a population
+        given a constant probability.
         """
-        # offspring = [copy.deepcopy(pr) for pr in self.population]
 
         # Apply crossover on the offspring
+        np.random.shuffle(offspring)
         for i in range(1, len(offspring), 2):
-            if random.random() < self.cxpb:
-                self.gp_helper.mate(offspring[i - 1],
-                                    offspring[i])
+            if np.random.random() < self.cxpb:
+                self.gp_helper.mate(offspring[i - 1], offspring[i])
 
         # Apply mutation on the offspring
         for i in range(len(offspring)):
-            if random.random() < self.mutpb:
-                # for everyone you randomly mutate them.
+            if np.random.random() < self.mutpb:
                 self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
 
         return offspring
 
     def create_init_population(self):
         """
-           create the initial population; look for every token in library, fill in
-           the leaves with constants or inputs.
+           create the initial population; for every variable, generate random equations.
+           save them to self.populations, self.hofs
+           for every single pool: look for every token in library, fill in the leaves with constants or inputs.
         """
-        self.population = []
+
         for i, t in enumerate(self.library.tokens):
             if self.library.allowed_tokens[i]:
                 # otherwise (not allowed) do not need to do anything
@@ -584,36 +372,36 @@ class GeneticProgram(object):
 
                 pr = Program(tree, np.ones(tree.size, dtype=np.int32))
                 self.population.append(pr)
-
-        # self.hof = [copy.deepcopy(pr) for pr in self.population]
-        self.hof = []
-        for pr in self.population:
-            # new_pr = copy.deepcopy(pr)
-            # if "expr_objs" in pr.__dict__:
-            #     new_pr.expr_objs = np.copy(pr.expr_objs)
-            # if "expr_consts" in pr.__dict__:
-            #     new_pr.expr_consts = np.copy(pr.expr_consts)
-            new_pr = pr.clone()
-            self.hof.append(new_pr)
+                new_pr = pr.clone()
+                self.hof.append(new_pr)
 
     def print_population(self):
-        for pr in self.population:
-            print(pr.__getstate__())
+        for vari in self.populations:
+            for pr in self.populations[vari]:
+                print(pr.__getstate__())
 
     def print_hof(self):
-        for pr in self.hof:
+        new_hof = sorted(self.hof, reverse=True, key=attrgetter('r'))
+        for pr in new_hof:
             print(pr.__getstate__())
-            pr.task.rand_draw_data()
-
-            print('validate r=', pr.task.reward_function_fixed_data(pr))
-            pr.task.reward_function_fixed_data_all_metrics(pr)
-
-            print(pr.print_expression())
+            pr.task.rand_draw_X_non_fixed()
+            print('validate r=', pr.task.reward_function(pr))
+            pr.task.print_reward_function_all_metrics(pr)
+            pr.print_expression()
 
 
 class GPHelper(object):
     """
     Function class for genetic programming.
+
+    Parameters
+    ----------
+
+    Methods
+    -------
+    mate(a, b): apply cross over of two program trees; find two subtrees
+       within allowed_change_tokens then swap them
+
     """
 
     # static variables
@@ -622,7 +410,6 @@ class GPHelper(object):
     def mate(self, a, b):
         """
             a and b are two program objects.
-             mate(a, b): apply cross over of two program trees; find two subtrees  within allowed_change_tokens then swap them
         """
         a_allowed = a.allow_change_pos()
         b_allowed = b.allow_change_pos()
@@ -630,16 +417,13 @@ class GPHelper(object):
         if len(a_allowed) == 0 or len(b_allowed) == 0:
             return
 
-        a_start = random.sample(a_allowed, 1)[0]
-        b_start = random.sample(b_allowed, 1)[0]
+        # a_start = random.sample(a_allowed, 1)[0]
+        # b_start = random.sample(b_allowed, 1)[0]
+        a_start = np.random.choice(a_allowed)
+        b_start = np.random.choice(b_allowed)
 
         a_end = a.subtree_end(a_start)
         b_end = b.subtree_end(b_start)
-
-        #### Feb 27: handle out of expression length case
-        if a_end == None or b_end == None:
-            return
-        ####
 
         # print('a.tokens=', a.tokens, 'a_start=', a_start, 'a_end=', a_end)
         # print('b.tokens=', b.tokens, 'b_start=', b_start, 'b_end=', b_end)
@@ -663,13 +447,6 @@ class GPHelper(object):
         a.remove_r_evaluate()
         b.remove_r_evaluate()
 
-    def mate_joint_variables_program(self, pr_a, pr_b):
-        """
-        apply several steps to combine two expresion randomly to obtain a parent expression that could contain two variables, or still single variables.
-        TODO: mate,
-        """
-        pass
-
     def gen_full(self, maxdepth):
         """
             generate a full program tree recursively (represented in token indicies in library)
@@ -682,16 +459,16 @@ class GPHelper(object):
             # more efficient implementation
             allowed_pos = [t for t in self.library.tokens_of_arity[0] \
                            if self.library.allowed_tokens[t] > 0]
-            t_idx = random.choice(allowed_pos)
+            t_idx = np.random.choice(allowed_pos)
             return [t_idx]
         else:
             # t_idx = random.randint(0, self.library.L-1)
             # while self.library.allowed_tokens[t_idx] == 0:
-            #    t_idx = random.randint(0, self.library.L-1)            
+            #    t_idx = random.randint(0, self.library.L-1)
 
             # more efficient implementation
             allowed_pos = self.library.allowed_tokens_pos()
-            t_idx = random.choice(allowed_pos)
+            t_idx = np.random.choice(allowed_pos)
 
             arity = self.library.tokens[t_idx].arity
             tree = [t_idx]
@@ -702,20 +479,16 @@ class GPHelper(object):
     def multi_mutate(self, individual, maxdepth):
         """Randomly select one of four types of mutation."""
 
-        v = np.random.randint(0, 4)
+        v = np.random.randint(0, 5)
 
         if v == 0:
             self.mutUniform(individual, maxdepth)
-            print('mutUniform: {}'.format(individual.allow_change_tokens))
         elif v == 1:
             self.mutNodeReplacement(individual)
-            print('mutNodeReplacement: {}'.format(individual.allow_change_tokens))
         elif v == 2:
             self.mutInsert(individual, maxdepth)
-            print('mutInsert: {}'.format(individual.allow_change_tokens))
         elif v == 3:
             self.mutShrink(individual)
-            print('mutShrink: {}'.format(individual.allow_change_tokens))
 
     def mutUniform(self, p, maxdepth):
         """
@@ -733,8 +506,7 @@ class GPHelper(object):
         new_tree = np.array(self.gen_full(maxdepth))
 
         np_tokens = np.concatenate((p.tokens[:t_idx], new_tree, p.tokens[(t_idx + 1):]))
-        np_allow = np.insert(p.allow_change_tokens, t_idx, \
-                             np.ones(len(new_tree) - 1, dtype=np.int32))
+        np_allow = np.insert(p.allow_change_tokens, t_idx, np.ones(len(new_tree) - 1, dtype=np.int32))
 
         p.__init__(np_tokens, np_allow)
         p.remove_r_evaluate()
@@ -746,13 +518,7 @@ class GPHelper(object):
         allowed_pos = p.allow_change_pos()
         if len(allowed_pos) == 0:
             return
-        a_idx = allowed_pos[random.randint(0, len(allowed_pos) - 1)]
-        #### Feb 27: handle allowed_pos is out of traversal
-        if a_idx >= len(p.traversal):
-            print("the selected allowed_pos {} is out of traversal {} in mutNodeReplacement".format(a_idx, len(p.traversal)))
-            p.remove_r_evaluate()
-            return
-        ####
+        a_idx = allowed_pos[np.random.randint(0, len(allowed_pos))]
         arity = p.traversal[a_idx].arity
 
         # t_idx = np.random.choice(self.library.tokens_of_arity[arity])
@@ -761,7 +527,7 @@ class GPHelper(object):
         # more efficient implementation
         allowed_pos = [t for t in self.library.tokens_of_arity[arity] \
                        if self.library.allowed_tokens[t] > 0]
-        t_idx = random.choice(allowed_pos)
+        t_idx = np.random.choice(allowed_pos)
 
         p.tokens[a_idx] = t_idx
         p.__init__(p.tokens, p.allow_change_tokens)
@@ -769,10 +535,10 @@ class GPHelper(object):
 
     def mutInsert(self, p, maxdepth):
         """
-            insert a node at a random position, the original subtree at the location 
+            insert a node at a random position, the original subtree at the location
             becomes one of its subtrees.
         """
-        insert_pos = random.randint(0, len(p.tokens) - 1)
+        insert_pos = np.random.randint(0, len(p.tokens))
         subtree_start = insert_pos
         subtree_end = p.subtree_end(subtree_start)
         # print('subtree_start=', subtree_start, 'subtree_end=', subtree_end)
@@ -785,11 +551,11 @@ class GPHelper(object):
 
         # more efficient implementation
         non_term_allowed = self.library.allowed_non_terminal_tokens_pos()
-        t_idx = random.choice(non_term_allowed)
+        t_idx = np.random.choice(non_term_allowed)
 
         root_arity = self.library.tokens[t_idx].arity
 
-        which_old_tree = random.randint(0, root_arity - 1)
+        which_old_tree = np.random.randint(0, root_arity)
 
         # generate other subtrees
         np_tokens = np.concatenate((p.tokens[:subtree_start], np.array([t_idx])))
@@ -821,13 +587,7 @@ class GPHelper(object):
         allowed_pos = p.allow_change_pos()
         if len(allowed_pos) == 0:
             return
-        a_idx = allowed_pos[random.randint(0, len(allowed_pos) - 1)]
-        #### Feb 27: handle allowed_pos is out of traversal
-        if a_idx >= len(p.traversal):
-            print("the selected allowed_pos {} is out of traversal {} in muShrink".format(a_idx, len(p.traversal)))
-            p.remove_r_evaluate()
-            return
-        ####
+        a_idx = allowed_pos[np.random.randint(0, len(allowed_pos))]
         arity = p.traversal[a_idx].arity
 
         # print('arity=', arity)
@@ -848,7 +608,7 @@ class GPHelper(object):
                 k = k_end
 
             # pick one of the subtrees, and re-assemble
-            sp = random.randint(0, len(subtrees_start) - 1)
+            sp = np.random.randint(0, len(subtrees_start))
 
             np_tokens = np.concatenate((p.tokens[:a_idx],
                                         p.tokens[subtrees_start[sp]:subtrees_end[sp]],

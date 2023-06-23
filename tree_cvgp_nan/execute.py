@@ -1,5 +1,5 @@
 try:
-    from dso import cyfunc
+    import cyfunc
 except ImportError:
     cyfunc = None
 import array

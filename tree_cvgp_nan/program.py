@@ -223,7 +223,6 @@ class Program(object):
     str : str
         String representation of tokens. Useful as unique identifier.
     """
-    # data_used = {'X':[], 'y_true': []}
     # Static variables
     task = None  # Task
     library = None  # Library
@@ -245,7 +244,7 @@ class Program(object):
 
     def __init__(self, tokens=None, allow_change_tokens=None):
         """
-        Builds the Program from a list of of integers corresponding to Tokens.
+        Builds the Program from a list of integers corresponding to Tokens.
         """
 
         # Can be empty if we are unpickling 
@@ -259,7 +258,10 @@ class Program(object):
         self.allow_change_tokens = allow_change_tokens
         # position of the constant
         self.const_pos = [i for i, t in enumerate(self.traversal) if isinstance(t, PlaceholderConstant)]
-        self.num_changing_consts = sum([self.allow_change_tokens[pos] for pos in self.const_pos])  # compute num_changing_consts
+        self.num_changing_consts = 0
+        for pos in self.const_pos:  # compute num_changing_consts
+            if self.allow_change_tokens[pos]:
+                self.num_changing_consts += 1
         self.len_traversal = len(self.traversal)
 
         if self.have_cython and self.len_traversal > 1:
@@ -269,26 +271,6 @@ class Program(object):
         self.str = tokens.tostring()
         self.tokens = tokens
 
-        if Program.n_objects > 1:  # only 1 function, output is one :y=f(x1, x2,...).
-            # XYX: this part is useless; for our application, n_objects == 1.
-            # Fill list of multi-traversals
-            danglings = -1 * np.arange(1, Program.n_objects + 1)
-            self.traversals = []  # list to keep track of each multi-traversal
-            i_prev = 0
-            arity_list = []  # list of arities for each node in the overall traversal
-            for i, token in enumerate(self.traversal):
-                arities = token.arity
-                arity_list.append(arities)
-                dangling = 1 + np.cumsum(np.array(arity_list) - 1)[-1]
-                if (dangling - 1) in danglings:
-                    trav_object = self.traversal[i_prev:i + 1]
-                    self.traversals.append(trav_object)
-                    i_prev = i + 1
-                    """
-                    Keep only what dangling values have not yet been calculated. Don't want dangling to go down and up (e.g hits -1, goes back up to 0 before hitting -2)
-                    and trigger the end of a traversal at the wrong time
-                    """
-                    danglings = danglings[danglings != dangling - 1]
 
     def clone(self):
         new_me = Program(self.tokens, self.allow_change_tokens)
@@ -309,48 +291,32 @@ class Program(object):
 
         return new_me
 
-    def get_used_variables(self):
-        '''
-        return all the variables that are used in this expression
-        '''
-        list_of_variables_used = []
-        for i in range(len(self.traversal)):
-            if hasattr(self.traversal[i], 'input_var'):
-                list_of_variables_used.append(self.traversal[i])
-        return list_of_variables_used
-
-    def simplify(self):
-        '''
-        recursively merges nodes if the leaves are all constants. (currently unclear)
-        '''
-        return None
-        new_me = Program(self.tokens, self.allow_change_tokens)
-        return new_me
-
-    def __getstate__(self):
+    def __getstate__(self, verbse=False):
         # for printing purpose
         have_r = "r" in self.__dict__
         have_evaluate = "evaluate" in self.__dict__
         possible_const = have_r or have_evaluate
-        # muliplie_rewards=[]
-        # for i in range(10):
-        #     self.task.rand_draw_data()
-        #     muliplie_rewards.append(self.task.reward_function_fixed_data(self))
 
-        state_dict = {'tokens': self.tokens,  # string rep comes out different if we cast to array, so we can get cache misses.
-                      'allow_change_tokens': self.allow_change_tokens,
-                      'have_r': bool(have_r),
-                      'r': float(self.r) if have_r else float(-np.inf),
-                      # 'multiply_r':muliplie_rewards,
-                      'fixed_column': self.task.fixed_column,
-                      'have_evaluate': bool(have_evaluate),
-                      'evaluate': self.evaluate if have_evaluate else float(-np.inf),
-                      'const': array.array('d', self.get_constants()) if possible_const else float(-np.inf),
-                      'invalid': bool(self.invalid),
-                      'error_node': array.array('u', "" if not self.invalid else self.error_node),
-                      'error_type': array.array('u', "" if not self.invalid else self.error_type)}
-
-        # In the future we might also return sympy_expr and complexity if we ever need to compute in parallel 
+        if verbse:
+            state_dict = {
+                'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
+                'allow_change_tokens': self.allow_change_tokens.tolist(),
+                'have_r': bool(have_r),
+                'r': float(self.r) if have_r else 'No r',
+                'fixed_column': self.task.fixed_column,
+                'have_evaluate': bool(have_evaluate),
+                'evaluate': self.evaluate if have_evaluate else float(-np.inf),
+                'const': array.array('d', self.get_constants()) if possible_const else float(-np.inf),
+                'invalid': bool(self.invalid),
+                'error_node': array.array('u', "" if not self.invalid else self.error_node),
+                'error_type': array.array('u', "" if not self.invalid else self.error_type)
+            }
+        else:
+            state_dict = {
+                'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
+                'allow_change_tokens': self.allow_change_tokens.tolist(),
+                'r': float(self.r) if have_r else 'No r'
+            }
 
         return state_dict
 
@@ -383,11 +349,6 @@ class Program(object):
         # subtree_start arbitraty
         # the END point of that subtree in preorder
         k = subtree_start
-        if k >= len(self.traversal):
-            #### Feb 27: handle output of expression length case
-            print("subtree_start: {} is out of self.traversal {} array".format(subtree_start, len(self.traversal)))
-            return None
-            ####
         s = self.traversal[k].arity
         k += 1
         while k < self.len_traversal and s > 0:
@@ -423,27 +384,13 @@ class Program(object):
         result : np.array or list of np.array
             In a single-object Program, returns just an array. In a multi-object Program, returns a list of arrays.
         """
-        if Program.n_objects > 1:
-            # XYX: this part is useless. For our application, n_objects == 1.
-            if not Program.protected:
-                result = []
-                invalids = []
-                for trav in self.traversals:
-                    val, invalid, self.error_node, self.error_type = Program.execute_function(trav, X)
-                    result.append(val)
-                    invalids.append(invalid)
-                self.invalid = any(invalids)
-            else:
-                result = [Program.execute_function(trav, X) for trav in self.traversals]
-            return result
+        if not Program.protected:
+            # return some weired error.
+            result, self.invalid, self.error_node, self.error_type = Program.execute_function(self.traversal, X)
         else:
-            if not Program.protected:
-                # return some weired error.
-                result, self.invalid, self.error_node, self.error_type = Program.execute_function(self.traversal, X)
-            else:
-                result = Program.execute_function(self.traversal, X)
-                # always protected. 1/div
-            return result
+            result = Program.execute_function(self.traversal, X)
+            # always protected. 1/div
+        return result
 
     def optimize(self):
         """
@@ -456,14 +403,12 @@ class Program(object):
 
         # Define the objective function: negative reward
         def f(consts):
-            # replace all the constant in self.travasal with the given constant.
+            # replace all the constant in self.traversal with the given constant.
             self.set_constants(consts)
 
-            # r = self.task.reward_function(self)
-            # evaluate the diffferent betwen predited y and the groundtruth y
-            r = self.task.reward_function_fixed_data(self)
-            # self.data_used["X"].append(self.task.X)
-            # self.data_used["y_true"].append(self.task.y_true)
+            # evaluate the different between predicted y and the ground truth y
+
+            r = self.task.reward_function(self)
             # minimize the objective function
             obj = -r  # Constant optimizer minimizes the objective function
 
@@ -475,22 +420,22 @@ class Program(object):
 
         optimized_constants = []
         optimized_obj = []
-        # how many time
+
         # do more than one experiment, so that we can set x2-x4 with different constant value.
+        self.task.rand_draw_X_fixed()
         for expr in range(self.opt_num_expr):
             # Do the optimization
             # x0 = np.ones(self.num_changing_consts) # Initial guess
             x0 = np.random.rand(self.num_changing_consts) * 10
-            # print('c0=', x0)
 
-            # self.task.rand_draw_X_fixed()
-            self.task.rand_draw_data()
+            self.task.rand_draw_data_with_X_fixed()
             # the returned constant, and the objective function.
             # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
             if Program.noise_std > 0:
-                opt_result = minimize(f, x0, method='BFGS', options={'eps': Program.noise_std})
+                opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
-                opt_result = minimize(f, x0, method='BFGS')
+                # changt the method from BFGS to Nelder-Mead to improve the precision.
+                opt_result = minimize(f, x0, method='Nelder-Mead', tol=1e-14)
 
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']
@@ -498,8 +443,8 @@ class Program(object):
             optimized_constants.append(t_optimized_constants)
 
             # add validated data as the obj
-            self.task.rand_draw_X_nonfixed()
-            validate_obj = -self.task.reward_function_fixed_data(self)
+            self.task.rand_draw_data_with_X_fixed()
+            validate_obj = -self.task.reward_function(self)
             optimized_obj.append(validate_obj)
 
         optimized_obj = np.array(optimized_obj)
@@ -519,36 +464,38 @@ class Program(object):
         # print('expr_consts=', self.expr_consts)
 
         # Set the optimized constants
-        # set the value of optimized constants with the last optimized constants (the values of the constants may change, so only the last one makes sense; the mean does not make sense).
+        # set the value of optimized constants with the last optimized constants
+        # (the values of the constants may change, so only the last one makes sense; the mean does not make sense). Nan Comments: Why not use average?
         self.set_constants(t_optimized_constants)
 
     def freeze_equation(self):
         if len(self.const_pos) == 0 or self.num_changing_consts == 0:
-            assert "r" in self.__dict__
+            assert "r" in self.__dict__, 'reward is not included'
             if self.r >= -self.expr_obj_thres:
                 for pos, t in enumerate(self.traversal):
                     self.allow_change_tokens[pos] = 0
-            print("allow_change_tokens: {}".format(self.allow_change_tokens))
+            print("freeze_equation->allow_change_tokens: {}".format(self.allow_change_tokens))
             return
 
         assert 'expr_objs' in self.__dict__
         # fitted objective  <= thereshold (residual is 0.01)
-        #
 
+
+        print("np.max(self.expr_objs) <= self.expr_obj_thres: {} {} {}".format(
+            np.max(self.expr_objs) <= self.expr_obj_thres,
+            self.expr_objs, self.expr_obj_thres)
+        )
         # the optimized result of negated reward should be smaller than the threshold
-        # if use neg_mse as reward: max{(y-y_pred)^2} < threshold, 
+        # if use neg_mse as reward: max{(y-y_pred)^2} < threshold,
         #     expr_obj_thres = 0.01
-        # if use inv_mse as reward: max{-1/(1+(y-y_pred)^2)} < threshold 
+        # if use inv_mse as reward: max{-1/(1+(y-y_pred)^2)} < threshold
         #     expr_obj_thres = - 0.99
-        print("np.max(self.expr_objs) <= self.expr_obj_thres: {} {} {}".format(np.max(self.expr_objs) <= self.expr_obj_thres,
-                                                                               self.expr_objs, self.expr_obj_thres))
         if np.max(self.expr_objs) <= self.expr_obj_thres:
             consts_tp = 0
             for pos, t in enumerate(self.traversal):
                 # if t is a constant
                 if isinstance(t, PlaceholderConstant):
-                    if self.allow_change_tokens[pos] and \
-                            np.std(self.expr_consts[consts_tp]) <= self.expr_consts_thres:
+                    if self.allow_change_tokens[pos] and np.std(self.expr_consts[consts_tp]) <= self.expr_consts_thres:
                         # std of x. 
                         # freeze it.
                         # the last step is allow to change (everything) x1 to x5 and every part of equation.
@@ -611,13 +558,10 @@ class Program(object):
         all_functions = {
             # No complexity
             None: lambda p: 0.0,
-
             # Length of sequence
             "length": lambda p: len(p.traversal),
-
             # Sum of token-wise complexities
             "token": lambda p: sum([t.complexity for t in p.traversal]),
-
         }
 
         assert name in all_functions, "Unrecognzied complexity function name."
@@ -709,19 +653,14 @@ class Program(object):
                 return -np.mean(self.expr_objs)
             else:
                 # this means there is no constants to be optimized.
-                # return self.task.reward_function(self)
                 self.expr_objs = []
+                self.task.rand_draw_X_fixed()
+                # Nan: note that the values of controled variable stay the same for `opt_num_expr` tryouts.
                 for expr in range(self.opt_num_expr):
-                    self.task.rand_draw_data()
-                    self.expr_objs.append(self.task.reward_function_fixed_data(self))
+                    self.task.rand_draw_data_with_X_fixed()
+                    self.expr_objs.append(self.task.reward_function(self))
                 self.expr_objs = np.array(self.expr_objs)
                 return np.mean(self.expr_objs)
-
-    @cached_property
-    def complexity(self):
-        """Evaluates and returns the complexity of the program"""
-
-        return Program.complexity_function(self)
 
     @cached_property
     def evaluate(self):
@@ -745,55 +684,21 @@ class Program(object):
         This is actually a bit complicated because we have to go: traversal -->
         tree --> serialized tree --> SymPy expression
         """
-
-        if Program.n_objects == 1:
-            tree = self.traversal.copy()
-            tree = build_tree(tree)
-            tree = convert_to_sympy(tree)
-            try:
-                expr = parse_expr(tree.__repr__())  # SymPy expression
-            except:
-                expr = tree.__repr__()
-            return [expr]
-        else:
-            exprs = []
-            for i in range(len(self.traversals)):
-                tree = self.traversals[i].copy()
-                tree = build_tree(tree)
-                tree = convert_to_sympy(tree)
-                try:
-                    expr = parse_expr(tree.__repr__())  # SymPy expression
-                except:
-                    expr = tree.__repr__()
-                exprs.append(expr)
-            return exprs
+        tree = self.traversal.copy()
+        tree = build_tree(tree)
+        tree = convert_to_sympy(tree)
+        try:
+            expr = parse_expr(tree.__repr__())  # SymPy expression
+        except:
+            expr = tree.__repr__()
+        return expr
 
     def pretty(self):
         """Returns pretty printed string of the program"""
-        return [pretty(self.sympy_expr[i]) for i in range(Program.n_objects)]
+        return pretty(self.sympy_expr)
 
     def print_expression(self):
-        print("\tExpression {}: {}".format(0, self.traversal))
-        print("{}\n".format(self.pretty()[0]))
-
-    def print_stats(self):
-        """Prints the statistics of the program
-        
-            We will print the most honest reward possible when using validation.
-        """
-
-        print("\tReward: {}".format(self.r))
-        print("\tOriginally on Policy: {}".format(self.originally_on_policy))
-        print("\tInvalid: {}".format(self.invalid))
-        print("\tTraversal: {}".format(self))
-
-        if Program.n_objects == 1:
-            print("\tExpression:")
-            print("{}\n".format(indent(self.pretty()[0], '\t  ')))
-        else:
-            for i in range(Program.n_objects):
-                print("\tExpression {}:".format(i))
-                print("{}\n".format(indent(self.pretty()[i], '\t  ')))
+        print("{}".format(self.traversal))
 
     def __repr__(self):
         """Prints the program's traversal"""
