@@ -194,12 +194,10 @@ class Library(object):
 
     def print_library(self):
         print('============== LIBRARY ==============')
-        print('{0: >8} {1: >10} {2: >8} {3: >8}'.format('ID', 'NAME', 'ARITY', 'ALLOWED'))
+        print('{0: >8} {1: >10} {2: >8}'.format('ID', 'NAME', 'ARITY', ))
         for i in range(self.L):
-            print('{0: >8} {1: >10} {2: >8} {3: >8}'.format(i, self.names[i],\
-                                                            self.arities[i],
-                                                            self.allowed_tokens[i]))
-        print('allowed_input_tokens=', self.allowed_input_tokens)
+            print('{0: >8} {1: >10} {2: >8} '.format(i, self.names[i],
+                                                            self.arities[i]))
         print('========== END OF LIBRARY ===========')
             
     def allowed_tokens_pos(self):

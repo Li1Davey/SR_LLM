@@ -32,9 +32,6 @@ def _finish_tokens(tokens):
         A list of integers corresponding to tokens in the library. The list
         defines an expression's pre-order traversal. "Dangling" programs are
         completed with repeated "x1" until the expression completes.
-
-    XYX: is this what the function is doing?? I doubt...
-
     """
 
     n_objects = Program.n_objects
@@ -368,19 +365,14 @@ class Program(object):
             del self.__dict__['expr_consts']
 
     def execute(self, X):
-        # execute the program with input X and obtain output.
         """
         Execute program on input X.
-
         Parameters
         ==========
-
         X : np.array
             Input to execute the Program over.
-
         Returns
         =======
-
         result : np.array or list of np.array
             In a single-object Program, returns just an array. In a multi-object Program, returns a list of arrays.
         """

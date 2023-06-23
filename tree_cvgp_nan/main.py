@@ -1,18 +1,20 @@
 from library import Library
 import argparse
 from program import Program
-import regress_task
+
 from const import ScipyMinimize
-from symbolic_data_generator import *
+from symbolic_data_generator import DataX
 from symbolic_equation_evaluator_public import Equation_evaluator
 from functions import create_tokens
-import gp_xyx
+from regress_task import RegressTaskV1
+from tree_cvgp import ExpandingGeneticProgram
+from gp_helper import GPHelper
 
 import numpy as np
 import random
 import time
 
-averaged_var_y = 10  # 569
+averaged_var_y = 10
 
 config = {
     'neg_mse': {'expr_consts_thres': 1e-3, 'expr_obj_thres': 0.01},
@@ -36,7 +38,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     expr_obj_thres = data_query_oracle.expr_obj_thres
     expr_consts_thres = config[metric_name]['expr_consts_thres']
 
-    # gp parameters
+    # gp hyper parameters
     cxpb = 0.8
     mutpb = 0.8
     maxdepth = 2
@@ -64,29 +66,30 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     Program.const_optimizer = ScipyMinimize()
     Program.noise_std = noise_scale
 
+    # set it for now. Will change in gp.run
+    allowed_input_tokens = np.zeros(nvar, dtype=np.int32)
     # set the task
-    allowed_input_tokens = np.zeros(nvar, dtype=np.int32)  # set it for now. Will change in gp.run
-    Program.task = regress_task.RegressTaskV1(regress_batchsize,
-                                              allowed_input_tokens,
-                                              dataXgen,
-                                              data_query_oracle)
+    Program.task = RegressTaskV1(regress_batchsize,
+                                 allowed_input_tokens,
+                                 dataXgen,
+                                 data_query_oracle)
 
     # set gp helper
-    gp_helper = gp_xyx.GPHelper()
+    gp_helper = GPHelper()
     gp_helper.library = protected_library
 
     # set GP
-    gp_xyx.ExpandingGeneticProgram.library = protected_library
-    gp_xyx.ExpandingGeneticProgram.gp_helper = gp_helper
-    egp = gp_xyx.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
-                                         tour_size, hof_size, n_generations, nvar)
+    ExpandingGeneticProgram.library = protected_library
+    ExpandingGeneticProgram.gp_helper = gp_helper
+    egp = ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
+                                  tour_size, hof_size, n_generations, nvar)
 
     # run GP
     egp.run_with_tree_based_randomized_variable_ordering()
 
     # print
     print('final hof=')
-    egp.print_hof()
+    egp.print_hofs()
     print('tree.cvgp.timer_log=', egp.timer_log)
 
 
