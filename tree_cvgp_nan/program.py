@@ -268,7 +268,6 @@ class Program(object):
         self.str = tokens.tostring()
         self.tokens = tokens
 
-
     def clone(self):
         new_me = Program(self.tokens, self.allow_change_tokens)
 
@@ -471,7 +470,6 @@ class Program(object):
 
         assert 'expr_objs' in self.__dict__
         # fitted objective  <= thereshold (residual is 0.01)
-
 
         print("np.max(self.expr_objs) <= self.expr_obj_thres: {} {} {}".format(
             np.max(self.expr_objs) <= self.expr_obj_thres,

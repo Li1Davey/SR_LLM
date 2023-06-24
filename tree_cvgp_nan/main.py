@@ -27,7 +27,7 @@ config = {
 }
 
 
-def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
+def run_tree_based_control_variable_gp(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -43,10 +43,10 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     mutpb = 0.8
     maxdepth = 2
     tour_size = 3
-    hof_size = 70  # 0
+    hof_size = 20  # 0
 
-    population_size = 100  # 0  # 0
-    n_generations = 20
+    population_size = 20  # 0  # 0
+    n_generations = 4
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
@@ -96,11 +96,9 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--equation_name", help="the filename of the true program.")
-    parser.add_argument("--metric_name", type=str, help="The name of the metric for loss.")
-    parser.add_argument("--noise_type", type=str, help="The name of the noises.")
-    parser.add_argument("--expr_obj_thres", type=float, help="Threshold")
-    parser.add_argument("--noise_scale", type=float, default=0.0,
-                        help="This parameter adds the standard deviation of the noise")
+    parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
+    parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
+    parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
 
     args = parser.parse_args()
 
@@ -112,4 +110,4 @@ if __name__ == '__main__':
     np.random.seed(seed)
     print('np.random seed=', seed)
 
-    run_expanding_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
+    run_tree_based_control_variable_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)

@@ -3,7 +3,6 @@ import numpy as np
 from operator import attrgetter
 
 from program import Program
-from utils import create_uniform_generations
 
 
 class ExpandingGeneticProgram(object):
@@ -16,6 +15,7 @@ class ExpandingGeneticProgram(object):
     population_size: the size of the selected populations (at the end of each generation)
     tour_size: the size of the tournament for selection
     hof_size: the size of the best programs retained
+    n_generations: the number of generations to be applied over each pool
     nvar: number of variables
 
     Variables
@@ -38,7 +38,7 @@ class ExpandingGeneticProgram(object):
         self.tour_size = tour_size
         self.hof_size = hof_size
 
-        self.n_generations = create_uniform_generations(n_generations, nvar + 1)
+        self.n_generations = n_generations
 
         self.hof = []
         self.population = []
@@ -51,90 +51,133 @@ class ExpandingGeneticProgram(object):
         assert Program.task != None
 
     def run_with_tree_based_randomized_variable_ordering(self):
-        ### 1st round: generate all single variable equations by creating `#nvar` pools.
+        # 1st step: generate all single variable equations by creating `#nvar` pools.
         self.create_init_population()
-        # apply GP for every single pool
-        all_the_pool_idxes = self.populations.keys()
-        for pool_idx in all_the_pool_idxes:
-            for pr in self.populations[pool_idx]:
-                pr.remove_r_evaluate()
-            for pr in self.hofs[pool_idx]:
-                pr.remove_r_evaluate()
-            ## TODO: the task need to be set.
-            # TODO: library, task set_allowed_input_tokens, disable the previous allowed input.
-            self._set_allowed_input_tokens(self.allowed_inputs[pool_idx])
-            for pr in self.populations[pool_idx]:
-                # a cached property in python (evaluated once) force the function to evaluate a new r
-                thisr = pr.r  # how good you fit.
-            for pr in self.hofs[pool_idx]:
-                thisr = pr.r
+        # 2nd step: apply GP for every single pool
+        all_the_pool_idxes = list(self.populations.keys())
+        while True:
+            for pool_idx in all_the_pool_idxes:
+                # set the free variables and controlled variables for the given pools
+                self._set_allowed_input_tokens(pool_idx)
+                for pr in self.populations[pool_idx]:
+                    pr.remove_r_evaluate()
+                for pr in self.hofs[pool_idx]:
+                    pr.remove_r_evaluate()
+                ## TODO: the task need to be set.
+                # TODO: library, task set_allowed_input_tokens, disable the previous allowed input.
 
-            # inside every single POOL, do n generation of GP, find the best fitted expression in each POOL
-            for it in range(self.n_generations[pool_idx]):
-                print('++++++++++++ VARS {pool_idx} ITERATION {} ++++++++++++'.format(pool_idx, i))
-                self.one_generation(pool_idx)
-            self.update_population(pool_idx)
+                for pr in self.populations[pool_idx]:
+                    # a cached property in python (evaluated once) force the function to evaluate a new r
+                    thisr = pr.r  # how good you fit.
+                for pr in self.hofs[pool_idx]:
+                    thisr = pr.r
 
-            for pr in self.populations[pool_idx]:
-                # evaluate r again, just incase it has not been evaluated.
-                this_r = pr.r
-                if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
-                    # only expand at those constant node. if there are no constant node,then we are done
-                    # if we do not want num_changing_consts, then we also quit.
-                    print('there are no constant node. we are done...')
-                else:
-                    if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
-                        print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
-                        pr.remove_r_evaluate()
-                        this_r = pr.r
-                        print('pr.expr_objs=', pr.expr_objs)
-                        print('pr.expr_consts=', pr.expr_consts)
+                # inside every single POOL, do n generation of GP, find the best fitted expression in each POOL
+                for it in range(self.n_generations):
+                    print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(pool_idx, it))
+                    self.one_generation(pool_idx)
+                self.update_population(pool_idx)
 
-                # whether you get very different value for different constant.
-                pr.freeze_equation()
-                pr.remove_r_evaluate()
+                for i, pr in enumerate(self.populations[pool_idx]):
+                    print('{}-th in population POOL {}'.format(i, pool_idx))
+                    # evaluate r again, just incase it has not been evaluated.
+                    this_r = pr.r
+                    if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
+                        # only expand at those constant node. if there are no constant node,then we are done
+                        # if we do not want num_changing_consts, then we also quit.
+                        print('there are no constant node. we are done...')
+                    else:
+                        if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
+                            print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
+                            pr.remove_r_evaluate()
+                            this_r = pr.r
+                            print('pr.expr_objs=', pr.expr_objs)
+                            print('pr.expr_consts=', pr.expr_consts)
+                    # whether you get very different value for different constant.
+                    pr.freeze_equation()
+                    pr.remove_r_evaluate()
 
-                print('pr.r=', pr.r)
-                print('pr=', pr.__getstate__())
-                pr.print_expression()
+                    print('pr.r=', pr.r)
+                    print('pr=', pr.__getstate__())
+                    pr.print_expression()
 
-            for i, pr in enumerate(self.hofs[pool_idx]):
-                print('{}-th in self.hof'.format(i))
-                # evaluate r again, just incase it has not been evaluated.
-                pr.remove_r_evaluate()
-                print('pr.r=', pr.r)
-                print('pr=', pr.__getstate__())
+                for i, pr in enumerate(self.hofs[pool_idx]):
+                    print('{}-th in self.hof {}'.format(i, pool_idx))
+                    # evaluate r again, just incase it has not been evaluated.
+                    pr.remove_r_evaluate()
+                    print('pr.r=', pr.r)
+                    print('pr=', pr.__getstate__())
+                    pr.print_expression()
 
-                pr.print_expression()
+            new_joint_population_Pools = dict()
+            new_pool_idxes = []
+            # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
+            np.random.shuffle(all_the_pool_idxes)
+            for i in range(0, len(all_the_pool_idxes), 2):
+                one_pool_idx, another_pool_idx = all_the_pool_idxes[i], all_the_pool_idxes[i + 1]
+                new_pool_idx = one_pool_idx + another_pool_idx
+                sorted(new_pool_idx)
+                self._set_allowed_input_tokens(new_pool_idx)
 
-        joint_Pools = dict()
-        for pool_idx in range(0, self.nvar, 2):
-            one_joint_pool = self.merge_two_pools(self.hofs[pool_idx], self.hofs[pool_idx + 1])
-            joint_Pools[f'{pool_idx},{pool_idx + 1}'] = one_joint_pool
+                one_joint_pool = self.merge_two_pools(one_pool_idx, another_pool_idx)
 
-    def merge_two_pools(self, Pool_var1, Pool_var2, ):
+                new_joint_population_Pools[new_pool_idx] = one_joint_pool
+                new_pool_idxes.append(new_pool_idx)
+
+    def merge_two_pools(self, one_pool_idx, another_pool_idx):
         """
         TODO set allowed input tokens.
         Given two pools of equations, pick two equations from two pools and apply m
         """
+        # self.gp_helper.mate(offspring[i - 1], offspring[i])
         joint_Pool = []
-        for pr_var1 in Pool_var1:
-            for pr_var2 in Pool_var2:
-                if np.random.random() < self.cxpb:
-                    #
+        for pr_var1 in self.populations[tuple(one_pool_idx)]:
+            for pr_var2 in self.populations[tuple(another_pool_idx)]:
+                # if np.random.random() < self.cxpb:
                     # TODO: multi-mutate:
                     # TODO: have a foor loop that joint_vars_pr has multiple expressions.
                     # Want to know the value of placeholder constant.
                     # check the simplifications
                     # run the optimize to get the constant value
-                    joint_vars_pr = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
-                    #### this step check if the joint-program can be splifiicaiton into the original expresiion
-                    if self.program_simplification_check(joint_vars_pr, pr_var1) \
-                            and self.program_simplification_check(joint_vars_pr, pr_var2):
-                        joint_Pool.append(joint_vars_pr)
+                    joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
+                    # TODO: this step check if the joint-program can be splifiicaiton into the original expresiion
+                    # if self.program_backward_check(joint_vars_pr, pr_var1) \
+                    #         and self.program_backward_check(joint_vars_pr, pr_var2):
+                    joint_Pool.append(joint_vars_progs)
+
         return joint_Pool
 
-    def program_simplification_check(self, joint_vars_pr, single_var_pr):
+    def create_init_population(self):
+        """
+           create the initial population; for every variable, a set of generate random equations.
+           save them to self.populations, self.hofs.
+           for every single pool: look for every token in library, fill in the leaves with constants or inputs.
+        """
+        self.populations = dict()
+        self.hofs = dict()
+        for vari in range(self.nvar):
+            self._set_allowed_input_tokens([vari])
+            for i, t in enumerate(self.library.tokens):
+                if self.library.allowed_tokens[i]:
+                    tree = [i]
+                    for j in range(t.arity):
+                        t_idx = np.random.choice(self.library.tokens_of_arity[0])
+                        while self.library.allowed_tokens[t_idx] == 0:
+                            t_idx = np.random.choice(self.library.tokens_of_arity[0])
+                        tree.append(t_idx)
+                    tree = np.array(tree)
+
+                    pr = Program(tree, np.ones(tree.size, dtype=np.int32))
+                    if (vari) not in self.populations:
+                        self.populations[(vari,)] = []
+                    self.populations[(vari,)].append(pr)
+                    new_pr = pr.clone()
+                    if (vari) not in self.hofs:
+                        self.hofs[(vari,)] = []
+                    self.hofs[(vari,)].append(new_pr)
+        print("Init done.....")
+
+    def program_backward_check(self, joint_vars_pr, single_var_pr):
         from functions import PlaceholderConstant
         ### apply the simplicaition step over joint_vars_pr,
         #
@@ -227,10 +270,7 @@ class ExpandingGeneticProgram(object):
         return offspring
 
     def _var_and(self, offspring):
-        """
-        Apply crossover AND mutation to each individual in a population
-        given a constant probability.
-        """
+        """Apply crossover AND mutation to each individual in a population, given a constant probability."""
 
         # Apply crossover on the offspring
         np.random.shuffle(offspring)
@@ -246,38 +286,12 @@ class ExpandingGeneticProgram(object):
         return offspring
 
     def _set_allowed_input_tokens(self, allowed_input_tokens):
-        self.library.set_allowed_input_tokens(allowed_input_tokens)
-        Program.task.set_allowed_inputs(allowed_input_tokens)
-
-    def create_init_population(self):
-        """
-           create the initial population; for every variable, generate random equations.
-           save them to self.populations, self.hofs
-           for every single pool: look for every token in library, fill in the leaves with constants or inputs.
-        """
-        self.populations = dict()
-        self.hofs = dict()
-        self.allowed_inputs = dict()
-        for vari in range(self.nvar):
-            allowed_input_tokens = np.zeros(self.nvar, dtype=np.int32)
-            # only all the generate one variable equation at a time
-            allowed_input_tokens[vari] = 1
-            self.allowed_inputs[vari] = allowed_input_tokens
-            for i, t in enumerate(self.library.tokens):
-                if allowed_input_tokens[i]:
-                    tree = [i]
-                    for j in range(t.arity):
-                        t_idx = np.random.choice(self.library.tokens_of_arity[0])
-                        while allowed_input_tokens[t_idx] == 0:
-                            t_idx = np.random.choice(self.library.tokens_of_arity[0])
-                        tree.append(t_idx)
-                    tree = np.array(tree)
-
-                    pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                    ##
-                    self.populations[vari].append(pr)
-                    new_pr = pr.clone()
-                    self.hofs[vari].append(new_pr)
+        """Input is a set of free input variables"""
+        free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
+        for vari in allowed_input_tokens:
+            free_input_tokens[vari] = 1
+        self.library.set_allowed_input_tokens(free_input_tokens)
+        Program.task.set_allowed_inputs(free_input_tokens)
 
     def print_populations(self):
         for vari in self.populations:
