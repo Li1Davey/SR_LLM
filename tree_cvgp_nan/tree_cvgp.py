@@ -7,21 +7,8 @@ from program import Program
 
 class ExpandingGeneticProgram(object):
     """
-    Parameters
-    ----------
-    cxpb: probability of mate
-    mutpb: probability of mutations
-    maxdepth: the maxdepth of the tree during mutation
-    population_size: the size of the selected populations (at the end of each generation)
-    tour_size: the size of the tournament for selection
-    hof_size: the size of the best programs retained
-    n_generations: the number of generations to be applied over each pool
-    nvar: number of variables
-
-    Variables
-    ---------
-    population: the current list of programs
-    hof: list of the best programs
+    populations: the current list of programs
+    hofs: list of the best programs
     timer_log: list of times
     gen_num: number of generations, starting from 0.
     """
@@ -31,6 +18,18 @@ class ExpandingGeneticProgram(object):
     gp_helper = None
 
     def __init__(self, cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations, nvar):
+        """
+        Parameters
+        ----------
+        cxpb: probability of mate
+        mutpb: probability of mutations
+        maxdepth: the maxdepth of the tree during mutation
+        population_size: the size of the selected populations (at the end of each generation)
+        tour_size: the size of the tournament for selection
+        hof_size: the size of the best programs retained
+        n_generations: the number of generations to be applied over each pool
+        nvar: number of variables
+        """
         self.cxpb = cxpb
         self.mutpb = mutpb
         self.maxdepth = maxdepth
@@ -40,9 +39,6 @@ class ExpandingGeneticProgram(object):
 
         self.n_generations = n_generations
 
-        self.hof = []
-        self.population = []
-
         self.timer_log = []
         self.gen_num = 0
 
@@ -51,31 +47,32 @@ class ExpandingGeneticProgram(object):
         assert Program.task != None
 
     def run_with_tree_based_randomized_variable_ordering(self):
-        # 1st step: generate all single variable equations by creating `#nvar` pools.
+        # 1. generate all single variable equations by creating `#nvar` pools.
         self.create_init_population()
-        # 2nd step: apply GP for every single pool
+        # 2. apply GP for every single pool
         all_the_pool_idxes = list(self.populations.keys())
         while True:
             for pool_idx in all_the_pool_idxes:
-                # set the free variables and controlled variables for the given pools
+                # 2.1 set the free variables and controlled variables for the given pool
+                # TODO: library, task set_allowed_input_tokens, disable the previous allowed input.
                 self._set_allowed_input_tokens(pool_idx)
                 for pr in self.populations[pool_idx]:
                     pr.remove_r_evaluate()
                 for pr in self.hofs[pool_idx]:
                     pr.remove_r_evaluate()
-                ## TODO: the task need to be set.
-                # TODO: library, task set_allowed_input_tokens, disable the previous allowed input.
 
+                # 2.2 revaluate the constants and reward for the given pool
                 for pr in self.populations[pool_idx]:
                     # a cached property in python (evaluated once) force the function to evaluate a new r
                     thisr = pr.r  # how good you fit.
                 for pr in self.hofs[pool_idx]:
                     thisr = pr.r
 
-                # inside every single POOL, do n generation of GP, find the best fitted expression in each POOL
+                # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
                 for it in range(self.n_generations):
                     print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(pool_idx, it))
                     self.one_generation(pool_idx)
+
                 self.update_population(pool_idx)
 
                 for i, pr in enumerate(self.populations[pool_idx]):
@@ -235,7 +232,7 @@ class ExpandingGeneticProgram(object):
         self.gen_num += 1
 
     def update_hof(self, pool_idx):
-        """update the set of Hall of Fame for the given pool_idx """
+        """update the set of Hall of Fame for the given pool_idx pool"""
         new_hof = sorted(self.populations[pool_idx], reverse=True, key=attrgetter('r'))
 
         self.hofs[pool_idx] = []
@@ -248,6 +245,7 @@ class ExpandingGeneticProgram(object):
             self.hofs[pool_idx].append(pr.clone())
 
     def update_population(self, pool_idx):
+        """update the population in the given indexed pool"""
         filtered_population = []
         for pr in self.populations[pool_idx]:
             if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
