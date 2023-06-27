@@ -49,6 +49,11 @@ class ExpandingGeneticProgram(object):
     def run_with_tree_based_randomized_variable_ordering(self):
         # 1. generate all single variable equations by creating `#nvar` POOLS.
         self.create_init_population()
+        print("=" * 20 + "Init Population" + "=" * 20)
+        for pool_idx in self.populations:
+            for pr in self.populations[pool_idx]:
+                print(pr.__getstate__())
+        print("=" * 20 + "Init Population" + "=" * 20)
         # 2. apply GP for every single POOL
         all_the_pool_idxes = list(self.populations.keys())
         while True:
@@ -114,6 +119,9 @@ class ExpandingGeneticProgram(object):
                 one_pool_idx, another_pool_idx = all_the_pool_idxes[i], all_the_pool_idxes[i + 1]
                 new_pool_idx = one_pool_idx + another_pool_idx
                 sorted(new_pool_idx)
+                if new_pool_idx in new_pool_idxes:
+                    print("new_pool_idx {} already in new_pool_idxes {}".format(new_pool_idx, new_pool_idxes))
+                    continue
                 self._set_allowed_input_tokens(new_pool_idx)
 
                 one_joint_pool = self.merge_two_pools(one_pool_idx, another_pool_idx)
@@ -131,16 +139,16 @@ class ExpandingGeneticProgram(object):
         for pr_var1 in self.populations[one_pool_idx]:
             for pr_var2 in self.populations[another_pool_idx]:
                 # if np.random.random() < self.cxpb:
-                    # TODO: multi-mutate:
-                    # TODO: have a foor loop that joint_vars_pr has multiple expressions.
-                    # Want to know the value of placeholder constant.
-                    # check the simplifications
-                    # run the optimize to get the constant value
-                    joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
-                    # TODO: this step check if the joint-program can be splifiicaiton into the original expresiion
-                    # if self.program_backward_check(joint_vars_pr, pr_var1) \
-                    #         and self.program_backward_check(joint_vars_pr, pr_var2):
-                    joint_Pool.append(joint_vars_progs)
+                # TODO: multi-mutate:
+                # TODO: have a foor loop that joint_vars_pr has multiple expressions.
+                # Want to know the value of placeholder constant.
+                # check the simplifications
+                # run the optimize to get the constant value
+                joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
+                # TODO: this step check if the joint-program can be splifiicaiton into the original expresiion
+                # if self.program_backward_check(joint_vars_pr, pr_var1) \
+                #         and self.program_backward_check(joint_vars_pr, pr_var2):
+                joint_Pool.append(joint_vars_progs)
 
         return joint_Pool
 
