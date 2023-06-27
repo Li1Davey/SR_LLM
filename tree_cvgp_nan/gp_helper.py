@@ -56,7 +56,7 @@ class GPHelper(object):
 
     def mate_joint_variables_program(self, a, b, K=10):
         """
-        apply several steps to combine two expresion randomly to obtain a parent expression that could contain two variables, or still single variables.
+        apply several steps to combine two expression randomly to obtain a parent expression that could contain two variables, or still single variables.
         a,b: two programs.
         """
         list_of_new_programs = []
@@ -72,12 +72,12 @@ class GPHelper(object):
             # pick a subtree in b
             b_start = np.random.choice(b_allowed)
             b_end = b.subtree_end(b_start)
+            na_tokens = np.concatenate((a.tokens[:a_start], b.tokens[b_start:b_end], a.tokens[a_end:]))
 
-            nb_tokens = np.concatenate((b.tokens[:b_start], a.tokens[a_start:a_end],b.tokens[b_end:]))
-
-            nb_allow = np.concatenate((b.allow_change_tokens[:b_start], a.allow_change_tokens[a_start:a_end], b.allow_change_tokens[b_end:]))
-            temp_prog = copy.copy(b)
-            new_pr = temp_prog.__init__(nb_tokens, nb_allow)
+            na_allow = np.concatenate(
+                (a.allow_change_tokens[:a_start], b.allow_change_tokens[b_start:b_end], a.allow_change_tokens[a_end:]))
+            temp_prog = copy.deepcopy(a)
+            new_pr = temp_prog.__init__(na_tokens, na_allow)
             new_pr.remove_r_evaluate()
             list_of_new_programs.append(new_pr)
 
@@ -95,12 +95,13 @@ class GPHelper(object):
             a_start = np.random.choice(a_allowed)
             a_end = a.subtree_end(a_start)
 
-            na_tokens = np.concatenate((a.tokens[:a_start], b.tokens[b_start:b_end], a.tokens[a_end:]))
+            nb_tokens = np.concatenate((b.tokens[:b_start], a.tokens[a_start:a_end], b.tokens[b_end:]))
 
-            na_allow = np.concatenate(
-                (a.allow_change_tokens[:a_start], b.allow_change_tokens[b_start:b_end], a.allow_change_tokens[a_end:]))
-            temp_prog = copy.deepcopy(a)
-            new_pr = temp_prog.__init__(na_tokens, na_allow)
+            nb_allow = np.concatenate(
+                (b.allow_change_tokens[:b_start], a.allow_change_tokens[a_start:a_end], b.allow_change_tokens[b_end:]))
+            temp_prog = copy.copy(b)
+            new_pr = temp_prog.__init__(nb_tokens, nb_allow)
+
             new_pr.remove_r_evaluate()
             list_of_new_programs.append(new_pr)
 
@@ -113,8 +114,7 @@ class GPHelper(object):
         if maxdepth == 1:
 
             # more efficient implementation
-            allowed_pos = [t for t in self.library.tokens_of_arity[0] \
-                           if self.library.allowed_tokens[t] > 0]
+            allowed_pos = [t for t in self.library.tokens_of_arity[0] if self.library.allowed_tokens[t] > 0]
             t_idx = np.random.choice(allowed_pos)
             return [t_idx]
         else:
@@ -165,9 +165,7 @@ class GPHelper(object):
         p.remove_r_evaluate()
 
     def mutNodeReplacement(self, p):
-        """
-            find a node and replace it with a node of the same arity
-        """
+        """  find a node and replace it with a node of the same arity """
         allowed_pos = p.allow_change_pos()
         if len(allowed_pos) == 0:
             return
@@ -175,8 +173,7 @@ class GPHelper(object):
         arity = p.traversal[a_idx].arity
 
         # more efficient implementation
-        allowed_pos = [t for t in self.library.tokens_of_arity[arity] \
-                       if self.library.allowed_tokens[t] > 0]
+        allowed_pos = [t for t in self.library.tokens_of_arity[arity] if self.library.allowed_tokens[t] > 0]
         t_idx = np.random.choice(allowed_pos)
 
         p.tokens[a_idx] = t_idx

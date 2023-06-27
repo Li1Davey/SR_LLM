@@ -206,6 +206,7 @@ class Library(object):
         return [i for i, t in enumerate(self.allowed_tokens) if t == 1 and self.arities[i] > 0]
 
     def set_allowed_input_tokens(self, allowed_input_tokens):
+        """1: allowed, 0: now allowed to do what?"""
         self.allowed_input_tokens = np.copy(allowed_input_tokens)
         for i, flag in enumerate(self.allowed_input_tokens):
             self.allowed_tokens[self.input_tokens[i]] = flag

@@ -164,7 +164,7 @@ def create_tokens(n_input_var, function_set, protected, decision_tree_threshold_
 
     # Create input variable Tokens
     for i in range(n_input_var):
-        token = Token(name="x{}".format(i + 1), arity=0, complexity=1,
+        token = Token(name="x{}".format(i), arity=0, complexity=1,
                       function=None, input_var=i)
         tokens.append(token)
 

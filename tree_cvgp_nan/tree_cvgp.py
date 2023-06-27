@@ -47,13 +47,13 @@ class ExpandingGeneticProgram(object):
         assert Program.task != None
 
     def run_with_tree_based_randomized_variable_ordering(self):
-        # 1. generate all single variable equations by creating `#nvar` pools.
+        # 1. generate all single variable equations by creating `#nvar` POOLS.
         self.create_init_population()
-        # 2. apply GP for every single pool
+        # 2. apply GP for every single POOL
         all_the_pool_idxes = list(self.populations.keys())
         while True:
             for pool_idx in all_the_pool_idxes:
-                # 2.1 set the free variables and controlled variables for the given pool
+                # 2.1 set the free variables and controlled variables for the given POOL
                 # TODO: library, task set_allowed_input_tokens, disable the previous allowed input.
                 self._set_allowed_input_tokens(pool_idx)
                 for pr in self.populations[pool_idx]:
@@ -61,7 +61,7 @@ class ExpandingGeneticProgram(object):
                 for pr in self.hofs[pool_idx]:
                     pr.remove_r_evaluate()
 
-                # 2.2 revaluate the constants and reward for the given pool
+                # 2.2 revaluate the constants and reward for the given POOL
                 for pr in self.populations[pool_idx]:
                     # a cached property in python (evaluated once) force the function to evaluate a new r
                     thisr = pr.r  # how good you fit.
@@ -128,8 +128,8 @@ class ExpandingGeneticProgram(object):
         """
         # self.gp_helper.mate(offspring[i - 1], offspring[i])
         joint_Pool = []
-        for pr_var1 in self.populations[tuple(one_pool_idx)]:
-            for pr_var2 in self.populations[tuple(another_pool_idx)]:
+        for pr_var1 in self.populations[one_pool_idx]:
+            for pr_var2 in self.populations[another_pool_idx]:
                 # if np.random.random() < self.cxpb:
                     # TODO: multi-mutate:
                     # TODO: have a foor loop that joint_vars_pr has multiple expressions.
@@ -153,7 +153,7 @@ class ExpandingGeneticProgram(object):
         self.populations = dict()
         self.hofs = dict()
         for vari in range(self.nvar):
-            self._set_allowed_input_tokens([vari])
+            self._set_allowed_input_tokens((vari,))
             for i, t in enumerate(self.library.tokens):
                 if self.library.allowed_tokens[i]:
                     tree = [i]
@@ -220,7 +220,7 @@ class ExpandingGeneticProgram(object):
         print("")
 
         # Replace the current population by the offspring
-        self.populations[pool_idx] = offspring + self.hof + self.populations[pool_idx]
+        self.populations[pool_idx] = offspring + self.hofs[pool_idx] + self.populations[pool_idx]
 
         # Update hall of fame
         self.update_hof(pool_idx)
