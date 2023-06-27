@@ -82,8 +82,9 @@ class ExpandingGeneticProgram(object):
         print("=" * 20 + "Init Population" + "=" * 20)
         for pool_idx in self.populations:
             for pr in self.populations[pool_idx]:
-                print(pr.__getstate__())
-        print("=" * 20 + "Init Population" + "=" * 20)
+                pr.print_expression()
+            print('-'*50)
+
         # 2. apply GP for every single POOL
         all_the_pool_idxes = list(self.populations.keys())
         while True:

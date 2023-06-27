@@ -3,18 +3,23 @@
 import array
 import warnings
 
-
 import numpy as np
+np.set_printoptions(precision=4, linewidth=np.inf)
+
 from sympy.parsing.sympy_parser import parse_expr
 from sympy import pretty
+
+from scipy.optimize import minimize
 
 from functions import PlaceholderConstant
 from const import make_const_optimizer
 from utils import cached_property
 import utils as U
 
-from scipy.optimize import minimize
-np.set_printoptions(linewidth=np.inf)
+
+
+
+
 
 def _finish_tokens(tokens):
     """
