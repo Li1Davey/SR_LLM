@@ -2,7 +2,6 @@
 
 import array
 import warnings
-from textwrap import indent
 
 import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
@@ -14,6 +13,8 @@ from utils import cached_property
 import utils as U
 
 from scipy.optimize import minimize
+
+np.set_printoptions(linewidth=np.inf)
 
 
 def _finish_tokens(tokens):
@@ -32,8 +33,6 @@ def _finish_tokens(tokens):
         A list of integers corresponding to tokens in the library. The list
         defines an expression's pre-order traversal. "Dangling" programs are
         completed with repeated "x1" until the expression completes.
-
-    XYX: is this what the function is doing?? I doubt...
 
     """
 
@@ -223,7 +222,6 @@ class Program(object):
     str : str
         String representation of tokens. Useful as unique identifier.
     """
-    # data_used = {'X':[], 'y_true': []}
     # Static variables
     task = None  # Task
     library = None  # Library
@@ -271,27 +269,6 @@ class Program(object):
         self.invalid = False  # always false.
         self.str = tokens.tostring()
         self.tokens = tokens
-
-        if Program.n_objects > 1:  # only 1 function, output is one :y=f(x1, x2,...).
-            # XYX: this part is useless; for our application, n_objects == 1.
-            # Fill list of multi-traversals
-            danglings = -1 * np.arange(1, Program.n_objects + 1)
-            self.traversals = []  # list to keep track of each multi-traversal
-            i_prev = 0
-            arity_list = []  # list of arities for each node in the overall traversal
-            for i, token in enumerate(self.traversal):
-                arities = token.arity
-                arity_list.append(arities)
-                dangling = 1 + np.cumsum(np.array(arity_list) - 1)[-1]
-                if (dangling - 1) in danglings:
-                    trav_object = self.traversal[i_prev:i + 1]
-                    self.traversals.append(trav_object)
-                    i_prev = i + 1
-                    """
-                    Keep only what dangling values have not yet been calculated. Don't want dangling to go down and up (e.g hits -1, goes back up to 0 before hitting -2)
-                    and trigger the end of a traversal at the wrong time
-                    """
-                    danglings = danglings[danglings != dangling - 1]
 
     def clone(self):
         new_me = Program(self.tokens, self.allow_change_tokens)
@@ -456,7 +433,7 @@ class Program(object):
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
                 # changt the method from BFGS to Nelder-Mead to improve the precision.
-                opt_result = minimize(f, x0, method='Nelder-Mead', tol=1e-14)
+                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
 
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']
@@ -481,8 +458,8 @@ class Program(object):
         assert self.expr_objs.shape[0] == self.opt_num_expr
         assert len(self.expr_objs.shape) == 1
 
-        # print('expr_objs=', self.expr_objs)
-        # print('expr_consts=', self.expr_consts)
+        print('expr_objs=', self.expr_objs.tolist())
+        print('expr_consts=', self.expr_consts.tolist())
 
         # Set the optimized constants
         # set the value of optimized constants with the last optimized constants
@@ -500,7 +477,6 @@ class Program(object):
 
         assert 'expr_objs' in self.__dict__
         # fitted objective  <= thereshold (residual is 0.01)
-
 
         print("np.max(self.expr_objs) <= self.expr_obj_thres: {} {} {}".format(
             np.max(self.expr_objs) <= self.expr_obj_thres,
@@ -706,53 +682,21 @@ class Program(object):
         tree --> serialized tree --> SymPy expression
         """
 
-        if Program.n_objects == 1:
-            tree = self.traversal.copy()
-            tree = build_tree(tree)
-            tree = convert_to_sympy(tree)
-            try:
-                expr = parse_expr(tree.__repr__())  # SymPy expression
-            except:
-                expr = tree.__repr__()
-            return [expr]
-        else:
-            exprs = []
-            for i in range(len(self.traversals)):
-                tree = self.traversals[i].copy()
-                tree = build_tree(tree)
-                tree = convert_to_sympy(tree)
-                try:
-                    expr = parse_expr(tree.__repr__())  # SymPy expression
-                except:
-                    expr = tree.__repr__()
-                exprs.append(expr)
-            return exprs
+        tree = self.traversal.copy()
+        tree = build_tree(tree)
+        tree = convert_to_sympy(tree)
+        try:
+            expr = parse_expr(tree.__repr__())  # SymPy expression
+        except:
+            expr = tree.__repr__()
+        return expr
 
     def pretty(self):
         """Returns pretty printed string of the program"""
-        return [pretty(self.sympy_expr[i]) for i in range(Program.n_objects)]
+        return pretty(self.sympy_expr)
 
     def print_expression(self):
-
         print("{}".format(self.traversal))
-
-    def print_stats(self):
-        """Prints the statistics of the program
-            We will print the most honest reward possible when using validation.
-        """
-
-        print("\tReward: {}".format(self.r))
-        print("\tOriginally on Policy: {}".format(self.originally_on_policy))
-        print("\tInvalid: {}".format(self.invalid))
-        print("\tTraversal: {}".format(self))
-
-        if Program.n_objects == 1:
-            print("\tExpression:")
-            print("{}\n".format(indent(self.pretty()[0], '\t  ')))
-        else:
-            for i in range(Program.n_objects):
-                print("\tExpression {}:".format(i))
-                print("{}\n".format(indent(self.pretty()[i], '\t  ')))
 
     def __repr__(self):
         """Prints the program's traversal"""

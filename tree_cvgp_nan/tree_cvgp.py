@@ -46,6 +46,36 @@ class ExpandingGeneticProgram(object):
         assert self.library != None
         assert Program.task != None
 
+    def create_init_population(self):
+        """
+           create the initial population; for every variable, a set of generate random equations.
+           save them to self.populations, self.hofs.
+           for every single pool: look for every token in library, fill in the leaves with constants or inputs.
+        """
+        self.populations = dict()
+        self.hofs = dict()
+        for vari in range(self.nvar):
+            self._set_allowed_input_tokens((vari,))
+            for i, t in enumerate(self.library.tokens):
+                if self.library.allowed_tokens[i]:
+                    tree = [i]
+                    for j in range(t.arity):
+                        t_idx = np.random.choice(self.library.tokens_of_arity[0])
+                        while self.library.allowed_tokens[t_idx] == 0:
+                            t_idx = np.random.choice(self.library.tokens_of_arity[0])
+                        tree.append(t_idx)
+                    tree = np.array(tree)
+
+                    pr = Program(tree, np.ones(tree.size, dtype=np.int32))
+                    if (vari,) not in self.populations:
+                        self.populations[(vari,)] = []
+                    self.populations[(vari,)].append(pr)
+                    new_pr = pr.clone()
+                    if (vari,) not in self.hofs:
+                        self.hofs[(vari,)] = []
+                    self.hofs[(vari,)].append(new_pr)
+        print("Init done.....")
+
     def run_with_tree_based_randomized_variable_ordering(self):
         # 1. generate all single variable equations by creating `#nvar` POOLS.
         self.create_init_population()
@@ -151,36 +181,6 @@ class ExpandingGeneticProgram(object):
                 joint_Pool.append(joint_vars_progs)
 
         return joint_Pool
-
-    def create_init_population(self):
-        """
-           create the initial population; for every variable, a set of generate random equations.
-           save them to self.populations, self.hofs.
-           for every single pool: look for every token in library, fill in the leaves with constants or inputs.
-        """
-        self.populations = dict()
-        self.hofs = dict()
-        for vari in range(self.nvar):
-            self._set_allowed_input_tokens((vari,))
-            for i, t in enumerate(self.library.tokens):
-                if self.library.allowed_tokens[i]:
-                    tree = [i]
-                    for j in range(t.arity):
-                        t_idx = np.random.choice(self.library.tokens_of_arity[0])
-                        while self.library.allowed_tokens[t_idx] == 0:
-                            t_idx = np.random.choice(self.library.tokens_of_arity[0])
-                        tree.append(t_idx)
-                    tree = np.array(tree)
-
-                    pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                    if (vari) not in self.populations:
-                        self.populations[(vari,)] = []
-                    self.populations[(vari,)].append(pr)
-                    new_pr = pr.clone()
-                    if (vari) not in self.hofs:
-                        self.hofs[(vari,)] = []
-                    self.hofs[(vari,)].append(new_pr)
-        print("Init done.....")
 
     def program_backward_check(self, joint_vars_pr, single_var_pr):
         from functions import PlaceholderConstant

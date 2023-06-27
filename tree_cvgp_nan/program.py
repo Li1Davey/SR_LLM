@@ -2,7 +2,7 @@
 
 import array
 import warnings
-from textwrap import indent
+
 
 import numpy as np
 from sympy.parsing.sympy_parser import parse_expr
@@ -14,7 +14,7 @@ from utils import cached_property
 import utils as U
 
 from scipy.optimize import minimize
-
+np.set_printoptions(linewidth=np.inf)
 
 def _finish_tokens(tokens):
     """
@@ -426,7 +426,7 @@ class Program(object):
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
                 # changt the method from BFGS to Nelder-Mead to improve the precision.
-                opt_result = minimize(f, x0, method='Nelder-Mead', tol=1e-14)
+                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
 
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']
@@ -451,8 +451,8 @@ class Program(object):
         assert self.expr_objs.shape[0] == self.opt_num_expr
         assert len(self.expr_objs.shape) == 1
 
-        # print('expr_objs=', self.expr_objs)
-        # print('expr_consts=', self.expr_consts)
+        print('expr_objs=', self.expr_objs.tolist())
+        print('expr_consts=', self.expr_consts.tolist())
 
         # Set the optimized constants
         # set the value of optimized constants with the last optimized constants
