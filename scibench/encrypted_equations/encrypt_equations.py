@@ -119,11 +119,12 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
         generate_new_key(key_filename)
     name_map = {}
     for eqname in EQUATION_CLASS_DICT:
-        # if not eqname  == 'FeynmanBonus6':
-        #     continue
+
         one_equation = get_eq_obj(eqname)
-        if not hasattr(one_equation, 'sympy_eq_preorder_traversal'):
-            one_equation.sympy_eq_preorder_traversal = symbolic_equation_to_preorder_traversal(one_equation.sympy_eq)
+        if not hasattr(one_equation, 'preorder_traversal'):
+
+            one_equation.preorder_traversal = symbolic_equation_to_preorder_traversal(one_equation.sympy_eq)
+
         if hasattr(one_equation, 'expr_obj_thres'):
             expr_obj_thres = one_equation.expr_obj_thres
         else:
@@ -133,7 +134,7 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
                     "num_vars": one_equation.num_vars,
                     "vars_range_and_types": one_equation.vars_range_and_types_to_json_str(),
                     "function_set": one_equation._function_set,
-                    "eq_expression": str(one_equation.sympy_eq_preorder_traversal),
+                    "eq_expression": str(one_equation.preorder_traversal),
                     "expr": str(one_equation.sympy_eq),
                     "expr_obj_thres": expr_obj_thres}
         # print(equation)
@@ -154,21 +155,20 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
 
         encrypt_equation(user_encode_data, output_eq_file, is_encrypted=0)
 
-        decrypt_equation(output_eq_file)
+        # decrypt_equation(output_eq_file)
 
     for name in name_map:
         print(name, name_map[name])
 
 
 if __name__ == '__main__':
-
-
-    from equations_feynman import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
-    from equations_others import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
+    X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7, X_8, X_9 =symbols('X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7, X_8, X_9')
+    # from equations_feynman import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
+    # from equations_others import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
 
     from equations_debug_cvgp import *
 

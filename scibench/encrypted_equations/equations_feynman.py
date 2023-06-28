@@ -2908,6 +2908,7 @@ class FeynmanIICh36Eq38(KnownEquation):
 
         super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
         x = self.x
+
         self.sympy_eq = x[0] * x[1] / (BOLTZMANN_CONSTANT * x[2]) + (x[0] * x[3]) / (
                 ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2 * BOLTZMANN_CONSTANT * x[2]) * x[4]
 
@@ -3125,8 +3126,10 @@ class FeynmanICh11Eq19(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
+            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
         ]
 
         super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
@@ -3253,7 +3256,7 @@ class FeynmanBonus6(KnownEquation):
         x = self.x
         # we need to write the traversal by ourself, sympy do very weried optimization, which make the numerical evaluation unstable.
         # self.eq_expression=[('sqrt', 'unary'), ('add', 'binary'), (1, 'const'), ('mul', 'binary'), (2, 'const'), ('mul', 'binary'), ('X_0', 'var'), ('mul', 'binary'), ('X_1', 'var'), ('mul', 'binary'), ('pow', 'binary'), ('X_2', 'var'), (2, 'const'), ('mul', 'binary'), ('pow', 'binary'), ('X_3', 'var'), (-1, 'const'), ('mul', 'binary'), ('pow', 'binary'), ('X_4', 'var'), (-2, 'const'), ('mul', 'binary'), ('pow', 'binary'), ('X_5', 'var'), (-2, 'const'), ('pow', 'binary'), ('X_6', 'var'), (-4, 'const'), (1/2, 'const')]
-        self.sympy_eq = sympy.sqrt(1 + 2 * x[0] * x[1] * x[2] * x[2] / (x[3] * (x[4] * x[5] * x[6] * x[6]) **2))
+        self.sympy_eq = sympy.sqrt(1 + 2 * x[0] * x[1] * x[2] * x[2] / (x[3] * (x[4] * x[5] * x[6] * x[6]) ** 2))
 
 
 @register_feynman_eq_class
@@ -3276,23 +3279,38 @@ class FeynmanICh9Eq18(KnownEquation):
     """
     _eq_name = 'feynman-i.9.18'
     _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'const']
-    expr_obj_thres = 1e-55
+    expr_obj_thres = 1e-1
 
     # expr_consts_thres=None
 
     def __init__(self):
         # Consider Cavendish experiment
         vars_range_and_types = [
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
+            LogUniformSampling(1.0e5, 1.0e10, only_positive=True),
+            LogUniformSampling(1.0e5, 1.0e10, only_positive=True),
+            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
+            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
+            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
+            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
+            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
+            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
         ]
 
         super().__init__(num_vars=8, vars_range_and_types=vars_range_and_types)
         x = self.x
+        self.preorder_traversal = [
+            ('mul', 'binary'),
+                (GRAVITATIONAL_CONSTANT, 'const'),
+                ('mul', 'binary'),
+                    (str(x[0]), 'var'),
+                    ('div', 'binary'),
+                        (str(x[1]), 'var'),
+                        ('add', 'binary'),
+                            ('n2', 'unary'), ('sub', 'binary'), (str(x[2]), 'var'), (str(x[3]), 'var'), (2, 'const'),
+                                ('add', 'binary'),
+                                    ('n2', 'unary'), ('sub', 'binary'), ('X_4', 'var'), (str(x[5]), 'var'), (2, 'const'),
+                                    ('n2', 'unary'), ('sub', 'binary'), ('X_6', 'var'), (str(x[7]), 'var'), (2, 'const'),
+
+        ]
+
         self.sympy_eq = GRAVITATIONAL_CONSTANT * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)

@@ -24,6 +24,7 @@ class Debug_1(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=3)
         x = self.x
+
         self.sympy_eq = 30 * x[0] * x[2] / ((x[0] - 10) * x[1] * x[1])
 
 
@@ -69,46 +70,89 @@ class Debug_5(KnownEquation):
         super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = x[0] / (x[0] - 1)
+
+
 @register_eq_class
 class Debug_6(KnownEquation):
     _eq_name = 'Debug_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'cos', 'sin', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = -2.1*sympy.cos(9.8*x[0]) + 2
+        self.sympy_eq = -2.1 * sympy.cos(9.8 * x[0]) + 2
+
+
 @register_eq_class
 class Debug_7(KnownEquation):
     _eq_name = 'Debug_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'cos', 'sin', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = -2.1*sympy.cos(9.8*x[0])
+        self.sympy_eq = -2.1 * sympy.cos(9.8 * x[0])
+
 
 #
 @register_eq_class
 class Debug_8(KnownEquation):
     _eq_name = 'Debug_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'cos', 'sin', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = -sympy.cos(9.8*x[0])
+        self.sympy_eq = -sympy.cos(9.8 * x[0])
+
 
 #
 @register_eq_class
 class Debug_9(KnownEquation):
     _eq_name = 'Debug_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','cos','sin', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'cos', 'sin', 'const']
 
     def __init__(self):
         super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = sympy.cos(9.8*x[0])
+        self.sympy_eq = sympy.cos(9.8 * x[0])
+
+
+@register_eq_class
+class Debug_10(KnownEquation):
+    _eq_name = 'Debug_10'
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'const']
+
+    def __init__(self):
+        super().__init__(num_vars=2)
+        x = self.x
+        self.preorder_traversal = [
+            ('mul', 'binary'), (9.8, 'const'), ('n2', 'unary'), ('sub', 'binary'), (str(x[0]), 'var'), (str(x[1]), 'var')
+        ]
+        self.sympy_eq = 9.8 * (x[0] - x[1]) ** 2
+
+
+@register_eq_class
+class Debug_11(KnownEquation):
+    _eq_name = 'Debug_11'
+    _function_set = ['add', 'mul', 'div', 'inv', 'const']
+
+    def __init__(self):
+        super().__init__(num_vars=4)
+        x = self.x
+        self.sympy_eq = 3 * x[0] * (4 * x[2] - 2) - 2 * (x[1] - 2) * x[3]
+
+
+@register_eq_class
+class Debug_12(KnownEquation):
+    _eq_name = 'Debug_12'
+    _function_set = ['add', 'mul', 'div', 'inv', 'const']
+
+    def __init__(self):
+        super().__init__(num_vars=4)
+        x = self.x
+        self.sympy_eq = 3 * x[0] * x[2] - 2 * x[1] * x[3]
+
 #
 #
 # @register_eq_class
