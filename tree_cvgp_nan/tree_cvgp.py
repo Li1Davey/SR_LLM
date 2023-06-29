@@ -131,14 +131,14 @@ class ExpandingGeneticProgram(object):
                     pr.freeze_equation()
                     pr.remove_r_evaluate()
 
-                    print('pr=', pr.__getstate__())
+                    print('\tpr=', pr.__getstate__())
                     pr.print_expression()
 
                 for i, pr in enumerate(self.hofs[pool_idx]):
                     print('{}-th in self.hof {}'.format(i, pool_idx))
                     # evaluate r again, just incase it has not been evaluated.
                     pr.remove_r_evaluate()
-                    print('pr=', pr.__getstate__())
+                    print('\tpr=', pr.__getstate__())
                     pr.print_expression()
 
             new_pool_idxes = []
@@ -304,18 +304,24 @@ class ExpandingGeneticProgram(object):
         self.library.set_allowed_input_tokens(free_input_tokens)
         Program.task.set_allowed_inputs(free_input_tokens)
 
-    def print_populations(self):
+    def print_all_populations(self):
         for vari in self.populations:
             print(f"vars={vari}")
             for pr in self.populations[vari]:
                 print("\t", pr.__getstate__())
 
-    def print_hofs(self):
-        for vari in self.hofs:
-            print(f"vars={vari}")
-            new_hof = sorted(self.hofs[vari], reverse=True, key=attrgetter('r'))
+    def print_final_hofs(self):
+        selected_vars = None
+        for key in self.hofs:
+            new_key = sorted(list(key))
+            if new_key == [i for i in range(self.nvar)]:
+                selected_vars = new_key
+
+        if selected_vars in self.hofs:
+            print(f"vars={selected_vars}")
+            new_hof = sorted(self.hofs[selected_vars], reverse=True, key=attrgetter('r'))
             for pr in new_hof:
-                print(pr.__getstate__())
+                print("\t", pr.__getstate__())
                 pr.task.rand_draw_X_non_fixed()
                 print('\tvalidate r=', pr.task.reward_function(pr))
                 pr.task.print_reward_function_all_metrics(pr)
