@@ -346,6 +346,10 @@ class Program(object):
         # the place the token can be changed
         return [i for i, t in enumerate(self.allow_change_tokens) if t == 1]
 
+    def all_tokens_pos(self):
+        # the place the token can be changed
+        return [i for i in range(len(self.allow_change_tokens))]
+
     def subtree_end(self, subtree_start):
         # subtree_start arbitraty
         # the END point of that subtree in preorder
@@ -431,7 +435,8 @@ class Program(object):
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
                 # changt the method from BFGS to Nelder-Mead to improve the precision.
-                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
+                # opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
+                opt_result = minimize(f, x0, method='BFGS')
 
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']
@@ -456,8 +461,8 @@ class Program(object):
         assert self.expr_objs.shape[0] == self.opt_num_expr
         assert len(self.expr_objs.shape) == 1
 
-        print('expr_objs=', self.expr_objs.tolist())
-        print('expr_consts=', self.expr_consts.tolist())
+        # print('expr_objs=', self.expr_objs.tolist())
+        # print('expr_consts=', self.expr_consts.tolist())
 
         # Set the optimized constants
         # set the value of optimized constants with the last optimized constants

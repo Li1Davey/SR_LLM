@@ -1,19 +1,10 @@
 import numpy as np
 import copy
-
+from program import Program
 
 class GPHelper(object):
     """
     Function class for genetic programming.
-
-    Parameters
-    ----------
-
-    Methods
-    -------
-    mate(a, b): apply cross over of two program trees; find two subtrees
-       within allowed_change_tokens then swap them
-
     """
 
     # static variables
@@ -21,7 +12,8 @@ class GPHelper(object):
 
     def mate(self, a, b):
         """
-            a and b are two program objects.
+            a and b are two program objects. apply cross over of two program trees; find two subtrees
+       within allowed_change_tokens then swap them
         """
         a_allowed = a.allow_change_pos()
         b_allowed = b.allow_change_pos()
@@ -54,7 +46,7 @@ class GPHelper(object):
         a.remove_r_evaluate()
         b.remove_r_evaluate()
 
-    def mate_joint_variables_program(self, a, b, K=10):
+    def mate_joint_variables_program(self, a, b, K=4):
         """
         apply several steps to combine two expression randomly to obtain a parent expression that could contain two variables, or still single variables.
         a,b: two programs.
@@ -62,7 +54,7 @@ class GPHelper(object):
         list_of_new_programs = []
         #### create new prog from a
         a_allowed = a.const_pos
-        b_allowed = b.allow_change_pos()
+        b_allowed = b.all_tokens_pos()
         if len(a_allowed) == 0 or len(b_allowed) == 0:
             return []
         for k in range(K):
@@ -76,13 +68,13 @@ class GPHelper(object):
 
             na_allow = np.concatenate(
                 (a.allow_change_tokens[:a_start], b.allow_change_tokens[b_start:b_end], a.allow_change_tokens[a_end:]))
-            temp_prog = copy.deepcopy(a)
-            new_pr = temp_prog.__init__(na_tokens, na_allow)
+            # temp_prog = copy.deepcopy(a)
+            new_pr = Program(na_tokens, na_allow)
             new_pr.remove_r_evaluate()
             list_of_new_programs.append(new_pr)
 
         #### create new prog from b
-        a_allowed = a.allow_change_pos()
+        a_allowed = a.all_tokens_pos()
         b_allowed = b.const_pos
         if len(a_allowed) == 0 or len(b_allowed) == 0:
             return list_of_new_programs
@@ -99,8 +91,8 @@ class GPHelper(object):
 
             nb_allow = np.concatenate(
                 (b.allow_change_tokens[:b_start], a.allow_change_tokens[a_start:a_end], b.allow_change_tokens[b_end:]))
-            temp_prog = copy.copy(b)
-            new_pr = temp_prog.__init__(nb_tokens, nb_allow)
+            # temp_prog = copy.copy(b)
+            new_pr = Program(nb_tokens, nb_allow)
 
             new_pr.remove_r_evaluate()
             list_of_new_programs.append(new_pr)

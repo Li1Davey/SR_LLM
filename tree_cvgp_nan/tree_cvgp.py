@@ -83,11 +83,11 @@ class ExpandingGeneticProgram(object):
         for pool_idx in self.populations:
             for pr in self.populations[pool_idx]:
                 pr.print_expression()
-            print('-'*50)
+            print('-' * 50)
 
         # 2. apply GP for every single POOL
         all_the_pool_idxes = list(self.populations.keys())
-        while True:
+        while len(all_the_pool_idxes) > 0:
             for pool_idx in all_the_pool_idxes:
                 # 2.1 set the free variables and controlled variables for the given POOL
                 # TODO: library, task set_allowed_input_tokens, disable the previous allowed input.
@@ -104,6 +104,7 @@ class ExpandingGeneticProgram(object):
                 for pr in self.hofs[pool_idx]:
                     thisr = pr.r
 
+                self.update_population(pool_idx)
                 # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
                 for it in range(self.n_generations):
                     print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(pool_idx, it))
@@ -130,7 +131,6 @@ class ExpandingGeneticProgram(object):
                     pr.freeze_equation()
                     pr.remove_r_evaluate()
 
-                    print('pr.r=', pr.r)
                     print('pr=', pr.__getstate__())
                     pr.print_expression()
 
@@ -138,14 +138,15 @@ class ExpandingGeneticProgram(object):
                     print('{}-th in self.hof {}'.format(i, pool_idx))
                     # evaluate r again, just incase it has not been evaluated.
                     pr.remove_r_evaluate()
-                    print('pr.r=', pr.r)
                     print('pr=', pr.__getstate__())
                     pr.print_expression()
 
-            new_joint_population_Pools = dict()
             new_pool_idxes = []
             # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
             np.random.shuffle(all_the_pool_idxes)
+            if len(all_the_pool_idxes) < 2:
+                all_the_pool_idxes = new_pool_idxes
+                continue
             for i in range(0, len(all_the_pool_idxes), 2):
                 one_pool_idx, another_pool_idx = all_the_pool_idxes[i], all_the_pool_idxes[i + 1]
                 new_pool_idx = one_pool_idx + another_pool_idx
@@ -157,8 +158,11 @@ class ExpandingGeneticProgram(object):
 
                 one_joint_pool = self.merge_two_pools(one_pool_idx, another_pool_idx)
 
-                new_joint_population_Pools[new_pool_idx] = one_joint_pool
+                self.populations[new_pool_idx] = one_joint_pool
+                self.hofs[new_pool_idx] = one_joint_pool
                 new_pool_idxes.append(new_pool_idx)
+
+            all_the_pool_idxes = new_pool_idxes
 
     def merge_two_pools(self, one_pool_idx, another_pool_idx):
         """
@@ -179,7 +183,7 @@ class ExpandingGeneticProgram(object):
                 # TODO: this step check if the joint-program can be splifiicaiton into the original expresiion
                 # if self.program_backward_check(joint_vars_pr, pr_var1) \
                 #         and self.program_backward_check(joint_vars_pr, pr_var2):
-                joint_Pool.append(joint_vars_progs)
+                joint_Pool.extend(joint_vars_progs)
 
         return joint_Pool
 
