@@ -39,7 +39,7 @@ do
 
 hostname
 
-$py3615 $thispath/main.py --equation_name $data_path/$eq_name --expand_gp \
+$py3615 $thispath/main.py --equation_name $data_path/$eq_name \
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
         		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out
 
