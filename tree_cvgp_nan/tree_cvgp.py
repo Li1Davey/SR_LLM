@@ -76,7 +76,7 @@ class ExpandingGeneticProgram(object):
                     self.hofs[(vari,)].append(new_pr)
         print("Init done.....")
 
-    def run_with_tree_based_randomized_variable_ordering(self):
+    def run_with_tree_based_randomized_variable_ordering(self, maximum_width=10):
         # 1. generate all single variable equations by creating `#nvar` POOLS.
         self.create_init_population()
         print("=" * 20 + "Init Population" + "=" * 20)
@@ -147,8 +147,11 @@ class ExpandingGeneticProgram(object):
             if len(all_the_pool_idxes) < 2:
                 all_the_pool_idxes = new_pool_idxes
                 continue
+            print("all the pools", all_the_pool_idxes)
             for i in range(0, len(all_the_pool_idxes), 2):
+                # print(i)
                 one_pool_idx, another_pool_idx = all_the_pool_idxes[i], all_the_pool_idxes[i + 1]
+                print(one_pool_idx, another_pool_idx)
                 new_pool_idx = one_pool_idx + another_pool_idx
                 sorted(new_pool_idx)
                 if new_pool_idx in new_pool_idxes:
@@ -169,7 +172,6 @@ class ExpandingGeneticProgram(object):
         TODO set allowed input tokens.
         Given two pools of equations, pick two equations from two pools and apply m
         """
-        # self.gp_helper.mate(offspring[i - 1], offspring[i])
         joint_Pool = []
         for pr_var1 in self.populations[one_pool_idx]:
             for pr_var2 in self.populations[another_pool_idx]:
@@ -312,13 +314,13 @@ class ExpandingGeneticProgram(object):
 
     def print_final_hofs(self):
         selected_vars = None
+        print(self.hofs.keys())
         for key in self.hofs:
-            new_key = sorted(list(key))
-            if new_key == [i for i in range(self.nvar)]:
-                selected_vars = new_key
-
+            if len(key) == self.nvar:
+                selected_vars = key
+        print(f"vars={selected_vars}")
         if selected_vars in self.hofs:
-            print(f"vars={selected_vars}")
+
             new_hof = sorted(self.hofs[selected_vars], reverse=True, key=attrgetter('r'))
             for pr in new_hof:
                 print("\t", pr.__getstate__())

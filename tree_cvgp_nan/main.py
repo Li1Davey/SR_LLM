@@ -43,10 +43,10 @@ def run_tree_based_control_variable_gp(equation_name, metric_name, noise_type, n
     mutpb = 0.8
     maxdepth = 2
     tour_size = 3
-    hof_size = 10  # 0
+    hof_size = 50  # 0
 
-    population_size = 20  # 0  # 0
-    n_generations = 4
+    population_size = 200  # 0  # 0
+    n_generations = 10
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
@@ -89,7 +89,7 @@ def run_tree_based_control_variable_gp(equation_name, metric_name, noise_type, n
 
     # print
     print('final hof=')
-    egp.print_hofs()
+    egp.print_final_hofs()
     print('tree.cvgp.timer_log=', egp.timer_log)
 
 
