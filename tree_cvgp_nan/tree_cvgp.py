@@ -185,7 +185,11 @@ class ExpandingGeneticProgram(object):
                 # TODO: this step check if the joint-program can be splifiicaiton into the original expresiion
                 # if self.program_backward_check(joint_vars_pr, pr_var1) \
                 #         and self.program_backward_check(joint_vars_pr, pr_var2):
+
                 joint_Pool.extend(joint_vars_progs)
+            if len(joint_Pool) >= self.population_size * 3:
+                print(f"joint pool size is too large: {len(joint_Pool)} >= {self.population_size * 3}")
+                break
 
         return joint_Pool
 
