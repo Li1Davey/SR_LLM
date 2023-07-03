@@ -462,11 +462,6 @@ class Program(object):
         assert 'expr_objs' in self.__dict__
         # fitted objective  <= thereshold (residual is 0.01)
 
-        # the optimized result of negated reward should be smaller than the threshold
-        # if use neg_mse as reward: max{(y-y_pred)^2} < threshold,
-        #     expr_obj_thres = 0.01
-        # if use inv_mse as reward: max{-1/(1+(y-y_pred)^2)} < threshold
-        #     expr_obj_thres = - 0.99
         if np.max(self.expr_objs) <= self.expr_obj_thres:
             print("fitness score: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
             consts_idx = 0
@@ -481,7 +476,9 @@ class Program(object):
                     # residual is within threshold and is not a constant, freeze it.
                     self.allow_change_tokens[pos] = 0
             # compute  num_changing_consts
-            self.num_changing_consts = sum([self.allow_change_tokens[pos] for pos in self.const_pos])
+            for pos in self.const_pos:
+                if self.allow_change_tokens[pos]:
+                    self.num_changing_consts += 1
 
     def get_constants(self):
         """Returns the values of a Program's constants."""

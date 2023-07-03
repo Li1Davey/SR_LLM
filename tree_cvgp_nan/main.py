@@ -27,10 +27,11 @@ config = {
 }
 
 
-def run_tree_based_control_variable_gp(equation_name, metric_name, noise_type, noise_scale):
+def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
+    max_width = max(max_width, nvar)
 
     regress_batchsize = 256
     opt_num_expr = 5
@@ -85,7 +86,7 @@ def run_tree_based_control_variable_gp(equation_name, metric_name, noise_type, n
                                   tour_size, hof_size, n_generations, nvar)
 
     # run GP
-    egp.run_with_tree_based_randomized_variable_ordering()
+    egp.run_with_tree_based_randomized_variable_ordering(maximum_width=max_width)
 
     # print
     print('final hof=')
@@ -96,6 +97,7 @@ def run_tree_based_control_variable_gp(equation_name, metric_name, noise_type, n
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--equation_name", help="the filename of the true program.")
+    parser.add_argument("--maxwidth", type=int, default=6, help="The name of the noises.")
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
@@ -110,4 +112,4 @@ if __name__ == '__main__':
     np.random.seed(seed)
     print('np.random seed=', seed)
 
-    run_tree_based_control_variable_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
+    run_tree_based_control_variable_gp(args.equation_name, args.maxwidth, args.metric_name, args.noise_type, args.noise_scale)

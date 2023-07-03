@@ -66,7 +66,7 @@ class GPHelper(object):
             b_end = b.subtree_end(b_start)
             na_tokens = np.concatenate((a.tokens[:a_start], b.tokens[b_start:b_end], a.tokens[a_end:]))
 
-            na_allow = np.concatenate((a.allow_change_tokens[:a_start], np.ones(b_end-b_start), a.allow_change_tokens[a_end:]))
+            na_allow = np.concatenate((a.allow_change_tokens[:a_start], np.ones(b_end-b_start, dtype=np.int32), a.allow_change_tokens[a_end:]))
 
             new_pr = Program(na_tokens, na_allow)
             new_pr.remove_r_evaluate()
@@ -88,7 +88,7 @@ class GPHelper(object):
 
             nb_tokens = np.concatenate((b.tokens[:b_start], a.tokens[a_start:a_end], b.tokens[b_end:]))
 
-            nb_allow = np.concatenate((b.allow_change_tokens[:b_start], np.ones(a_end-a_start), b.allow_change_tokens[b_end:]))
+            nb_allow = np.concatenate((b.allow_change_tokens[:b_start], np.ones(a_end-a_start, dtype=np.int32), b.allow_change_tokens[b_end:]))
             # temp_prog = copy.copy(b)
             new_pr = Program(nb_tokens, nb_allow)
 

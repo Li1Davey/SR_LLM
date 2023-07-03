@@ -86,9 +86,12 @@ class ExpandingGeneticProgram(object):
             print('-' * 50)
 
         # 2. apply GP for every single POOL
-        all_the_pool_idxes = list(self.populations.keys())
-        while len(all_the_pool_idxes) > 0:
-            for pool_idx in all_the_pool_idxes:
+        current_pools_idxes = list(self.populations.keys())
+        all_pool_idxes = [set() for i in range(self.nvar)]
+
+        while len(current_pools_idxes) > 0:
+            for pool_idx in current_pools_idxes:
+                all_pool_idxes[len(pool_idx)].add(pool_idx)
                 # 2.1 set the free variables and controlled variables for the given POOL
                 self._set_allowed_input_tokens(pool_idx)
                 for pr in self.populations[pool_idx]:
@@ -140,14 +143,13 @@ class ExpandingGeneticProgram(object):
 
             new_pool_idxes = []
             # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
-            np.random.shuffle(all_the_pool_idxes)
-            if len(all_the_pool_idxes) < 2:
-                all_the_pool_idxes = new_pool_idxes
+            np.random.shuffle(current_pools_idxes)
+            if len(current_pools_idxes) < 2:
+                current_pools_idxes = new_pool_idxes
                 continue
-            print("all the pools", all_the_pool_idxes)
-            for i in range(0, len(all_the_pool_idxes), 2):
-
-                one_pool_idx, another_pool_idx = all_the_pool_idxes[i], all_the_pool_idxes[i + 1]
+            print("all the pools", current_pools_idxes)
+            for i in range(0, len(current_pools_idxes), 2):
+                one_pool_idx, another_pool_idx = current_pools_idxes[i], current_pools_idxes[i + 1]
                 print(one_pool_idx, another_pool_idx)
                 new_pool_idx = one_pool_idx + another_pool_idx
                 new_pool_idx = tuple(sorted(new_pool_idx))
@@ -161,7 +163,7 @@ class ExpandingGeneticProgram(object):
                 self.hofs[new_pool_idx] = one_joint_pool
                 new_pool_idxes.append(new_pool_idx)
 
-            all_the_pool_idxes = new_pool_idxes
+            current_pools_idxes = new_pool_idxes
 
     def merge_two_pools(self, one_pool_idx, another_pool_idx, pool_limit=5000):
         """
@@ -225,7 +227,7 @@ class ExpandingGeneticProgram(object):
             print("")
 
         # Replace the current population by the offspring
-        self.populations[pool_idx] = offspring + self.hofs[pool_idx] #+ self.populations[pool_idx]
+        self.populations[pool_idx] = offspring + self.hofs[pool_idx]  # + self.populations[pool_idx]
 
         # Update hall of fame
         self.update_hof(pool_idx)
