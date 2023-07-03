@@ -1,5 +1,4 @@
 import numpy as np
-import copy
 from program import Program
 
 class GPHelper(object):
@@ -48,34 +47,34 @@ class GPHelper(object):
 
     def mate_joint_variables_program(self, a, b, K=4):
         """
-        apply several steps to combine two expression randomly to obtain a parent expression that could contain two variables, or still single variables.
+        apply several steps to combine two expression randomly to obtain a parent expression that could contain two variables,
+        or still single variables.
         a,b: two programs.
         """
         list_of_new_programs = []
         #### create new prog from a
-        a_allowed = a.const_pos
+        a_allowed = a.allow_change_constant_pos()
         b_allowed = b.all_tokens_pos()
         if len(a_allowed) == 0 or len(b_allowed) == 0:
             return []
+
         for k in range(K):
-            # pick a leave node containing constant
+            # pick a leave node containing constant from a, replace it with a sub-tree from b
             a_start = np.random.choice(a_allowed)
             a_end = a.subtree_end(a_start)
-            # pick a subtree in b
             b_start = np.random.choice(b_allowed)
             b_end = b.subtree_end(b_start)
             na_tokens = np.concatenate((a.tokens[:a_start], b.tokens[b_start:b_end], a.tokens[a_end:]))
 
-            na_allow = np.concatenate(
-                (a.allow_change_tokens[:a_start], b.allow_change_tokens[b_start:b_end], a.allow_change_tokens[a_end:]))
-            # temp_prog = copy.deepcopy(a)
+            na_allow = np.concatenate((a.allow_change_tokens[:a_start], np.ones(b_end-b_start), a.allow_change_tokens[a_end:]))
+
             new_pr = Program(na_tokens, na_allow)
             new_pr.remove_r_evaluate()
             list_of_new_programs.append(new_pr)
 
         #### create new prog from b
         a_allowed = a.all_tokens_pos()
-        b_allowed = b.const_pos
+        b_allowed = b.allow_change_constant_pos()
         if len(a_allowed) == 0 or len(b_allowed) == 0:
             return list_of_new_programs
 
@@ -89,8 +88,7 @@ class GPHelper(object):
 
             nb_tokens = np.concatenate((b.tokens[:b_start], a.tokens[a_start:a_end], b.tokens[b_end:]))
 
-            nb_allow = np.concatenate(
-                (b.allow_change_tokens[:b_start], a.allow_change_tokens[a_start:a_end], b.allow_change_tokens[b_end:]))
+            nb_allow = np.concatenate((b.allow_change_tokens[:b_start], np.ones(a_end-a_start), b.allow_change_tokens[b_end:]))
             # temp_prog = copy.copy(b)
             new_pr = Program(nb_tokens, nb_allow)
 
@@ -253,3 +251,11 @@ class GPHelper(object):
                                        p.allow_change_tokens[a_end:]))
             p.__init__(np_tokens, np_allow)
             p.remove_r_evaluate()
+
+
+def program_simplify(p):
+    """given the preorder traversal of the progarm, simpify the program.
+    (add/sub/mul/div, c1, c2) -> c1
+    (exp/log/sin/cos/inv c1) -> c1
+    """
+    return None

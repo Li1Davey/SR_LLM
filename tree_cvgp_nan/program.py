@@ -4,6 +4,7 @@ import array
 import warnings
 
 import numpy as np
+
 np.set_printoptions(precision=4, linewidth=np.inf)
 
 from sympy.parsing.sympy_parser import parse_expr
@@ -15,10 +16,6 @@ from functions import PlaceholderConstant
 from const import make_const_optimizer
 from utils import cached_property
 import utils as U
-
-
-
-
 
 
 def _finish_tokens(tokens):
@@ -234,7 +231,7 @@ class Program(object):
 
     opt_num_expr = 32  # number of experiments done for optimization
 
-    expr_obj_thres = 1e-2
+    expr_obj_thres = 1e-2  # expression objective threshold
     expr_consts_thres = 1e-3
 
     # Cython-related static variables
@@ -321,30 +318,14 @@ class Program(object):
 
         return state_dict
 
-    def __setstate__(self, state_dict):
 
-        # Question, do we need to init everything when we have already run, or just some things?
-        self._init(state_dict['tokens'], state_dict['allow_change_tokens'])
-
-        have_run = False
-
-        if state_dict['have_r']:
-            setattr(self, 'r', state_dict['r'])
-            have_run = True
-
-        if state_dict['have_evaluate']:
-            setattr(self, 'evaluate', state_dict['evaluate'])
-            have_run = True
-
-        if have_run:
-            self.set_constants(state_dict['const'].tolist())
-            self.invalid = state_dict['invalid']
-            self.error_node = state_dict['error_node'].tounicode()
-            self.error_type = state_dict['error_type'].tounicode()
 
     def allow_change_pos(self):
         # the place the token can be changed
         return [i for i, t in enumerate(self.allow_change_tokens) if t == 1]
+
+    def allow_change_constant_pos(self):
+        return [pos for i, pos in enumerate(self.const_pos) if self.allow_change_tokens[pos]]
 
     def all_tokens_pos(self):
         # the place the token can be changed
@@ -481,34 +462,26 @@ class Program(object):
         assert 'expr_objs' in self.__dict__
         # fitted objective  <= thereshold (residual is 0.01)
 
-        print("np.max(self.expr_objs) <= self.expr_obj_thres: {} {} {}".format(
-            np.max(self.expr_objs) <= self.expr_obj_thres,
-            self.expr_objs, self.expr_obj_thres)
-        )
         # the optimized result of negated reward should be smaller than the threshold
         # if use neg_mse as reward: max{(y-y_pred)^2} < threshold,
         #     expr_obj_thres = 0.01
         # if use inv_mse as reward: max{-1/(1+(y-y_pred)^2)} < threshold
         #     expr_obj_thres = - 0.99
         if np.max(self.expr_objs) <= self.expr_obj_thres:
-            consts_tp = 0
+            print("fitness score: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
+            consts_idx = 0
             for pos, t in enumerate(self.traversal):
                 # if t is a constant
                 if isinstance(t, PlaceholderConstant):
-                    if self.allow_change_tokens[pos] and np.std(self.expr_consts[consts_tp]) <= self.expr_consts_thres:
-                        # std of x. 
-                        # freeze it.
-                        # the last step is allow to change (everything) x1 to x5 and every part of equation.
-                        #
+                    print("constant std: {}, threshold {}".format(np.std(self.expr_consts[:, consts_idx]), self.expr_consts_thres))
+                    if self.allow_change_tokens[pos] and np.std(self.expr_consts[:, consts_idx]) <= self.expr_consts_thres:
                         self.allow_change_tokens[pos] = 0
+                    consts_idx += 1
                 else:
                     # residual is within threshold and is not a constant, freeze it.
                     self.allow_change_tokens[pos] = 0
-
-            self.num_changing_consts = 0  # compute  num_changing_consts
-            for pos in self.const_pos:
-                if self.allow_change_tokens[pos]:
-                    self.num_changing_consts += 1
+            # compute  num_changing_consts
+            self.num_changing_consts = sum([self.allow_change_tokens[pos] for pos in self.const_pos])
 
     def get_constants(self):
         """Returns the values of a Program's constants."""

@@ -33,20 +33,20 @@ def run_tree_based_control_variable_gp(equation_name, metric_name, noise_type, n
     nvar = data_query_oracle.get_nvars()
 
     regress_batchsize = 256
-    opt_num_expr = 2
+    opt_num_expr = 5
 
     expr_obj_thres = data_query_oracle.expr_obj_thres
     expr_consts_thres = config[metric_name]['expr_consts_thres']
 
     # gp hyper parameters
-    cxpb = 0.8
-    mutpb = 0.8
+    cxpb = 0.5
+    mutpb = 0.5
     maxdepth = 2
     tour_size = 3
-    hof_size = 50  # 0
+    hof_size = 20  # 0
 
-    population_size = 200  # 0  # 0
-    n_generations = 10
+    population_size = 100
+    n_generations = 20
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)

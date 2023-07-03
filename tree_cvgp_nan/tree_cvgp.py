@@ -90,7 +90,6 @@ class ExpandingGeneticProgram(object):
         while len(all_the_pool_idxes) > 0:
             for pool_idx in all_the_pool_idxes:
                 # 2.1 set the free variables and controlled variables for the given POOL
-                # TODO: library, task set_allowed_input_tokens, disable the previous allowed input.
                 self._set_allowed_input_tokens(pool_idx)
                 for pr in self.populations[pool_idx]:
                     pr.remove_r_evaluate()
@@ -111,9 +110,12 @@ class ExpandingGeneticProgram(object):
                     self.one_generation(pool_idx)
 
                 self.update_population(pool_idx)
-
+                print(f'populations {pool_idx}')
+                print_prs(self.populations[pool_idx])
+                print("")
+                # 2.4 freeze tokens in the expressions
                 for i, pr in enumerate(self.populations[pool_idx]):
-                    print('{}-th in population POOL {}'.format(i, pool_idx))
+                    # print('{}-th in population POOL {}'.format(i, pool_idx))
                     # evaluate r again, just incase it has not been evaluated.
                     this_r = pr.r
                     if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
@@ -131,15 +133,10 @@ class ExpandingGeneticProgram(object):
                     pr.freeze_equation()
                     pr.remove_r_evaluate()
 
-                    print('\tpr=', pr.__getstate__())
-                    pr.print_expression()
-
                 for i, pr in enumerate(self.hofs[pool_idx]):
-                    print('{}-th in self.hof {}'.format(i, pool_idx))
+                    # print('{}-th in self.hof {}'.format(i, pool_idx))
                     # evaluate r again, just incase it has not been evaluated.
                     pr.remove_r_evaluate()
-                    print('\tpr=', pr.__getstate__())
-                    pr.print_expression()
 
             new_pool_idxes = []
             # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
@@ -149,16 +146,15 @@ class ExpandingGeneticProgram(object):
                 continue
             print("all the pools", all_the_pool_idxes)
             for i in range(0, len(all_the_pool_idxes), 2):
-                # print(i)
+
                 one_pool_idx, another_pool_idx = all_the_pool_idxes[i], all_the_pool_idxes[i + 1]
                 print(one_pool_idx, another_pool_idx)
                 new_pool_idx = one_pool_idx + another_pool_idx
-                sorted(new_pool_idx)
+                new_pool_idx = tuple(sorted(new_pool_idx))
                 if new_pool_idx in new_pool_idxes:
                     print("new_pool_idx {} already in new_pool_idxes {}".format(new_pool_idx, new_pool_idxes))
                     continue
                 self._set_allowed_input_tokens(new_pool_idx)
-
                 one_joint_pool = self.merge_two_pools(one_pool_idx, another_pool_idx)
 
                 self.populations[new_pool_idx] = one_joint_pool
@@ -167,30 +163,20 @@ class ExpandingGeneticProgram(object):
 
             all_the_pool_idxes = new_pool_idxes
 
-    def merge_two_pools(self, one_pool_idx, another_pool_idx):
+    def merge_two_pools(self, one_pool_idx, another_pool_idx, pool_limit=5000):
         """
-        TODO set allowed input tokens.
         Given two pools of equations, pick two equations from two pools and apply m
         """
         joint_Pool = []
-        for pr_var1 in self.populations[one_pool_idx]:
-            for pr_var2 in self.populations[another_pool_idx]:
-                # if np.random.random() < self.cxpb:
-                # TODO: multi-mutate:
-                # TODO: have a foor loop that joint_vars_pr has multiple expressions.
-                # Want to know the value of placeholder constant.
-                # check the simplifications
-                # run the optimize to get the constant value
-                joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
-                # TODO: this step check if the joint-program can be splifiicaiton into the original expresiion
-                # if self.program_backward_check(joint_vars_pr, pr_var1) \
-                #         and self.program_backward_check(joint_vars_pr, pr_var2):
-
+        for i, pr_var1 in enumerate(self.populations[one_pool_idx][:self.population_size // 4]):
+            for j, pr_var2 in enumerate(self.populations[another_pool_idx][:self.population_size // 4]):
+                joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2, K=10)
                 joint_Pool.extend(joint_vars_progs)
-            if len(joint_Pool) >= self.population_size * 3:
-                print(f"joint pool size is too large: {len(joint_Pool)} >= {self.population_size * 3}")
-                break
-
+        joint_Pool.extend(self.populations[one_pool_idx][:self.population_size // 4])
+        joint_Pool.extend(self.populations[another_pool_idx][:self.population_size // 4])
+        if len(joint_Pool) > pool_limit:
+            np.random.shuffle(joint_Pool)
+            return joint_Pool[:pool_limit]
         return joint_Pool
 
     def program_backward_check(self, joint_vars_pr, single_var_pr):
@@ -213,7 +199,7 @@ class ExpandingGeneticProgram(object):
         else:
             return False
 
-    def one_generation(self, pool_idx):
+    def one_generation(self, pool_idx, verbose=False):
         """
         One step of the genetic algorithm.
         This wraps selection, mutation, crossover and hall of fame computation
@@ -226,25 +212,26 @@ class ExpandingGeneticProgram(object):
 
         # Select the next generation individuals
         offspring = self.selectTournament(self.population_size, self.tour_size, pool_idx)
-
-        print('offspring after select=')
-        print_prs(offspring)
-        print("")
+        if verbose:
+            print('offspring after select=')
+            print_prs(offspring)
+            print("")
 
         # Vary the pool of individuals
         offspring = self._var_and(offspring)
-
-        print('offspring after _var_and=')
-        print_prs(offspring)
-        print("")
+        if verbose:
+            print('offspring after _var_and=')
+            print_prs(offspring)
+            print("")
 
         # Replace the current population by the offspring
-        self.populations[pool_idx] = offspring + self.hofs[pool_idx] + self.populations[pool_idx]
+        self.populations[pool_idx] = offspring + self.hofs[pool_idx] #+ self.populations[pool_idx]
 
         # Update hall of fame
         self.update_hof(pool_idx)
-        print("after update hof after sorted=")
-        print_prs(self.hofs[pool_idx])
+        if verbose:
+            print("after update hof after sorted=")
+            print_prs(self.hofs[pool_idx])
         timer = time.perf_counter() - t1
 
         self.timer_log.append(timer)
@@ -264,7 +251,7 @@ class ExpandingGeneticProgram(object):
             self.hofs[pool_idx].append(pr.clone())
 
     def update_population(self, pool_idx):
-        """update the population in the given indexed pool"""
+        """update the population in the given indexed pool. sort by fitness score and cut by population_size"""
         filtered_population = []
         for pr in self.populations[pool_idx]:
             if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
