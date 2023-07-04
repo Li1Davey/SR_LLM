@@ -468,10 +468,18 @@ class Program(object):
             for pos, t in enumerate(self.traversal):
                 # if t is a constant
                 if isinstance(t, PlaceholderConstant):
-                    print("constant std: {}, threshold {}".format(np.std(self.expr_consts[:, consts_idx]), self.expr_consts_thres))
-                    if self.allow_change_tokens[pos] and np.std(self.expr_consts[:, consts_idx]) <= self.expr_consts_thres:
-                        self.allow_change_tokens[pos] = 0
-                    consts_idx += 1
+                    try:
+                        print("constant std: {}, threshold {}".format(np.std(self.expr_consts[:, consts_idx]), self.expr_consts_thres))
+                        if self.allow_change_tokens[pos] and np.std(self.expr_consts[:, consts_idx]) <= self.expr_consts_thres:
+                            self.allow_change_tokens[pos] = 0
+                        consts_idx += 1
+                    except IndexError:
+                        print(consts_idx)
+                        print('-'*20)
+                        print(self.expr_consts.shape)
+                        print('-' * 20)
+                        print(self.tokens)
+                        print('-' * 20)
                 else:
                     # residual is within threshold and is not a constant, freeze it.
                     self.allow_change_tokens[pos] = 0

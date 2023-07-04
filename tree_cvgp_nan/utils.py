@@ -9,6 +9,77 @@ import importlib
 import re
 import os
 import pandas as pd
+import itertools
+
+
+def unique(arr):
+    return list(set(arr))
+
+
+class Tree(object):
+    """
+    this data structure maintain different variable ordering as a tree.
+    """
+
+    def __init__(self, nvar, max_width=6):
+        self.layers = nvar + 1
+        self.maxwidth_pool_idxes = [[] for i in range(nvar + 1)]
+        self.max_width = max_width
+
+    def add_node(self, one_node):
+        if one_node in self.maxwidth_pool_idxes[len(one_node.cur)]:
+            print("new_pool_idx {} already discovered {}".format(one_node.cur, self.maxwidth_pool_idxes[len(one_node.cur)]))
+            return False
+
+        if len(self.maxwidth_pool_idxes[len(one_node.cur)]) > self.max_width:
+            print(f"{len(one_node.cur)}, {self.maxwidth_pool_idxes[len(one_node.cur)]}")
+            return False
+
+        self.maxwidth_pool_idxes[len(one_node.cur)].append(one_node)
+        return True
+
+    def combine_with_historial_pool_idxes(self, current_pool_idxes):
+        historical_pools_idxes = []
+        for i in range(self.layers):
+            for node in self.maxwidth_pool_idxes[i]:
+                if node.cur not in historical_pools_idxes:
+                    historical_pools_idxes.append(node.cur)
+        to_be_merged_pool_pairs = []
+        if len(historical_pools_idxes) != 0:
+            for one_pool_idx, another_pool_idx in itertools.product(current_pool_idxes, historical_pools_idxes):
+                to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
+        return to_be_merged_pool_pairs
+
+
+# this node is used for keep track of variable ordering
+class Node(object):
+    def __init__(self, l: tuple = None, r: tuple = None, cur: tuple = None):
+        # l:left parent pool idx. It is a tuple or None, r right parent pool idx
+        self.l = l
+        self.r = r
+        if cur == None:
+            new_pool_idx = self.l + self.r
+            self.cur = tuple(unique(sorted(new_pool_idx)))
+        else:
+            self.cur = cur
+
+    def __eq__(self, other):
+        if (self.l == other.l and self.r == other.r) or (self.l == other.r and self.r == other.l):
+            return True
+        return False
+
+    def __repr__(self):
+        return f"{self.l},{self.r}->{self.cur}"
+
+    def __hash__(self):
+        return hash(f"{self.l},{self.r}->{self.cur}")
+
+
+def create_node(one_pool_idx, another_pool_idx):
+    new_pool_idx = one_pool_idx + another_pool_idx
+    new_pool_idx = tuple(unique(sorted(new_pool_idx)))
+    return Node(one_pool_idx, another_pool_idx, new_pool_idx)
+
 
 def create_geometric_generations(n_generations, nvar):
     gens = [0] * nvar
@@ -65,12 +136,12 @@ def is_pareto_efficient(costs):
     is_efficient = np.arange(costs.shape[0])
     n_points = costs.shape[0]
     next_point_index = 0  # Next index in the is_efficient array to search for
-    while next_point_index<len(costs):
-        nondominated_point_mask = np.any(costs<costs[next_point_index], axis=1)
+    while next_point_index < len(costs):
+        nondominated_point_mask = np.any(costs < costs[next_point_index], axis=1)
         nondominated_point_mask[next_point_index] = True
         is_efficient = is_efficient[nondominated_point_mask]  # Remove dominated points
         costs = costs[nondominated_point_mask]
-        next_point_index = np.sum(nondominated_point_mask[:next_point_index])+1
+        next_point_index = np.sum(nondominated_point_mask[:next_point_index]) + 1
     is_efficient_mask = np.zeros(n_points, dtype=bool)
     is_efficient_mask[is_efficient] = True
     return is_efficient_mask
@@ -126,13 +197,12 @@ def weighted_quantile(values, weights, q):
 
 # Entropy computation in batch
 def empirical_entropy(labels):
-
     n_labels = len(labels)
 
     if n_labels <= 1:
         return 0
 
-    value,counts = np.unique(labels, return_counts=True)
+    value, counts = np.unique(labels, return_counts=True)
     probs = counts / n_labels
     n_classes = np.count_nonzero(probs)
 
@@ -231,10 +301,10 @@ def import_custom_source(import_source):
     """
 
     # Partially validates if the import_source is in correct format
-    regex = '[\w._]+:[\w._]+' #lib_name:class_name
+    regex = '[\w._]+:[\w._]+'  # lib_name:class_name
     m = re.match(pattern=regex, string=import_source)
     # Partial matches mean that the import will fail
-    assert m is not None and m.end() == len(import_source), "*** Failed to import malformed source string: "+import_source
+    assert m is not None and m.end() == len(import_source), "*** Failed to import malformed source string: " + import_source
 
     source, type = import_source.split(':')
 
