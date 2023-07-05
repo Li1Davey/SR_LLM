@@ -27,27 +27,33 @@ class Tree(object):
         self.max_width = max_width
 
     def add_node(self, one_node):
+        if one_node == None:
+            return False
         if one_node in self.maxwidth_pool_idxes[len(one_node.cur)]:
-            print("new_pool_idx {} already discovered {}".format(one_node.cur, self.maxwidth_pool_idxes[len(one_node.cur)]))
+            print("new_pool_idx {} already discovered {}".format(one_node, self.maxwidth_pool_idxes[len(one_node.cur)]))
             return False
 
         if len(self.maxwidth_pool_idxes[len(one_node.cur)]) > self.max_width:
-            print(f"{len(one_node.cur)}, {self.maxwidth_pool_idxes[len(one_node.cur)]}")
+            print(f"maxwidth reaached {len(one_node.cur)}-layer {len(self.maxwidth_pool_idxes[len(one_node.cur)])}")
             return False
 
         self.maxwidth_pool_idxes[len(one_node.cur)].append(one_node)
         return True
 
     def combine_with_historial_pool_idxes(self, current_pool_idxes):
+        visited = set()
         historical_pools_idxes = []
         for i in range(self.layers):
             for node in self.maxwidth_pool_idxes[i]:
-                if node.cur not in historical_pools_idxes:
-                    historical_pools_idxes.append(node.cur)
+                if node.cur not in visited:
+                    historical_pools_idxes.append(node)
+                    visited.add(node.cur)
         to_be_merged_pool_pairs = []
         if len(historical_pools_idxes) != 0:
             for one_pool_idx, another_pool_idx in itertools.product(current_pool_idxes, historical_pools_idxes):
                 to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
+        for one_pool_idx, another_pool_idx in itertools.combinations(current_pool_idxes, r=2):
+            to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
         return to_be_merged_pool_pairs
 
 
@@ -64,7 +70,9 @@ class Node(object):
             self.cur = cur
 
     def __eq__(self, other):
-        if (self.l == other.l and self.r == other.r) or (self.l == other.r and self.r == other.l):
+        if other == None:
+            return False
+        if (self.l == other.l and self.r == other.r and self.cur== other.cur) or (self.l == other.r and self.r == other.l and self.cur == other.cur):
             return True
         return False
 
@@ -76,9 +84,13 @@ class Node(object):
 
 
 def create_node(one_pool_idx, another_pool_idx):
-    new_pool_idx = one_pool_idx + another_pool_idx
+    if one_pool_idx == another_pool_idx:
+        return None
+    new_pool_idx = one_pool_idx.cur + another_pool_idx.cur
     new_pool_idx = tuple(unique(sorted(new_pool_idx)))
-    return Node(one_pool_idx, another_pool_idx, new_pool_idx)
+    if new_pool_idx == one_pool_idx.cur or new_pool_idx == another_pool_idx.cur:
+        return None
+    return Node(one_pool_idx.cur, another_pool_idx.cur, new_pool_idx)
 
 
 def create_geometric_generations(n_generations, nvar):

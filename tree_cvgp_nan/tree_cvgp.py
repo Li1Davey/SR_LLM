@@ -59,7 +59,6 @@ class ExpandingGeneticProgram(object):
         for vari in range(self.nvar):
 
             tmp_node = Node(l=-1, r=-1, cur=(vari,))
-            self.variable_ordering_tree.add_node(tmp_node)
             self._set_allowed_input_tokens(tmp_node.cur)
             current_node_lists.append(tmp_node)
             for i, t in enumerate(self.library.tokens):
@@ -71,7 +70,6 @@ class ExpandingGeneticProgram(object):
                             t_idx = np.random.choice(self.library.tokens_of_arity[0])
                         tree.append(t_idx)
                     tree = np.array(tree)
-
                     pr = Program(tree, np.ones(tree.size, dtype=np.int32))
                     if tmp_node not in self.populations:
                         self.populations[tmp_node] = []
@@ -154,10 +152,9 @@ class ExpandingGeneticProgram(object):
             print("all the pools", current_node_lists)
             ## 3. generate a lot of different pairs of pools that can be merged
             to_be_merged_pool_pairs = self.variable_ordering_tree.combine_with_historial_pool_idxes(current_node_lists)
-            for one_pool_idx, another_pool_idx in itertools.combinations(current_node_lists, r=2):
-                to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
-
             np.random.shuffle(to_be_merged_pool_pairs)
+            for tmp_node in current_node_lists:
+                self.variable_ordering_tree.add_node(tmp_node)
             new_pool_idxes = []
             for one_pool_idx, another_pool_idx in to_be_merged_pool_pairs:
                 tmp_node = create_node(one_pool_idx, another_pool_idx)
@@ -318,7 +315,7 @@ class ExpandingGeneticProgram(object):
         selected_vars = None
         print(self.hofs.keys())
         for key in self.hofs:
-            if len(key) == self.nvar:
+            if len(key.cur) == self.nvar:
                 selected_vars = key
         print(f"vars={selected_vars}")
         if selected_vars in self.hofs:
