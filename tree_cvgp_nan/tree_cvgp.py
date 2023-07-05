@@ -60,6 +60,7 @@ class ExpandingGeneticProgram(object):
 
             tmp_node = Node(l=-1, r=-1, cur=(vari,))
             self._set_allowed_input_tokens(tmp_node.cur)
+            self.variable_ordering_tree.add_node(tmp_node)
             current_node_lists.append(tmp_node)
             for i, t in enumerate(self.library.tokens):
                 if self.library.allowed_tokens[i]:
@@ -97,6 +98,7 @@ class ExpandingGeneticProgram(object):
                 print(cur_node)
                 # 2.1 set the free variables and controlled variables for the given POOL
                 self._set_allowed_input_tokens(cur_node.cur)
+
                 for pr in self.populations[cur_node]:
                     pr.remove_r_evaluate()
                 for pr in self.hofs[cur_node]:
@@ -151,10 +153,8 @@ class ExpandingGeneticProgram(object):
                 continue
             print("all the pools", current_node_lists)
             ## 3. generate a lot of different pairs of pools that can be merged
-            to_be_merged_pool_pairs = self.variable_ordering_tree.combine_with_historial_pool_idxes(current_node_lists)
+            to_be_merged_pool_pairs = self.variable_ordering_tree.combine_with_historial_pool_idxes()
             np.random.shuffle(to_be_merged_pool_pairs)
-            for tmp_node in current_node_lists:
-                self.variable_ordering_tree.add_node(tmp_node)
             new_pool_idxes = []
             for one_pool_idx, another_pool_idx in to_be_merged_pool_pairs:
                 tmp_node = create_node(one_pool_idx, another_pool_idx)
@@ -168,16 +168,17 @@ class ExpandingGeneticProgram(object):
                 self.populations[tmp_node] = one_joint_pool
                 self.hofs[tmp_node] = one_joint_pool
                 new_pool_idxes.append(tmp_node)
-
+            # print("next round will be")
             current_node_lists = new_pool_idxes
 
-    def merge_two_pools(self, one_pool_idx, another_pool_idx, pool_limit=5000):
+    def merge_two_pools(self, one_pool_idx, another_pool_idx, pool_limit=1000):
         """
         Given two pools of equations, pick two equations from two pools and apply m
         """
         joint_Pool = []
-        for i, pr_var1 in enumerate(self.populations[one_pool_idx][:self.population_size // 4]):
-            for j, pr_var2 in enumerate(self.populations[another_pool_idx][:self.population_size // 4]):
+        sqrt_pool_size = max(int(np.sqrt(self.population_size // 4)),5)
+        for pr_var1 in self.populations[one_pool_idx][:sqrt_pool_size]:
+            for pr_var2 in self.populations[another_pool_idx][:sqrt_pool_size]:
                 joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2, K=10)
                 joint_Pool.extend(joint_vars_progs)
         joint_Pool.extend(self.populations[one_pool_idx][:self.population_size // 4])
@@ -233,7 +234,7 @@ class ExpandingGeneticProgram(object):
             print("")
 
         # Replace the current population by the offspring
-        self.populations[pool_idx] = offspring + self.hofs[pool_idx]  # + self.populations[pool_idx]
+        self.populations[pool_idx] = offspring + self.hofs[pool_idx]
 
         # Update hall of fame
         self.update_hof(pool_idx)

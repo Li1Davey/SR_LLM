@@ -40,7 +40,7 @@ class Tree(object):
         self.maxwidth_pool_idxes[len(one_node.cur)].append(one_node)
         return True
 
-    def combine_with_historial_pool_idxes(self, current_pool_idxes):
+    def combine_with_historial_pool_idxes(self):
         visited = set()
         historical_pools_idxes = []
         for i in range(self.layers):
@@ -50,10 +50,8 @@ class Tree(object):
                     visited.add(node.cur)
         to_be_merged_pool_pairs = []
         if len(historical_pools_idxes) != 0:
-            for one_pool_idx, another_pool_idx in itertools.product(current_pool_idxes, historical_pools_idxes):
+            for one_pool_idx, another_pool_idx in itertools.combinations(historical_pools_idxes, r=2):
                 to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
-        for one_pool_idx, another_pool_idx in itertools.combinations(current_pool_idxes, r=2):
-            to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
         return to_be_merged_pool_pairs
 
 

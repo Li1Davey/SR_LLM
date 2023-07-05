@@ -325,6 +325,7 @@ class Program(object):
         return [i for i, t in enumerate(self.allow_change_tokens) if t == 1]
 
     def allow_change_constant_pos(self):
+        """ return the index of 'summary constants' """
         return [pos for i, pos in enumerate(self.const_pos) if self.allow_change_tokens[pos]]
 
     def all_tokens_pos(self):
