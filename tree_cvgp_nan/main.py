@@ -44,9 +44,9 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     mutpb = 0.5
     maxdepth = 2
     tour_size = 3
-    hof_size = 10  # 0
+    hof_size = 20  # 0
 
-    population_size = 50
+    population_size = 100
     n_generations = 15
 
     # get all the functions and variables ready
