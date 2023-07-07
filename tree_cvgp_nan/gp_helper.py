@@ -1,6 +1,7 @@
 import numpy as np
 from program import Program
 
+
 class GPHelper(object):
     """
     Function class for genetic programming.
@@ -66,7 +67,8 @@ class GPHelper(object):
             b_end = b.subtree_end(b_start)
             na_tokens = np.concatenate((a.tokens[:a_start], b.tokens[b_start:b_end], a.tokens[a_end:]))
 
-            na_allow = np.concatenate((a.allow_change_tokens[:a_start], np.ones(b_end-b_start, dtype=np.int32), a.allow_change_tokens[a_end:]))
+            na_allow = np.concatenate(
+                (a.allow_change_tokens[:a_start], np.ones(b_end - b_start, dtype=np.int32), a.allow_change_tokens[a_end:]))
 
             new_pr = Program(na_tokens, na_allow)
             new_pr.remove_r_evaluate()
@@ -88,7 +90,8 @@ class GPHelper(object):
 
             nb_tokens = np.concatenate((b.tokens[:b_start], a.tokens[a_start:a_end], b.tokens[b_end:]))
 
-            nb_allow = np.concatenate((b.allow_change_tokens[:b_start], np.ones(a_end-a_start, dtype=np.int32), b.allow_change_tokens[b_end:]))
+            nb_allow = np.concatenate(
+                (b.allow_change_tokens[:b_start], np.ones(a_end - a_start, dtype=np.int32), b.allow_change_tokens[b_end:]))
             # temp_prog = copy.copy(b)
             new_pr = Program(nb_tokens, nb_allow)
 
@@ -102,13 +105,11 @@ class GPHelper(object):
             generate a full program tree recursively (represented in token indicies in library)
         """
         if maxdepth == 1:
-
             # more efficient implementation
             allowed_pos = [t for t in self.library.tokens_of_arity[0] if self.library.allowed_tokens[t] > 0]
             t_idx = np.random.choice(allowed_pos)
             return [t_idx]
         else:
-
             # more efficient implementation
             allowed_pos = self.library.allowed_tokens_pos()
             t_idx = np.random.choice(allowed_pos)
@@ -121,7 +122,6 @@ class GPHelper(object):
 
     def multi_mutate(self, individual, maxdepth):
         """Randomly select one of four types of mutation."""
-
         v = np.random.randint(0, 5)
 
         if v == 0:
@@ -155,7 +155,9 @@ class GPHelper(object):
         p.remove_r_evaluate()
 
     def mutNodeReplacement(self, p):
-        """  find a node and replace it with a node of the same arity """
+        """
+        find a node and replace it with a node of the same arity.
+        """
         allowed_pos = p.allow_change_pos()
         if len(allowed_pos) == 0:
             return
@@ -251,11 +253,3 @@ class GPHelper(object):
                                        p.allow_change_tokens[a_end:]))
             p.__init__(np_tokens, np_allow)
             p.remove_r_evaluate()
-
-
-def program_simplify(p):
-    """given the preorder traversal of the progarm, simpify the program.
-    (add/sub/mul/div, c1, c2) -> c1
-    (exp/log/sin/cos/inv c1) -> c1
-    """
-    return None

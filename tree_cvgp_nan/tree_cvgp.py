@@ -10,8 +10,6 @@ class ExpandingGeneticProgram(object):
     """
     populations: the current list of programs
     hofs: list of the best programs
-    timer_log: list of times
-    gen_num: number of generations, starting from 0.
     """
 
     # static variables
@@ -20,8 +18,6 @@ class ExpandingGeneticProgram(object):
 
     def __init__(self, cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations, nvar):
         """
-        Parameters
-        ----------
         cxpb: probability of mate
         mutpb: probability of mutations
         maxdepth: the maxdepth of the tree during mutation
@@ -57,7 +53,6 @@ class ExpandingGeneticProgram(object):
         self.hofs = dict()
         current_node_lists = []
         for vari in range(self.nvar):
-
             tmp_node = Node(l=-1, r=-1, cur=(vari,))
             self._set_allowed_input_tokens(tmp_node.cur)
             self.variable_ordering_tree.add_node(tmp_node)
@@ -79,7 +74,6 @@ class ExpandingGeneticProgram(object):
                     if tmp_node not in self.hofs:
                         self.hofs[tmp_node] = []
                     self.hofs[tmp_node].append(new_pr)
-        print("Init done.....")
         return current_node_lists
 
     def run_with_tree_based_randomized_variable_ordering(self, maximum_width=10):
@@ -98,17 +92,13 @@ class ExpandingGeneticProgram(object):
                 print(cur_node)
                 # 2.1 set the free variables and controlled variables for the given POOL
                 self._set_allowed_input_tokens(cur_node.cur)
-
-                for pr in self.populations[cur_node]:
-                    pr.remove_r_evaluate()
-                for pr in self.hofs[cur_node]:
-                    pr.remove_r_evaluate()
-
-                # 2.2 revaluate the constants and reward for the given POOL
+                # 2.2 re-evaluate the constants and reward for the given POOL
                 for pr in self.populations[cur_node]:
                     # a cached property in python (evaluated once) force the function to evaluate a new r
-                    thisr = pr.r  # how good you fit.
+                    pr.remove_r_evaluate()
+                    thisr = pr.r  # goodness-of-fit
                 for pr in self.hofs[cur_node]:
+                    pr.remove_r_evaluate()
                     thisr = pr.r
 
                 self.update_population(cur_node)
@@ -120,34 +110,22 @@ class ExpandingGeneticProgram(object):
                 self.update_population(cur_node)
                 print(f'populations {cur_node}')
                 print_prs(self.populations[cur_node])
-                print("")
+
                 # 2.4 freeze tokens in the expressions
                 for i, pr in enumerate(self.populations[cur_node]):
-                    # print('{}-th in population POOL {}'.format(i, pool_idx))
                     # evaluate r again, just incase it has not been evaluated.
-                    # this_r = pr.r
+                    this_r = pr.r
                     if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
                         # only expand at those constant node. if there are no constant node,then we are done
                         # if we do not want num_changing_consts, then we also quit.
                         print('there are no constant node. we are done...')
                     else:
-                        # if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
-                        #     print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
                         pr.remove_r_evaluate()
                         this_r = pr.r
-                        # print('pr.expr_objs=', pr.expr_objs)
-                        # print('pr.expr_consts=', pr.expr_consts)
                     # whether you get very different value for different constant.
                     pr.freeze_equation()
-                    # pr.remove_r_evaluate()
-
-                # for i, pr in enumerate(self.hofs[pool_idx]):
-                #     # print('{}-th in self.hof {}'.format(i, pool_idx))
-                #     # evaluate r again, just incase it has not been evaluated.
-                #     pr.remove_r_evaluate()
 
             # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
-
             if len(current_node_lists) == 0:
                 current_node_lists = []
                 continue
@@ -159,7 +137,7 @@ class ExpandingGeneticProgram(object):
             for one_pool_idx, another_pool_idx in to_be_merged_pool_pairs:
                 tmp_node = create_node(one_pool_idx, another_pool_idx)
                 is_success = self.variable_ordering_tree.add_node(tmp_node)
-                if is_success == False:
+                if not is_success:
                     continue
                 print(tmp_node)
                 self._set_allowed_input_tokens(tmp_node.cur)
@@ -168,15 +146,14 @@ class ExpandingGeneticProgram(object):
                 self.populations[tmp_node] = one_joint_pool
                 self.hofs[tmp_node] = one_joint_pool
                 new_pool_idxes.append(tmp_node)
-            # print("next round will be")
             current_node_lists = new_pool_idxes
 
-    def merge_two_pools(self, one_pool_idx, another_pool_idx, pool_limit=1000):
+    def merge_two_pools(self, one_pool_idx, another_pool_idx, pool_limit=500):
         """
         Given two pools of equations, pick two equations from two pools and apply m
         """
         joint_Pool = []
-        sqrt_pool_size = max(int(np.sqrt(self.population_size // 4)),5)
+        sqrt_pool_size = max(int(np.sqrt(self.population_size // 4)), 5)
         for pr_var1 in self.populations[one_pool_idx][:sqrt_pool_size]:
             for pr_var2 in self.populations[another_pool_idx][:sqrt_pool_size]:
                 joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2, K=10)
@@ -215,7 +192,7 @@ class ExpandingGeneticProgram(object):
         over all the individuals in the population for this epoch/step.
         Parameters
         ----------
-        iter : int. The current iteration used for logging purposes.
+        pool_idx : int. the set of equations.
         """
         t1 = time.perf_counter()
 
@@ -224,14 +201,12 @@ class ExpandingGeneticProgram(object):
         if verbose:
             print('offspring after select=')
             print_prs(offspring)
-            print("")
 
         # Vary the pool of individuals
         offspring = self._var_and(offspring)
         if verbose:
-            print('offspring after _var_and=')
+            print('offspring after mutation and cross-over=')
             print_prs(offspring)
-            print("")
 
         # Replace the current population by the offspring
         self.populations[pool_idx] = offspring + self.hofs[pool_idx]
@@ -239,12 +214,10 @@ class ExpandingGeneticProgram(object):
         # Update hall of fame
         self.update_hof(pool_idx)
         if verbose:
-            print("after update hof after sorted=")
+            print("after update hof=")
             print_prs(self.hofs[pool_idx])
         timer = time.perf_counter() - t1
-
         self.timer_log.append(timer)
-        self.gen_num += 1
 
     def update_hof(self, pool_idx):
         """update the set of Hall of Fame for the given pool_idx pool"""
@@ -334,3 +307,4 @@ def print_prs(prs):
     for pr in prs:
         print('        ' + str(pr.__getstate__()), end="\t")
         pr.print_expression()
+    print("")

@@ -318,8 +318,6 @@ class Program(object):
 
         return state_dict
 
-
-
     def allow_change_pos(self):
         # the place the token can be changed
         return [i for i, t in enumerate(self.allow_change_tokens) if t == 1]
@@ -416,7 +414,7 @@ class Program(object):
             if Program.noise_std > 0:
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
-                # changt the method from BFGS to Nelder-Mead to improve the precision.
+                # change the method from BFGS to Nelder-Mead to improve the precision.
                 # opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
                 opt_result = minimize(f, x0, method='BFGS')
 
@@ -464,34 +462,23 @@ class Program(object):
         # fitted objective  <= thereshold (residual is 0.01)
 
         if np.max(self.expr_objs) <= self.expr_obj_thres:
-            print("fitness score: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
-            consts_idx = 0
+            print("objective residual: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
+            new_program = program_simplify(self)
+            print(new_program, self.traversal ==new_program)
             for pos, t in enumerate(self.traversal):
-                # if t is a constant
-                if isinstance(t, PlaceholderConstant):
-                    try:
-                        print("constant std: {}, threshold {}".format(np.std(self.expr_consts[:, consts_idx]), self.expr_consts_thres))
-                        if self.allow_change_tokens[pos] and np.std(self.expr_consts[:, consts_idx]) <= self.expr_consts_thres:
-                            self.allow_change_tokens[pos] = 0
-                        consts_idx += 1
-                    except IndexError:
-                        print(consts_idx)
-                        print('-'*20)
-                        print(self.expr_consts.shape)
-                        print('-' * 20)
-                        print(self.tokens)
-                        print('-' * 20)
-                else:
+                if not isinstance(t, PlaceholderConstant):
                     # residual is within threshold and is not a constant, freeze it.
                     self.allow_change_tokens[pos] = 0
-            # compute  num_changing_consts
-            for pos in self.const_pos:
-                if self.allow_change_tokens[pos]:
-                    self.num_changing_consts += 1
+
+            # compute num_changing_consts and set for the constants
+            for i, pos in enumerate(self.const_pos):
+                print("constant std: {}, threshold {}".format(np.std(self.expr_consts[:, i]), self.expr_consts_thres))
+                if np.std(self.expr_consts[:, i]) <= self.expr_consts_thres:
+                    self.allow_change_tokens[pos] = 0
+                self.num_changing_consts += self.allow_change_tokens[pos]
 
     def get_constants(self):
         """Returns the values of a Program's constants."""
-
         return [t.value for t in self.traversal if isinstance(t, PlaceholderConstant)]
 
     def set_constants(self, consts):
@@ -513,20 +500,17 @@ class Program(object):
     @classmethod
     def clear_cache(cls):
         """Clears the class' cache"""
-
         cls.cache = {}
 
     @classmethod
     def set_task(cls, task):
         """Sets the class' Task"""
-
         Program.task = task
         Program.library = task.library
 
     @classmethod
     def set_const_optimizer(cls, name, **kwargs):
         """Sets the class' constant optimizer"""
-
         const_optimizer = make_const_optimizer(name, **kwargs)
         Program.const_optimizer = const_optimizer
 
@@ -682,6 +666,33 @@ class Program(object):
     def __repr__(self):
         """Prints the program's traversal"""
         return ','.join([repr(t) for t in self.traversal])
+
+
+def program_simplify(p):
+    """given the preorder traversal of the program, simplify the program.
+    (add/sub/mul/div, c1, c2) -> c1
+    (exp/log/sin/cos/inv c1) -> c1
+    """
+    flag = True
+    traversal_tokens = p.traversal
+    # traversal_allows = p.allow_change_tokens
+    while flag:
+        flag = False
+        tmp_tokens = []
+        for i in range(len(traversal_tokens)):
+            if traversal_tokens[i].arity == 2 and isinstance(traversal_tokens[i + 1], PlaceholderConstant) and \
+                    isinstance(traversal_tokens[i + 2], PlaceholderConstant):
+                tmp_tokens.append(p.traversal_tokens[i](traversal_tokens[i + 1], traversal_tokens[i + 2]))
+                flag = True
+                continue
+            if traversal_tokens[i].arity == 1 and isinstance(traversal_tokens[i + 1], PlaceholderConstant):
+                tmp_tokens.append(p.traversal[i](p.traversal[i + 1]))
+                flag = True
+                continue
+            tmp_tokens.append(traversal_tokens[i])
+        traversal_tokens = tmp_tokens
+    return traversal_tokens
+    # return Program(traversal_tokens, np.ones_like(traversal_tokens, dtype=np.int32))
 
 
 ###############################################################################

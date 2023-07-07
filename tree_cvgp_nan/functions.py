@@ -3,8 +3,7 @@ import re
 import numpy as np
 from fractions import Fraction
 
-from library import Token, PlaceholderConstant, HardCodedConstant
-import utils as U
+from library import Token, PlaceholderConstant
 from typing import List
 
 GAMMA = 0.57721566490153286060651209008240243104215933593992
