@@ -12,7 +12,7 @@ from sympy import pretty
 
 from scipy.optimize import minimize
 
-from functions import PlaceholderConstant
+from functions import PlaceholderConstant, Token
 from const import make_const_optimizer
 from utils import cached_property
 import utils as U
@@ -184,10 +184,10 @@ class Program(object):
         List of operators (type: Function) and terminals (type: int, float, or
         str ("const")) encoding the pre-order traversal of the expression tree.
 
-    tokens : np.ndarry (dtype: int)
+    tokens : np.ndarray (dtype: int)
         Array of integers whose values correspond to indices
 
-    allow_change_tokens: np.ndarry (dtype: int)
+    allow_change_tokens: np.ndarray (dtype: int)
         if each token allows to be changed during GP. 
 
     const_pos : list of int
@@ -250,7 +250,7 @@ class Program(object):
         if tokens is not None:
             self._init(tokens, allow_change_tokens)
 
-    def _init(self, tokens, allow_change_tokens):
+    def _init(self, tokens: np.ndarray, allow_change_tokens: np.ndarray):
         # pre-order of the program. the most important thing.
         self.traversal = [Program.library[t] for t in tokens]
         # added part: which token is allowed to be token. 1 means allowed
@@ -372,6 +372,67 @@ class Program(object):
             # always protected. 1/div
         return result
 
+    def simplify_equation(self):
+        """given the preorder traversal of the program, simplify the program.
+        (add/sub/mul/div, c1, c2) -> c1
+        (exp/log/sin/cos/inv c1) -> c1
+        (div, Xi, Xi)  -> 1
+        (sub, Xi, Xi)  -> 1
+        """
+        flag = True
+        tokens = self.tokens
+        traversal = self.traversal
+        traversal_allows = self.allow_change_tokens
+
+        if len(traversal) < 2:
+            return traversal
+        while flag:
+            flag = False
+            tmp_traversal = []
+            tmp_allows = []
+            tmp_tokens = []
+            i = 0
+            while i < len(traversal):
+                if traversal[i].arity == 2 and isinstance(traversal[i + 1], PlaceholderConstant) and \
+                        isinstance(traversal[i + 2], PlaceholderConstant):
+                    val = traversal[i](traversal[i + 1].value, traversal[i + 2].value)[0]
+                    print(i, val)
+                    tmp_traversal.append(PlaceholderConstant(val))
+                    tmp_allows.append(traversal_allows[i])
+                    tmp_tokens.append(tokens[i])
+                    i += 3
+                    flag = True
+                # if traversal[i].arity == 2 and isinstance(traversal[i + 1], Token) and \
+                #         isinstance(traversal[i + 2], Token) and traversal[i + 1] == traversal[i + 2]:
+                #     print(i)
+                #     flag = True
+                #     i += 2
+                elif traversal[i].arity == 1 and isinstance(traversal[i + 1], PlaceholderConstant):
+                    val = traversal[i](traversal[i + 1].value)[0]
+                    print(i, val)
+                    tmp_traversal.append(PlaceholderConstant(val))
+                    tmp_allows.append(traversal_allows[i])
+                    tmp_tokens.append(tokens[i])
+                    flag = True
+                    i += 2
+                else:
+                    tmp_traversal.append(traversal[i])
+                    tmp_allows.append(traversal_allows[i])
+                    tmp_tokens.append(tokens[i])
+                    i += 1
+            traversal = tmp_traversal
+            traversal_allows = tmp_allows
+            tokens = tmp_tokens
+        if len(traversal) == len(self.traversal):
+            return
+        print("before simplify:", self.traversal)
+        self._init(np.array(tokens, dtype=np.int32), np.array(traversal_allows, dtype=np.int32))
+        self.remove_r_evaluate()
+        for i in range(len(traversal)):
+            if isinstance(traversal[i], PlaceholderConstant):
+                self.traversal[i] = PlaceholderConstant(traversal[i].value)
+        print("after simplify:", self.traversal)
+
     def optimize(self):
         """
         Optimizes PlaceholderConstant tokens against the reward function. The
@@ -463,8 +524,8 @@ class Program(object):
 
         if np.max(self.expr_objs) <= self.expr_obj_thres:
             print("objective residual: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
-            new_program = program_simplify(self)
-            print(new_program, self.traversal ==new_program)
+
+            # print(new_program, self.traversal == new_program)
             for pos, t in enumerate(self.traversal):
                 if not isinstance(t, PlaceholderConstant):
                     # residual is within threshold and is not a constant, freeze it.
@@ -600,8 +661,6 @@ class Program(object):
     def r(self):
         """Evaluates and returns the reward of the program"""
         with warnings.catch_warnings():
-            # warnings.simplefilter("ignore")
-
             # print('===before optimize===')
 
             # Optimize any PlaceholderConstants
@@ -666,33 +725,6 @@ class Program(object):
     def __repr__(self):
         """Prints the program's traversal"""
         return ','.join([repr(t) for t in self.traversal])
-
-
-def program_simplify(p):
-    """given the preorder traversal of the program, simplify the program.
-    (add/sub/mul/div, c1, c2) -> c1
-    (exp/log/sin/cos/inv c1) -> c1
-    """
-    flag = True
-    traversal_tokens = p.traversal
-    # traversal_allows = p.allow_change_tokens
-    while flag:
-        flag = False
-        tmp_tokens = []
-        for i in range(len(traversal_tokens)):
-            if traversal_tokens[i].arity == 2 and isinstance(traversal_tokens[i + 1], PlaceholderConstant) and \
-                    isinstance(traversal_tokens[i + 2], PlaceholderConstant):
-                tmp_tokens.append(p.traversal_tokens[i](traversal_tokens[i + 1], traversal_tokens[i + 2]))
-                flag = True
-                continue
-            if traversal_tokens[i].arity == 1 and isinstance(traversal_tokens[i + 1], PlaceholderConstant):
-                tmp_tokens.append(p.traversal[i](p.traversal[i + 1]))
-                flag = True
-                continue
-            tmp_tokens.append(traversal_tokens[i])
-        traversal_tokens = tmp_tokens
-    return traversal_tokens
-    # return Program(traversal_tokens, np.ones_like(traversal_tokens, dtype=np.int32))
 
 
 ###############################################################################

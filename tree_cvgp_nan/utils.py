@@ -26,21 +26,21 @@ class Tree(object):
         self.maxwidth_pool_idxes = [[] for i in range(nvar + 1)]
         self.max_width = max_width
 
-    def add_node(self, one_node):
-        if one_node == None:
+    def insert_node(self, one_node):
+        if not one_node:
             return False
         if one_node in self.maxwidth_pool_idxes[len(one_node.cur)]:
             print("new_pool_idx {} already discovered {}".format(one_node, self.maxwidth_pool_idxes[len(one_node.cur)]))
             return False
 
         if len(self.maxwidth_pool_idxes[len(one_node.cur)]) > self.max_width:
-            print(f"maxwidth reaached {len(one_node.cur)}-layer {len(self.maxwidth_pool_idxes[len(one_node.cur)])}")
+            print(f"max width reached {len(one_node.cur)}-layer {len(self.maxwidth_pool_idxes[len(one_node.cur)])}")
             return False
 
         self.maxwidth_pool_idxes[len(one_node.cur)].append(one_node)
         return True
 
-    def combine_with_historial_pool_idxes(self):
+    def all_pair_combinations(self):
         visited = set()
         historical_pools_idxes = []
         for i in range(self.layers):
@@ -54,6 +54,23 @@ class Tree(object):
                 to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
         return to_be_merged_pool_pairs
 
+    def combine_with_one_var_pool_idxes(self):
+        one_var_pool_indexes = []
+
+        for node in self.maxwidth_pool_idxes[1]:
+            one_var_pool_indexes.append(node)
+        #
+        historical_pools_idxes = []
+        for i in range(self.layers):
+            for node in self.maxwidth_pool_idxes[i]:
+                if node.cur not in historical_pools_idxes:
+                    historical_pools_idxes.append(node.cur)
+        to_be_merged_pool_pairs = []
+        if len(historical_pools_idxes) != 0:
+            for one_pool_idx, another_pool_idx in itertools.product(historical_pools_idxes, one_var_pool_indexes):
+                to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
+        return to_be_merged_pool_pairs
+
 
 # this node is used for keep track of variable ordering
 class Node(object):
@@ -61,16 +78,17 @@ class Node(object):
         # l:left parent pool idx. It is a tuple or None, r right parent pool idx
         self.l = l
         self.r = r
-        if cur == None:
+        if not cur:
             new_pool_idx = self.l + self.r
-            self.cur = tuple(unique(sorted(new_pool_idx)))
+            self.cur = tuple(unique(new_pool_idx))
         else:
             self.cur = cur
 
     def __eq__(self, other):
-        if other == None:
+        if not other:
             return False
-        if (self.l == other.l and self.r == other.r and self.cur== other.cur) or (self.l == other.r and self.r == other.l and self.cur == other.cur):
+        if (self.l == other.l and self.r == other.r and self.cur == other.cur) or (
+                self.l == other.r and self.r == other.l and self.cur == other.cur):
             return True
         return False
 

@@ -253,3 +253,24 @@ class GPHelper(object):
                                        p.allow_change_tokens[a_end:]))
             p.__init__(np_tokens, np_allow)
             p.remove_r_evaluate()
+
+
+def program_backward_check(joint_vars_pr, single_var_pr):
+    from functions import PlaceholderConstant
+    ### apply the simplicaition step over joint_vars_pr,
+    #
+    # 1. replacing all extra variables not contained in single_var_pr as constant:
+    all_vars_valid = single_var_pr.get_used_variables()
+
+    for i in range(len(joint_vars_pr.traversal)):
+        if joint_vars_pr.traversal[i] in all_vars_valid:
+            # TODO: if it is a variable, but it is not
+            joint_vars_pr.traversal[i] = PlaceholderConstant(np.random.rand() * 10)
+
+    # 2. recursively merges nodes if the leaves are all constants. (currently unclear)
+    simplified_joint_vars_pr = joint_vars_pr.simplify_equation()
+    # TODO: check X1+C and C+X1;
+    if simplified_joint_vars_pr == single_var_pr:
+        return True
+    else:
+        return False

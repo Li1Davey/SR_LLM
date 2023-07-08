@@ -44,10 +44,10 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     mutpb = 0.5
     maxdepth = 2
     tour_size = 3
-    hof_size = 20  # 0
+    hof_size = 5  # 0
 
-    population_size = 100
-    n_generations = 15
+    population_size = 10
+    n_generations = 3
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
@@ -91,7 +91,7 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     # print
     print('final hof=')
     egp.print_final_hofs()
-    print('tree.cvgp.timer_log=', egp.timer_log)
+    print('tree.gp.timer_log=', egp.timer_log)
 
 
 if __name__ == '__main__':
