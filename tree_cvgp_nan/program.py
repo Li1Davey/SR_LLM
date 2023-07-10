@@ -249,6 +249,7 @@ class Program(object):
         # Can be empty if we are unpickling 
         if tokens is not None:
             self._init(tokens, allow_change_tokens)
+        self.freezed = False
 
     def _init(self, tokens: np.ndarray, allow_change_tokens: np.ndarray):
         # pre-order of the program. the most important thing.
@@ -322,7 +323,7 @@ class Program(object):
         # the place the token can be changed
         return [i for i, t in enumerate(self.allow_change_tokens) if t == 1]
 
-    def allow_change_constant_pos(self):
+    def summary_constant_pos(self):
         """ return the index of 'summary constants' """
         return [pos for i, pos in enumerate(self.const_pos) if self.allow_change_tokens[pos]]
 
@@ -448,7 +449,6 @@ class Program(object):
             self.set_constants(consts)
 
             # evaluate the different between predicted y and the ground truth y
-
             r = self.task.reward_function(self)
             # minimize the objective function
             obj = -r  # Constant optimizer minimizes the objective function
@@ -524,7 +524,7 @@ class Program(object):
 
         if np.max(self.expr_objs) <= self.expr_obj_thres:
             print("objective residual: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
-
+            self.freezed=True
             # print(new_program, self.traversal == new_program)
             for pos, t in enumerate(self.traversal):
                 if not isinstance(t, PlaceholderConstant):

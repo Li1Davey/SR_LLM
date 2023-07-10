@@ -7,14 +7,10 @@ class RegressTaskV1(object):
 
     batchsize:
     allowed_input: 1 if the input can be in the approximated expr. 0 cannot.
-    n_input: num of vars in X
     true_program: the program to map from X to Y
-
     reward_function(self, p) # in reward function need to decide on non-varying parameters
 
     evaluate(self, p)        # this is the inference task (evaluate the program on the test set).
-
-    NOTE: nexpr should be left to program.optimize() (nexpr: number of experiments)
     """
 
     def __init__(self, batchsize, allowed_input, dataX, data_query_oracle):

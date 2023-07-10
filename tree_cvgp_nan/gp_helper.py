@@ -13,7 +13,7 @@ class GPHelper(object):
     def mate(self, a, b):
         """
             a and b are two program objects. apply cross over of two program trees; find two subtrees
-       within allowed_change_tokens then swap them
+            within allowed_change_tokens then swap them
         """
         a_allowed = a.allow_change_pos()
         b_allowed = b.allow_change_pos()
@@ -35,7 +35,7 @@ class GPHelper(object):
                                     b.tokens[b_end:]))
 
         na_allow = np.concatenate((a.allow_change_tokens[:a_start],
-                                   b.allow_change_tokens[b_start:b_end],
+                                   b.allow_change_tokens[b_start:b_end],  # Nan: should it be all ones here?
                                    a.allow_change_tokens[a_end:]))
         nb_allow = np.concatenate((b.allow_change_tokens[:b_start],
                                    a.allow_change_tokens[a_start:a_end],
@@ -46,7 +46,7 @@ class GPHelper(object):
         a.remove_r_evaluate()
         b.remove_r_evaluate()
 
-    def mate_joint_variables_program(self, a, b, K=4):
+    def mate_joint_variables_program(self, a, b):
         """
         apply several steps to combine two expression randomly to obtain a parent expression that could contain two variables,
         or still single variables.
@@ -54,55 +54,31 @@ class GPHelper(object):
         """
         list_of_new_programs = []
         #### create new prog from a
-        a_allowed = a.allow_change_constant_pos()
-        b_allowed = b.all_tokens_pos()
-        if len(a_allowed) == 0 or len(b_allowed) == 0:
-            return []
-
-        for k in range(K):
-            # pick a leave node containing constant from a, replace it with a sub-tree from b
-            a_start = np.random.choice(a_allowed)
+        # 1. get the list of summary constants from program a
+        a_allowed = a.summary_constant_pos()
+        na_tokens, na_allow = [], []
+        a_end = 0
+        for a_start in a_allowed:
+            # pick a leave node which is a summary constants, replace it with a sub-tree from b
+            na_tokens.append(a.tokens[a_end:a_start])
+            na_tokens.append(b.tokens)
+            #
+            na_allow.append(a.allow_change_tokens[a_end:a_start])
+            na_allow.append(np.ones(len(b.tokens), dtype=np.int32))
             a_end = a.subtree_end(a_start)
-            b_start = np.random.choice(b_allowed)
-            b_end = b.subtree_end(b_start)
-            na_tokens = np.concatenate((a.tokens[:a_start], b.tokens[b_start:b_end], a.tokens[a_end:]))
-
-            na_allow = np.concatenate(
-                (a.allow_change_tokens[:a_start], np.ones(b_end - b_start, dtype=np.int32), a.allow_change_tokens[a_end:]))
-
-            new_pr = Program(na_tokens, na_allow)
-            new_pr.remove_r_evaluate()
-            list_of_new_programs.append(new_pr)
-
-        #### create new prog from b
-        a_allowed = a.all_tokens_pos()
-        b_allowed = b.allow_change_constant_pos()
-        if len(a_allowed) == 0 or len(b_allowed) == 0:
-            return list_of_new_programs
-
-        for k in range(K):
-            # pick a leave node in b containing constant
-            b_start = np.random.choice(b_allowed)
-            b_end = b.subtree_end(b_start)
-            # pick a subtree in a
-            a_start = np.random.choice(a_allowed)
-            a_end = a.subtree_end(a_start)
-
-            nb_tokens = np.concatenate((b.tokens[:b_start], a.tokens[a_start:a_end], b.tokens[b_end:]))
-
-            nb_allow = np.concatenate(
-                (b.allow_change_tokens[:b_start], np.ones(a_end - a_start, dtype=np.int32), b.allow_change_tokens[b_end:]))
-            # temp_prog = copy.copy(b)
-            new_pr = Program(nb_tokens, nb_allow)
-
-            new_pr.remove_r_evaluate()
-            list_of_new_programs.append(new_pr)
+        na_tokens.append(a.tokens[a_end:])
+        na_allow.append(a.allow_change_tokens[a_end:])
+        na_tokens = np.concatenate(na_tokens)
+        na_allow = np.concatenate(na_allow)
+        new_pr = Program(na_tokens, na_allow)
+        new_pr.remove_r_evaluate()
+        list_of_new_programs.append(new_pr)
 
         return list_of_new_programs
 
     def gen_full(self, maxdepth):
         """
-            generate a full program tree recursively (represented in token indicies in library)
+            generate a full program tree recursively (represented in token indices in library)
         """
         if maxdepth == 1:
             # more efficient implementation
@@ -110,7 +86,6 @@ class GPHelper(object):
             t_idx = np.random.choice(allowed_pos)
             return [t_idx]
         else:
-            # more efficient implementation
             allowed_pos = self.library.allowed_tokens_pos()
             t_idx = np.random.choice(allowed_pos)
 
@@ -135,8 +110,7 @@ class GPHelper(object):
 
     def mutUniform(self, p, maxdepth):
         """
-            find a leaf node (which allow_change_tokens == 1), replace the node with a gen_full
-            tree of maxdepth.
+            find a leaf node (which allow_change_tokens == 1), replace the node with a gen_full tree of maxdepth.
         """
         leaf_set = []
         for i, token in enumerate(p.traversal):
@@ -164,7 +138,6 @@ class GPHelper(object):
         a_idx = allowed_pos[np.random.randint(0, len(allowed_pos))]
         arity = p.traversal[a_idx].arity
 
-        # more efficient implementation
         allowed_pos = [t for t in self.library.tokens_of_arity[arity] if self.library.allowed_tokens[t] > 0]
         t_idx = np.random.choice(allowed_pos)
 
@@ -180,7 +153,6 @@ class GPHelper(object):
         insert_pos = np.random.randint(0, len(p.tokens))
         subtree_start = insert_pos
         subtree_end = p.subtree_end(subtree_start)
-        # print('subtree_start=', subtree_start, 'subtree_end=', subtree_end)
 
         # generate the new root node
 
@@ -254,23 +226,22 @@ class GPHelper(object):
             p.__init__(np_tokens, np_allow)
             p.remove_r_evaluate()
 
-
-def program_backward_check(joint_vars_pr, single_var_pr):
-    from functions import PlaceholderConstant
-    ### apply the simplicaition step over joint_vars_pr,
-    #
-    # 1. replacing all extra variables not contained in single_var_pr as constant:
-    all_vars_valid = single_var_pr.get_used_variables()
-
-    for i in range(len(joint_vars_pr.traversal)):
-        if joint_vars_pr.traversal[i] in all_vars_valid:
-            # TODO: if it is a variable, but it is not
-            joint_vars_pr.traversal[i] = PlaceholderConstant(np.random.rand() * 10)
-
-    # 2. recursively merges nodes if the leaves are all constants. (currently unclear)
-    simplified_joint_vars_pr = joint_vars_pr.simplify_equation()
-    # TODO: check X1+C and C+X1;
-    if simplified_joint_vars_pr == single_var_pr:
-        return True
-    else:
-        return False
+# def program_backward_check(joint_vars_pr, single_var_pr):
+#     from functions import PlaceholderConstant
+#     ### apply the simplicaition step over joint_vars_pr,
+#     #
+#     # 1. replacing all extra variables not contained in single_var_pr as constant:
+#     all_vars_valid = single_var_pr.get_used_variables()
+#
+#     for i in range(len(joint_vars_pr.traversal)):
+#         if joint_vars_pr.traversal[i] in all_vars_valid:
+#             # TODO: if it is a variable, but it is not
+#             joint_vars_pr.traversal[i] = PlaceholderConstant(np.random.rand() * 10)
+#
+#     # 2. recursively merges nodes if the leaves are all constants. (currently unclear)
+#     simplified_joint_vars_pr = joint_vars_pr.simplify_equation()
+#     # TODO: check X1+C and C+X1;
+#     if simplified_joint_vars_pr == single_var_pr:
+#         return True
+#     else:
+#         return False

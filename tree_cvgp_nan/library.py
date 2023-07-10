@@ -9,31 +9,18 @@ import utils as U
 class Token(object):
     """
     An arbitrary token or "building block" of a Program object.
-
-    Attributes
-    ----------
-    name : str
-        Name of token.
-
-    arity : int
-        Arity (number of arguments) of token.
-
-    complexity : float
-        Complexity of token.
-
-    function : callable
-        Function associated with the token; used for exectuable Programs.
-
-    input_var : int or None
-        Index of input if this Token is an input variable, otherwise None.
-
-    Methods
-    -------
-    __call__(input)
-        Call the Token's function according to input.
     """
 
     def __init__(self, function, name, arity, complexity, input_var=None):
+        """
+        Parameters
+        ----------
+        name : str. Name of token.
+        arity : int. Arity (number of arguments) of token.
+        complexity : float. Complexity of token.
+        function : callable. Function associated with the token; used for exectuable Programs.
+        input_var : int or None. Index of input if this Token is an input variable, otherwise None.
+        """
         self.function = function
         self.name = name
         self.arity = arity
@@ -45,8 +32,8 @@ class Token(object):
             assert arity == 0, "Input variables should have arity zero."
 
     def __call__(self, *args):
-        assert self.function is not None, \
-            "Token {} is not callable.".format(self.name)
+        """Call the Token's function according to input."""
+        assert self.function is not None, "Token {} is not callable.".format(self.name)
 
         return self.function(*args)
 
@@ -206,7 +193,7 @@ class Library(object):
         return [i for i, t in enumerate(self.allowed_tokens) if t == 1 and self.arities[i] > 0]
 
     def set_allowed_input_tokens(self, allowed_input_tokens):
-        """1: allowed, 0: now allowed to do what?"""
+        """1: allowed, 0: now allowed"""
         self.allowed_input_tokens = np.copy(allowed_input_tokens)
         for i, flag in enumerate(self.allowed_input_tokens):
             self.allowed_tokens[self.input_tokens[i]] = flag

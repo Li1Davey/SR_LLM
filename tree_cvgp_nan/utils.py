@@ -5,15 +5,11 @@ import copy
 import functools
 import numpy as np
 import time
-import importlib
-import re
-import os
-import pandas as pd
 import itertools
 
 
-def unique(arr):
-    return list(set(arr))
+# def unique(arr):
+#     return list(set(arr))
 
 
 class Tree(object):
@@ -54,17 +50,15 @@ class Tree(object):
                 to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
         return to_be_merged_pool_pairs
 
-    def combine_with_one_var_pool_idxes(self):
+    def combine_with_one_var_pool_idxes(self, given_layer):
         one_var_pool_indexes = []
-
         for node in self.maxwidth_pool_idxes[1]:
             one_var_pool_indexes.append(node)
         #
         historical_pools_idxes = []
-        for i in range(self.layers):
-            for node in self.maxwidth_pool_idxes[i]:
-                if node.cur not in historical_pools_idxes:
-                    historical_pools_idxes.append(node.cur)
+        for node in self.maxwidth_pool_idxes[given_layer]:
+            if node not in historical_pools_idxes:
+                historical_pools_idxes.append(node)
         to_be_merged_pool_pairs = []
         if len(historical_pools_idxes) != 0:
             for one_pool_idx, another_pool_idx in itertools.product(historical_pools_idxes, one_var_pool_indexes):
@@ -80,15 +74,14 @@ class Node(object):
         self.r = r
         if not cur:
             new_pool_idx = self.l + self.r
-            self.cur = tuple(unique(new_pool_idx))
+            self.cur = tuple(new_pool_idx)
         else:
             self.cur = cur
 
     def __eq__(self, other):
         if not other:
             return False
-        if (self.l == other.l and self.r == other.r and self.cur == other.cur) or (
-                self.l == other.r and self.r == other.l and self.cur == other.cur):
+        if self.l == other.l and self.r == other.r and self.cur == other.cur:
             return True
         return False
 
@@ -100,10 +93,11 @@ class Node(object):
 
 
 def create_node(one_pool_idx, another_pool_idx):
-    if one_pool_idx == another_pool_idx:
+    assert len(another_pool_idx.cur) == 1, "another pool must be one variable!"
+    if one_pool_idx == another_pool_idx or another_pool_idx.cur[0] in set(one_pool_idx.cur):
         return None
     new_pool_idx = one_pool_idx.cur + another_pool_idx.cur
-    new_pool_idx = tuple(unique(sorted(new_pool_idx)))
+    new_pool_idx = tuple(new_pool_idx)
     if new_pool_idx == one_pool_idx.cur or new_pool_idx == another_pool_idx.cur:
         return None
     return Node(one_pool_idx.cur, another_pool_idx.cur, new_pool_idx)
@@ -135,7 +129,6 @@ def create_uniform_generations(n_generations, nvar):
 
 def is_float(s):
     """Determine whether the input variable can be cast to float."""
-
     try:
         float(s)
         return True
@@ -280,64 +273,3 @@ def safe_merge_dicts(base_dict, update_dict):
         else:
             base_dict[key] = value
     return base_dict
-
-
-def safe_update_summary(csv_path, new_data):
-    """Updates a summary csv file with new rows. Adds new columns
-    in existing data if necessary. New rows are distinguished by
-    the run seed.
-
-    Parameters
-    ----------
-        csv_path : str
-            String with the path to the csv file.
-        new_data : dict
-            Dictionary containing values to be saved in the csv file.
-
-    Returns
-    -------
-        bool
-            Boolean value to indicate if saving the data to file worked.
-    """
-    try:
-        new_data_pd = pd.DataFrame(new_data, index=[0])
-        new_data_pd.set_index('seed', inplace=True)
-        if os.path.isfile(csv_path):
-            old_data_pd = pd.read_csv(csv_path)
-            old_data_pd.set_index('seed', inplace=True)
-            merged_df = pd.concat([old_data_pd, new_data_pd], axis=0, ignore_index=False)
-            merged_df.to_csv(csv_path, header=True, mode='w+', index=True)
-        else:
-            new_data_pd.to_csv(csv_path, header=True, mode='w+', index=True)
-        return True
-    except:
-        return False
-
-
-def import_custom_source(import_source):
-    """
-    Provides a way to import custom modules. The return will be a reference to the desired source
-    Parameters
-    ----------
-        import_source : import path
-            Source to import from, for most purposes: <module_name>:<class or function name>
-
-    Returns
-    -------
-        mod : ref
-            reference to the imported module
-    """
-
-    # Partially validates if the import_source is in correct format
-    regex = '[\w._]+:[\w._]+'  # lib_name:class_name
-    m = re.match(pattern=regex, string=import_source)
-    # Partial matches mean that the import will fail
-    assert m is not None and m.end() == len(import_source), "*** Failed to import malformed source string: " + import_source
-
-    source, type = import_source.split(':')
-
-    # Dynamically imports the configured source
-    mod = importlib.import_module(source)
-    func = getattr(mod, type)
-
-    return func
