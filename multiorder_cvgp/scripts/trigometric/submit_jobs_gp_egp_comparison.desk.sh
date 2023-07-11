@@ -15,7 +15,7 @@ data_path=$basepath/data/unencrypted/equations_trigometric
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
-for prog in {0..0};
+for prog in {0..9};
 do
     eq_name=${type}_nv${nv}_nt${nt}_prog_${prog}.in
     echo "submit $eq_name"
@@ -31,9 +31,9 @@ do
     	echo "create dir: $log_dir"
     	mkdir -p $log_dir
 	fi
+	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out"
 	$py3615 $thispath/main.py --equation_name $data_path/$eq_name \
-        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale
-#        		\ > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out
+        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out
 #	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 ##!/bin/bash -l
 #
