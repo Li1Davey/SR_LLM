@@ -86,7 +86,7 @@ class ExpandingGeneticProgram(object):
             print('-' * 50)
 
         # 2. apply GP for every single POOL
-        for round_idx in range(self.nvar):
+        for round_idx in range(self.nvar + 1):
             for cur_node in current_node_lists:
                 print(cur_node)
                 # 2.1 set the free variables and controlled variables for the given POOL
@@ -131,8 +131,8 @@ class ExpandingGeneticProgram(object):
                 continue
             print("all the pools", current_node_lists)
             ## 3. generate a lot of different pairs of pools that can be merged
-            to_be_merged_pool_pairs = self.variable_ordering_tree.combine_with_one_var_pool_idxes(round_idx)
-            print("to be merged:", to_be_merged_pool_pairs)
+            to_be_merged_pool_pairs = self.variable_ordering_tree.combine_with_one_var_pool_idxes(round_idx + 1)
+            print("to be merged:", [[x.cur, y.cur] for x, y in to_be_merged_pool_pairs])
             ## 3.1 use randomized stategies to pick new pools
             np.random.shuffle(to_be_merged_pool_pairs)
             new_pool_idxes = []
@@ -142,29 +142,29 @@ class ExpandingGeneticProgram(object):
                 if not is_success:
                     continue
                 print(tmp_node)
-                one_joint_pool = self.merge_two_pools(one_pool_idx, another_pool_idx)
-
+                one_joint_pool = self.create_new_pools(one_pool_idx, another_pool_idx)
                 self.populations[tmp_node] = one_joint_pool
                 self.hofs[tmp_node] = one_joint_pool
                 new_pool_idxes.append(tmp_node)
             current_node_lists = new_pool_idxes
 
-    def merge_two_pools(self, one_pool_idx, another_pool_idx, pool_limit=500):
+    def create_new_pools(self, one_pool_idx, another_pool_idx):
         """
         Given two pools of equations, pick two equations from two pools and apply m
         """
-        joint_Pool = []
-        for pr_var1 in self.populations[one_pool_idx]:
-            for pr_var2 in self.populations[another_pool_idx]:
-                if pr_var1.freezed and pr_var2.freezed:
-                    joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
-                    print("freezed cases:", joint_vars_progs)
-                    joint_Pool.extend(joint_vars_progs)
-        joint_Pool.extend(self.populations[one_pool_idx][:self.population_size])
-        if len(joint_Pool) > pool_limit:
-            np.random.shuffle(joint_Pool)
-            return joint_Pool[:pool_limit]
-        return joint_Pool
+        if another_pool_idx not in self.populations or len(self.populations[another_pool_idx]) == 0:
+            return self.populations[one_pool_idx]
+
+        if one_pool_idx not in self.populations or len(self.populations[one_pool_idx]) == 0:
+            return self.populations[another_pool_idx]
+
+        # for pr_var1 in self.populations[one_pool_idx]:
+        #     for pr_var2 in self.populations[another_pool_idx]:
+        #         if pr_var1.freezed and pr_var2.freezed:
+        #             joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
+        #             print("freezed cases:", joint_vars_progs)
+        #             joint_Pool.extend(joint_vars_progs)
+        return self.populations[one_pool_idx]
 
     def one_generation(self, pool_idx, verbose=False):
         """
@@ -257,13 +257,15 @@ class ExpandingGeneticProgram(object):
         allowed_input_token, library_disallowed_input_token = node.cur, node.l
         free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
         for vari in allowed_input_token:
-            free_input_tokens[vari] = 1
+            if vari >= 0 and vari < len(free_input_tokens):
+                free_input_tokens[vari] = 1
         Program.task.set_allowed_inputs(free_input_tokens)
         print("set allow input tokens.....")
 
         if library_disallowed_input_token != -1:
             for vari in library_disallowed_input_token:
-                free_input_tokens[vari] = 0
+                if vari >= 0 and vari < len(free_input_tokens):
+                    free_input_tokens[vari] = 0
         self.library.set_allowed_input_tokens(free_input_tokens)
         print("For library:", self.library.allowed_tokens, self.library.allowed_input_tokens)
         print("For data loader:", Program.task.allowed_input, Program.task.fixed_column)
@@ -275,21 +277,24 @@ class ExpandingGeneticProgram(object):
                 print("\t", pr.__getstate__())
 
     def print_final_hofs(self):
-        selected_vars = None
+        # selected_vars = None
         print(self.hofs.keys())
         for key in self.hofs:
-            if len(key.cur) == self.nvar:
+            if len(key.cur) == self.nvar + 1:
                 selected_vars = key
-        print(f"vars={selected_vars}")
-        if selected_vars in self.hofs:
+                print("\n\n")
+                print('%' * 20)
+                print(f"vars={selected_vars}")
+                print('%' * 20)
+                if selected_vars in self.hofs:
 
-            new_hof = sorted(self.hofs[selected_vars], reverse=True, key=attrgetter('r'))
-            for pr in new_hof:
-                print("\t", pr.__getstate__())
-                pr.task.rand_draw_X_non_fixed()
-                print('\tvalidate r=', pr.task.reward_function(pr))
-                pr.task.print_reward_function_all_metrics(pr)
-                pr.print_expression()
+                    new_hof = sorted(self.hofs[selected_vars], reverse=True, key=attrgetter('r'))
+                    for pr in new_hof:
+                        print("\t", pr.__getstate__())
+                        pr.task.rand_draw_X_non_fixed()
+                        print('\tvalidate r=', pr.task.reward_function(pr))
+                        pr.task.print_reward_function_all_metrics(pr)
+                        pr.print_expression()
 
 
 def print_prs(prs):

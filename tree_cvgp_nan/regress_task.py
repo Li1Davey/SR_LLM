@@ -47,10 +47,10 @@ class RegressTaskV1(object):
         """used for print the error for all metrics between the predicted program `p` and true program."""
         y_hat = p.execute(self.X)
         dict_of_result = self.data_query_oracle._evaluate_all_losses(self.X, y_hat)
-        print('%' * 30)
+        print('-' * 30)
         for mertic_name in dict_of_result:
             print(f"{mertic_name} {dict_of_result[mertic_name]}")
-        print('%' * 30)
+        print('-' * 30)
 
     def reward_function(self, p):
         y_hat = p.execute(self.X)

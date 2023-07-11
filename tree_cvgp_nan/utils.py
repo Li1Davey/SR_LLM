@@ -18,9 +18,11 @@ class Tree(object):
     """
 
     def __init__(self, nvar, max_width=6):
-        self.layers = nvar + 1
-        self.maxwidth_pool_idxes = [[] for i in range(nvar + 1)]
+        self.layers = nvar + 2
+        self.maxwidth_pool_idxes = [[] for i in range(self.layers)]
         self.max_width = max_width
+        self.maxwidth_pool_idxes[-1].append(Node((-1,), (-1,), (-1,)))
+        self.maxwidth_pool_idxes[0].append(Node((-1,), (-1,), (-1,)))
 
     def insert_node(self, one_node):
         if not one_node:
@@ -29,7 +31,7 @@ class Tree(object):
             print("new_pool_idx {} already discovered {}".format(one_node, self.maxwidth_pool_idxes[len(one_node.cur)]))
             return False
 
-        if len(self.maxwidth_pool_idxes[len(one_node.cur)]) > self.max_width:
+        if self.max_width > 0 and len(self.maxwidth_pool_idxes[len(one_node.cur)]) > self.max_width:
             print(f"max width reached {len(one_node.cur)}-layer {len(self.maxwidth_pool_idxes[len(one_node.cur)])}")
             return False
 
@@ -50,12 +52,15 @@ class Tree(object):
                 to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
         return to_be_merged_pool_pairs
 
-    def combine_with_one_var_pool_idxes(self, given_layer):
+    def combine_with_one_var_pool_idxes(self, given_layer, chosen_layer=1):
         one_var_pool_indexes = []
-        for node in self.maxwidth_pool_idxes[1]:
+        if given_layer + 2 == self.layers:
+            chosen_layer = 0
+        for node in self.maxwidth_pool_idxes[chosen_layer]:
             one_var_pool_indexes.append(node)
         #
         historical_pools_idxes = []
+
         for node in self.maxwidth_pool_idxes[given_layer]:
             if node not in historical_pools_idxes:
                 historical_pools_idxes.append(node)
@@ -63,6 +68,8 @@ class Tree(object):
         if len(historical_pools_idxes) != 0:
             for one_pool_idx, another_pool_idx in itertools.product(historical_pools_idxes, one_var_pool_indexes):
                 to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
+        if given_layer +2 == self.layers:
+            to_be_merged_pool_pairs=[(y,x) for x,y in to_be_merged_pool_pairs]
         return to_be_merged_pool_pairs
 
 
@@ -93,7 +100,7 @@ class Node(object):
 
 
 def create_node(one_pool_idx, another_pool_idx):
-    assert len(another_pool_idx.cur) == 1, "another pool must be one variable!"
+    # assert len(another_pool_idx.cur) == 1, "another pool must be one variable!"
     if one_pool_idx == another_pool_idx or another_pool_idx.cur[0] in set(one_pool_idx.cur):
         return None
     new_pool_idx = one_pool_idx.cur + another_pool_idx.cur
