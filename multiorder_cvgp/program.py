@@ -12,7 +12,7 @@ from sympy import pretty
 
 from scipy.optimize import minimize
 
-from functions import PlaceholderConstant, Token
+from functions import PlaceholderConstant
 from const import make_const_optimizer
 from utils import cached_property
 import utils as U
@@ -532,10 +532,17 @@ class Program(object):
                     self.allow_change_tokens[pos] = 0
 
             # compute num_changing_consts and set for the constants
+            print("decide constant type: (summary, standalone) threshold {}".format(self.expr_consts_thres))
+            print(self.const_pos, self.expr_consts.shape)
             for i, pos in enumerate(self.const_pos):
-                print("constant std: {}, threshold {}".format(np.std(self.expr_consts[:, i]), self.expr_consts_thres))
-                if np.std(self.expr_consts[:, i]) <= self.expr_consts_thres:
-                    self.allow_change_tokens[pos] = 0
+                try:
+                    print("constant std: {}".format(np.std(self.expr_consts[:, i])))
+                    if np.std(self.expr_consts[:, i]) <= self.expr_consts_thres:
+                        self.allow_change_tokens[pos] = 0
+                except IndexError:
+                    print(i, self.const_pos, self.traversal)
+                    print(self.expr_consts)
+
                 self.num_changing_consts += self.allow_change_tokens[pos]
 
     def get_constants(self):
@@ -598,7 +605,7 @@ class Program(object):
 
         # Check if cython_execute can be imported; if not, fall back to python_execute
         try:
-            from dso import cyfunc
+            import cyfunc
             from execute import cython_execute
             execute_function = cython_execute
             Program.have_cython = True
