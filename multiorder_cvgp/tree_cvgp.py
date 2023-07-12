@@ -2,8 +2,8 @@ import time
 import numpy as np
 from operator import attrgetter
 from program import Program
-from utils import Node, Tree, create_node
-
+from utils import Node, Tree, create_node, create_uniform_generations, create_geometric_generations
+from concurrent.futures import ProcessPoolExecutor
 
 class ExpandingGeneticProgram(object):
     """
@@ -33,7 +33,8 @@ class ExpandingGeneticProgram(object):
         self.tour_size = tour_size
         self.hof_size = hof_size
 
-        self.n_generations = n_generations
+        self.n_generations = create_uniform_generations(n_generations, nvar + 1)
+        print(self.n_generations)
 
         self.timer_log = []
         self.gen_num = 0
@@ -92,6 +93,7 @@ class ExpandingGeneticProgram(object):
                 #               that can be changed among different experiments.
                 Program.task.batchsize *= Program.opt_num_expr
                 Program.opt_num_expr = 1
+
             for cur_node in current_node_lists:
                 print(cur_node)
                 # 2.1 set the free variables and controlled variables for the given POOL
@@ -105,9 +107,8 @@ class ExpandingGeneticProgram(object):
                     pr.remove_r_evaluate()
                     thisr = pr.r
 
-
                 # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
-                for it in range(self.n_generations):
+                for it in range(self.n_generations[round_idx]):
                     print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(cur_node.cur, it))
                     self.one_generation(cur_node)
 
@@ -130,7 +131,6 @@ class ExpandingGeneticProgram(object):
                             _ = pr.r
                     # whether you get very different value for different constant.
                     pr.freeze_equation()
-                    # pr.simplify_equation()
 
             # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
             if len(current_node_lists) == 0:
@@ -164,13 +164,6 @@ class ExpandingGeneticProgram(object):
 
         if one_pool_idx not in self.populations or len(self.populations[one_pool_idx]) == 0:
             return self.populations[another_pool_idx]
-
-        # for pr_var1 in self.populations[one_pool_idx]:
-        #     for pr_var2 in self.populations[another_pool_idx]:
-        #         if pr_var1.freezed and pr_var2.freezed:
-        #             joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
-        #             print("freezed cases:", joint_vars_progs)
-        #             joint_Pool.extend(joint_vars_progs)
         return self.populations[one_pool_idx]
 
     def one_generation(self, pool_idx, verbose=False):

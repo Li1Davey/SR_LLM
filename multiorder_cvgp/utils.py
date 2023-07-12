@@ -113,14 +113,14 @@ def create_node(one_pool_idx, another_pool_idx):
 def create_geometric_generations(n_generations, nvar):
     gens = [0] * nvar
     for it in range(nvar - 1, 0, -1):
-        gens[it] = n_generations // 2
+        gens[it] = int(n_generations // 3)
         n_generations -= gens[it]
     gens[0] = n_generations
-    for it in range(0, nvar):
-        if gens[it] < 50:
-            gens[it] = 50
-    print('generation #:', gens, 'sum=', sum(gens))
-    return gens
+    # for it in range(0, nvar):
+    #     if gens[it] < 50:
+    #         gens[it] = 50
+    # print('generation #:', gens, 'sum=', sum(gens))
+    return gens[::-1]
 
 
 def create_uniform_generations(n_generations, nvar):

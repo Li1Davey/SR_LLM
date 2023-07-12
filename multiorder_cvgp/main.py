@@ -46,8 +46,8 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     tour_size = 3
     hof_size = 20  # 0
 
-    population_size = 100
-    n_generations = 15
+    population_size = 50
+    n_generations = 60
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
