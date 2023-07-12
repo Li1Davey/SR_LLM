@@ -143,6 +143,7 @@ class Program(object):
 
         new_me.allow_change_tokens = np.copy(self.allow_change_tokens)
         new_me.tokens = np.copy(self.tokens)
+        new_me.cur_node = self.cur_node
 
         if 'r' in self.__dict__:
             new_me.r = self.r
