@@ -2,7 +2,7 @@ import time
 import numpy as np
 from operator import attrgetter
 from program import Program
-from utils import Node, Tree, create_node
+from utils import Node, create_node
 
 
 class ExpandingGeneticProgram(object):
@@ -36,9 +36,9 @@ class ExpandingGeneticProgram(object):
         self.n_generations = n_generations
 
         self.timer_log = []
-        self.gen_num = 0
 
         self.nvar = nvar
+        self.full_vars = [i for i in range(self.nvar)]
         assert self.library != None
         assert Program.task != None
 
@@ -48,13 +48,13 @@ class ExpandingGeneticProgram(object):
            save them to self.populations, self.hofs.
            for every single pool: look for every token in library, fill in the leaves with constants or inputs.
         """
-        self.populations = dict()
-        self.hofs = dict()
+        self.populations = []
+        self.hofs = []
         current_node_lists = []
         for vari in range(self.nvar):
-            tmp_node = Node(l=-1, r=-1, cur=(vari,))
-            self._set_allowed_input_tokens(tmp_node)
-            self.variable_ordering_tree.insert_node(tmp_node)
+            tmp_node = Node(prev_vf=[-1, ], next_vf=[vari, ])
+            self._set_dataX_allowed_input_tokens(tmp_node.total_vf)
+            self._set_library_allowed_input_tokens(tmp_node.next_vf)
             current_node_lists.append(tmp_node)
             for i, t in enumerate(self.library.tokens):
                 if self.library.allowed_tokens[i]:
@@ -66,119 +66,70 @@ class ExpandingGeneticProgram(object):
                         tree.append(t_idx)
                     tree = np.array(tree)
                     pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                    if tmp_node not in self.populations:
-                        self.populations[tmp_node] = []
-                    self.populations[tmp_node].append(pr)
+                    pr.set_node(tmp_node)
+                    self.populations.append(pr)
                     new_pr = pr.clone()
-                    if tmp_node not in self.hofs:
-                        self.hofs[tmp_node] = []
-                    self.hofs[tmp_node].append(new_pr)
+                    self.hofs.append(new_pr)
         return current_node_lists
 
-    def run_with_tree_based_randomized_variable_ordering(self, maximum_width=10):
+    def run_with_tree_based_randomized_variable_ordering(self):
         # 1. generate all single variable equations by creating `#nvar` POOLS.
-        self.variable_ordering_tree = Tree(self.nvar, max_width=maximum_width)
-        current_node_lists = self.create_init_population()
+
+        self.create_init_population()
         print("=" * 20 + "Init Population" + "=" * 20)
-        for cur_node in self.populations:
-            for pr in self.populations[cur_node]:
-                pr.print_expression()
-            print('-' * 50)
+        for pr in self.populations:
+            pr.print_expression()
+        print('-' * 50)
 
-        # 2. apply GP for every single POOL
+        # 2. apply GP
         for round_idx in range(self.nvar + 1):
-            for cur_node in current_node_lists:
-                print(cur_node)
+            for pr in self.populations:
                 # 2.1 set the free variables and controlled variables for the given POOL
-                self._set_allowed_input_tokens(cur_node)
                 # 2.2 re-evaluate the constants and reward for the given POOL
-                for pr in self.populations[cur_node]:
-                    # a cached property in python (evaluated once) force the function to evaluate a new r
+                self._set_dataX_allowed_input_tokens(pr.cur_node)
+                # a cached property in python (evaluated once) force the function to evaluate a new r
+                pr.remove_r_evaluate()
+                # finds the best constants on control variable data
+                thisr = pr.r  # goodness-of-fit
+            for pr in self.hofs:
+                self._set_dataX_allowed_input_tokens(pr.cur_node)
+                pr.remove_r_evaluate()
+                thisr = pr.r
+
+
+            # 2.3  do n generation of GP,
+            for it in range(self.n_generations):
+                print('++++++++++++ ITERATION {} ++++++++++++'.format(it))
+                self.one_generation()
+            # 2.4 find the best set of fitted expressions
+            self.update_population()
+            print_prs(self.populations)
+
+            # 2.5 freeze tokens in the expressions
+            for i, pr in enumerate(self.populations):
+                # evaluate r again, just incase it has not been evaluated.
+                this_r = pr.r
+                if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
+                    # only expand at those constant node. if there are no constant node,then we are done
+                    # if we do not want num_changing_consts, then we also quit.
+                    print('there are no constant node. we are done...')
+                else:
                     pr.remove_r_evaluate()
-                    thisr = pr.r  # goodness-of-fit
-                for pr in self.hofs[cur_node]:
-                    pr.remove_r_evaluate()
-                    thisr = pr.r
-
-                # self.update_population(cur_node)
-                # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
-                for it in range(self.n_generations):
-                    print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(cur_node.cur, it))
-                    self.one_generation(cur_node)
-
-                self.update_population(cur_node)
-                print(f'populations {cur_node}')
-                print_prs(self.populations[cur_node])
-
-                # 2.4 freeze tokens in the expressions
-                for i, pr in enumerate(self.populations[cur_node]):
-                    # evaluate r again, just incase it has not been evaluated.
                     this_r = pr.r
-                    if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
-                        # only expand at those constant node. if there are no constant node,then we are done
-                        # if we do not want num_changing_consts, then we also quit.
-                        print('there are no constant node. we are done...')
-                    else:
-                        pr.remove_r_evaluate()
-                        this_r = pr.r
-                    # whether you get very different value for different constant.
-                    pr.freeze_equation()
-                    # pr.simplify_equation()
+                # whether you get very different value for different constant.
+                pr.freeze_equation()
+                # pr.simplify_equation()
 
-            # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
-            if len(current_node_lists) == 0:
-                current_node_lists = []
-                continue
-            print("all the pools", current_node_lists)
-            ## 3. generate a lot of different pairs of pools that can be merged
-            to_be_merged_pool_pairs = self.variable_ordering_tree.combine_with_one_var_pool_idxes(round_idx + 1)
-            print("to be merged:", [[x.cur, y.cur] for x, y in to_be_merged_pool_pairs])
-            ## 3.1 use randomized stategies to pick new pools
-            np.random.shuffle(to_be_merged_pool_pairs)
-            new_pool_idxes = []
-            for one_pool_idx, another_pool_idx in to_be_merged_pool_pairs:
-                tmp_node = create_node(one_pool_idx, another_pool_idx)
-                is_success = self.variable_ordering_tree.insert_node(tmp_node)
-                if not is_success:
-                    continue
-                print(tmp_node)
-                one_joint_pool = self.create_new_pools(one_pool_idx, another_pool_idx)
-                self.populations[tmp_node] = one_joint_pool
-                self.hofs[tmp_node] = one_joint_pool
-                new_pool_idxes.append(tmp_node)
-            current_node_lists = new_pool_idxes
-
-    def create_new_pools(self, one_pool_idx, another_pool_idx):
-        """
-        Given two pools of equations, pick two equations from two pools and apply m
-        """
-        if another_pool_idx not in self.populations or len(self.populations[another_pool_idx]) == 0:
-            return self.populations[one_pool_idx]
-
-        if one_pool_idx not in self.populations or len(self.populations[one_pool_idx]) == 0:
-            return self.populations[another_pool_idx]
-
-        # for pr_var1 in self.populations[one_pool_idx]:
-        #     for pr_var2 in self.populations[another_pool_idx]:
-        #         if pr_var1.freezed and pr_var2.freezed:
-        #             joint_vars_progs = self.gp_helper.mate_joint_variables_program(pr_var1, pr_var2)
-        #             print("freezed cases:", joint_vars_progs)
-        #             joint_Pool.extend(joint_vars_progs)
-        return self.populations[one_pool_idx]
-
-    def one_generation(self, pool_idx, verbose=False):
+    def one_generation(self, verbose=False):
         """
         One step of the genetic algorithm.
         This wraps selection, mutation, crossover and hall of fame computation
         over all the individuals in the population for this epoch/step.
-        Parameters
-        ----------
-        pool_idx : int. the set of equations.
         """
         t1 = time.perf_counter()
 
         # Select the next generation individuals
-        offspring = self.selectTournament(self.population_size, self.tour_size, pool_idx)
+        offspring = self.selectTournament(self.population_size, self.tour_size)
         if verbose:
             print('offspring after select=')
             print_prs(offspring)
@@ -190,47 +141,50 @@ class ExpandingGeneticProgram(object):
             print_prs(offspring)
 
         # Replace the current population by the offspring
-        self.populations[pool_idx] = offspring + self.hofs[pool_idx]
+        self.populations = offspring + self.hofs
 
         # Update hall of fame
-        self.update_hof(pool_idx)
+        self.update_hof()
         if verbose:
             print("after update hof=")
-            print_prs(self.hofs[pool_idx])
+            print_prs(self.hofs)
         timer = time.perf_counter() - t1
         self.timer_log.append(timer)
 
-    def update_hof(self, pool_idx):
+    def update_hof(self):
         """update the set of Hall of Fame for the given pool_idx pool"""
-        new_hof = sorted(self.populations[pool_idx], reverse=True, key=attrgetter('r'))
+        new_hof = sorted(self.populations, reverse=True, key=attrgetter('r'))
 
-        self.hofs[pool_idx] = []
+        self.hofs = []
         for i in range(self.hof_size):
             pr = new_hof[i]
             if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
                 print("filter:", pr.r, pr.__getstate__(), end="\t")
                 pr.print_expression()
                 continue
-            self.hofs[pool_idx].append(pr.clone())
+            self.hofs.append(pr.clone())
 
-    def update_population(self, pool_idx):
-        """update the population in the given indexed pool. sort by fitness score and cut by population_size"""
+    def update_population(self):
+        """update the population. sort by fitness score and cut by population_size.
+        evaluated on all random dataset.
+        """
         filtered_population = []
-        for pr in self.populations[pool_idx]:
+        for pr in self.populations:
             if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
                 print("filter:", pr.r, pr.__getstate__(), end="\t")
                 pr.print_expression()
                 continue
             filtered_population.append(pr)
+        self._set_dataX_allowed_input_tokens(self.full_vars)
         new_population = sorted(filtered_population, reverse=True, key=attrgetter('r'))
-        self.populations[pool_idx] = []
+        self.populations = []
         for i in range(min(self.population_size, len(filtered_population))):
-            self.populations[pool_idx].append(new_population[i].clone())
+            self.populations.append(new_population[i].clone())
 
-    def selectTournament(self, population_size, tour_size, pool_idx):
+    def selectTournament(self, population_size, tour_size):
         offspring = []
         for pp in range(population_size):
-            spr = np.random.choice(self.populations[pool_idx], tour_size)
+            spr = np.random.choice(self.populations, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
             maxspri = maxspr.clone()
             offspring.append(maxspri)
@@ -252,49 +206,35 @@ class ExpandingGeneticProgram(object):
 
         return offspring
 
-    def _set_allowed_input_tokens(self, node):
+    def _set_library_allowed_input_tokens(self, allowed_input_token):
         """Input is a set of free input variables"""
-        allowed_input_token, library_disallowed_input_token = node.cur, node.l
+        print("set library allow input tokens.....")
         free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
         for vari in allowed_input_token:
-            if vari >= 0 and vari < len(free_input_tokens):
+            if 0 <= vari < len(free_input_tokens):
                 free_input_tokens[vari] = 1
-        Program.task.set_allowed_inputs(free_input_tokens)
-        print("set allow input tokens.....")
-
-        if library_disallowed_input_token != -1:
-            for vari in library_disallowed_input_token:
-                if vari >= 0 and vari < len(free_input_tokens):
-                    free_input_tokens[vari] = 0
         self.library.set_allowed_input_tokens(free_input_tokens)
         print("For library:", self.library.allowed_tokens, self.library.allowed_input_tokens)
-        print("For data loader:", Program.task.allowed_input, Program.task.fixed_column)
 
-    def print_all_populations(self):
-        for vari in self.populations:
-            print(f"vars={vari}")
-            for pr in self.populations[vari]:
-                print("\t", pr.__getstate__())
+    def _set_dataX_allowed_input_tokens(self, allowed_input_token):
+        """Input is a set of free input variables"""
+        print("set Program allow input tokens.....")
+        free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
+        for vari in allowed_input_token:
+            if 0 <= vari < len(free_input_tokens):
+                free_input_tokens[vari] = 1
+        Program.task.set_allowed_inputs(free_input_tokens)
+        print("For dataX:", Program.task.allowed_input, Program.task.fixed_column)
 
     def print_final_hofs(self):
-        # selected_vars = None
-        print(self.hofs.keys())
-        for key in self.hofs:
-            if len(key.cur) == self.nvar + 1:
-                selected_vars = key
-                print("\n\n")
-                print('%' * 20)
-                print(f"vars={selected_vars}")
-                print('%' * 20)
-                if selected_vars in self.hofs:
-
-                    new_hof = sorted(self.hofs[selected_vars], reverse=True, key=attrgetter('r'))
-                    for pr in new_hof:
-                        print("\t", pr.__getstate__())
-                        pr.task.rand_draw_X_non_fixed()
-                        print('\tvalidate r=', pr.task.reward_function(pr))
-                        pr.task.print_reward_function_all_metrics(pr)
-                        pr.print_expression()
+        self._set_dataX_allowed_input_tokens(self.full_vars)
+        # new_hof = sorted(self.hofs, reverse=True, key=attrgetter('r'))
+        for pr in self.hofs:
+            print("\t", pr.__getstate__())
+            pr.task.rand_draw_X_non_fixed()
+            print('\tvalidate r=', pr.task.reward_function(pr))
+            pr.task.print_reward_function_all_metrics(pr)
+            pr.print_expression()
 
 
 def print_prs(prs):

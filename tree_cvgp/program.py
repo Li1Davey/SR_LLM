@@ -18,152 +18,6 @@ from utils import cached_property
 import utils as U
 
 
-def _finish_tokens(tokens):
-    """
-    Complete a possibly unfinished string of tokens.
-
-    Parameters
-    ----------
-    tokens : list of integers
-        A list of integers corresponding to tokens in the library. The list
-        defines an expression's pre-order traversal.
-
-    Returns
-    _______
-    tokens : list of ints
-        A list of integers corresponding to tokens in the library. The list
-        defines an expression's pre-order traversal. "Dangling" programs are
-        completed with repeated "x1" until the expression completes.
-    """
-
-    n_objects = Program.n_objects
-
-    arities = np.array([Program.library.arities[t] for t in tokens])
-    # Number of dangling nodes, returns the cumsum up to each point
-    # Note that terminal nodes are -1 while functions will be >= 0 since arities - 1
-    dangling = 1 + np.cumsum(arities - 1)
-
-    if -n_objects in (dangling - 1):
-        # Chop off tokens once the cumsum reaches 0, This is the last valid point in the tokens
-        expr_length = 1 + np.argmax((dangling - 1) == -n_objects)
-        tokens = tokens[:expr_length]
-    else:
-        # Extend with valid variables until string is valid
-        # NOTE: This only appends onto the end of a set of tokens, even in the multi-object case!
-        assert n_objects == 1, "Is max length constraint turned on? Max length constraint required when n_objects > 1."
-        tokens = np.append(tokens, np.random.choice(Program.library.input_tokens, size=dangling[-1]))
-
-    return tokens
-
-
-def from_str_tokens(str_tokens, skip_cache=False):
-    """
-    Memoized function to generate a Program from a list of str and/or float.
-    See from_tokens() for details.
-
-    Parameters
-    ----------
-    str_tokens : str | list of (str | float)
-        Either a comma-separated string of tokens and/or floats, or a list of
-        str and/or floats.
-
-    skip_cache : bool
-        See from_tokens().
-
-    Returns
-    -------
-    program : Program
-        See from_tokens().
-    """
-
-    # Convert str to list of str
-    if isinstance(str_tokens, str):
-        str_tokens = str_tokens.split(",")
-
-    # Convert list of str|float to list of tokens
-    if isinstance(str_tokens, list):
-        traversal = []
-        constants = []
-        for s in str_tokens:
-            if s in Program.library.names:
-                t = Program.library.names.index(s.lower())
-            elif U.is_float(s):
-                assert "const" not in str_tokens, "Currently does not support both placeholder and hard-coded constants."
-                t = Program.library.const_token
-                constants.append(float(s))
-            else:
-                raise ValueError("Did not recognize token {}.".format(s))
-            traversal.append(t)
-        traversal = np.array(traversal, dtype=np.int32)
-    else:
-        raise ValueError("Input must be list or string.")
-
-    # Generate base Program (with "const" for constants)
-    p = from_tokens(traversal, skip_cache=skip_cache)
-
-    # Replace any constants
-    p.set_constants(constants)
-
-    return p
-
-
-def from_tokens(tokens, skip_cache=False, on_policy=True, finish_tokens=True):
-    """
-    Memoized function to generate a Program from a list of tokens.
-
-    Since some tokens are nonfunctional, this first computes the corresponding
-    traversal. If that traversal exists in the cache, the corresponding Program
-    is returned. Otherwise, a new Program is returned.
-
-    Parameters
-    ----------
-    tokens : list of integers
-        A list of integers corresponding to tokens in the library. The list
-        defines an expression's pre-order traversal. "Dangling" programs are
-        completed with repeated "x1" until the expression completes.
-
-    skip_cache : bool
-        Whether to bypass the cache when creating the program (used for
-        previously learned symbolic actions in DSP).
-        
-    finish_tokens: bool
-        Do we need to finish this token. There are instances where we have
-        already done this. Most likely you will want this to be True. 
-
-    Returns
-    _______
-    program : Program
-        The Program corresponding to the tokens, either pulled from memoization
-        or generated from scratch.
-    """
-
-    '''
-        Truncate expressions that complete early; extend ones that don't complete
-    '''
-
-    if finish_tokens:
-        tokens = _finish_tokens(tokens)
-
-    # For stochastic Tasks, there is no cache; always generate a new Program.
-    # For deterministic Programs, if the Program is in the cache, return it;
-    # otherwise, create a new one and add it to the cache.
-    if skip_cache or Program.task.stochastic:
-        p = Program(tokens, on_policy=on_policy)
-    else:
-        key = tokens.tostring()
-        try:
-            p = Program.cache[key]
-            if on_policy:
-                p.on_policy_count += 1
-            else:
-                p.off_policy_count += 1
-        except KeyError:
-            p = Program(tokens, on_policy=on_policy)
-            Program.cache[key] = p
-
-    return p
-
-
 class Program(object):
     """
     The executable program representing the symbolic expression.
@@ -251,6 +105,15 @@ class Program(object):
             self._init(tokens, allow_change_tokens)
         self.freezed = False
 
+    def set_node(self, node):
+        self.cur_node=node
+    def update_node(self):
+        appeared_input_vars=[]
+        for i, xi in enumerate(self.traversal):
+            if xi.input_var is not None:
+                appeared_input_vars.append(i)
+        # self.cur_node.
+
     def _init(self, tokens: np.ndarray, allow_change_tokens: np.ndarray):
         # pre-order of the program. the most important thing.
         self.traversal = [Program.library[t] for t in tokens]
@@ -328,7 +191,7 @@ class Program(object):
         return [pos for i, pos in enumerate(self.const_pos) if self.allow_change_tokens[pos]]
 
     def all_tokens_pos(self):
-        # the place the token can be changed
+        # the place of the tokens that can be changed
         return [i for i in range(len(self.allow_change_tokens))]
 
     def subtree_end(self, subtree_start):
@@ -373,66 +236,61 @@ class Program(object):
             # always protected. 1/div
         return result
 
-    def simplify_equation(self):
-        """given the preorder traversal of the program, simplify the program.
-        (add/sub/mul/div, c1, c2) -> c1
-        (exp/log/sin/cos/inv c1) -> c1
-        (div, Xi, Xi)  -> 1
-        (sub, Xi, Xi)  -> 1
-        """
-        flag = True
-        tokens = self.tokens
-        traversal = self.traversal
-        traversal_allows = self.allow_change_tokens
-
-        if len(traversal) < 2:
-            return traversal
-        while flag:
-            flag = False
-            tmp_traversal = []
-            tmp_allows = []
-            tmp_tokens = []
-            i = 0
-            while i < len(traversal):
-                if traversal[i].arity == 2 and isinstance(traversal[i + 1], PlaceholderConstant) and \
-                        isinstance(traversal[i + 2], PlaceholderConstant):
-                    val = traversal[i](traversal[i + 1].value, traversal[i + 2].value)[0]
-                    print(i, val)
-                    tmp_traversal.append(PlaceholderConstant(val))
-                    tmp_allows.append(traversal_allows[i])
-                    tmp_tokens.append(tokens[i])
-                    i += 3
-                    flag = True
-                # if traversal[i].arity == 2 and isinstance(traversal[i + 1], Token) and \
-                #         isinstance(traversal[i + 2], Token) and traversal[i + 1] == traversal[i + 2]:
-                #     print(i)
-                #     flag = True
-                #     i += 2
-                elif traversal[i].arity == 1 and isinstance(traversal[i + 1], PlaceholderConstant):
-                    val = traversal[i](traversal[i + 1].value)[0]
-                    print(i, val)
-                    tmp_traversal.append(PlaceholderConstant(val))
-                    tmp_allows.append(traversal_allows[i])
-                    tmp_tokens.append(tokens[i])
-                    flag = True
-                    i += 2
-                else:
-                    tmp_traversal.append(traversal[i])
-                    tmp_allows.append(traversal_allows[i])
-                    tmp_tokens.append(tokens[i])
-                    i += 1
-            traversal = tmp_traversal
-            traversal_allows = tmp_allows
-            tokens = tmp_tokens
-        if len(traversal) == len(self.traversal):
-            return
-        print("before simplify:", self.traversal)
-        self._init(np.array(tokens, dtype=np.int32), np.array(traversal_allows, dtype=np.int32))
-        self.remove_r_evaluate()
-        for i in range(len(traversal)):
-            if isinstance(traversal[i], PlaceholderConstant):
-                self.traversal[i] = PlaceholderConstant(traversal[i].value)
-        print("after simplify:", self.traversal)
+    # def simplify_equation(self):
+    #     """given the preorder traversal of the program, simplify the program.
+    #     (add/sub/mul/div, c1, c2) -> c1
+    #     (exp/log/sin/cos/inv c1) -> c1
+    #     (div, Xi, Xi)  -> 1
+    #     (sub, Xi, Xi)  -> 1
+    #     """
+    #     flag = True
+    #     tokens = self.tokens
+    #     traversal = self.traversal
+    #     traversal_allows = self.allow_change_tokens
+    #
+    #     if len(traversal) < 2:
+    #         return traversal
+    #     while flag:
+    #         flag = False
+    #         tmp_traversal = []
+    #         tmp_allows = []
+    #         tmp_tokens = []
+    #         i = 0
+    #         while i < len(traversal):
+    #             if traversal[i].arity == 2 and isinstance(traversal[i + 1], PlaceholderConstant) and \
+    #                     isinstance(traversal[i + 2], PlaceholderConstant):
+    #                 val = traversal[i](traversal[i + 1].value, traversal[i + 2].value)[0]
+    #                 print(i, val)
+    #                 tmp_traversal.append(PlaceholderConstant(val))
+    #                 tmp_allows.append(traversal_allows[i])
+    #                 tmp_tokens.append(tokens[i])
+    #                 i += 3
+    #                 flag = True
+    #             elif traversal[i].arity == 1 and isinstance(traversal[i + 1], PlaceholderConstant):
+    #                 val = traversal[i](traversal[i + 1].value)[0]
+    #                 print(i, val)
+    #                 tmp_traversal.append(PlaceholderConstant(val))
+    #                 tmp_allows.append(traversal_allows[i])
+    #                 tmp_tokens.append(tokens[i])
+    #                 flag = True
+    #                 i += 2
+    #             else:
+    #                 tmp_traversal.append(traversal[i])
+    #                 tmp_allows.append(traversal_allows[i])
+    #                 tmp_tokens.append(tokens[i])
+    #                 i += 1
+    #         traversal = tmp_traversal
+    #         traversal_allows = tmp_allows
+    #         tokens = tmp_tokens
+    #     if len(traversal) == len(self.traversal):
+    #         return
+    #     print("before simplify:", self.traversal)
+    #     self._init(np.array(tokens, dtype=np.int32), np.array(traversal_allows, dtype=np.int32))
+    #     self.remove_r_evaluate()
+    #     for i in range(len(traversal)):
+    #         if isinstance(traversal[i], PlaceholderConstant):
+    #             self.traversal[i] = PlaceholderConstant(traversal[i].value)
+    #     print("after simplify:", self.traversal)
 
     def optimize(self):
         """
@@ -466,8 +324,7 @@ class Program(object):
         self.task.rand_draw_X_fixed()
         for expr in range(self.opt_num_expr):
             # Do the optimization
-            # x0 = np.ones(self.num_changing_consts) # Initial guess
-            x0 = np.random.rand(self.num_changing_consts) * 10
+            x0 = np.random.rand(self.num_changing_consts) * 10 # Initial guess
 
             self.task.rand_draw_data_with_X_fixed()
             # the returned constant, and the objective function.
@@ -524,7 +381,7 @@ class Program(object):
 
         if np.max(self.expr_objs) <= self.expr_obj_thres:
             print("objective residual: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
-            self.freezed=True
+            self.freezed = True
             # print(new_program, self.traversal == new_program)
             for pos, t in enumerate(self.traversal):
                 if not isinstance(t, PlaceholderConstant):
@@ -809,3 +666,147 @@ def convert_to_sympy(node):
         convert_to_sympy(child)
 
     return node
+
+
+def _finish_tokens(tokens):
+    """
+    Complete a possibly unfinished string of tokens.
+
+    Parameters
+    ----------
+    tokens : list of integers
+        A list of integers corresponding to tokens in the library. The list
+        defines an expression's pre-order traversal.
+
+    Returns
+    _______
+    tokens : list of ints
+        A list of integers corresponding to tokens in the library. The list
+        defines an expression's pre-order traversal. "Dangling" programs are
+        completed with repeated "x1" until the expression completes.
+    """
+
+    n_objects = Program.n_objects
+
+    arities = np.array([Program.library.arities[t] for t in tokens])
+    # Number of dangling nodes, returns the cumsum up to each point
+    # Note that terminal nodes are -1 while functions will be >= 0 since arities - 1
+    dangling = 1 + np.cumsum(arities - 1)
+
+    if -n_objects in (dangling - 1):
+        # Chop off tokens once the cumsum reaches 0, This is the last valid point in the tokens
+        expr_length = 1 + np.argmax((dangling - 1) == -n_objects)
+        tokens = tokens[:expr_length]
+    else:
+        # Extend with valid variables until string is valid
+        # NOTE: This only appends onto the end of a set of tokens, even in the multi-object case!
+        assert n_objects == 1, "Is max length constraint turned on? Max length constraint required when n_objects > 1."
+        tokens = np.append(tokens, np.random.choice(Program.library.input_tokens, size=dangling[-1]))
+
+    return tokens
+
+
+def from_str_tokens(str_tokens, skip_cache=False):
+    """
+    Memoized function to generate a Program from a list of str and/or float.
+    See from_tokens() for details.
+
+    Parameters
+    ----------
+    str_tokens : str | list of (str | float)
+        Either a comma-separated string of tokens and/or floats, or a list of
+        str and/or floats.
+
+    skip_cache : bool
+        See from_tokens().
+
+    Returns
+    -------
+    program : Program
+        See from_tokens().
+    """
+
+    # Convert str to list of str
+    if isinstance(str_tokens, str):
+        str_tokens = str_tokens.split(",")
+
+    # Convert list of str|float to list of tokens
+    if isinstance(str_tokens, list):
+        traversal = []
+        constants = []
+        for s in str_tokens:
+            if s in Program.library.names:
+                t = Program.library.names.index(s.lower())
+            elif U.is_float(s):
+                assert "const" not in str_tokens, "Currently does not support both placeholder and hard-coded constants."
+                t = Program.library.const_token
+                constants.append(float(s))
+            else:
+                raise ValueError("Did not recognize token {}.".format(s))
+            traversal.append(t)
+        traversal = np.array(traversal, dtype=np.int32)
+    else:
+        raise ValueError("Input must be list or string.")
+
+    # Generate base Program (with "const" for constants)
+    p = from_tokens(traversal, skip_cache=skip_cache)
+
+    # Replace any constants
+    p.set_constants(constants)
+
+    return p
+
+
+def from_tokens(tokens, skip_cache=False, on_policy=True, finish_tokens=True):
+    """
+    Memoized function to generate a Program from a list of tokens.
+
+    Since some tokens are nonfunctional, this first computes the corresponding
+    traversal. If that traversal exists in the cache, the corresponding Program
+    is returned. Otherwise, a new Program is returned.
+
+    Parameters
+    ----------
+    tokens : list of integers
+        A list of integers corresponding to tokens in the library. The list
+        defines an expression's pre-order traversal. "Dangling" programs are
+        completed with repeated "x1" until the expression completes.
+
+    skip_cache : bool
+        Whether to bypass the cache when creating the program (used for
+        previously learned symbolic actions in DSP).
+
+    finish_tokens: bool
+        Do we need to finish this token. There are instances where we have
+        already done this. Most likely you will want this to be True.
+
+    program : Program
+        The Program corresponding to the tokens, either pulled from memoization
+        or generated from scratch.
+    """
+
+    '''
+        Truncate expressions that complete early; extend ones that don't complete
+    '''
+
+    if finish_tokens:
+        tokens = _finish_tokens(tokens)
+
+    # For stochastic Tasks, there is no cache; always generate a new Program.
+    # For deterministic Programs, if the Program is in the cache, return it;
+    # otherwise, create a new one and add it to the cache.
+    if skip_cache or Program.task.stochastic:
+        p = Program(tokens)
+    else:
+        key = tokens.tostring()
+        try:
+            p = Program.cache[key]
+            if on_policy:
+                p.on_policy_count += 1
+            else:
+                p.off_policy_count += 1
+        except KeyError:
+            p = Program(tokens)
+            Program.cache[key] = p
+
+    return p

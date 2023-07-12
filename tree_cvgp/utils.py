@@ -5,6 +5,7 @@ import copy
 import functools
 import numpy as np
 import time
+from typing import List
 import itertools
 
 
@@ -12,102 +13,48 @@ import itertools
 #     return list(set(arr))
 
 
-class Tree(object):
-    """
-    this data structure maintain different variable ordering as a tree.
-    """
-
-    def __init__(self, nvar, max_width=6):
-        self.layers = nvar + 2
-        self.maxwidth_pool_idxes = [[] for i in range(self.layers)]
-        self.max_width = max_width
-        self.maxwidth_pool_idxes[-1].append(Node((-1,), (-1,), (-1,)))
-        self.maxwidth_pool_idxes[0].append(Node((-1,), (-1,), (-1,)))
-
-    def insert_node(self, one_node):
-        if not one_node:
-            return False
-        if one_node in self.maxwidth_pool_idxes[len(one_node.cur)]:
-            print("new_pool_idx {} already discovered {}".format(one_node, self.maxwidth_pool_idxes[len(one_node.cur)]))
-            return False
-
-        if self.max_width > 0 and len(self.maxwidth_pool_idxes[len(one_node.cur)]) > self.max_width:
-            print(f"max width reached {len(one_node.cur)}-layer {len(self.maxwidth_pool_idxes[len(one_node.cur)])}")
-            return False
-
-        self.maxwidth_pool_idxes[len(one_node.cur)].append(one_node)
-        return True
-
-    def all_pair_combinations(self):
-        visited = set()
-        historical_pools_idxes = []
-        for i in range(self.layers):
-            for node in self.maxwidth_pool_idxes[i]:
-                if node.cur not in visited:
-                    historical_pools_idxes.append(node)
-                    visited.add(node.cur)
-        to_be_merged_pool_pairs = []
-        if len(historical_pools_idxes) != 0:
-            for one_pool_idx, another_pool_idx in itertools.combinations(historical_pools_idxes, r=2):
-                to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
-        return to_be_merged_pool_pairs
-
-    def combine_with_one_var_pool_idxes(self, given_layer, chosen_layer=1):
-        one_var_pool_indexes = []
-        if given_layer + 2 == self.layers:
-            chosen_layer = 0
-        for node in self.maxwidth_pool_idxes[chosen_layer]:
-            one_var_pool_indexes.append(node)
-        #
-        historical_pools_idxes = []
-
-        for node in self.maxwidth_pool_idxes[given_layer]:
-            if node not in historical_pools_idxes:
-                historical_pools_idxes.append(node)
-        to_be_merged_pool_pairs = []
-        if len(historical_pools_idxes) != 0:
-            for one_pool_idx, another_pool_idx in itertools.product(historical_pools_idxes, one_var_pool_indexes):
-                to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
-        if given_layer +2 == self.layers:
-            to_be_merged_pool_pairs=[(y,x) for x,y in to_be_merged_pool_pairs]
-        return to_be_merged_pool_pairs
-
-
 # this node is used for keep track of variable ordering
 class Node(object):
-    def __init__(self, l: tuple = None, r: tuple = None, cur: tuple = None):
-        # l:left parent pool idx. It is a tuple or None, r right parent pool idx
-        self.l = l
-        self.r = r
-        if not cur:
-            new_pool_idx = self.l + self.r
-            self.cur = tuple(new_pool_idx)
+    def __init__(self, prev_vf: List = None, next_vf: List = None, total_vf: List = None):
+        """
+
+        Parameters
+        ----------
+        prev_vf: previous free variables
+        next_vf: next free variables
+        total_vf: all free variables
+        """
+        self.prev_vf = prev_vf
+        self.next_vf = next_vf
+        if not total_vf:
+            self.total_vf = self.prev_vf
+            self.total_vf.extend(self.next_vf)
         else:
-            self.cur = cur
+            self.total_vf = total_vf
 
     def __eq__(self, other):
         if not other:
             return False
-        if self.l == other.l and self.r == other.r and self.cur == other.cur:
+        if self.prev_vf == other.prev_vf and self.next_vf == other.next_vf and self.total_vf == other.total_vf:
             return True
         return False
 
     def __repr__(self):
-        return f"{self.l},{self.r}->{self.cur}"
+        return f"{self.prev_vf},{self.next_vf}->{self.total_vf}"
 
     def __hash__(self):
-        return hash(f"{self.l},{self.r}->{self.cur}")
+        return hash(f"{self.prev_vf},{self.next_vf}->{self.total_vf}")
 
 
-def create_node(one_pool_idx, another_pool_idx):
-    # assert len(another_pool_idx.cur) == 1, "another pool must be one variable!"
-    if one_pool_idx == another_pool_idx or another_pool_idx.cur[0] in set(one_pool_idx.cur):
-        return None
-    new_pool_idx = one_pool_idx.cur + another_pool_idx.cur
-    new_pool_idx = tuple(new_pool_idx)
-    if new_pool_idx == one_pool_idx.cur or new_pool_idx == another_pool_idx.cur:
-        return None
-    return Node(one_pool_idx.cur, another_pool_idx.cur, new_pool_idx)
+def create_node(prev_node, new_vf):
+    # if prev_node == another_pool_idx or another_pool_idx.cur[0] in set(one_pool_idx.cur):
+    #     return None
+    new_total_vf = prev_node.total_vf
+    new_total_vf.extend(new_vf)
+    # new_pool_idx = tuple(new_pool_idx)
+    # if new_pool_idx == one_pool_idx.total_vf or new_pool_idx == another_pool_idx.total_vf:
+    #     return None
+    return Node(prev_node.total_vf, new_vf, new_total_vf)
 
 
 def create_geometric_generations(n_generations, nvar):
