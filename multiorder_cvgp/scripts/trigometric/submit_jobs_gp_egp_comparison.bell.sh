@@ -5,9 +5,9 @@ type=$1
 nv=$2
 nt=$3
 
-thispath=$basepath/tree_cvgp_nan
+thispath=$basepath/multiorder_cvgp
 data_path=$basepath/data/unencrypted/equations_trigometric
-py3615=/home/jiang631/workspace/miniconda3/envs/py3615/bin/python3
+py3615=/home/jiang631/workspace/miniconda3/bin/python3
 
 noise_type=normal
 noise_scale=0.0
