@@ -524,7 +524,7 @@ class Program(object):
 
         if np.max(self.expr_objs) <= self.expr_obj_thres:
             print("objective residual: {}, threshold {}".format(self.expr_objs, self.expr_obj_thres))
-            self.freezed=True
+            self.freezed = True
             # print(new_program, self.traversal == new_program)
             for pos, t in enumerate(self.traversal):
                 if not isinstance(t, PlaceholderConstant):
@@ -540,7 +540,7 @@ class Program(object):
                     if np.std(self.expr_consts[:, i]) <= self.expr_consts_thres:
                         self.allow_change_tokens[pos] = 0
                 except IndexError:
-                    print(i, self.const_pos, self.traversal)
+                    print("IndexError", i, self.const_pos, self.traversal)
                     print(self.expr_consts)
 
                 self.num_changing_consts += self.allow_change_tokens[pos]

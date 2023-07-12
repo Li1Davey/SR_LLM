@@ -68,8 +68,8 @@ class Tree(object):
         if len(historical_pools_idxes) != 0:
             for one_pool_idx, another_pool_idx in itertools.product(historical_pools_idxes, one_var_pool_indexes):
                 to_be_merged_pool_pairs.append((one_pool_idx, another_pool_idx))
-        if given_layer +2 == self.layers:
-            to_be_merged_pool_pairs=[(y,x) for x,y in to_be_merged_pool_pairs]
+        if given_layer + 2 == self.layers:
+            to_be_merged_pool_pairs = [(y, x) for x, y in to_be_merged_pool_pairs]
         return to_be_merged_pool_pairs
 
 

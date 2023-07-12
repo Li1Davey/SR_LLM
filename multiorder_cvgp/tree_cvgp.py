@@ -87,6 +87,11 @@ class ExpandingGeneticProgram(object):
 
         # 2. apply GP for every single POOL
         for round_idx in range(self.nvar + 1):
+            if round_idx == self.nvar:
+                # XYX on Jan 5: in the last iteration there is no constants
+                #               that can be changed among different experiments.
+                Program.task.batchsize *= Program.opt_num_expr
+                Program.opt_num_expr = 1
             for cur_node in current_node_lists:
                 print(cur_node)
                 # 2.1 set the free variables and controlled variables for the given POOL
@@ -100,7 +105,7 @@ class ExpandingGeneticProgram(object):
                     pr.remove_r_evaluate()
                     thisr = pr.r
 
-                # self.update_population(cur_node)
+
                 # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
                 for it in range(self.n_generations):
                     print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(cur_node.cur, it))
@@ -113,14 +118,16 @@ class ExpandingGeneticProgram(object):
                 # 2.4 freeze tokens in the expressions
                 for i, pr in enumerate(self.populations[cur_node]):
                     # evaluate r again, just incase it has not been evaluated.
-                    this_r = pr.r
+                    _ = pr.r
                     if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
                         # only expand at those constant node. if there are no constant node,then we are done
                         # if we do not want num_changing_consts, then we also quit.
                         print('there are no constant node. we are done...')
                     else:
-                        pr.remove_r_evaluate()
-                        this_r = pr.r
+                        if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
+                            print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
+                            pr.remove_r_evaluate()
+                            _ = pr.r
                     # whether you get very different value for different constant.
                     pr.freeze_equation()
                     # pr.simplify_equation()
@@ -207,20 +214,20 @@ class ExpandingGeneticProgram(object):
         self.hofs[pool_idx] = []
         for i in range(self.hof_size):
             pr = new_hof[i]
-            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
-                print("filter:", pr.r, pr.__getstate__(), end="\t")
-                pr.print_expression()
-                continue
+            # if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
+            #     print("filter:", pr.r, pr.__getstate__(), end="\t")
+            #     pr.print_expression()
+            #     continue
             self.hofs[pool_idx].append(pr.clone())
 
     def update_population(self, pool_idx):
         """update the population in the given indexed pool. sort by fitness score and cut by population_size"""
         filtered_population = []
         for pr in self.populations[pool_idx]:
-            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
-                print("filter:", pr.r, pr.__getstate__(), end="\t")
-                pr.print_expression()
-                continue
+            # if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
+            #     print("filter:", pr.r, pr.__getstate__(), end="\t")
+            #     pr.print_expression()
+            #     continue
             filtered_population.append(pr)
         new_population = sorted(filtered_population, reverse=True, key=attrgetter('r'))
         self.populations[pool_idx] = []
