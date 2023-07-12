@@ -44,18 +44,18 @@ class ExpandingGeneticProgram(object):
 
     def create_init_population(self):
         """
-           create the initial population; for every variable, a set of generate random equations.
+           create the initial population; for every variable, generate a set of generate random equations.
            save them to self.populations, self.hofs.
-           for every single pool: look for every token in library, fill in the leaves with constants or inputs.
+           look for every token in library, fill in the leaves with constants or inputs.
         """
         self.populations = []
         self.hofs = []
-        current_node_lists = []
+
         for vari in range(self.nvar):
             tmp_node = Node(prev_vf=[-1, ], next_vf=[vari, ])
             self._set_dataX_allowed_input_tokens(tmp_node.total_vf)
             self._set_library_allowed_input_tokens(tmp_node.next_vf)
-            current_node_lists.append(tmp_node)
+
             for i, t in enumerate(self.library.tokens):
                 if self.library.allowed_tokens[i]:
                     tree = [i]
@@ -66,36 +66,29 @@ class ExpandingGeneticProgram(object):
                         tree.append(t_idx)
                     tree = np.array(tree)
                     pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                    pr.set_node(tmp_node)
+                    pr.cur_node=tmp_node
                     self.populations.append(pr)
                     new_pr = pr.clone()
                     self.hofs.append(new_pr)
-        return current_node_lists
 
     def run_with_tree_based_randomized_variable_ordering(self):
         # 1. generate all single variable equations by creating `#nvar` POOLS.
 
         self.create_init_population()
-        print("=" * 20 + "Init Population" + "=" * 20)
-        for pr in self.populations:
-            pr.print_expression()
-        print('-' * 50)
-
         # 2. apply GP
         for round_idx in range(self.nvar + 1):
             for pr in self.populations:
                 # 2.1 set the free variables and controlled variables for the given POOL
                 # 2.2 re-evaluate the constants and reward for the given POOL
-                self._set_dataX_allowed_input_tokens(pr.cur_node)
+                self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf)
                 # a cached property in python (evaluated once) force the function to evaluate a new r
                 pr.remove_r_evaluate()
                 # finds the best constants on control variable data
-                thisr = pr.r  # goodness-of-fit
+                _ = pr.r  # goodness-of-fit
             for pr in self.hofs:
-                self._set_dataX_allowed_input_tokens(pr.cur_node)
+                self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf)
                 pr.remove_r_evaluate()
-                thisr = pr.r
-
+                _ = pr.r
 
             # 2.3  do n generation of GP,
             for it in range(self.n_generations):
@@ -108,6 +101,7 @@ class ExpandingGeneticProgram(object):
             # 2.5 freeze tokens in the expressions
             for i, pr in enumerate(self.populations):
                 # evaluate r again, just incase it has not been evaluated.
+                self._set_dataX_allowed_input_tokens(pr.cur_node)
                 this_r = pr.r
                 if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
                     # only expand at those constant node. if there are no constant node,then we are done
@@ -118,7 +112,6 @@ class ExpandingGeneticProgram(object):
                     this_r = pr.r
                 # whether you get very different value for different constant.
                 pr.freeze_equation()
-                # pr.simplify_equation()
 
     def one_generation(self, verbose=False):
         """
@@ -182,7 +175,9 @@ class ExpandingGeneticProgram(object):
             self.populations.append(new_population[i].clone())
 
     def selectTournament(self, population_size, tour_size):
+        """evaluate on full data for tournament"""
         offspring = []
+        self._set_dataX_allowed_input_tokens(self.full_vars)
         for pp in range(population_size):
             spr = np.random.choice(self.populations, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
@@ -206,25 +201,27 @@ class ExpandingGeneticProgram(object):
 
         return offspring
 
-    def _set_library_allowed_input_tokens(self, allowed_input_token):
+    def _set_library_allowed_input_tokens(self, allowed_input_token, verbose=False):
         """Input is a set of free input variables"""
-        print("set library allow input tokens.....")
+        # print("set library allow input tokens.....")
         free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
         for vari in allowed_input_token:
             if 0 <= vari < len(free_input_tokens):
                 free_input_tokens[vari] = 1
         self.library.set_allowed_input_tokens(free_input_tokens)
-        print("For library:", self.library.allowed_tokens, self.library.allowed_input_tokens)
+        if verbose:
+            print("For library:", self.library.allowed_tokens, self.library.allowed_input_tokens)
 
-    def _set_dataX_allowed_input_tokens(self, allowed_input_token):
+    def _set_dataX_allowed_input_tokens(self, allowed_input_token, verbose=False):
         """Input is a set of free input variables"""
-        print("set Program allow input tokens.....")
+        # print("set Program allow input tokens.....")
         free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
         for vari in allowed_input_token:
             if 0 <= vari < len(free_input_tokens):
                 free_input_tokens[vari] = 1
         Program.task.set_allowed_inputs(free_input_tokens)
-        print("For dataX:", Program.task.allowed_input, Program.task.fixed_column)
+        if verbose:
+            print("For dataX:", Program.task.allowed_input, Program.task.fixed_column)
 
     def print_final_hofs(self):
         self._set_dataX_allowed_input_tokens(self.full_vars)

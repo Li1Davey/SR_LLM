@@ -86,7 +86,7 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
                                   tour_size, hof_size, n_generations, nvar)
 
     # run GP
-    egp.run_with_tree_based_randomized_variable_ordering(maximum_width=max_width)
+    egp.run_with_tree_based_randomized_variable_ordering()
 
     # print
     print('final hof=')
