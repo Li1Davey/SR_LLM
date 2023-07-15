@@ -106,9 +106,10 @@ class Program(object):
         self.freezed = False
 
     def set_node(self, node):
-        self.cur_node=node
+        self.cur_node = node
+
     def update_node(self):
-        appeared_input_vars=[]
+        appeared_input_vars = []
         for i, xi in enumerate(self.traversal):
             if xi.input_var is not None:
                 appeared_input_vars.append(i)
@@ -325,7 +326,7 @@ class Program(object):
         self.task.rand_draw_X_fixed()
         for expr in range(self.opt_num_expr):
             # Do the optimization
-            x0 = np.random.rand(self.num_changing_consts) * 10 # Initial guess
+            x0 = np.random.rand(self.num_changing_consts) * 10  # Initial guess
 
             self.task.rand_draw_data_with_X_fixed()
             # the returned constant, and the objective function.
@@ -456,7 +457,7 @@ class Program(object):
 
         # Check if cython_execute can be imported; if not, fall back to python_execute
         try:
-            from dso import cyfunc
+            import cyfunc
             from execute import cython_execute
             execute_function = cython_execute
             Program.have_cython = True

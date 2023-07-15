@@ -6,7 +6,7 @@ from const import ScipyMinimize
 from symbolic_data_generator import DataX
 from symbolic_equation_evaluator_public import Equation_evaluator
 from functions import create_tokens
-from regress_task import RegressTaskV1
+from regress_task import RegressTask
 from randomized_cvgp import ExpandingGeneticProgram
 from gp_helper import GPHelper
 
@@ -69,10 +69,10 @@ def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, n
     # set it for now. Will change in gp.run
     allowed_input_tokens = np.zeros(nvar, dtype=np.int32)
     # set the task
-    Program.task = RegressTaskV1(regress_batchsize,
-                                 allowed_input_tokens,
-                                 dataXgen,
-                                 data_query_oracle)
+    Program.task = RegressTask(regress_batchsize,
+                               allowed_input_tokens,
+                               dataXgen,
+                               data_query_oracle)
 
     # set gp helper
     gp_helper = GPHelper()

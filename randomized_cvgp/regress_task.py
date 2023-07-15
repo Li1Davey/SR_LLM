@@ -1,7 +1,7 @@
 import numpy as np
 
 
-class RegressTaskV1(object):
+class RegressTask(object):
     """
     input parameters:
 
