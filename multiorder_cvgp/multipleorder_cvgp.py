@@ -3,7 +3,8 @@ import numpy as np
 from operator import attrgetter
 from program import Program
 from utils import Node, Tree, create_node, create_uniform_generations, create_geometric_generations
-from concurrent.futures import ProcessPoolExecutor
+from concurrent.futures import ProcessPoolExecutor, as_completed
+
 
 class ExpandingGeneticProgram(object):
     """
@@ -94,43 +95,17 @@ class ExpandingGeneticProgram(object):
                 Program.task.batchsize *= Program.opt_num_expr
                 Program.opt_num_expr = 1
 
-            for cur_node in current_node_lists:
-                print(cur_node)
-                # 2.1 set the free variables and controlled variables for the given POOL
-                self._set_allowed_input_tokens(cur_node)
-                # 2.2 re-evaluate the constants and reward for the given POOL
-                for pr in self.populations[cur_node]:
-                    # a cached property in python (evaluated once) force the function to evaluate a new r
-                    pr.remove_r_evaluate()
-                    thisr = pr.r  # goodness-of-fit
-                for pr in self.hofs[cur_node]:
-                    pr.remove_r_evaluate()
-                    thisr = pr.r
+            all_threads = []
+            with ProcessPoolExecutor(max_workers=maximum_width) as executor:
+                for cur_node in current_node_lists:
+                    all_threads.append(
+                        executor.submit(self.run_func, cur_node, round_idx))
 
-                # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
-                for it in range(self.n_generations[round_idx]):
-                    print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(cur_node.cur, it))
-                    self.one_generation(cur_node)
-
-                self.update_population(cur_node)
-                print(f'populations {cur_node}')
-                print_prs(self.populations[cur_node])
-
-                # 2.4 freeze tokens in the expressions
-                for i, pr in enumerate(self.populations[cur_node]):
-                    # evaluate r again, just incase it has not been evaluated.
-                    _ = pr.r
-                    if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
-                        # only expand at those constant node. if there are no constant node,then we are done
-                        # if we do not want num_changing_consts, then we also quit.
-                        print('there are no constant node. we are done...')
-                    else:
-                        if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
-                            print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
-                            pr.remove_r_evaluate()
-                            _ = pr.r
-                    # whether you get very different value for different constant.
-                    pr.freeze_equation()
+            for x in as_completed(all_threads):
+                ret = x.result()
+                print(ret)
+            with ProcessPoolExecutor() as executor:
+                executor.map(self.run_func, current_node_lists)
 
             # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
             if len(current_node_lists) == 0:
@@ -154,6 +129,45 @@ class ExpandingGeneticProgram(object):
                 self.hofs[tmp_node] = one_joint_pool
                 new_pool_idxes.append(tmp_node)
             current_node_lists = new_pool_idxes
+
+    def run_func(self, cur_node,round_idx):
+
+        print(cur_node)
+        # 2.1 set the free variables and controlled variables for the given POOL
+        self._set_allowed_input_tokens(cur_node)
+        # 2.2 re-evaluate the constants and reward for the given POOL
+        for pr in self.populations[cur_node]:
+            # a cached property in python (evaluated once) force the function to evaluate a new r
+            pr.remove_r_evaluate()
+            thisr = pr.r  # goodness-of-fit
+        for pr in self.hofs[cur_node]:
+            pr.remove_r_evaluate()
+            thisr = pr.r
+
+        # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
+        for it in range(self.n_generations[round_idx]):
+            print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(cur_node.cur, it))
+            self.one_generation(cur_node)
+
+        self.update_population(cur_node)
+        print(f'populations {cur_node}')
+        print_prs(self.populations[cur_node])
+
+        # 2.4 freeze tokens in the expressions
+        for i, pr in enumerate(self.populations[cur_node]):
+            # evaluate r again, just incase it has not been evaluated.
+            _ = pr.r
+            if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
+                # only expand at those constant node. if there are no constant node,then we are done
+                # if we do not want num_changing_consts, then we also quit.
+                print('there are no constant node. we are done...')
+            else:
+                if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
+                    print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
+                    pr.remove_r_evaluate()
+                    _ = pr.r
+            # whether you get very different value for different constant.
+            pr.freeze_equation()
 
     def create_new_pools(self, one_pool_idx, another_pool_idx):
         """

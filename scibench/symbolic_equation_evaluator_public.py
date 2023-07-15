@@ -12,7 +12,11 @@ import numpy as np
 import time
 
 EQUATION_EXTENSION = ".in"
-
+try:
+    import cyfunc
+except ImportError:
+    cyfunc = None
+import array
 
 class Equation_evaluator(object):
     def __init__(self, true_equation_filename, noise_type='normal', noise_scale=0.0, metric_name="neg_nmse"):
@@ -46,11 +50,8 @@ class Equation_evaluator(object):
 
         one_equation = decrypt_equation(self.eq_name, key_filename=key_filename)
         num_vars = int(one_equation['num_vars'])
-        kwargs_list = [{'real': True} for _ in range(num_vars)]
-
-        assert len(kwargs_list) == num_vars
         self.num_vars = num_vars
-        x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
+        x = [Symbol(f'X_{i}') for i in range(self.num_vars)]
         return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set'], \
             one_equation['vars_range_and_types'], parse_expr(one_equation['expr']), one_equation['expr_obj_thres']
 
@@ -64,22 +65,22 @@ class Equation_evaluator(object):
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
 
-        y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
-        if np.sum(np.isnan(y_true)) >= 1:
-            raise NotImplementedError("the true expression contains Nan value")
-        if np.sum(np.isinf(y_true)) >= 1:
-            raise NotImplementedError("the true expression contains inf value")
+        self.y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
+        if np.sum(np.isnan(self.y_true)) >= 1:
+            raise OverflowError("the true expression contains Nan value")
+        if np.sum(np.isinf(self.y_true)) >= 1:
+            raise OverflowError("the true expression contains inf value")
 
         """
         the following part is used to double check if the preorder traversal correctly computes the output.
         """
         if debug_mode:
             y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
-            for y_i, y_hat_i in zip(y_true, y_hat):
+            for y_i, y_hat_i in zip(self.y_true, y_hat):
                 if np.abs(y_i - y_hat_i) > 1e-10:
                     raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
 
-        return y_true
+        return self.y_true
 
     def get_symbolic_output(self, X_test):
         var_x = self.expr.free_symbols
@@ -98,7 +99,6 @@ class Equation_evaluator(object):
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
         """
         y_true = self.evaluate(X)
-        # assert y_true.shape == y_pred.shape, "the dimension of the output mismatch!"
         if verbose:
             print("X=", X[:2, :])
             print("y_true: {}, y_pred: {}".format(y_true[:5], y_pred[:5]))
@@ -201,8 +201,7 @@ def decrypt_equation(eq_file, key_filename=None):
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
         list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1), PlaceholderConstant(1.0)]
-    # if 'const' in preorder_traversal:
-    #     list_of_tokens = list_of_tokens + [PlaceholderConstant(1.0)]
+
     protected_library = sciLibrary(list_of_tokens)
 
     sciProgram.library = protected_library
@@ -389,6 +388,9 @@ def expneg(x1):
 def n3(x1):
     return np.power(x1, 3)
 
+def n2(x1):
+    return np.power(x1, 2)
+
 
 def n4(x1):
     return np.power(x1, 4)
@@ -437,6 +439,7 @@ unprotected_ops = [
     sciToken(logabs, "logabs", arity=1, complexity=4),
     sciToken(expneg, "expneg", arity=1, complexity=4),
     sciToken(np.square, "n2", arity=1, complexity=2),
+
     sciToken(n3, "n3", arity=1, complexity=3),
     sciToken(n4, "n4", arity=1, complexity=3),
     sciToken(n5, "n5", arity=2, complexity=3),
@@ -612,8 +615,14 @@ class sciProgram(object):
     @classmethod
     def set_execute(cls, protected):
         """Sets which execute method to use"""
+        try:
+            import cyfunc
+            execute_function = cython_execute
+            sciProgram.have_cython = True
 
-        execute_function = python_execute
+        except ImportError:
+            execute_function = python_execute
+            sciProgram.have_cython = False
 
         if protected:
             sciProgram.protected = True
@@ -727,3 +736,29 @@ def python_execute(traversal, X):
 
     assert False, "Function should never get here!"
     return None
+
+
+
+def cython_execute(traversal, X):
+    """
+    Execute cython function using given traversal over input X.
+
+    Parameters
+    ----------
+
+    traversal : list
+        A list of nodes representing the traversal over a Program.
+    X : np.array
+        The input values to execute the traversal over.
+
+    Returns
+    -------
+
+    result : float
+        The result of executing the traversal.
+    """
+    if len(traversal) > 1:
+        is_input_var = array.array('i', [t.input_var is not None for t in traversal])
+        return cyfunc.execute(X, len(traversal), traversal, is_input_var)
+    else:
+        return python_execute(traversal, X)

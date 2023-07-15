@@ -7,7 +7,7 @@ from symbolic_data_generator import DataX
 from symbolic_equation_evaluator_public import Equation_evaluator
 from functions import create_tokens
 from regress_task import RegressTaskV1
-from tree_cvgp import ExpandingGeneticProgram
+from multipleorder_cvgp import ExpandingGeneticProgram
 from gp_helper import GPHelper
 
 import numpy as np

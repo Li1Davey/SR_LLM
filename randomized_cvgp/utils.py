@@ -7,7 +7,7 @@ import numpy as np
 import time
 from typing import List
 import itertools
-
+import copy
 
 # def unique(arr):
 #     return list(set(arr))
@@ -27,7 +27,7 @@ class Node(object):
         self.prev_vf = prev_vf
         self.next_vf = next_vf
         if not total_vf:
-            self.total_vf = self.prev_vf
+            self.total_vf = copy.copy(self.prev_vf)
             self.total_vf.extend(self.next_vf)
         else:
             self.total_vf = total_vf
@@ -40,7 +40,7 @@ class Node(object):
         return False
 
     def __repr__(self):
-        return f"{self.prev_vf},{self.next_vf}->{self.total_vf}"
+        return f"hist={self.prev_vf},next={self.next_vf}->total={self.total_vf}"
 
     def __hash__(self):
         return hash(f"{self.prev_vf},{self.next_vf}->{self.total_vf}")

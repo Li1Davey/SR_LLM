@@ -175,8 +175,8 @@ if __name__ == '__main__':
     #
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_debug_cvgp')
 
-    # from equations_trigometric import *
-    #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
+    from equations_trigometric import *
+
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
 
 #

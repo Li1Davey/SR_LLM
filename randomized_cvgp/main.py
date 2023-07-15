@@ -7,7 +7,7 @@ from symbolic_data_generator import DataX
 from symbolic_equation_evaluator_public import Equation_evaluator
 from functions import create_tokens
 from regress_task import RegressTaskV1
-from tree_cvgp import ExpandingGeneticProgram
+from randomized_cvgp import ExpandingGeneticProgram
 from gp_helper import GPHelper
 
 import numpy as np
@@ -27,11 +27,10 @@ config = {
 }
 
 
-def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, noise_type, noise_scale):
+def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
-    max_width = max(max_width, nvar)
 
     regress_batchsize = 256
     opt_num_expr = 5
@@ -44,10 +43,10 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     mutpb = 0.5
     maxdepth = 2
     tour_size = 3
-    hof_size = 20  # 0
+    hof_size = 10  # 0
 
-    population_size = 100
-    n_generations = 15
+    population_size = 20
+    n_generations = 100
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
@@ -86,7 +85,7 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
                                   tour_size, hof_size, n_generations, nvar)
 
     # run GP
-    egp.run_with_tree_based_randomized_variable_ordering()
+    egp.run_with_randomized_variable_ordering()
 
     # print
     print('final hof=')
@@ -97,7 +96,7 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--equation_name", help="the filename of the true program.")
-    parser.add_argument("--maxwidth", type=int, default=6, help="The name of the noises.")
+    # parser.add_argument("--scheduled_pace", type=int, default=6, help="The name of the noises.")
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
@@ -112,4 +111,4 @@ if __name__ == '__main__':
     np.random.seed(seed)
     print('np.random seed=', seed)
 
-    run_tree_based_control_variable_gp(args.equation_name, args.maxwidth, args.metric_name, args.noise_type, args.noise_scale)
+    run_randomized_control_variable_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)

@@ -2,7 +2,7 @@ import time
 import numpy as np
 from operator import attrgetter
 from program import Program
-from utils import Node, create_node
+from utils import Node, create_node, create_uniform_generations
 
 
 class ExpandingGeneticProgram(object):
@@ -33,7 +33,7 @@ class ExpandingGeneticProgram(object):
         self.tour_size = tour_size
         self.hof_size = hof_size
 
-        self.n_generations = n_generations
+        self.n_generations = create_uniform_generations(n_generations, nvar + 1)
 
         self.timer_log = []
 
@@ -52,7 +52,7 @@ class ExpandingGeneticProgram(object):
         self.hofs = []
 
         for vari in range(self.nvar):
-            tmp_node = Node(prev_vf=[-1, ], next_vf=[vari, ])
+            tmp_node = Node(prev_vf=[], next_vf=[vari, ])
             self._set_dataX_allowed_input_tokens(tmp_node.total_vf)
             self._set_library_allowed_input_tokens(tmp_node.next_vf)
 
@@ -66,32 +66,30 @@ class ExpandingGeneticProgram(object):
                         tree.append(t_idx)
                     tree = np.array(tree)
                     pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                    pr.cur_node=tmp_node
+                    pr.cur_node = tmp_node
                     self.populations.append(pr)
                     new_pr = pr.clone()
                     self.hofs.append(new_pr)
 
-    def run_with_tree_based_randomized_variable_ordering(self):
-        # 1. generate all single variable equations by creating `#nvar` POOLS.
-
+    def run_with_randomized_variable_ordering(self):
+        # 1. generate all single variable equations
         self.create_init_population()
         # 2. apply GP
         for round_idx in range(self.nvar + 1):
             for pr in self.populations:
-                # 2.1 set the free variables and controlled variables for the given POOL
-                # 2.2 re-evaluate the constants and reward for the given POOL
-                self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf)
-                # a cached property in python (evaluated once) force the function to evaluate a new r
+                # 2.1 set the free variables and controlled variables
+                # 2.2 re-evaluate the constants and goodness-of-fit.
+                self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf, verbose=True)
                 pr.remove_r_evaluate()
-                # finds the best constants on control variable data
-                _ = pr.r  # goodness-of-fit
+                # finds the best constants on control variable data, and then computes  goodness-of-fit.
+                _ = pr.r
             for pr in self.hofs:
                 self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf)
                 pr.remove_r_evaluate()
                 _ = pr.r
 
             # 2.3  do n generation of GP,
-            for it in range(self.n_generations):
+            for it in range(self.n_generations[round_idx]):
                 print('++++++++++++ ITERATION {} ++++++++++++'.format(it))
                 self.one_generation()
             # 2.4 find the best set of fitted expressions
@@ -144,40 +142,10 @@ class ExpandingGeneticProgram(object):
         timer = time.perf_counter() - t1
         self.timer_log.append(timer)
 
-    def update_hof(self):
-        """update the set of Hall of Fame for the given pool_idx pool"""
-        new_hof = sorted(self.populations, reverse=True, key=attrgetter('r'))
-
-        self.hofs = []
-        for i in range(self.hof_size):
-            pr = new_hof[i]
-            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
-                print("filter:", pr.r, pr.__getstate__(), end="\t")
-                pr.print_expression()
-                continue
-            self.hofs.append(pr.clone())
-
-    def update_population(self):
-        """update the population. sort by fitness score and cut by population_size.
-        evaluated on all random dataset.
-        """
-        filtered_population = []
-        for pr in self.populations:
-            if pr.r == np.nan or pr.r == np.inf or pr.r == -np.inf:
-                print("filter:", pr.r, pr.__getstate__(), end="\t")
-                pr.print_expression()
-                continue
-            filtered_population.append(pr)
-        self._set_dataX_allowed_input_tokens(self.full_vars)
-        new_population = sorted(filtered_population, reverse=True, key=attrgetter('r'))
-        self.populations = []
-        for i in range(min(self.population_size, len(filtered_population))):
-            self.populations.append(new_population[i].clone())
-
     def selectTournament(self, population_size, tour_size):
         """evaluate on full data for tournament"""
         offspring = []
-        self._set_dataX_allowed_input_tokens(self.full_vars)
+        # self._set_dataX_allowed_input_tokens(self.full_vars)
         for pp in range(population_size):
             spr = np.random.choice(self.populations, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
@@ -187,6 +155,11 @@ class ExpandingGeneticProgram(object):
 
     def _var_and(self, offspring):
         """Apply crossover AND mutation to each individual in a population, given a constant probability."""
+        # Apply mutation on the offspring
+        for i in range(len(offspring)):
+            if np.random.random() < self.mutpb:
+                self._set_dataX_allowed_input_tokens(offspring[i].total_vf)
+                self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
 
         # Apply crossover on the offspring
         np.random.shuffle(offspring)
@@ -194,12 +167,18 @@ class ExpandingGeneticProgram(object):
             if np.random.random() < self.cxpb:
                 self.gp_helper.mate(offspring[i - 1], offspring[i])
 
-        # Apply mutation on the offspring
-        for i in range(len(offspring)):
-            if np.random.random() < self.mutpb:
-                self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
-
         return offspring
+
+    def update_hof(self):
+        """update the set of Hall of Fame for the given pool_idx pool"""
+        new_hof = sorted(self.populations, reverse=True, key=attrgetter('r'))
+        self.hofs = [new_hof[i].clone() for i in range(self.hof_size)]
+
+    def update_population(self):
+        """update the population. sort by fitness score and cut by population_size.
+        """
+        new_population = sorted(self.populations, reverse=True, key=attrgetter('r'))
+        self.populations = [new_population[i].clone() for i in range(self.population_size)]
 
     def _set_library_allowed_input_tokens(self, allowed_input_token, verbose=False):
         """Input is a set of free input variables"""
@@ -221,17 +200,16 @@ class ExpandingGeneticProgram(object):
                 free_input_tokens[vari] = 1
         Program.task.set_allowed_inputs(free_input_tokens)
         if verbose:
-            print("For dataX:", Program.task.allowed_input, Program.task.fixed_column)
+            print("For dataX: {} Program.task.allowed_input:{} fixed_column:{}".format(allowed_input_token, Program.task.allowed_input, Program.task.fixed_column))
 
     def print_final_hofs(self):
         self._set_dataX_allowed_input_tokens(self.full_vars)
-        # new_hof = sorted(self.hofs, reverse=True, key=attrgetter('r'))
         for pr in self.hofs:
             print("\t", pr.__getstate__())
             pr.task.rand_draw_X_non_fixed()
+            pr.print_expression()
             print('\tvalidate r=', pr.task.reward_function(pr))
             pr.task.print_reward_function_all_metrics(pr)
-            pr.print_expression()
 
 
 def print_prs(prs):

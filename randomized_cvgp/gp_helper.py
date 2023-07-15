@@ -81,7 +81,6 @@ class GPHelper(object):
             generate a full program tree recursively (represented in token indices in library)
         """
         if maxdepth == 1:
-            # more efficient implementation
             allowed_pos = [t for t in self.library.tokens_of_arity[0] if self.library.allowed_tokens[t] > 0]
             t_idx = np.random.choice(allowed_pos)
             return [t_idx]
