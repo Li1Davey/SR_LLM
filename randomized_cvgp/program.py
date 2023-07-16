@@ -132,7 +132,6 @@ class Program(object):
             self.is_input_var = array.array('i', [t.input_var is not None for t in self.traversal])
 
         self.invalid = False  # always false.
-        self.str = tokens.tostring()
         self.tokens = tokens
 
     def clone(self):
@@ -238,61 +237,6 @@ class Program(object):
             # always protected. 1/div
         return result
 
-    # def simplify_equation(self):
-    #     """given the preorder traversal of the program, simplify the program.
-    #     (add/sub/mul/div, c1, c2) -> c1
-    #     (exp/log/sin/cos/inv c1) -> c1
-    #     (div, Xi, Xi)  -> 1
-    #     (sub, Xi, Xi)  -> 1
-    #     """
-    #     flag = True
-    #     tokens = self.tokens
-    #     traversal = self.traversal
-    #     traversal_allows = self.allow_change_tokens
-    #
-    #     if len(traversal) < 2:
-    #         return traversal
-    #     while flag:
-    #         flag = False
-    #         tmp_traversal = []
-    #         tmp_allows = []
-    #         tmp_tokens = []
-    #         i = 0
-    #         while i < len(traversal):
-    #             if traversal[i].arity == 2 and isinstance(traversal[i + 1], PlaceholderConstant) and \
-    #                     isinstance(traversal[i + 2], PlaceholderConstant):
-    #                 val = traversal[i](traversal[i + 1].value, traversal[i + 2].value)[0]
-    #                 print(i, val)
-    #                 tmp_traversal.append(PlaceholderConstant(val))
-    #                 tmp_allows.append(traversal_allows[i])
-    #                 tmp_tokens.append(tokens[i])
-    #                 i += 3
-    #                 flag = True
-    #             elif traversal[i].arity == 1 and isinstance(traversal[i + 1], PlaceholderConstant):
-    #                 val = traversal[i](traversal[i + 1].value)[0]
-    #                 print(i, val)
-    #                 tmp_traversal.append(PlaceholderConstant(val))
-    #                 tmp_allows.append(traversal_allows[i])
-    #                 tmp_tokens.append(tokens[i])
-    #                 flag = True
-    #                 i += 2
-    #             else:
-    #                 tmp_traversal.append(traversal[i])
-    #                 tmp_allows.append(traversal_allows[i])
-    #                 tmp_tokens.append(tokens[i])
-    #                 i += 1
-    #         traversal = tmp_traversal
-    #         traversal_allows = tmp_allows
-    #         tokens = tmp_tokens
-    #     if len(traversal) == len(self.traversal):
-    #         return
-    #     print("before simplify:", self.traversal)
-    #     self._init(np.array(tokens, dtype=np.int32), np.array(traversal_allows, dtype=np.int32))
-    #     self.remove_r_evaluate()
-    #     for i in range(len(traversal)):
-    #         if isinstance(traversal[i], PlaceholderConstant):
-    #             self.traversal[i] = PlaceholderConstant(traversal[i].value)
-    #     print("after simplify:", self.traversal)
 
     def optimize(self):
         """
@@ -301,6 +245,7 @@ class Program(object):
         """
         # find the best constant value and fit the equation.
         if len(self.const_pos) == 0 or self.num_changing_consts == 0:
+            # there is no constant in the expression
             return
 
         # Define the objective function: negative reward
@@ -516,9 +461,21 @@ class Program(object):
 
             Program.execute_function = unsafe_execute
 
+    def _set_dataX_allowed_input_tokens(self, allowed_input_token, verbose=False):
+        """Input is a set of free input variables"""
+        # print("set Program allow input tokens.....")
+        free_input_tokens = np.zeros(self.task.n_input, dtype=np.int32)
+        for vari in allowed_input_token:
+            if 0 <= vari < len(free_input_tokens):
+                free_input_tokens[vari] = 1
+        self.task.set_allowed_inputs(free_input_tokens)
+        if verbose:
+            print("For dataX: {} Program.task.allowed_input:{} fixed_column:{}".format(
+                allowed_input_token, Program.task.allowed_input, Program.task.fixed_column))
     @cached_property
     def r(self):
         """Evaluates and returns the reward of the program"""
+        self._set_dataX_allowed_input_tokens(self.cur_node.total_vf, verbose=True)
         with warnings.catch_warnings():
             # print('===before optimize===')
 

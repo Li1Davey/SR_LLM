@@ -35,7 +35,7 @@ class GPHelper(object):
                                     b.tokens[b_end:]))
 
         na_allow = np.concatenate((a.allow_change_tokens[:a_start],
-                                   b.allow_change_tokens[b_start:b_end],  # Nan: should it be all ones here?
+                                   b.allow_change_tokens[b_start:b_end],  # Question: should it be all ones here?
                                    a.allow_change_tokens[a_end:]))
         nb_allow = np.concatenate((b.allow_change_tokens[:b_start],
                                    a.allow_change_tokens[a_start:a_end],
@@ -46,35 +46,26 @@ class GPHelper(object):
         a.remove_r_evaluate()
         b.remove_r_evaluate()
 
-    def mate_joint_variables_program(self, a, b):
+    def muNewVariable(self, p, maxdepth):
         """
-        apply several steps to combine two expression randomly to obtain a parent expression that could contain two variables,
-        or still single variables.
-        a,b: two programs.
+        expand a (random) summary constant with a new variable.
         """
-        list_of_new_programs = []
-        #### create new prog from a
         # 1. get the list of summary constants from program a
-        a_allowed = a.summary_constant_pos()
-        na_tokens, na_allow = [], []
-        a_end = 0
-        for a_start in a_allowed:
-            # pick a leave node which is a summary constants, replace it with a sub-tree from b
-            na_tokens.append(a.tokens[a_end:a_start])
-            na_tokens.append(b.tokens)
-            #
-            na_allow.append(a.allow_change_tokens[a_end:a_start])
-            na_allow.append(np.ones(len(b.tokens), dtype=np.int32))
-            a_end = a.subtree_end(a_start)
-        na_tokens.append(a.tokens[a_end:])
-        na_allow.append(a.allow_change_tokens[a_end:])
-        na_tokens = np.concatenate(na_tokens)
-        na_allow = np.concatenate(na_allow)
-        new_pr = Program(na_tokens, na_allow)
-        new_pr.remove_r_evaluate()
-        list_of_new_programs.append(new_pr)
+        leaf_set = p.summary_constant_pos()
+        if len(leaf_set) == 0:
+            return
+        t_idx = np.random.choice(np.array(leaf_set))
 
-        return list_of_new_programs
+        new_tree = np.array(self.gen_full(maxdepth))
+
+        np_tokens = np.concatenate((p.tokens[:t_idx], new_tree, p.tokens[(t_idx + 1):]))
+        np_allow = np.insert(p.allow_change_tokens, t_idx, np.ones(len(new_tree) - 1, dtype=np.int32))
+
+        p.__init__(np_tokens, np_allow)
+        p.remove_r_evaluate()
+
+
+
 
     def gen_full(self, maxdepth):
         """
@@ -106,6 +97,8 @@ class GPHelper(object):
             self.mutInsert(individual, maxdepth)
         elif v == 3:
             self.mutShrink(individual)
+        elif v == 4:
+            self.muNewVariable(individual)
 
     def mutUniform(self, p, maxdepth):
         """
@@ -225,22 +218,3 @@ class GPHelper(object):
             p.__init__(np_tokens, np_allow)
             p.remove_r_evaluate()
 
-# def program_backward_check(joint_vars_pr, single_var_pr):
-#     from functions import PlaceholderConstant
-#     ### apply the simplicaition step over joint_vars_pr,
-#     #
-#     # 1. replacing all extra variables not contained in single_var_pr as constant:
-#     all_vars_valid = single_var_pr.get_used_variables()
-#
-#     for i in range(len(joint_vars_pr.traversal)):
-#         if joint_vars_pr.traversal[i] in all_vars_valid:
-#             # TODO: if it is a variable, but it is not
-#             joint_vars_pr.traversal[i] = PlaceholderConstant(np.random.rand() * 10)
-#
-#     # 2. recursively merges nodes if the leaves are all constants. (currently unclear)
-#     simplified_joint_vars_pr = joint_vars_pr.simplify_equation()
-#     # TODO: check X1+C and C+X1;
-#     if simplified_joint_vars_pr == single_var_pr:
-#         return True
-#     else:
-#         return False

@@ -2,7 +2,7 @@ import time
 import numpy as np
 from operator import attrgetter
 from program import Program
-from utils import Node, create_node, create_uniform_generations
+from utils import Node, create_uniform_generations
 
 
 class ExpandingGeneticProgram(object):
@@ -79,12 +79,11 @@ class ExpandingGeneticProgram(object):
             for pr in self.populations:
                 # 2.1 set the free variables and controlled variables
                 # 2.2 re-evaluate the constants and goodness-of-fit.
-                self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf, verbose=True)
+                # self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf, verbose=True)
                 pr.remove_r_evaluate()
                 # finds the best constants on control variable data, and then computes  goodness-of-fit.
                 _ = pr.r
             for pr in self.hofs:
-                self._set_dataX_allowed_input_tokens(pr.cur_node.total_vf)
                 pr.remove_r_evaluate()
                 _ = pr.r
 
@@ -145,7 +144,6 @@ class ExpandingGeneticProgram(object):
     def selectTournament(self, population_size, tour_size):
         """evaluate on full data for tournament"""
         offspring = []
-        # self._set_dataX_allowed_input_tokens(self.full_vars)
         for pp in range(population_size):
             spr = np.random.choice(self.populations, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
@@ -158,7 +156,8 @@ class ExpandingGeneticProgram(object):
         # Apply mutation on the offspring
         for i in range(len(offspring)):
             if np.random.random() < self.mutpb:
-                self._set_dataX_allowed_input_tokens(offspring[i].total_vf)
+                print(offspring[i].cur_node)
+                self._set_library_allowed_input_tokens(offspring[i].cur_node.total_vf, verbose=True)
                 self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
 
         # Apply crossover on the offspring
@@ -200,7 +199,8 @@ class ExpandingGeneticProgram(object):
                 free_input_tokens[vari] = 1
         Program.task.set_allowed_inputs(free_input_tokens)
         if verbose:
-            print("For dataX: {} Program.task.allowed_input:{} fixed_column:{}".format(allowed_input_token, Program.task.allowed_input, Program.task.fixed_column))
+            print("For dataX: {} Program.task.allowed_input:{} fixed_column:{}".format(
+                allowed_input_token, Program.task.allowed_input, Program.task.fixed_column))
 
     def print_final_hofs(self):
         self._set_dataX_allowed_input_tokens(self.full_vars)
