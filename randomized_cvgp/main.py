@@ -35,17 +35,17 @@ def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, n
     regress_batchsize = 256
     opt_num_expr = 5
 
-    expr_obj_thres = data_query_oracle.expr_obj_thres
+    expr_obj_thres = 1E-6#data_query_oracle.expr_obj_thres
     expr_consts_thres = config[metric_name]['expr_consts_thres']
 
     # gp hyper parameters
     cxpb = 0.5
     mutpb = 0.5
     maxdepth = 2
-    tour_size = 3
-    hof_size = 10  # 0
+    tour_size = 2
+    hof_size = 200  # 0
 
-    population_size = 20
+    population_size = 200
     n_generations = 100
 
     # get all the functions and variables ready

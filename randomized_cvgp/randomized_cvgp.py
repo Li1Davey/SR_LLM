@@ -2,7 +2,7 @@ import time
 import numpy as np
 from operator import attrgetter
 from program import Program
-from utils import Node, create_uniform_generations
+from utils import create_uniform_generations
 
 
 class ExpandingGeneticProgram(object):
@@ -38,7 +38,7 @@ class ExpandingGeneticProgram(object):
         self.timer_log = []
 
         self.nvar = nvar
-        self.full_vars = [i for i in range(self.nvar)]
+
         assert self.library != None
         assert Program.task != None
 
@@ -52,10 +52,10 @@ class ExpandingGeneticProgram(object):
         self.hofs = []
 
         for vari in range(self.nvar):
-            tmp_node = Node(prev_vf=[], next_vf=[vari, ])
-            self._set_dataX_allowed_input_tokens(tmp_node.total_vf)
-            self._set_library_allowed_input_tokens(tmp_node.next_vf)
-
+            vf = [vari, ]
+            free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
+            free_input_tokens[vari] = 1
+            self.library.set_allowed_input_tokens(free_input_tokens)
             for i, t in enumerate(self.library.tokens):
                 if self.library.allowed_tokens[i]:
                     tree = [i]
@@ -66,7 +66,7 @@ class ExpandingGeneticProgram(object):
                         tree.append(t_idx)
                     tree = np.array(tree)
                     pr = Program(tree, np.ones(tree.size, dtype=np.int32))
-                    pr.cur_node = tmp_node
+                    pr.vf = vf
                     self.populations.append(pr)
                     new_pr = pr.clone()
                     self.hofs.append(new_pr)
@@ -89,16 +89,16 @@ class ExpandingGeneticProgram(object):
 
             # 2.3  do n generation of GP,
             for it in range(self.n_generations[round_idx]):
-                print('++++++++++++ ITERATION {} ++++++++++++'.format(it))
-                self.one_generation()
+                print('++++++++++++ ROUND {} ITERATION {} ++++++++++++'.format(round_idx, it))
+                self.one_generation(verbose=True)
             # 2.4 find the best set of fitted expressions
+
+            self.scheduling_vf(min(self.nvar, round_idx + 1))
             self.update_population()
             print_prs(self.populations)
-
             # 2.5 freeze tokens in the expressions
             for i, pr in enumerate(self.populations):
                 # evaluate r again, just incase it has not been evaluated.
-                self._set_dataX_allowed_input_tokens(pr.cur_node)
                 this_r = pr.r
                 if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
                     # only expand at those constant node. if there are no constant node,then we are done
@@ -110,6 +110,14 @@ class ExpandingGeneticProgram(object):
                 # whether you get very different value for different constant.
                 pr.freeze_equation()
 
+    def scheduling_vf(self, num_of_free_variables):
+        print("scheduling step.....")
+        for pr in self.populations:
+            while len(pr.vf) < num_of_free_variables:
+                print("{} from: {}".format(pr, pr.vf), end="\t")
+                pr.pick_new_random_vf()
+                print("to {}".format(pr.vf))
+
     def one_generation(self, verbose=False):
         """
         One step of the genetic algorithm.
@@ -120,15 +128,9 @@ class ExpandingGeneticProgram(object):
 
         # Select the next generation individuals
         offspring = self.selectTournament(self.population_size, self.tour_size)
-        if verbose:
-            print('offspring after select=')
-            print_prs(offspring)
 
         # Vary the pool of individuals
         offspring = self._var_and(offspring)
-        if verbose:
-            print('offspring after mutation and cross-over=')
-            print_prs(offspring)
 
         # Replace the current population by the offspring
         self.populations = offspring + self.hofs
@@ -138,72 +140,73 @@ class ExpandingGeneticProgram(object):
         if verbose:
             print("after update hof=")
             print_prs(self.hofs)
+
         timer = time.perf_counter() - t1
         self.timer_log.append(timer)
 
-    def selectTournament(self, population_size, tour_size):
+    def selectTournament(self, population_size, tour_size, randomized=False):
         """evaluate on full data for tournament"""
         offspring = []
         for pp in range(population_size):
             spr = np.random.choice(self.populations, tour_size)
             maxspr = max(spr, key=attrgetter('r'))
+            if randomized:
+                maxspr = np.random.choice(spr)
             maxspri = maxspr.clone()
             offspring.append(maxspri)
         return offspring
 
-    def _var_and(self, offspring):
-        """Apply crossover AND mutation to each individual in a population, given a constant probability."""
+    def _var_and(self, offspring, crosscover_with_same_vf=0.5):
+        """Apply mutation AND crossover to each individual in a population, given a constant probability."""
         # Apply mutation on the offspring
+        # sorted(offspring, reverse=True, key=attrgetter('r'))
+        # print_prs(offspring)
         for i in range(len(offspring)):
             if np.random.random() < self.mutpb:
-                print(offspring[i].cur_node)
-                self._set_library_allowed_input_tokens(offspring[i].cur_node.total_vf, verbose=True)
                 self.gp_helper.multi_mutate(offspring[i], self.maxdepth)
-
+        # sorted(offspring, reverse=True, key=attrgetter('r'))
+        # print_prs(offspring)
         # Apply crossover on the offspring
         np.random.shuffle(offspring)
-        for i in range(1, len(offspring), 2):
-            if np.random.random() < self.cxpb:
-                self.gp_helper.mate(offspring[i - 1], offspring[i])
+        if np.random.random() < crosscover_with_same_vf:
 
+            for i in range(1, len(offspring), 2):
+                if np.random.random() < self.cxpb:
+                    self.gp_helper.mate(offspring[i - 1], offspring[i])
+        else:
+            used = set()
+            for i in range(len(offspring)):
+                selected = None
+                used.add(i)
+                for j in range(i + 1, len(offspring)):
+                    if offspring[i].vf == offspring[j].vf and j not in used:
+                        selected = j
+                        used.add(j)
+                        break
+                if selected is None:
+                    if len(used) < len(offspring):
+                        selected = np.random.choice([i for i in range(len(offspring)) if i not in used])
+
+                if np.random.random() < self.cxpb and selected is not None:
+                    # print(offspring[i], offspring[i].vf, " ||||||||||| ", offspring[selected], offspring[selected].vf)
+                    self.gp_helper.mate(offspring[i], offspring[selected])
+
+        # sorted(offspring, reverse=True, key=attrgetter('r'))
+        # print_prs(offspring)
         return offspring
 
     def update_hof(self):
-        """update the set of Hall of Fame for the given pool_idx pool"""
+        """update the set of Hall of Fame"""
         new_hof = sorted(self.populations, reverse=True, key=attrgetter('r'))
         self.hofs = [new_hof[i].clone() for i in range(self.hof_size)]
 
     def update_population(self):
-        """update the population. sort by fitness score and cut by population_size.
-        """
+        """update the population. sort by fitness score and cut by population_size."""
         new_population = sorted(self.populations, reverse=True, key=attrgetter('r'))
         self.populations = [new_population[i].clone() for i in range(self.population_size)]
 
-    def _set_library_allowed_input_tokens(self, allowed_input_token, verbose=False):
-        """Input is a set of free input variables"""
-        # print("set library allow input tokens.....")
-        free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
-        for vari in allowed_input_token:
-            if 0 <= vari < len(free_input_tokens):
-                free_input_tokens[vari] = 1
-        self.library.set_allowed_input_tokens(free_input_tokens)
-        if verbose:
-            print("For library:", self.library.allowed_tokens, self.library.allowed_input_tokens)
-
-    def _set_dataX_allowed_input_tokens(self, allowed_input_token, verbose=False):
-        """Input is a set of free input variables"""
-        # print("set Program allow input tokens.....")
-        free_input_tokens = np.zeros(self.nvar, dtype=np.int32)
-        for vari in allowed_input_token:
-            if 0 <= vari < len(free_input_tokens):
-                free_input_tokens[vari] = 1
-        Program.task.set_allowed_inputs(free_input_tokens)
-        if verbose:
-            print("For dataX: {} Program.task.allowed_input:{} fixed_column:{}".format(
-                allowed_input_token, Program.task.allowed_input, Program.task.fixed_column))
-
     def print_final_hofs(self):
-        self._set_dataX_allowed_input_tokens(self.full_vars)
+        Program.task.set_allowed_inputs(np.ones(self.nvar, dtype=np.int32))
         for pr in self.hofs:
             print("\t", pr.__getstate__())
             pr.task.rand_draw_X_non_fixed()
@@ -213,7 +216,8 @@ class ExpandingGeneticProgram(object):
 
 
 def print_prs(prs):
-    for pr in prs:
+    new_prs = sorted(prs, reverse=True, key=attrgetter('vf', 'r'))
+    for pr in new_prs:
         print('        ' + str(pr.__getstate__()), end="\t")
         pr.print_expression()
     print("")

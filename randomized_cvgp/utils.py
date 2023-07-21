@@ -9,53 +9,6 @@ from typing import List
 import itertools
 import copy
 
-# def unique(arr):
-#     return list(set(arr))
-
-
-# this node is used for keep track of variable ordering
-class Node(object):
-    def __init__(self, prev_vf: List = None, next_vf: List = None, total_vf: List = None):
-        """
-
-        Parameters
-        ----------
-        prev_vf: previous free variables
-        next_vf: next free variables
-        total_vf: all free variables
-        """
-        self.prev_vf = prev_vf
-        self.next_vf = next_vf
-        if not total_vf:
-            self.total_vf = copy.copy(self.prev_vf)
-            self.total_vf.extend(self.next_vf)
-        else:
-            self.total_vf = total_vf
-
-    def __eq__(self, other):
-        if not other:
-            return False
-        if self.prev_vf == other.prev_vf and self.next_vf == other.next_vf and self.total_vf == other.total_vf:
-            return True
-        return False
-
-    def __repr__(self):
-        return f"hist={self.prev_vf},next={self.next_vf}->total={self.total_vf}"
-
-    def __hash__(self):
-        return hash(f"{self.prev_vf},{self.next_vf}->{self.total_vf}")
-
-
-def create_node(prev_node, new_vf):
-    # if prev_node == another_pool_idx or another_pool_idx.cur[0] in set(one_pool_idx.cur):
-    #     return None
-    new_total_vf = prev_node.total_vf
-    new_total_vf.extend(new_vf)
-    # new_pool_idx = tuple(new_pool_idx)
-    # if new_pool_idx == one_pool_idx.total_vf or new_pool_idx == another_pool_idx.total_vf:
-    #     return None
-    return Node(prev_node.total_vf, new_vf, new_total_vf)
-
 
 def create_geometric_generations(n_generations, nvar):
     gens = [0] * nvar
@@ -168,39 +121,6 @@ def weighted_quantile(values, weights, q):
     # quantile = empirical_dist.ppf(q)
 
     return quantile
-
-
-# Entropy computation in batch
-def empirical_entropy(labels):
-    n_labels = len(labels)
-
-    if n_labels <= 1:
-        return 0
-
-    value, counts = np.unique(labels, return_counts=True)
-    probs = counts / n_labels
-    n_classes = np.count_nonzero(probs)
-
-    if n_classes <= 1:
-        return 0
-
-    ent = 0.
-    # Compute entropy
-    for i in probs:
-        ent -= i * np.log(i)
-
-    return ent
-
-
-def get_duration(start_time):
-    return get_human_readable_time(time.time() - start_time)
-
-
-def get_human_readable_time(s):
-    m, s = divmod(s, 60)
-    h, m = divmod(m, 60)
-    d, h = divmod(h, 24)
-    return "{:02d}:{:02d}:{:02d}:{:05.2f}".format(int(d), int(h), int(m), s)
 
 
 def safe_merge_dicts(base_dict, update_dict):
