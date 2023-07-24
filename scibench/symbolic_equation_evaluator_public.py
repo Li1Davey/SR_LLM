@@ -615,14 +615,14 @@ class sciProgram(object):
     @classmethod
     def set_execute(cls, protected):
         """Sets which execute method to use"""
-        try:
-            import cyfunc
-            execute_function = cython_execute
-            sciProgram.have_cython = True
+        # try:
+        import cyfunc
+        execute_function = cython_execute
+        sciProgram.have_cython = True
 
-        except ImportError:
-            execute_function = python_execute
-            sciProgram.have_cython = False
+        # except ImportError:
+        #     execute_function = python_execute
+        #     sciProgram.have_cython = False
 
         if protected:
             sciProgram.protected = True

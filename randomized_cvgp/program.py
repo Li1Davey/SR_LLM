@@ -424,15 +424,15 @@ class Program(object):
         """Sets which execute method to use"""
 
         # Check if cython_execute can be imported; if not, fall back to python_execute
-        try:
-            import cyfunc
-            from execute import cython_execute
-            execute_function = cython_execute
-            Program.have_cython = True
-        except ImportError:
-            from execute import python_execute
-            execute_function = python_execute
-            Program.have_cython = False
+        # try:
+        import cyfunc
+        from execute import cython_execute
+        execute_function = cython_execute
+        Program.have_cython = True
+        # except ImportError:
+        #     from execute import python_execute
+        #     execute_function = python_execute
+        #     Program.have_cython = False
 
         if protected:
             Program.protected = True
