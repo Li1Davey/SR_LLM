@@ -130,7 +130,7 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
         dso_output_files[key] = {}
     for root, dirs, files in os.walk(file_prefix, topdown=False):
         for name in files:
-            if keyword not in name:
+            if keyword and  keyword not in name:
                 continue
             if metric_name in name and noise_type in name and noise_scale in name:
                 if 'gp' in name and 'egp' not in name:
@@ -180,7 +180,7 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
 
 
 def pretty_print_dso_family(all_rs, is_numbered=1):
-    for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+    for key in ['neg_nmse', 'neg_nrmse',]:# 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
         print('{}, DSR, PQT, VPG, GPMELD'.format(key))
         if is_numbered == 1:
             for idx in range(10):
@@ -252,7 +252,7 @@ if __name__ == '__main__':
     parser.add_argument('--fp', type=str, required=True)
     parser.add_argument('--metric', type=str, default='neg_mse', required=True)
     parser.add_argument('--dso_basepath', type=str, required=False, default='None')
-    parser.add_argument("--keyword", type=str)
+    parser.add_argument("--keyword", type=str, default=None)
     parser.add_argument('--noise_type', type=str, required=True, default="None")
     parser.add_argument('--noise_scale', type=str, default='0.0')
     parser.add_argument('--is_numbered', type=int, default=0)
@@ -263,7 +263,7 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     all_dso_r, all_gp_r, all_egp_r = parse_exp_set(args.fp, args.metric, args.noise_type, args.noise_scale,
-                                                   args.true_program_basepath, None, args.keyword)# args.dso_basepath)
+                                                   args.true_program_basepath, args.dso_basepath, args.keyword)# args.dso_basepath)
     # print(all_gp_r)
     print(all_egp_r)
     # print(all_dso_r)
