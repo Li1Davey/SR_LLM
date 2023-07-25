@@ -8,7 +8,7 @@ type=$1
 nv=$2
 nt=$3
 
-thispath=$basepath/tree_cvgp_nan
+thispath=$basepath/randomized_cvgp
 data_path=$basepath/data/unencrypted/equations_trigometric
 
 
@@ -31,25 +31,9 @@ do
     	echo "create dir: $log_dir"
     	mkdir -p $log_dir
 	fi
-	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out"
+	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.randgp.out"
 	$py3615 $thispath/main.py --equation_name $data_path/$eq_name \
-        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out
-#	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
-##!/bin/bash -l
-#
-##SBATCH --job-name="tgp_${type}${nv}${nt}_${prog}"
-##SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.treegp.out
-##SBATCH --constraint=A
-##SBATCH --time=48:00:00
-##SBATCH --mem=4096MB
-#
-#hostname
-#
-#$py3615 $thispath/main.py --equation_name $data_path/$eq_name \
-#        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-#        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out
-#
-#EOT
+        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.randgp.out &
 
 done
 

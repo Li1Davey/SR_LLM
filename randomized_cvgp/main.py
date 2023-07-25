@@ -43,9 +43,9 @@ def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, n
     mutpb = 0.5
     maxdepth = 2
     tour_size = 2
-    hof_size = 200  # 0
+    hof_size = 50  # 0
 
-    population_size = 200
+    population_size = 100
     n_generations = 100
 
     # get all the functions and variables ready
