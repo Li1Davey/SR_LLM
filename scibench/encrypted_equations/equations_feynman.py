@@ -3,7 +3,7 @@ import numpy as np
 from base import KnownEquation, LogUniformSampling, IntegerUniformSampling, UniformSampling
 import sympy
 
-FEYNMAN_EQUATION_CLASS_DICT = OrderedDict()
+
 GRAVITATIONAL_CONSTANT = 6.67430e-11
 GRAVITATIONAL_ACCELERATION = 9.80665
 SPEED_OF_LIGHT = 2.99792458e8
@@ -23,9 +23,8 @@ def register_eq_class(cls):
     return cls
 
 
-def register_feynman_eq_class(cls):
-    register_eq_class(cls)
-    FEYNMAN_EQUATION_CLASS_DICT[cls.__name__] = cls
+def register_eq_class(cls):
+    EQUATION_CLASS_DICT[cls.__name__] = cls
     return cls
 
 
@@ -35,7 +34,7 @@ def get_eq_obj(key, **kwargs):
     raise KeyError(f'`{key}` is not expected as a equation object key')
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh6Eq20a(KnownEquation):
     """
     - Equation: I.6.20a
@@ -58,7 +57,7 @@ class FeynmanICh6Eq20a(KnownEquation):
         self.sympy_eq = sympy.exp(-x[0] ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh29Eq4(KnownEquation):
     """
     - Equation: I.29.4
@@ -82,7 +81,7 @@ class FeynmanICh29Eq4(KnownEquation):
         self.sympy_eq = x[0] / SPEED_OF_LIGHT
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh34Eq27(KnownEquation):
     """
     - Equation: I.34.27
@@ -103,7 +102,7 @@ class FeynmanICh34Eq27(KnownEquation):
         self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) * x[0]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh8Eq31(KnownEquation):
     """
     - Equation: II.8.31
@@ -124,7 +123,7 @@ class FeynmanIICh8Eq31(KnownEquation):
         self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2 / 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh27Eq16(KnownEquation):
     """
     - Equation: II.27.16
@@ -145,7 +144,7 @@ class FeynmanIICh27Eq16(KnownEquation):
         self.sympy_eq = ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh27Eq18(KnownEquation):
     """
     - Equation: II.27.18
@@ -166,7 +165,7 @@ class FeynmanIICh27Eq18(KnownEquation):
         self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh12Eq43(KnownEquation):
     """
     - Equation: III.12.43
@@ -187,7 +186,7 @@ class FeynmanIIICh12Eq43(KnownEquation):
         self.sympy_eq = x[0] * (PLANCK_CONSTANT / (2 * sympy.pi))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh12Eq1(KnownEquation):
     """
     - Equation: I.12.1
@@ -214,7 +213,7 @@ class FeynmanICh12Eq1(KnownEquation):
         self.sympy_eq = x[0] * x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh6Eq20(KnownEquation):
     """
     - Equation: I.6.20
@@ -237,7 +236,7 @@ class FeynmanICh6Eq20(KnownEquation):
         self.sympy_eq = sympy.exp(-(x[0] / x[1]) ** 2 / 2) / (sympy.sqrt(2 * sympy.pi) * x[1])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh10Eq7(KnownEquation):
     """
     - Equation: I.10.7
@@ -264,7 +263,7 @@ class FeynmanICh10Eq7(KnownEquation):
         self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh12Eq4(KnownEquation):
     """
     - Equation: I.12.4
@@ -287,7 +286,7 @@ class FeynmanICh12Eq4(KnownEquation):
         self.sympy_eq = x[0] * x[1] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] ** 3)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh14Eq3(KnownEquation):
     """
     - Equation: I.14.3
@@ -309,7 +308,7 @@ class FeynmanICh14Eq3(KnownEquation):
         self.sympy_eq = GRAVITATIONAL_ACCELERATION * x[0] * x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh12Eq5(KnownEquation):
     """
     - Equation: I.12.5
@@ -331,7 +330,7 @@ class FeynmanICh12Eq5(KnownEquation):
         self.sympy_eq = x[0] * x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh14Eq4(KnownEquation):
     """
     - Equation: I.14.4
@@ -353,7 +352,7 @@ class FeynmanICh14Eq4(KnownEquation):
         self.sympy_eq = 1 / 2 * x[0] * x[1] ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh15Eq10(KnownEquation):
     """
     - Equation: I.15.10
@@ -376,7 +375,7 @@ class FeynmanICh15Eq10(KnownEquation):
         self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh16Eq6(KnownEquation):
     """
     - Equation: I.16.6
@@ -399,7 +398,7 @@ class FeynmanICh16Eq6(KnownEquation):
         self.sympy_eq = (x[0] + x[1]) / (1 + x[0] * x[1] / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh25Eq13(KnownEquation):
     """
     - Equation: I.25.13
@@ -422,7 +421,7 @@ class FeynmanICh25Eq13(KnownEquation):
         self.sympy_eq = x[0] / x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh26Eq2(KnownEquation):
     """
     - Equation: I.26.2
@@ -448,7 +447,7 @@ class FeynmanICh26Eq2(KnownEquation):
         self.sympy_eq = sympy.sin(x[0]) / sympy.sin(x[1])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh32Eq5(KnownEquation):
     """
     - Equation: I.32.5
@@ -474,7 +473,7 @@ class FeynmanICh32Eq5(KnownEquation):
         self.sympy_eq = x[0] ** 2 * x[1] ** 2 / (6 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 3)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh34Eq10(KnownEquation):
     """
     - Equation: I.34.10
@@ -497,7 +496,7 @@ class FeynmanICh34Eq10(KnownEquation):
         self.sympy_eq = x[0] / (1 - x[1] / SPEED_OF_LIGHT)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh34Eq14(KnownEquation):
     """
     - Equation: I.34.14
@@ -521,7 +520,7 @@ class FeynmanICh34Eq14(KnownEquation):
         self.sympy_eq = (1 + x[0] / SPEED_OF_LIGHT) / sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh38Eq12(KnownEquation):
     """
     - Equation: I.38.12
@@ -548,7 +547,7 @@ class FeynmanICh38Eq12(KnownEquation):
         self.sympy_eq = 4 * sympy.pi * ELECTRIC_CONSTANT * (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (x[0] * x[1] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh39Eq10(KnownEquation):
     """
     - Equation: I.39.10
@@ -572,7 +571,7 @@ class FeynmanICh39Eq10(KnownEquation):
         self.sympy_eq = 3 / 2 * x[0] * x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh41Eq16(KnownEquation):
     """
     - Equation: I.41.16
@@ -598,7 +597,7 @@ class FeynmanICh41Eq16(KnownEquation):
                 sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh43Eq31(KnownEquation):
     """
     - Equation: I.43.31
@@ -622,7 +621,7 @@ class FeynmanICh43Eq31(KnownEquation):
         self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh48Eq2(KnownEquation):
     """
     - Equation: I.48.2
@@ -648,7 +647,7 @@ class FeynmanICh48Eq2(KnownEquation):
         self.sympy_eq = x[0] * SPEED_OF_LIGHT ** 2 / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh3Eq24(KnownEquation):
     """
     - Equation: II.3.24
@@ -671,7 +670,7 @@ class FeynmanIICh3Eq24(KnownEquation):
         self.sympy_eq = x[0] / (4 * sympy.pi * x[1] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh4Eq23(KnownEquation):
     """
     - Equation: II.4.23
@@ -694,7 +693,7 @@ class FeynmanIICh4Eq23(KnownEquation):
         self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh8Eq7(KnownEquation):
     """
     - Equation: II.8.7
@@ -717,7 +716,7 @@ class FeynmanIICh8Eq7(KnownEquation):
         self.sympy_eq = 3 / 5 * x[0] ** 2 / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh10Eq9(KnownEquation):
     """
     - Equation: II.10.9
@@ -740,7 +739,7 @@ class FeynmanIICh10Eq9(KnownEquation):
         self.sympy_eq = x[0] / ELECTRIC_CONSTANT * 1 / (1 + x[1])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh11Eq28(KnownEquation):
     """
     - Equation: II.11.28
@@ -766,7 +765,7 @@ class FeynmanIICh11Eq28(KnownEquation):
         self.sympy_eq = 1 + x[0] * x[1] / (1 - (x[0] * x[1] / 3))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh13Eq17(KnownEquation):
     """
     - Equation: II.13.17
@@ -789,7 +788,7 @@ class FeynmanIICh13Eq17(KnownEquation):
         self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2) * 2 * x[0] / x[1]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh13Eq23(KnownEquation):
     """
     - Equation: II.13.23
@@ -815,7 +814,7 @@ class FeynmanIICh13Eq23(KnownEquation):
         self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh13Eq34(KnownEquation):
     """
     - Equation: II.13.34
@@ -841,7 +840,7 @@ class FeynmanIICh13Eq34(KnownEquation):
         self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh24Eq17(KnownEquation):
     """
     - Equation: II.24.17
@@ -865,7 +864,7 @@ class FeynmanIICh24Eq17(KnownEquation):
         self.sympy_eq = sympy.sqrt(x[0] ** 2 / SPEED_OF_LIGHT ** 2 - sympy.pi ** 2 / x[1] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh34Eq29a(KnownEquation):
     """
     - Equation: II.34.29a
@@ -888,7 +887,7 @@ class FeynmanIICh34Eq29a(KnownEquation):
         self.sympy_eq = x[0] * PLANCK_CONSTANT / (4 * sympy.pi * x[1])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh38Eq14(KnownEquation):
     """
     - Equation: II.38.14
@@ -914,7 +913,7 @@ class FeynmanIICh38Eq14(KnownEquation):
         self.sympy_eq = x[0] / (2 * (1 + x[1]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh4Eq32(KnownEquation):
     """
     - Equation: III.4.32
@@ -941,7 +940,7 @@ class FeynmanIIICh4Eq32(KnownEquation):
         self.sympy_eq = 1 / (sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh4Eq33(KnownEquation):
     """
     - Equation: III.4.33
@@ -969,7 +968,7 @@ class FeynmanIIICh4Eq33(KnownEquation):
                 sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh7Eq38(KnownEquation):
     """
     - Equation: III.7.38
@@ -991,7 +990,7 @@ class FeynmanIIICh7Eq38(KnownEquation):
         self.sympy_eq = 2 * x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh8Eq54(KnownEquation):
     """
     - Equation: III.8.54
@@ -1013,7 +1012,7 @@ class FeynmanIIICh8Eq54(KnownEquation):
         self.sympy_eq = sympy.sin(x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))) ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh15Eq14(KnownEquation):
     """
     - Equation: III.15.14
@@ -1040,7 +1039,7 @@ class FeynmanIIICh15Eq14(KnownEquation):
         self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (2 * x[0] * x[1] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus8(KnownEquation):
     """
     - Equation: Compton Scattering
@@ -1063,7 +1062,7 @@ class FeynmanBonus8(KnownEquation):
         self.sympy_eq = x[0] / (1 + x[0] / (ELECTRON_MASS * SPEED_OF_LIGHT ** 2) * (1 - sympy.cos(x[1])))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus10(KnownEquation):
     """
     - Equation: Relativistic aberation
@@ -1091,7 +1090,7 @@ class FeynmanBonus10(KnownEquation):
         self.sympy_eq = (sympy.cos(x[0]) - x[1] / SPEED_OF_LIGHT) / (1 - x[1] / SPEED_OF_LIGHT * sympy.cos(x[0]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh6Eq20b(KnownEquation):
     """
     - Equation: I.6.20b
@@ -1118,7 +1117,7 @@ class FeynmanICh6Eq20b(KnownEquation):
         self.sympy_eq = sympy.exp(-((x[0] - x[1]) / x[2]) ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh12Eq2(KnownEquation):
     """
     - Equation: I.12.2
@@ -1145,7 +1144,7 @@ class FeynmanICh12Eq2(KnownEquation):
         self.sympy_eq = x[0] * x[1] * x[2] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[2] ** 3)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh15Eq3t(KnownEquation):
     """
     - Equation: I.15.3t
@@ -1172,7 +1171,7 @@ class FeynmanICh15Eq3t(KnownEquation):
         self.sympy_eq = (x[0] - x[1] * x[2] / SPEED_OF_LIGHT ** 2) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh15Eq3x(KnownEquation):
     """
     - Equation: I.15.3x
@@ -1199,7 +1198,7 @@ class FeynmanICh15Eq3x(KnownEquation):
         self.sympy_eq = (x[0] - x[1] * x[2]) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus20(KnownEquation):
     """
     - Equation: Klein-Nishina (13.132 Schwarz)
@@ -1227,7 +1226,7 @@ class FeynmanBonus20(KnownEquation):
                 ELECTRON_MASS ** 2 * SPEED_OF_LIGHT ** 2) * (x[0] / x[1]) ** 2 * (x[0] / x[1] + x[1] / x[0] - sympy.sin(x[2]) ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh18Eq12(KnownEquation):
     """
     - Equation: I.18.12
@@ -1253,7 +1252,7 @@ class FeynmanICh18Eq12(KnownEquation):
         self.sympy_eq = x[0] * x[1] * sympy.sin(x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh27Eq6(KnownEquation):
     """
     - Equation: I.27.6
@@ -1282,7 +1281,7 @@ class FeynmanICh27Eq6(KnownEquation):
         self.sympy_eq = 1 / (1 / x[0] + x[1] / x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh30Eq3(KnownEquation):
     """
     - Equation: I.30.3
@@ -1309,7 +1308,7 @@ class FeynmanICh30Eq3(KnownEquation):
         self.sympy_eq = x[0] * sympy.sin(x[1] * x[2] / 2) ** 2 / sympy.sin(x[2] / 2) ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh30Eq5(KnownEquation):
     """
     - Equation: I.30.5
@@ -1338,7 +1337,7 @@ class FeynmanICh30Eq5(KnownEquation):
         self.sympy_eq = x[0] / (x[1] * sympy.sin(x[2]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh37Eq4(KnownEquation):
     """
     - Equation: I.37.4
@@ -1365,7 +1364,7 @@ class FeynmanICh37Eq4(KnownEquation):
         self.sympy_eq = x[0] + x[1] + 2 * sympy.sqrt(x[0] * x[1]) * sympy.cos(x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh39Eq11(KnownEquation):
     """
     - Equation: I.39.11
@@ -1392,7 +1391,7 @@ class FeynmanICh39Eq11(KnownEquation):
         self.sympy_eq = 1 / (x[0] - 1) * x[1] * x[2]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh39Eq22(KnownEquation):
     """
     - Equation: I.39.22
@@ -1419,7 +1418,7 @@ class FeynmanICh39Eq22(KnownEquation):
         self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] / x[2]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh43Eq43(KnownEquation):
     """
     - Equation: I.43.43
@@ -1448,7 +1447,7 @@ class FeynmanICh43Eq43(KnownEquation):
         self.sympy_eq = 1 / (x[0] - 1) * BOLTZMANN_CONSTANT * x[1] / x[2]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh47Eq23(KnownEquation):
     """
     - Equation: I.47.23
@@ -1476,7 +1475,7 @@ class FeynmanICh47Eq23(KnownEquation):
         self.sympy_eq = sympy.sqrt(x[0] * x[1] / x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh6Eq11(KnownEquation):
     """
     - Equation: II.6.11
@@ -1503,7 +1502,7 @@ class FeynmanIICh6Eq11(KnownEquation):
         self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT) * x[0] * sympy.cos(x[1]) / x[2] ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh6Eq15b(KnownEquation):
     """
     - Equation: II.6.15b
@@ -1530,7 +1529,7 @@ class FeynmanIICh6Eq15b(KnownEquation):
         self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT) * 3 * sympy.cos(x[1]) * sympy.sin(x[1]) / x[2] ** 3
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh11Eq27(KnownEquation):
     """
     - Equation: II.11.27
@@ -1558,7 +1557,7 @@ class FeynmanIICh11Eq27(KnownEquation):
         self.sympy_eq = x[0] * x[1] / (1 - (x[0] * x[1] / 3)) * ELECTRIC_CONSTANT * x[2]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh15Eq4(KnownEquation):
     """
     - Equation: II.15.4
@@ -1584,7 +1583,7 @@ class FeynmanIICh15Eq4(KnownEquation):
         self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh15Eq5(KnownEquation):
     """
     - Equation: II.15.5
@@ -1610,7 +1609,7 @@ class FeynmanIICh15Eq5(KnownEquation):
         self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh21Eq32(KnownEquation):
     """
     - Equation: II.21.32
@@ -1638,7 +1637,7 @@ class FeynmanIICh21Eq32(KnownEquation):
         self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] * (1 - x[2] / SPEED_OF_LIGHT))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh34Eq2a(KnownEquation):
     """
     - Equation: II.34.2a
@@ -1665,7 +1664,7 @@ class FeynmanIICh34Eq2a(KnownEquation):
         self.sympy_eq = x[0] * x[1] / (2 * sympy.pi * x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh34Eq2(KnownEquation):
     """
     - Equation: II.34.2
@@ -1691,7 +1690,7 @@ class FeynmanIICh34Eq2(KnownEquation):
         self.sympy_eq = x[0] * x[1] * x[2] / 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh34Eq29b(KnownEquation):
     """
     - Equation: II.34.29b
@@ -1717,7 +1716,7 @@ class FeynmanIICh34Eq29b(KnownEquation):
         self.sympy_eq = x[0] * BOHR_MAGNETON * x[1] * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh37Eq1(KnownEquation):
     """
     - Equation: II.37.1
@@ -1743,7 +1742,7 @@ class FeynmanIICh37Eq1(KnownEquation):
         self.sympy_eq = x[0] * (1 + x[1]) * x[2]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh13Eq18(KnownEquation):
     """
     - Equation: III.13.18
@@ -1769,7 +1768,7 @@ class FeynmanIIICh13Eq18(KnownEquation):
         self.sympy_eq = 2 * x[0] * x[1] ** 2 * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh15Eq12(KnownEquation):
     """
     - Equation: III.15.12
@@ -1796,7 +1795,7 @@ class FeynmanIIICh15Eq12(KnownEquation):
         self.sympy_eq = 2 * x[0] * (1 - sympy.cos(x[1] * x[2]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh15Eq27(KnownEquation):
     """
     - Equation: III.15.27
@@ -1824,7 +1823,7 @@ class FeynmanIIICh15Eq27(KnownEquation):
         self.sympy_eq = 2 * sympy.pi * x[0] / (x[1] * x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh17Eq37(KnownEquation):
     """
     - Equation: III.17.37
@@ -1850,7 +1849,7 @@ class FeynmanIIICh17Eq37(KnownEquation):
         self.sympy_eq = x[0] * (1 + x[1] * sympy.cos(x[2]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh19Eq51(KnownEquation):
     """
     - Equation: III.19.51
@@ -1878,7 +1877,7 @@ class FeynmanIIICh19Eq51(KnownEquation):
                 1 / x[2] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus5(KnownEquation):
     """
     - Equation: 3.74 Goldstein
@@ -1908,7 +1907,7 @@ class FeynmanBonus5(KnownEquation):
         self.sympy_eq = 2 * sympy.pi * x[0] ** (3 / 2) / sympy.sqrt(GRAVITATIONAL_CONSTANT * (x[1] + x[2]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus7(KnownEquation):
     """
     - Equation: Friedman Equation
@@ -1936,7 +1935,7 @@ class FeynmanBonus7(KnownEquation):
         self.sympy_eq = sympy.sqrt(8 * sympy.pi * GRAVITATIONAL_CONSTANT * x[0] / 3 - x[1] * SPEED_OF_LIGHT ** 2 / x[2] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus9(KnownEquation):
     """
     - Equation: Gravitational wave ratiated power
@@ -1964,7 +1963,7 @@ class FeynmanBonus9(KnownEquation):
         self.sympy_eq = -32 / 5 * GRAVITATIONAL_CONSTANT ** 4 / SPEED_OF_LIGHT ** 5 * (x[0] * x[1]) ** 2 * (x[0] + x[1]) / x[2] ** 5
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus15(KnownEquation):
     """
     - Equation: 11.38 Jackson
@@ -1992,7 +1991,7 @@ class FeynmanBonus15(KnownEquation):
         self.sympy_eq = sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1] / (1 + x[0] / SPEED_OF_LIGHT * sympy.cos(x[2]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus18(KnownEquation):
     """
     - Equation: 15.2.1 Weinberg
@@ -2019,7 +2018,7 @@ class FeynmanBonus18(KnownEquation):
         self.sympy_eq = 3 / (8 * sympy.pi * GRAVITATIONAL_CONSTANT) * (SPEED_OF_LIGHT ** 2 * x[0] / x[1] ** 2 + x[2] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh8Eq14(KnownEquation):
     """
     - Equation: I.8.14
@@ -2046,7 +2045,7 @@ class FeynmanICh8Eq14(KnownEquation):
         self.sympy_eq = sympy.sqrt((x[0] - x[1]) ** 2 + (x[2] - x[3]) ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh13Eq4(KnownEquation):
     """
     - Equation: I.13.4
@@ -2073,7 +2072,7 @@ class FeynmanICh13Eq4(KnownEquation):
         self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh13Eq12(KnownEquation):
     """
     - Equation: I.13.12
@@ -2102,7 +2101,7 @@ class FeynmanICh13Eq12(KnownEquation):
         self.sympy_eq = GRAVITATIONAL_CONSTANT * x[0] * x[1] * (1 / x[2] - 1 / x[3])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh18Eq4(KnownEquation):
     """
     - Equation: I.18.4
@@ -2130,7 +2129,7 @@ class FeynmanICh18Eq4(KnownEquation):
         self.sympy_eq = (x[0] * x[1] + x[2] * x[3]) / (x[0] + x[2])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh18Eq16(KnownEquation):
     """
     - Equation: I.18.16
@@ -2158,7 +2157,7 @@ class FeynmanICh18Eq16(KnownEquation):
         self.sympy_eq = x[0] * x[1] * x[2] * sympy.sin(x[3])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh24Eq6(KnownEquation):
     """
     - Equation: I.24.6
@@ -2185,7 +2184,7 @@ class FeynmanICh24Eq6(KnownEquation):
         self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2) * 1 / 2 * x[3] ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh29Eq16(KnownEquation):
     """
     - Equation: I.29.16
@@ -2213,7 +2212,7 @@ class FeynmanICh29Eq16(KnownEquation):
         self.sympy_eq = sympy.sqrt(x[0] ** 2 + x[1] ** 2 + 2 * x[0] * x[1] * sympy.cos(x[2] - x[3]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh32Eq17(KnownEquation):
     """
     - Equation: I.32.17
@@ -2242,7 +2241,7 @@ class FeynmanICh32Eq17(KnownEquation):
                         * (8 * sympy.pi * x[1] ** 2 / 3) * (x[2] ** 4 / (x[2] ** 2 - x[3] ** 2) ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh34Eq8(KnownEquation):
     """
     - Equation: I.34.8
@@ -2270,7 +2269,7 @@ class FeynmanICh34Eq8(KnownEquation):
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh40Eq1(KnownEquation):
     """
     - Equation: I.40.1
@@ -2299,7 +2298,7 @@ class FeynmanICh40Eq1(KnownEquation):
         self.sympy_eq = x[0] * sympy.exp(-x[1] * GRAVITATIONAL_ACCELERATION * x[2] / (BOLTZMANN_CONSTANT * x[3]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh43Eq16(KnownEquation):
     """
     - Equation: I.43.16
@@ -2327,7 +2326,7 @@ class FeynmanICh43Eq16(KnownEquation):
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh44Eq4(KnownEquation):
     """
     - Equation: I.44.4
@@ -2357,7 +2356,7 @@ class FeynmanICh44Eq4(KnownEquation):
         self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] * sympy.log(x[2] / x[3])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh50Eq26(KnownEquation):
     """
     - Equation: I.50.26
@@ -2384,7 +2383,7 @@ class FeynmanICh50Eq26(KnownEquation):
         self.sympy_eq = x[0] * (sympy.cos(x[1] * x[2]) + x[3] * sympy.cos(x[1] * x[2]) ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh11Eq20(KnownEquation):
     """
     - Equation: II.11.20
@@ -2412,7 +2411,7 @@ class FeynmanIICh11Eq20(KnownEquation):
         self.sympy_eq = x[0] * x[1] ** 2 * x[2] / (3 * BOLTZMANN_CONSTANT * x[3])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh34Eq11(KnownEquation):
     """
     - Equation: II.34.11
@@ -2441,7 +2440,7 @@ class FeynmanIICh34Eq11(KnownEquation):
         self.sympy_eq = x[0] * x[1] * x[2] / (2 * x[3])
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh35Eq18(KnownEquation):
     """
     - Equation: II.35.18
@@ -2471,7 +2470,7 @@ class FeynmanIICh35Eq18(KnownEquation):
                                 + sympy.exp(-x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh35Eq21(KnownEquation):
     """
     - Equation: II.35.21
@@ -2500,7 +2499,7 @@ class FeynmanIICh35Eq21(KnownEquation):
         self.sympy_eq = x[0] * x[1] * sympy.tanh(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh38Eq3(KnownEquation):
     """
     - Equation: II.38.3
@@ -2529,7 +2528,7 @@ class FeynmanIICh38Eq3(KnownEquation):
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh10Eq19(KnownEquation):
     """
     - Equation: III.10.19
@@ -2556,7 +2555,7 @@ class FeynmanIIICh10Eq19(KnownEquation):
         self.sympy_eq = x[0] * sympy.sqrt(x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh14Eq14(KnownEquation):
     """
     - Equation: III.14.14
@@ -2584,7 +2583,7 @@ class FeynmanIIICh14Eq14(KnownEquation):
         self.sympy_eq = x[0] * (sympy.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])) - 1)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh21Eq20(KnownEquation):
     """
     - Equation: III.21.20
@@ -2613,7 +2612,7 @@ class FeynmanIIICh21Eq20(KnownEquation):
         self.sympy_eq = -x[0] * x[1] * x[2] / x[3]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus1(KnownEquation):
     """
     - Equation: Rutherford scattering
@@ -2644,7 +2643,7 @@ class FeynmanBonus1(KnownEquation):
                          / (4 * x[2] * sympy.sin(x[3] / 2) ** 2)) ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus3(KnownEquation):
     """
     - Equation: 3.64 Goldstein
@@ -2672,7 +2671,7 @@ class FeynmanBonus3(KnownEquation):
         self.sympy_eq = x[0] * (1 - x[1] ** 2) / (1 + x[1] * sympy.cos(x[2] - x[3]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus11(KnownEquation):
     """
     - Equation: N-slit diffraction
@@ -2700,7 +2699,7 @@ class FeynmanBonus11(KnownEquation):
         self.sympy_eq = x[0] * (sympy.sin(x[1] / 2) * sympy.sin(x[2] * x[3] / 2) / (x[1] / 2 * sympy.sin(x[3] / 2))) ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus19(KnownEquation):
     """
     - Equation: 15.2.2 Weinberg
@@ -2729,7 +2728,7 @@ class FeynmanBonus19(KnownEquation):
                 SPEED_OF_LIGHT ** 4 * x[0] / x[1] ** 2 + x[2] ** 2 * SPEED_OF_LIGHT ** 2 * (1 - 2 * x[3]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh12Eq11(KnownEquation):
     """
     - Equation: I.12.11
@@ -2759,7 +2758,7 @@ class FeynmanICh12Eq11(KnownEquation):
         self.sympy_eq = x[0] * (x[1] + x[2] * x[3] * sympy.sin(x[4]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh2Eq42(KnownEquation):
     """
     - Equation: II.2.42
@@ -2789,7 +2788,7 @@ class FeynmanIICh2Eq42(KnownEquation):
         self.sympy_eq = x[0] * (x[1] - x[2]) * x[3] / x[4]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh6Eq15a(KnownEquation):
     """
     - Equation: II.6.15a
@@ -2820,7 +2819,7 @@ class FeynmanIICh6Eq15a(KnownEquation):
                         * 3 * x[1] / x[2] ** 5 * sympy.sqrt(x[3] ** 2 + x[4] ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh11Eq3(KnownEquation):
     """
     - Equation: II.11.3
@@ -2851,7 +2850,7 @@ class FeynmanIICh11Eq3(KnownEquation):
         self.sympy_eq = x[0] * x[1] / (x[2] * (x[3] ** 2 - x[4] ** 2))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh11Eq17(KnownEquation):
     """
     - Equation: II.11.17
@@ -2881,7 +2880,7 @@ class FeynmanIICh11Eq17(KnownEquation):
         self.sympy_eq = x[0] * (1 + x[1] * x[2] * sympy.cos(x[3]) / (BOLTZMANN_CONSTANT * x[4]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIICh36Eq38(KnownEquation):
     """
     - Equation: II.36.38
@@ -2913,7 +2912,7 @@ class FeynmanIICh36Eq38(KnownEquation):
                 ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2 * BOLTZMANN_CONSTANT * x[2]) * x[4]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanIIICh9Eq52(KnownEquation):
     """
     - Equation: III.9.52
@@ -2945,7 +2944,7 @@ class FeynmanIIICh9Eq52(KnownEquation):
                 (x[3] - x[4]) * x[2] / 2) ** 2
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus4(KnownEquation):
     """
     - Equation: 3.16 Goldstein
@@ -2979,7 +2978,7 @@ class FeynmanBonus4(KnownEquation):
         self.sympy_eq = sympy.sqrt(2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2)))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus12(KnownEquation):
     """
     - Equation: 2.11 Jackson
@@ -3011,7 +3010,7 @@ class FeynmanBonus12(KnownEquation):
                         * (4 * sympy.pi * x[1] * x[3] * x[4] - x[0] * x[4] * x[2] ** 3 / (x[2] ** 2 - x[4] ** 2) ** 2)
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus13(KnownEquation):
     """
     - Equation: 3.45 Jackson
@@ -3042,7 +3041,7 @@ class FeynmanBonus13(KnownEquation):
         self.sympy_eq = 1 / (4 * sympy.pi * x[0]) * x[1] / sympy.sqrt(x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * sympy.cos(x[4]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus14(KnownEquation):
     """
     - Equation: 4.60' Jackson
@@ -3074,7 +3073,7 @@ class FeynmanBonus14(KnownEquation):
         self.sympy_eq = x[0] * sympy.cos(x[1]) * (-x[2] + x[3] ** 3 / x[2] ** 2 * (x[4] - 1) / (x[4] + 2))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus16(KnownEquation):
     """
     - Equation: 8.56 Goldstein
@@ -3105,7 +3104,7 @@ class FeynmanBonus16(KnownEquation):
                         + x[1] * x[4]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh11Eq19(KnownEquation):
     """
     - Equation: I.11.19
@@ -3137,7 +3136,7 @@ class FeynmanICh11Eq19(KnownEquation):
         self.sympy_eq = x[0] * x[1] + x[2] * x[3] + x[4] * x[5]
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus2(KnownEquation):
     """
     - Equation: 3.55 Goldstein
@@ -3173,7 +3172,7 @@ class FeynmanBonus2(KnownEquation):
         self.sympy_eq = x[0] * x[1] / x[2] ** 2 * (1 + sympy.sqrt(1 + 2 * x[3] * x[2] ** 2 / (x[0] * x[1] ** 2)) * sympy.cos(x[4] - x[5]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus17(KnownEquation):
     """
     - Equation: 12.80' Goldstein
@@ -3206,7 +3205,7 @@ class FeynmanBonus17(KnownEquation):
         self.sympy_eq = 1 / (2 * x[0]) * (x[1] ** 2 + x[0] ** 2 * x[2] ** 2 * x[3] ** 2 * (1 + x[4] * x[3] / x[5]))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanBonus6(KnownEquation):
     """
     - Equation: 3.99 Goldstein
@@ -3259,12 +3258,12 @@ class FeynmanBonus6(KnownEquation):
         self.sympy_eq = sympy.sqrt(1 + 2 * x[0] * x[1] * x[2] * x[2] / (x[3] * (x[4] * x[5] * x[6] * x[6]) ** 2))
 
 
-@register_feynman_eq_class
+@register_eq_class
 class FeynmanICh9Eq18(KnownEquation):
     """
     - Equation: I.9.18
     - Raw: 6.6743e-11 * m1 * m2 / ((x2 - x1) ** 2 + (y2 - y1) ** 2 + (z2 - z1) ** 2)
-    - Num. Vars: 9
+    - Num. Vars: 8
     - Vars:
         - x[0]: m1 (float, positive)
         - x[1]: m2 (float, positive)

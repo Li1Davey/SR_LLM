@@ -12,6 +12,7 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy import pretty
 
 from scipy.optimize import minimize
+from scipy.optimize import basinhopping, direct, shgo
 
 from functions import PlaceholderConstant, Token
 from const import make_const_optimizer
@@ -303,12 +304,16 @@ class Program(object):
             self.task.rand_draw_data_with_X_fixed()
             # the returned constant, and the objective function.
             # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
-            if Program.noise_std > 0:
+            if self.optimizer=="basinhopping":
+                minimizer_kwargs = {"method": "Nelder-Mead",
+                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
+                opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=200)
+            elif Program.noise_std > 0:
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
                 # change the method from BFGS to Nelder-Mead to improve the precision.
                 # opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
-                opt_result = minimize(f, x0, method='BFGS')
+                opt_result = minimize(f, x0, method='BFGS', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000})
 
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']

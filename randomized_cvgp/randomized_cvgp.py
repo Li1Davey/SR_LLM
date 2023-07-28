@@ -2,7 +2,7 @@ import time
 import numpy as np
 from operator import attrgetter
 from program import Program
-from utils import create_uniform_generations
+from utils import create_uniform_generations, create_geometric_generations
 
 
 class ExpandingGeneticProgram(object):
@@ -33,7 +33,8 @@ class ExpandingGeneticProgram(object):
         self.tour_size = tour_size
         self.hof_size = hof_size
 
-        self.n_generations = create_uniform_generations(n_generations, nvar + 1)
+        # self.n_generations = create_uniform_generations(n_generations, nvar + 1)
+        self.n_generations = create_geometric_generations(n_generations, nvar + 1)
 
         self.timer_log = []
 
