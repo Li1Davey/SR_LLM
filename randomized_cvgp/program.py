@@ -106,6 +106,7 @@ class Program(object):
         if tokens is not None:
             self._init(tokens, allow_change_tokens)
         self.freezed = False
+        self.optimizer ='BFGS'
 
     def set_vf(self, vf: list):
         """set of free variables"""
