@@ -7,6 +7,7 @@ from sympy.parsing.sympy_parser import parse_expr
 from symbolic_data_generator import DataX
 from symbolic_equation_evaluator_public import Equation_evaluator
 
+
 def read_until_line_starts_with(inp, line):
     l = inp.readline()
     while l != "" and not l.startswith(line):
@@ -29,7 +30,7 @@ def create_all_metrics_dict(inp):
     return val_dict
 
 
-def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_str, testset_size, metric_name=""):
+def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_str, testset_size, metric_name="neg_mse"):
     data_query_oracle = Equation_evaluator(equation_filename, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -51,47 +52,28 @@ def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_
             val_dict[x] = X[i]
         y_hat[idx] = expr.evalf(subs=val_dict)
     print('%' * 30)
-    dict_of_rs = data_query_oracle(X, y_hat)
+    dict_of_rs = data_query_oracle._evaluate_all_losses(X_test, y_hat)#data_query_oracle.(X, y_hat)
 
     return dict_of_rs
 
-def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_program_basepath, dso_basepath, keyword="Korns"):
-    all_dso_r, all_gp_r, all_egp_r = {}, {}, {}
-    gp_output_files, egp_output_files = {}, {}
-    dso_output_files = {}
-    for key in ['VPG', 'PQT', 'DSR', 'GPMELD']:
-        dso_output_files[key] = {}
-    for root, dirs, files in os.walk(file_prefix, topdown=False):
-        for name in files:
-            if keyword and  keyword not in name:
-                continue
-            if metric_name in name and noise_type in name and noise_scale in name:
-                if 'gp' in name and 'egp' not in name:
-                    gp_output_files[name.split('.')[0]] = os.path.join(root, name)
-                elif 'egp' in name:
-                    egp_output_files[name.split('.')[0]] = os.path.join(root, name)
-            for key in ['VPG', 'PQT', 'DSR', 'GPMELD']:
-                dso_output_files[key][name.split('.')[0]] = os.path.join(root, name)
 
-
-
-
-def parse_eureqa_solutions(eureqa_basepath, noise_std):
+def parse_eureqa_solutions(eureqa_basepath, noise_type, noise_scale):
     df = pd.read_csv(eureqa_basepath)
     all_eureqa_r = {}
     result_dict = {}
-    for row in df.iterrows():
+    for i, row in df.iterrows():
         prog = row['benchmark']
         idx = int(prog.split('_')[-1])
         predicted = row['solution']
         result_dict[idx] = predicted
-        equreqa_ri = compute_eureqa_all_metrics(prog+'.in', result_dict[idx], testset_size=256,
-                                                    noise_std=noise_std)
+        equreqa_ri = compute_eureqa_all_metrics(equation_filename=prog + '.in', expr_str=result_dict[idx], testset_size=256,
+                                                noise_type=noise_type, noise_scale=noise_scale)
         all_eureqa_r[idx] = equreqa_ri
         # except:
         #     print(i, "eureqa cannot process")
 
     return all_eureqa_r
+
 
 def pretty_print_eureqa(all_eureqa_rs):
     for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
@@ -111,11 +93,11 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Add an argument
     parser.add_argument('--metric', type=str, default='neg_mse')
-    parser.add_argument('--noise_type', type=str, default="None")
-    parser.add_argument('--noise_scale', type=str, default='0.0')
+    parser.add_argument('--noise_type', type=str, default="normal")
+    parser.add_argument('--noise_scale', type=float, default=0.0)
     parser.add_argument('--eureqa_path', type=str, required=True)
 
     # Parse the argument
     args = parser.parse_args()
-    all_eureqa_r = parse_eureqa_solutions(args.eureqa_path, args.true_program_file)
+    all_eureqa_r = parse_eureqa_solutions(args.eureqa_path, args.noise_type, args.noise_scale)
     pretty_print_eureqa(all_eureqa_r)
