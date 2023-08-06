@@ -9,7 +9,7 @@ nt=$3
 
 for pgn in {0..9};
 do
-	eq_name=${type}_nv${nv}_nt${nt}_prog_${prog}.in
+	eq_name=${type}_nv${nv}_nt${nt}_prog_${pgn}.in
     echo "submit $eq_name"
     dump_dir=$basepath/result/${type}_nv${nv}_nt${nt}/$(date +%F)
 
