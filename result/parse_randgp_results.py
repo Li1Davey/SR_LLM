@@ -71,11 +71,12 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, keyword="Ko
     return all_randgp_r
 
 
-def pretty_print_pair(all_gp_rs, metric_name, is_numbered=True):
-    for key in [metric_name,]:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
-        print(f"{key}")
+
+def pretty_print_pair(all_gp_rs,max_prog=10, is_numbered=True):
+    for key in ['neg_nmse',]:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        print(f"{key} randGP")
         if is_numbered:
-            for i in range(10):
+            for i in range(max_prog):
                 print(i, end=", ")
                 progi = 'prog_' + str(i)
                 if progi in all_gp_rs:
@@ -83,7 +84,8 @@ def pretty_print_pair(all_gp_rs, metric_name, is_numbered=True):
                 else:
                     print()
         else:
-            for prog in all_gp_rs:
+            keys=sorted(list(all_gp_rs.keys()))
+            for prog in keys:#all_gp_rs:
                 print(prog, end=", ")
                 if prog in all_gp_rs:
                     print(all_gp_rs[prog][key])
@@ -96,12 +98,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Add an argument
     parser.add_argument('--fp', type=str, required=True)
-    parser.add_argument('--metric', type=str, default='neg_nmse', required=True)
+    # parser.add_argument('--metric', type=str, default='neg_nmse', required=True)
     parser.add_argument("--keyword", type=str, default=None)
     parser.add_argument('--noise_type', type=str, required=True, default="None")
     parser.add_argument('--noise_scale', type=str, default='0.0')
     parser.add_argument('--is_numbered', type=int, default=0)
-
+    parser.add_argument('--max_prog', type=int, default=10)
     # Parse the argument
     args = parser.parse_args()
     all_randgp_r = parse_exp_set(args.fp, args.metric, args.noise_type, args.noise_scale, args.keyword)
@@ -111,4 +113,4 @@ if __name__ == '__main__':
 
     print(args.keyword)
     if len(all_randgp_r) != 0:
-        pretty_print_pair(all_randgp_r, args.metric, is_numbered=args.is_numbered)
+        pretty_print_pair(all_randgp_r, max_prog=args.max_prog, is_numbered=args.is_numbered)
