@@ -37,7 +37,7 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     opt_num_expr = 5
 
     expr_obj_thres = data_query_oracle.expr_obj_thres
-    expr_consts_thres = config[metric_name]['expr_consts_thres']
+    expr_consts_thres = 1e-6 #config[metric_name]['expr_consts_thres']
 
     # gp hyper parameters
     cxpb = 0.5
@@ -47,7 +47,7 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     hof_size = 20  # 0
 
     population_size = 50
-    n_generations = 60
+    n_generations = 100
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
