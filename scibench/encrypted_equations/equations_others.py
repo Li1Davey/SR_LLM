@@ -1954,21 +1954,9 @@ class Livermore2_Vars4_6(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.eq_expression = [('div', 'binary'),
-                              ('add', 'binary'),
-                              ('mul', 'binary'),
-                              (-1, 'const'),
-                              ('X_0', 'var'),
-                              ('mul', 'binary'),
-                              (-0.54, 'const'),
-                              ('exp', 'unary'),
-                              ('mul', 'binary'),
-                              ('X_0', 'var'),
-                              ('mul', 'binary'),
-                              ('sqrt', 'unary'), ('add', 'binary'), ('X_3', 'var'), ('cos', 'unary'), ('X_1', 'var'),
-                              ('exp', 'unary'), ('mul', 'binary'), (-2, 'const'), ('X_0', 'var'),
-                              ('X_2', 'var')]
-        self.sympy_eq = (-x[0] - 0.54 * sympy.exp(x[0] * sympy.sqrt(x[3] + sympy.cos(x[1])) * sympy.exp(-2 * x[0]))) / x[2]
+        self.sympy_eq = -x[0] - \
+                        0.54 * sympy.exp(x[0]) * sympy.sqrt(x[3]) + \
+                        sympy.cos(x[1]) * sympy.exp(-2 * x[0]) / x[2]
 
 
 @register_eq_class
@@ -1979,7 +1967,7 @@ class Livermore2_Vars4_7(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] + sympy.cos(x[1] / sympy.log(x[1] ** 2 * x[2] + x[3]))
+        self.sympy_eq = x[0] + sympy.cos(x[1]) / sympy.log(1+x[1] ** 2) + x[2] + x[3]
 
 
 @register_eq_class
@@ -2103,8 +2091,9 @@ class Livermore2_Vars4_18(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] + sympy.sin(2 * x[1] + x[2]) - x[3] * sympy.exp(x[0]) + \
-                        2.96 * sympy.sqrt(-0.36 * x[1] ** 2 + x[1] * x[2] ** 2 + 0.94) + \
+        self.sympy_eq = x[0] + sympy.sin(2 * x[1] + x[2]) -\
+                        x[3] * sympy.exp(x[0]) + \
+                        2.96 * sympy.sqrt(0.36 * x[1] ** 2 + x[1] * x[2] ** 2 + 0.94) + \
                         sympy.log(-x[0] + x[1]+1)
 
 
