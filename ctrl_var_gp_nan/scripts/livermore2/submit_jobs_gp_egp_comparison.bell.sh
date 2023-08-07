@@ -1,9 +1,8 @@
 #!/bin/bash -l
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
-type=$1
-nv=$2
-nt=$3
+type=Livermore2
+nv=$1
 
 thispath=$basepath/ctrl_var_gp_nan
 data_path=$basepath/data/unencrypted/equations_others
@@ -16,7 +15,7 @@ for prog in {1..25};
 do
     eq_name=${type}_Vars${nv}_$prog.in
     echo "submit $eq_name"
-   	dump_dir=$basepath/result/${type}_nv${nv}_nt${nt}/$(date +%F)
+   	dump_dir=$basepath/result/${type}_Vars${nv}/$(date +%F)
     if [ ! -d "$dump_dir" ]
     then
     	echo "create dir: $dump_dir"
