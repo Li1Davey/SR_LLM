@@ -50,7 +50,7 @@
       "run_gp_meld" : false,
       "verbose" : false,
       // How many GP generations to run between each RNN step. 
-      "generations" : 10,
+      "generations" : 50,
       "p_crossover" : 0.5,
       "p_mutate" : 0.5,
       "tournament_size" : 5,
@@ -61,7 +61,7 @@
    // Only the key training hyperparameters are listed here. See
    // config_common.json for the full list.
    "training" : {
-      "n_samples":15000,
+      "n_samples":150000,
       "batch_size" : 1024,
       "epsilon" : 0.02,
       // <R> is the sample average _after_ epsilon sub-sampling and  R_e is the (1-epsilon)-quantile estimate.
