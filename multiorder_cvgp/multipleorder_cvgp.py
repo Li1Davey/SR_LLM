@@ -94,43 +94,43 @@ class ExpandingGeneticProgram(object):
                 #               that can be changed among different experiments.
                 Program.task.batchsize *= Program.opt_num_expr
                 Program.opt_num_expr = 1
+            for cur_node in current_node_lists:
+                print(cur_node)
+                # 2.1 set the free variables and controlled variables for the given POOL
+                self._set_allowed_input_tokens(cur_node)
+                # 2.2 re-evaluate the constants and reward for the given POOL
+                for pr in self.populations[cur_node]:
+                    # a cached property in python (evaluated once) force the function to evaluate a new r
+                    pr.remove_r_evaluate()
+                    thisr = pr.r  # goodness-of-fit
+                for pr in self.hofs[cur_node]:
+                    pr.remove_r_evaluate()
+                    thisr = pr.r
 
-            print(cur_node)
-            # 2.1 set the free variables and controlled variables for the given POOL
-            self._set_allowed_input_tokens(cur_node)
-            # 2.2 re-evaluate the constants and reward for the given POOL
-            for pr in self.populations[cur_node]:
-                # a cached property in python (evaluated once) force the function to evaluate a new r
-                pr.remove_r_evaluate()
-                thisr = pr.r  # goodness-of-fit
-            for pr in self.hofs[cur_node]:
-                pr.remove_r_evaluate()
-                thisr = pr.r
+                # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
+                for it in range(self.n_generations[round_idx]):
+                    print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(cur_node.cur, it))
+                    self.one_generation(cur_node)
 
-            # 2.3 for the given POOL, do n generation of GP, find the best set of fitted expressions
-            for it in range(self.n_generations[round_idx]):
-                print('++++++++++++ VAR {} ITERATION {} ++++++++++++'.format(cur_node.cur, it))
-                self.one_generation(cur_node)
+                self.update_population(cur_node)
+                print(f'populations {cur_node}')
+                print_prs(self.populations[cur_node])
 
-            self.update_population(cur_node)
-            print(f'populations {cur_node}')
-            print_prs(self.populations[cur_node])
-
-            # 2.4 freeze tokens in the expressions
-            for i, pr in enumerate(self.populations[cur_node]):
-                # evaluate r again, just incase it has not been evaluated.
-                _ = pr.r
-                if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
-                    # only expand at those constant node. if there are no constant node,then we are done
-                    # if we do not want num_changing_consts, then we also quit.
-                    print('there are no constant node. we are done...')
-                else:
-                    if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
-                        print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
-                        pr.remove_r_evaluate()
-                        _ = pr.r
-                # whether you get very different value for different constant.
-                pr.freeze_equation()
+                # 2.4 freeze tokens in the expressions
+                for i, pr in enumerate(self.populations[cur_node]):
+                    # evaluate r again, just incase it has not been evaluated.
+                    _ = pr.r
+                    if len(pr.const_pos) == 0 or pr.num_changing_consts == 0:
+                        # only expand at those constant node. if there are no constant node,then we are done
+                        # if we do not want num_changing_consts, then we also quit.
+                        print('there are no constant node. we are done...')
+                    else:
+                        if not ("expr_objs" in pr.__dict__ and "expr_consts" in pr.__dict__):
+                            print('WARNING: pr.expr_objs NOT IN DICT: pr=' + str(pr.__getstate__()))
+                            pr.remove_r_evaluate()
+                            _ = pr.r
+                    # whether you get very different value for different constant.
+                    pr.freeze_equation()
 
             # pick two pools randomly, create a new pool of expression containing expression with the union of free variables
             if len(current_node_lists) == 0:
