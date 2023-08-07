@@ -2,15 +2,18 @@
 #basepath=/home/jiangnan/PycharmProjects/scibench
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 #py3615=/home/jiangnan/anaconda3/envs/py3615/bin/python3
+#
 py3615=/home/jiang631/workspace/miniconda3/envs/py3615/bin/python3
 type=$1
 nv=$2
 nt=$3
-
+datapath=$basepath/data/unencrypted/equations_trigometric
+set -x
 for pgn in {0..9};
 do
 	eq_name=${type}_nv${nv}_nt${nt}_prog_${pgn}.in
     echo "submit $eq_name"
+    
     dump_dir=$basepath/result/${type}_nv${nv}_nt${nt}/$(date +%F)
 
 	if [ ! -d "$dump_dir" ]; then
@@ -23,11 +26,11 @@ do
 		mkdir -p $log_dir
 	fi
 	for bsl in DSR PQT VPG GPMELD; do
-		echo $bsl, $(date +'%R/%m/%d/%Y')
+		echo $basepath/dso_classic/config/config_regression_${bsl}.json --equation_name $datapath/$eq_name --noise_type 'normal' --noise_scale 0.0
 		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=8 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="$bsl-${trimed_name}"
+#SBATCH --job-name="$bsl-${eq_name}"
 #SBATCH --output=$log_dir/run_${bsl}_${pgn}.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
@@ -35,7 +38,7 @@ do
 
 hostname
 
-$py3615 -m dso.run $basepath/dso_classic/config/config_regression_${bsl}.json --equation_name $equation_name --noise_type normal --noise_scale 0.0  > $dump_dir/$pgn.${bsl}.out
+$py3615 -m dso.run $basepath/dso_classic/config/config_regression_${type}_${bsl}.json --equation_name $datapath/$eq_name --noise_type 'normal' --noise_scale 0.0  > $dump_dir/$pgn.${bsl}.out
 
 EOT
 	done
