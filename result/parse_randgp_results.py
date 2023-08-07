@@ -54,8 +54,7 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, keyword="Ko
             if keyword and keyword not in name:
                 continue
             if metric_name in name and noise_type in name and noise_scale in name:
-                # if 'randgp' in name:
-                    randgp_output_files[name.split('.')[0]] = os.path.join(root, name)
+                randgp_output_files[name.split('.')[0]] = os.path.join(root, name)
 
     for prog in randgp_output_files:
         try:
@@ -71,9 +70,8 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, keyword="Ko
     return all_randgp_r
 
 
-
-def pretty_print_pair(all_gp_rs,max_prog=10, is_numbered=True):
-    for key in ['neg_nmse',]:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+def pretty_print_pair(all_gp_rs, max_prog=10, is_numbered=True):
+    for key in ['neg_nmse', ]:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
         print(f"{key} randGP")
         if is_numbered:
             for i in range(max_prog):
@@ -84,8 +82,8 @@ def pretty_print_pair(all_gp_rs,max_prog=10, is_numbered=True):
                 else:
                     print()
         else:
-            keys=sorted(list(all_gp_rs.keys()))
-            for prog in keys:#all_gp_rs:
+            keys = sorted(list(all_gp_rs.keys()))
+            for prog in keys:  # all_gp_rs:
                 print(prog, end=", ")
                 if prog in all_gp_rs:
                     print(all_gp_rs[prog][key])
@@ -107,9 +105,7 @@ if __name__ == '__main__':
     # Parse the argument
     args = parser.parse_args()
     all_randgp_r = parse_exp_set(args.fp, args.metric, args.noise_type, args.noise_scale, args.keyword)
-    # print(all_gp_r)
-    # print(all_randgp_r)
-    # print(all_dso_r)
+
 
     print(args.keyword)
     if len(all_randgp_r) != 0:
