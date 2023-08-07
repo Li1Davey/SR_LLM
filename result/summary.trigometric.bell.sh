@@ -1,12 +1,13 @@
 #!/bin/bash -l
 set -x
 #basepath=/home/jiang631/data/scibench
-basepath=/home/jiangnan/PycharmProjects/scibench/
+basepath=/home/jiang631/jiang631_scratch/data/scibench
+#basepath=/home/jiangnan/PycharmProjects/scibench/
 type=$1
 nv=$2
 nt=$3
 datasource=${type}_nv${nv}_nt${nt}
-dates=2023-07-21
+dates=2023-07-$4
 metric=neg_mse
 #python parse_results.py --fp $basepath/result/$datasource/$dates/ \
 #--metric $metric \
