@@ -1893,23 +1893,23 @@ class Livermore2_Vars3_25(KnownEquation):
 @register_eq_class
 class Livermore2_Vars4_1(KnownEquation):
     _eq_name = 'Livermore2_Vars4_1'
-    _function_set = ['add', 'sub', 'mul']
+    _function_set = ['add', 'sub', 'mul', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] - x[1] * x[2] - x[1] - x[3]
+        self.sympy_eq = x[0] - x[1] * x[2] - x[1] - 3 * x[3]
 
 
 @register_eq_class
 class Livermore2_Vars4_2(KnownEquation):
     _eq_name = 'Livermore2_Vars4_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] * sympy.sqrt(x[1]) * x[3] / x[2]
+        self.sympy_eq = x[0] * sympy.sqrt(2 * x[1]) * x[3] / x[2] + 1
 
 
 @register_eq_class
@@ -2079,25 +2079,8 @@ class Livermore2_Vars4_16(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.eq_expression = [('add', 'binary'), ('sqrt', 'unary'),
-
-                              ('mul', 'binary'),
-                              ('X_1', 'var'),
-                              ('add', 'binary'),
-                              ('mul', 'binary'), (-1, 'const'), ('X_1', 'var'),
-                              ('mul', 'binary'), (-1, 'const'),
-                              ('mul', 'binary'), ('n2', 'unary'), ('X_0', 'var'), ('exp', 'unary'), ('X_1', 'var'),
-
-                              ('add', 'binary'),
-
-                              ('mul', 'binary'),
-                              ('X_2', 'var'),
-                              ('add', 'binary'), ('mul', 'binary'), (-1, 'const'), ('X_3', 'var'), ('div', 'binary'), (1.81, 'const'),
-                              ('X_2', 'var'),
-
-                              ('mul', 'binary'), (-2.34, 'const'), ('div', 'binary'), ('X_3', 'var'), ('X_0', 'var')]
-        self.sympy_eq = sympy.sqrt(x[1] * (-x[0] ** 2 * sympy.exp(x[1]) - x[1])) + \
-                        x[2] * (-x[3] + 1.81 / x[2]) \
+        self.sympy_eq = sympy.sqrt(x[1]) * (-x[0] ** 2) + sympy.exp(x[1])  \
+                        + x[2] * (-x[3] + 1.81 / x[2]) \
                         - 2.34 * x[3] / x[0]
 
 
@@ -2120,21 +2103,9 @@ class Livermore2_Vars4_18(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.eq_expression = [('add', 'binary'), ('X_0', 'var'), ('add', 'binary'),
-
-                              ('mul', 'binary'), (2.96, 'const'),
-                              ('n2', 'unary'), ('add', 'binary'), (0.94, 'const'), ('add', 'binary'), ('mul', 'binary'), (-0.36, 'const'),
-
-                              ('sqrt', 'unary'), ('X_1', 'var'),
-                              ('mul', 'binary'), ('X_1', 'var'), ('n2', 'unary'), ('X_2', 'var'),
-
-                              ('add', 'binary'), ('log', 'unary'), ('add', 'binary'), ('X_1', 'var'), ('mul', 'binary'), (-1, 'const'),
-                              ('X_0', 'var'), ('sin', 'unary'), ('add', 'binary'), ('X_2', 'var'),
-                              ('add', 'binary'), ('mul', 'binary'), (2, 'const'), ('X_1', 'var'), ('mul', 'binary'), (-1, 'const'),
-                              ('mul', 'binary'), ('X_3', 'var'), ('exp', 'unary'), ('X_0', 'var')]
-        self.sympy_eq = x[0] + sympy.sin(2 * x[1] + x[2] - x[3] * sympy.exp(x[0])) + \
+        self.sympy_eq = x[0] + sympy.sin(2 * x[1] + x[2]) - x[3] * sympy.exp(x[0]) + \
                         2.96 * sympy.sqrt(-0.36 * x[1] ** 2 + x[1] * x[2] ** 2 + 0.94) + \
-                        sympy.log(-x[0] + x[1])
+                        sympy.log(-x[0] + x[1]+1)
 
 
 @register_eq_class
