@@ -166,12 +166,12 @@ if __name__ == '__main__':
     # from equations_feynman import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
-    # from equations_others import *
-    #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
-    from equations_trigometric_extra import *
+    from equations_others import *
 
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
+    # from equations_trigometric_extra import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
 
     # from equations_debug_cvgp import *
     #
