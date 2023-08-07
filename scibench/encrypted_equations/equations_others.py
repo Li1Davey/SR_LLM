@@ -1994,12 +1994,12 @@ class Livermore2_Vars4_9(KnownEquation):
 @register_eq_class
 class Livermore2_Vars4_10(KnownEquation):
     _eq_name = 'Livermore2_Vars4_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'const', 'sin', 'cos', 'pow']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'const', 'sin', 'cos', ]
 
     def __init__(self):
         super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] + (x[0] * (x[3] + (sympy.sqrt(x[1]) - sympy.sin(x[2])) / x[2])) ** (1 / 4)
+        self.sympy_eq = x[0] + x[0] * (x[3] + (sympy.sqrt(x[1]) - sympy.sin(x[2])) / x[2])
 
 
 @register_eq_class

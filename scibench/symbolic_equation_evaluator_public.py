@@ -12,10 +12,7 @@ import numpy as np
 import time
 
 EQUATION_EXTENSION = ".in"
-try:
-    import cyfunc
-except ImportError:
-    cyfunc = None
+import cyfunc
 import array
 
 class Equation_evaluator(object):
