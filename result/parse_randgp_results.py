@@ -46,14 +46,14 @@ def parse_gp_file(filename, verbose=False):
     return r
 
 
-def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, keyword="Korns"):
+def parse_exp_set(file_prefix, noise_type, noise_scale, keyword="Korns"):
     all_randgp_r = {}
     randgp_output_files = {}
     for root, dirs, files in os.walk(file_prefix, topdown=False):
         for name in files:
             if keyword and keyword not in name:
                 continue
-            if metric_name in name and noise_type in name and noise_scale in name:
+            if noise_type in name and noise_scale in name:
                 randgp_output_files[name.split('.')[0]] = os.path.join(root, name)
 
     for prog in randgp_output_files:
@@ -104,7 +104,7 @@ if __name__ == '__main__':
     parser.add_argument('--max_prog', type=int, default=10)
     # Parse the argument
     args = parser.parse_args()
-    all_randgp_r = parse_exp_set(args.fp, args.metric, args.noise_type, args.noise_scale, args.keyword)
+    all_randgp_r = parse_exp_set(args.fp, args.noise_type, args.noise_scale, args.keyword)
 
 
     print(args.keyword)
