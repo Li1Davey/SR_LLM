@@ -2249,18 +2249,19 @@ class Livermore2_Vars5_7(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = x[0] * x[4] + sympy.sqrt(x[0] * x[1] * sympy.cos(x[0]) - x[0] / (x[1] + x[2] + x[3] + 8.05))
+        self.sympy_eq = x[0] * x[4] + sympy.sqrt(x[0] * x[1]) * sympy.cos(x[0]) - x[0] / (x[1] + x[2] + x[3] + 8.05)
 
 
 @register_eq_class
 class Livermore2_Vars5_8(KnownEquation):
     _eq_name = 'Livermore2_Vars5_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'const', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = sympy.sqrt(x[1]) * x[2] - x[3] - 0.07 * (x[0] + (x[0] - x[1]) * sympy.sqrt(x[1] - 0.99)) * sympy.cos(x[4])
+        self.sympy_eq = sympy.sqrt(x[1]) * x[2] -\
+                        x[3] - 0.07 * (x[0] + (x[0] - x[1]) * sympy.sqrt(x[1] + 0.99)) * sympy.cos(x[4])
 
 
 @register_eq_class
@@ -2293,8 +2294,8 @@ class Livermore2_Vars5_11(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = -x[3] ** 2 + sympy.sqrt((x[0] * (x[2] + x[4]) - x[1] + x[4]) / x[2]) + 0.47 * sympy.sqrt(
-            x[2] * (x[0] - sympy.sqrt(x[1]) + x[1]) / x[1])
+        self.sympy_eq = -x[3] ** 2 + sympy.sqrt((x[0] * (x[2] + x[4]) - x[1] + x[4]) / x[2]) +\
+                        0.47 * sympy.sqrt(x[2] * x[0]) - sympy.sqrt(x[1]) / x[1]
 
 
 @register_eq_class
@@ -2316,7 +2317,7 @@ class Livermore2_Vars5_13(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = sympy.sqrt(x[0] * (x[4] * (x[1] - 1.52) - sympy.cos(4.03 * x[2] + x[3])))
+        self.sympy_eq = sympy.sqrt(x[0] * x[4]) * (x[1] - 1.52) - sympy.cos(4.03 * x[2] + x[3])
 
 
 @register_eq_class
@@ -2356,7 +2357,7 @@ class Livermore2_Vars5_16(KnownEquation):
 @register_eq_class
 class Livermore2_Vars5_17(KnownEquation):
     _eq_name = 'Livermore2_Vars5_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'cos', 'sin','const']
 
     def __init__(self):
         super().__init__(num_vars=5)
