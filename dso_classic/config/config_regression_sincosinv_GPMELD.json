@@ -51,7 +51,7 @@
       "run_gp_meld" : true,
       "verbose" : true,
       // How many GP generations to run between each RNN step. 
-      "generations" : 50,
+      "generations" : 20,
       "p_crossover" : 0.5,
       "p_mutate" : 0.5,
       "tournament_size" : 5,
