@@ -72,7 +72,7 @@ def parse_exp_set(file_prefix, noise_type, noise_scale, keyword="Korns"):
 
 def pretty_print_pair(all_gp_rs, max_prog=10, is_numbered=True):
     for key in ['neg_nmse', ]:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
-        print(f"{key} randGP")
+        print(f"{key} ")
         if is_numbered:
             for i in range(max_prog):
                 print(i, end=", ")
