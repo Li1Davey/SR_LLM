@@ -350,9 +350,9 @@ class GeneticProgram(object):
 
             now_time_stamp = time.perf_counter()
             if now_time_stamp - most_recent_timestamp >= 900:  # 15 min
-                print('print hof (ITERATION {0})='.format(i))
-                self.print_hof()
-                print("")
+                print('running {} more than 15mins'.format(i))
+                # self.print_hof()
+                # print("")
                 most_recent_timestamp = now_time_stamp
 
     def one_generation(self, iter=None):

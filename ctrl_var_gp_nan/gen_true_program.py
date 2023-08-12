@@ -150,13 +150,16 @@ if __name__ == '__main__':
 
     #basepath = "/depot/yexiang/apps/jiang631/data/xyx_dso"
     basepath = "/scratch/bell/yexiang/xyx_dso/data"
+    basepath= "/home/jiangnan/PycharmProjects/xyx_dso/data"
     
-    param.n_vars = 6
-    param.n_terms = [6, 8]
-    # param.decor = ['sin', 'cos'] #['inv'] #
-    # param.folder = basepath + '/sincos_nv{}_nt{}{}'.format(param.n_vars, param.n_terms[0], param.n_terms[1])
-    # param.decor = ['inv']
-    # param.folder = basepath + '/inv_nv{}_nt{}{}'.format(param.n_vars, param.n_terms[0], param.n_terms[1])
+    param.n_vars = 10
+    param.n_terms = [10, 20]
+    param.decor = ['sin', 'cos'] #['inv'] #
+    param.folder = basepath + '/sincos_nv{}_nt{}{}'.format(param.n_vars, param.n_terms[0], param.n_terms[1])
+    main(param)
+    param.decor = ['inv']
+    param.folder = basepath + '/inv_nv{}_nt{}{}'.format(param.n_vars, param.n_terms[0], param.n_terms[1])
+    main(param)
     param.decor = ['inv', 'sin', 'cos']
     param.folder = basepath + '/sincosinv_nv{}_nt{}{}'.format(param.n_vars, param.n_terms[0], param.n_terms[1])
 
