@@ -83,6 +83,9 @@ def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_
     config = load_config(config_template)
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    print("OLD function set:", config['task']['function_set'])
+    config['task']['function_set'] = data_query_oracle.function_set
+    print("New function set:", config['task']['function_set'])
 
     # Overwrite named benchmark (for tasks that support them)
     task_type = config["task"]["task_type"]
