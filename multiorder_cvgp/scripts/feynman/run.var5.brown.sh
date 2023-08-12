@@ -11,11 +11,11 @@ py3615=/home/jiang631/workspace/miniconda3/envs/py3615/bin/python
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_nmse
-for eq_name in FeynmanICh8Eq14.in FeynmanICh13Eq4.in FeynmanICh13Eq12.in FeynmanICh18Eq4.in FeynmanICh18Eq16.in FeynmanICh24Eq6.in FeynmanICh29Eq16.in FeynmanICh32Eq17.in FeynmanICh34Eq8.in FeynmanICh40Eq1.in FeynmanICh43Eq16.in FeynmanICh44Eq4.in FeynmanICh50Eq26.in FeynmanIICh11Eq20.in FeynmanIICh34Eq11.in FeynmanIICh35Eq18.in FeynmanIICh35Eq21.in FeynmanIICh38Eq3.in FeynmanIIICh10Eq19.in FeynmanIIICh14Eq14.in FeynmanIIICh21Eq20.in FeynmanBonus1.in FeynmanBonus3.in FeynmanBonus11.in FeynmanBonus19.in; do
+for eq_name in FeynmanICh12Eq11.in FeynmanIICh2Eq42.in FeynmanIICh6Eq15a.in FeynmanIICh11Eq3.in FeynmanIICh11Eq17.in FeynmanIICh36Eq38.in FeynmanIIICh9Eq52.in FeynmanBonus4.in FeynmanBonus12.in FeynmanBonus13.in FeynmanBonus14.in FeynmanBonus16.in; do
 
 	echo "submit $eq_name"
     trimed_name=${eq_name:7:-3}
-	dump_dir=$basepath/result/feynman_vars4/$(date +%F)
+	dump_dir=$basepath/result/feynman_vars5/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
