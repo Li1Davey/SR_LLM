@@ -3,48 +3,9 @@ import os
 
 import pandas as pd
 
-from compute_dso_all_metrics import compute_dso_all_metrics, compute_eureqa_all_metrics
+from compute_dso_all_metrics import compute_dso_all_metrics
 
 
-# def read_until_line_starts_with(inp, line):
-#     l = inp.readline()
-#     while l != "" and not l.startswith(line):
-#         l = inp.readline()
-#     return l
-#
-#
-# def create_all_metrics_dict(inp):
-#     l = inp.readline()
-#     # print(l)
-#     l = inp.readline()
-#     # print(l)
-#     val_dict = {}
-#     while l != "" and not l.startswith("%%%%%"):
-#         spl = l.split(" ")
-#         val_dict[spl[0]] = float(spl[1].strip())
-#         l = inp.readline()
-#         # print(l)
-#     # print(val_dict)
-#     return val_dict
-#
-#
-# def parse_gp_file(filename, verbose=False):
-#     # print('filename=', filename)
-#     inp = open(filename, 'r')
-#     l = read_until_line_starts_with(inp, 'final hof')
-#     # print('l=', l)
-#     rs = []
-#     l = read_until_line_starts_with(inp, 'validate r=')
-#     while l != "":
-#
-#         tt = l[:-1].split()
-#         rs.append(-float(tt[2]))
-#         if verbose:
-#             print('l=', l.strip())
-#         l = read_until_line_starts_with(inp, 'validate r=')
-#     inp.close()
-#     if verbose: print(f"filename:{filename}, reward:{rs}")
-#     r = min(rs)
 #     return r
 def read_until_line_starts_with(inp, line):
     l = inp.readline()
@@ -130,16 +91,16 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
         dso_output_files[key] = {}
     for root, dirs, files in os.walk(file_prefix, topdown=False):
         for name in files:
-            if keyword and  keyword not in name:
+            if keyword and keyword not in name:
                 continue
             if metric_name in name and noise_type in name and noise_scale in name:
-                if 'gp' in name and 'egp' not in name:
+                if '.gp' in name and '.egp' not in name:
                     gp_output_files[name.split('.')[0]] = os.path.join(root, name)
-                elif 'egp' in name:
+                elif '.egp' in name:
                     egp_output_files[name.split('.')[0]] = os.path.join(root, name)
-            for key in ['VPG', 'PQT', 'DSR', 'GPMELD']:
-                dso_output_files[key][name.split('.')[0]] = os.path.join(root, name)
-
+                for key in ['VPG', 'PQT', 'DSR', 'GPMELD']:
+                    dso_output_files[key][name.split('.')[0]] = os.path.join(root, name)
+    print(dso_output_files)
     for prog in gp_output_files:
         try:
             filename = gp_output_files[prog]
@@ -233,7 +194,7 @@ def pretty_print_pair(all_gp_rs, all_egp_rs, metric_name, is_numbered=True):
 
 
 def pretty_print_eureqa(all_eureqa_rs):
-    for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+    for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'inv_mse']:
         # print('{}\ndata idx, gp, expand_gp, dso'.format(key))
         print(key, ", EUREQA")
         for idx in range(10):
@@ -250,7 +211,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     # Add an argument
     parser.add_argument('--fp', type=str, required=True)
-    parser.add_argument('--metric', type=str, default='neg_mse', required=True)
+    parser.add_argument('--metric', type=str, default='neg_mse', required=False)
     parser.add_argument('--dso_basepath', type=str, required=False, default='None')
     parser.add_argument("--keyword", type=str, default=None)
     parser.add_argument('--noise_type', type=str, required=True, default="None")
@@ -263,10 +224,10 @@ if __name__ == '__main__':
     args = parser.parse_args()
 
     all_dso_r, all_gp_r, all_egp_r = parse_exp_set(args.fp, args.metric, args.noise_type, args.noise_scale,
-                                                   args.true_program_basepath, args.dso_basepath, args.keyword)# args.dso_basepath)
+                                                   args.true_program_basepath, args.dso_basepath, args.keyword)
     # print(all_gp_r)
-    print(all_egp_r)
-    # print(all_dso_r)
+    # print(all_egp_r)
+    print(all_dso_r)
 
     if len(all_dso_r) != 0:
         pretty_print_dso_family(all_dso_r, is_numbered=args.is_numbered)
