@@ -117,6 +117,6 @@ if __name__ == '__main__':
     seed = int(time.perf_counter() * 10000) % 1000007
     np.random.seed(seed)
     print('np.random seed=', seed)
-
+    print(args)
     run_tree_based_control_variable_gp(args.equation_name, args.maxwidth, args.metric_name, args.noise_type, args.noise_scale,
                                        args.optimizer)

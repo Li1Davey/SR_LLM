@@ -28,8 +28,9 @@ do
     	echo "create dir: $log_dir"
     	mkdir -p $log_dir
 	fi
-	for opt in BFGS Nelder-Mead CG basinhopping dual_annealing shgo
+	for opt in BFGS Nelder-Mead CG basinhopping dual_annealing shgo;
 	do
+		echo $opt
 		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
