@@ -36,7 +36,7 @@ def run_tree_based_control_variable_gp(equation_name, max_width, metric_name, no
     regress_batchsize = 256
     opt_num_expr = 5
 
-    expr_obj_thres = data_query_oracle.expr_obj_thres
+    expr_obj_thres = 1e-6# data_query_oracle.expr_obj_thres
     expr_consts_thres = 1e-6  # config[metric_name]['expr_consts_thres']
 
     # gp hyper parameters
