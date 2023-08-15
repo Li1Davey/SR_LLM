@@ -138,7 +138,7 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
 
 
 def pretty_print_dso_family(all_rs, is_numbered=1):
-    for key in ['neg_nmse', 'neg_nrmse',]:# 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+    for key in ['neg_nmse', 'neg_mse', 'neg_rmse', 'neg_nrmse']:# 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
         print('{}, DSR, PQT, VPG, GPMELD'.format(key))
         if is_numbered == 1:
             for idx in range(10):

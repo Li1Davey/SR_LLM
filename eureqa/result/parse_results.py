@@ -3,7 +3,6 @@ import os
 import numpy as np
 import pandas as pd
 from sympy.parsing.sympy_parser import parse_expr
-# from compute_all_metrics import compute_eureqa_all_metrics
 from symbolic_data_generator import DataX
 from symbolic_equation_evaluator_public import Equation_evaluator
 
@@ -76,10 +75,10 @@ def parse_eureqa_solutions(eureqa_basepath, noise_type, noise_scale):
 
 
 def pretty_print_eureqa(all_eureqa_rs):
-    for key in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+    for key in ['neg_nmse', 'neg_mse', 'neg_rmse', 'neg_nrmse']:
         # print('{}\ndata idx, gp, expand_gp, dso'.format(key))
         print(key, ", EUREQA")
-        for idx in range(10):
+        for idx in range(26):
             print(idx, end=", ")
             if idx in all_eureqa_rs:
                 print(all_eureqa_rs[idx][key])
