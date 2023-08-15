@@ -35,7 +35,7 @@ do
 #!/bin/bash -l
 
 #SBATCH --job-name="tgp_${opt}_${type}${nv}${nt}_${prog}"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.treegp.out
+#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.treegp.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
 #SBATCH --mem=4096MB
@@ -44,7 +44,7 @@ hostname
 
 $py3615 $thispath/main.py --equation_name $data_path/$eq_name   --optimizer $opt \
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out
+        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt${opt}.treegp.out
 
 EOT
 done
