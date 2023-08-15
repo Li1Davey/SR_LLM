@@ -15,7 +15,7 @@ def create_all_metrics_dict(inp):
     l = inp.readline()
     # print(l)
     val_dict = {}
-    while l != "" and not l.startswith("------------------------------"):
+    while l != "" and not l.startswith("------------------------------") and not l.startswith("%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"):
         spl = l.split(" ")
         val_dict[spl[0]] = float(spl[1].strip())
         l = inp.readline()
@@ -51,12 +51,14 @@ def parse_exp_set(file_prefix, noise_type, noise_scale, keyword="Korns"):
     randgp_output_files = {}
     for root, dirs, files in os.walk(file_prefix, topdown=False):
         for name in files:
+            
             if keyword and keyword not in name:
                 continue
             if noise_type in name and noise_scale in name:
                 randgp_output_files[name.split('.')[0]] = os.path.join(root, name)
-
+    print(randgp_output_files)
     for prog in randgp_output_files:
+        print(prog,"....")
         try:
             filename = randgp_output_files[prog]
             if not os.path.isfile(filename):
@@ -64,14 +66,15 @@ def parse_exp_set(file_prefix, noise_type, noise_scale, keyword="Korns"):
             gp_r = parse_gp_file(filename, verbose=True)
             all_randgp_r[prog] = gp_r[-1]
             # print('gp', gp_r)
-        except:
-            print(f'cannot parse randGP {filename}')
+        except Exception as e: 
+            print(e)
+            print(f'cannot parse {filename}')
 
     return all_randgp_r
 
 
 def pretty_print_pair(all_gp_rs, max_prog=10, is_numbered=True):
-    for key in ['neg_nmse', ]:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+    for key in ['neg_nmse', 'neg_mse', 'neg_rmse', 'neg_nrmse']:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
         print(f"{key} ")
         if is_numbered:
             for i in range(max_prog):
