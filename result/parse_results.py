@@ -59,11 +59,11 @@ def parse_dso_file(dso_log_filename, true_program_file, basepath, noise_std=0.0)
     inp = open(dso_log_filename, 'r')
     l = read_until_line_starts_with(inp, 'Source path______')
 
-    data_frame_basepath = l.strip().split('/')[-1]
+    data_frame_basepath = l.strip().split('______./')[-1]
     if len(data_frame_basepath) == 0:
         return None
     print(data_frame_basepath)
-    csv_expr_dir = os.path.join(basepath, 'log', data_frame_basepath)
+    csv_expr_dir = os.path.join(basepath,  data_frame_basepath)
 
     if not os.path.isdir(csv_expr_dir):
         print(csv_expr_dir, 'does not exists')
@@ -93,13 +93,10 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
         for name in files:
             if keyword and keyword not in name:
                 continue
-            if metric_name in name and noise_type in name and noise_scale in name:
-                if '.gp' in name and '.egp' not in name:
-                    gp_output_files[name.split('.')[0]] = os.path.join(root, name)
-                elif '.egp' in name:
-                    egp_output_files[name.split('.')[0]] = os.path.join(root, name)
-                for key in ['VPG', 'PQT', 'DSR', 'GPMELD']:
-                    dso_output_files[key][name.split('.')[0]] = os.path.join(root, name)
+            # if metric_name in name and noise_type in name and noise_scale in name:
+            for key in ['VPG', 'PQT', 'DSR', 'GPMELD']:
+                    if key in name:
+                        dso_output_files[key][name.split('.')[0]] = os.path.join(root, name)
     print(dso_output_files)
     for prog in gp_output_files:
         try:
@@ -127,7 +124,7 @@ def parse_exp_set(file_prefix, metric_name, noise_type, noise_scale, true_progra
     if dso_basepath == None:
         return all_dso_r, all_gp_r, all_egp_r
 
-    for baseline_name in ['VPG', 'PQT', 'DSR', 'GPMELD']:
+    for baseline_name in ['PQT', 'VPG', 'DSR', 'GPMELD']:
         all_dso_r[baseline_name] = {}
         for prog in dso_output_files[baseline_name]:
             filename = dso_output_files[baseline_name][prog]
@@ -147,8 +144,8 @@ def pretty_print_dso_family(all_rs, is_numbered=1):
             for idx in range(10):
                 print(idx, end=", ")
                 for baseline_name in ['DSR', 'PQT', 'VPG', 'GPMELD']:
-                    if idx in all_rs[baseline_name]:
-                        print(all_rs[baseline_name][idx][key], end=", ")
+                    if str(idx) in all_rs[baseline_name]:
+                        print(all_rs[baseline_name][str(idx)][key], end=", ")
                     else:
                         print(",", end=" ")
                 print()

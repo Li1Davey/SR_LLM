@@ -14,8 +14,8 @@ python parse_results.py --fp $basepath/result/$datasource/$dates/ \
 --noise_type normal \
 --noise_scale 0.0 \
 --is_numbered 1 \
---max_prog 10 \
 --keyword $5 \
+--dso_basepath $basepath/dso_classic/scripts \
 --true_program_basepath $basepath/data/unencrypted/equations_$data_folder_name/${datasource}_prog_
 
 
