@@ -71,7 +71,7 @@ def parse_exp_set(file_prefix, noise_type, noise_scale, keyword="Korns"):
 
 
 def pretty_print_pair(all_gp_rs, max_prog=10, is_numbered=True):
-    for key in ['neg_nmse', ]:  # 'neg_nrmse', 'inv_nrmse', 'inv_nmse', 'neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+    for key in ['neg_nmse', 'neg_mse', 'neg_rmse', 'neg_nrmse']: #'inv_mse', 'inv_nmse', 'inv_nrmse'
         print(f"{key} ")
         if is_numbered:
             for i in range(max_prog):
@@ -105,7 +105,6 @@ if __name__ == '__main__':
     # Parse the argument
     args = parser.parse_args()
     all_randgp_r = parse_exp_set(args.fp, args.noise_type, args.noise_scale, args.keyword)
-
 
     print(args.keyword)
     if len(all_randgp_r) != 0:

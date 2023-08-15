@@ -2,11 +2,10 @@
 set -x
 #basepath=/home/jiang631/data/scibench
 basepath=/home/jiangnan/PycharmProjects/scibench/eureqa/
-type=sincos
-nv=8
-nt=812
-datasource=${type}_nv${nv}_nt${nt}
-dates=2023-08-06
+type=Livermore2
+nv=4
+datasource=${type}_Vars${nv}
+dates=2023-08-08
 metric=neg_mse
 
 
