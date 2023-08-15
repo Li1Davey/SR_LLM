@@ -1,7 +1,4 @@
-try:
-    import cyfunc
-except ImportError:
-    cyfunc = None
+import cyfunc
 import array
 
 def python_execute(traversal, X):
