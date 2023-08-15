@@ -11,6 +11,7 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy import pretty
 
 from scipy.optimize import minimize
+from scipy.optimize import basinhopping, direct, shgo, dual_annealing
 
 from functions import PlaceholderConstant
 from const import make_const_optimizer
@@ -241,7 +242,7 @@ class Program(object):
 
     noise_std = 0.0
 
-    def __init__(self, tokens=None, allow_change_tokens=None):
+    def __init__(self, tokens=None, allow_change_tokens=None, optimizer="BFGS"):
         """
         Builds the Program from a list of integers corresponding to Tokens.
         """
@@ -250,6 +251,7 @@ class Program(object):
         if tokens is not None:
             self._init(tokens, allow_change_tokens)
         self.freezed = False
+        self.optimizer = optimizer
 
     def _init(self, tokens: np.ndarray, allow_change_tokens: np.ndarray):
         # pre-order of the program. the most important thing.
@@ -472,12 +474,50 @@ class Program(object):
             self.task.rand_draw_data_with_X_fixed()
             # the returned constant, and the objective function.
             # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
-            if Program.noise_std > 0:
+            if self.optimizer == "basinhopping":
+                minimizer_kwargs = {"method": "Nelder-Mead",
+                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
+                opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=500)
+
+                # print(opt_result)
+            elif self.optimizer == 'dual_annealing':
+                minimizer_kwargs = {"method": "Nelder-Mead",
+                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
+                lw = [-10] * self.n_var
+                up = [10] * self.n_var
+                bounds = list(zip(lw, up))
+                opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, niter=500)
+            elif self.optimizer == 'shgo':
+
+                minimizer_kwargs = {"method": "Nelder-Mead",
+                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
+                lw = [-10] * self.n_var
+                up = [10] * self.n_var
+                bounds = list(zip(lw, up))
+                opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': 5})
+            elif self.optimizer == "direct":
+                lw = [-10] * self.n_var
+                up = [10] * self.n_var
+                bounds = list(zip(lw, up))
+                opt_result = direct(f, bounds, maxiter=500)
+            elif self.optimizer == 'Nelder-Mead':
+                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000})
+            elif self.optimizer == 'CG':
+                opt_result = minimize(f, x0, method='CG', options={'maxiter': 1000})
+            elif self.optimizer == 'L-BFGS-B':
+                opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': 1000})
+            elif Program.noise_std > 0:
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
                 # change the method from BFGS to Nelder-Mead to improve the precision.
-                # opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
-                opt_result = minimize(f, x0, method='BFGS')
+                # opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000})
+                opt_result = minimize(f, x0, method='BFGS', options={'maxiter': 1000})
+            # if Program.noise_std > 0:
+            #     opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
+            # else:
+            #     # change the method from BFGS to Nelder-Mead to improve the precision.
+            #     # opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 10000})
+            #     opt_result = minimize(f, x0, method='BFGS')
 
             t_optimized_constants = opt_result['x']
             t_optimized_obj = opt_result['fun']
