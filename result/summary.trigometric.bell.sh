@@ -1,7 +1,7 @@
 #!/bin/bash -l
 set -x
-#basepath=/home/jiang631/data/scibench
-basepath=/home/jiang631/jiang631_scratch/data/scibench
+basepath=/home/jiang631/data/scibench
+# basepath=/home/jiang631/jiang631_scratch/data/scibench
 #basepath=/home/jiangnan/PycharmProjects/scibench/
 type=$1
 nv=$2
