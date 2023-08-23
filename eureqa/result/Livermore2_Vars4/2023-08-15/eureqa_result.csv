@@ -1,0 +1,4 @@
+benchmark,seed,project_id,base_model_id,model_id,solution
+/home/jiangnan/PycharmProjects/scibench/eureqa/data/equations_others/Livermore2_Vars4_25,10086,64db348cb8149c97bfe7f916,64db34f654b6a8c2b72fe3ec,64db356467a6d7e4bf788b7d,1.44531065576903 + -1.00399068956286*x1/(x2*x4) + -0.195426771466407*exp(cos(x2))/x4 - 0.107435453805486*x4
+benchmark,seed,project_id,base_model_id,model_id,solution
+/home/jiangnan/PycharmProjects/scibench/eureqa/data/equations_others/Livermore2_Vars4_25,10010,64db348cb8149c97bfe7f916,64db356467a6d7e4bf788b7d,64dbbaa78ff5d01a0d86d153,1.07743225194887 + -1.00659879767204*x1/(x2*x4) + -0.359370951929765*sin(sqrt(2.77915306503957 + 1.01388888888889*x2))/x4

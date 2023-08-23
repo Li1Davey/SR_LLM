@@ -7,28 +7,6 @@ from symbolic_data_generator import DataX
 from symbolic_equation_evaluator_public import Equation_evaluator
 
 
-def read_until_line_starts_with(inp, line):
-    l = inp.readline()
-    while l != "" and not l.startswith(line):
-        l = inp.readline()
-    return l
-
-
-def create_all_metrics_dict(inp):
-    l = inp.readline()
-    # print(l)
-    l = inp.readline()
-    # print(l)
-    val_dict = {}
-    while l != "" and not l.startswith("%%%%%"):
-        spl = l.split(" ")
-        val_dict[spl[0]] = float(spl[1].strip())
-        l = inp.readline()
-        # print(l)
-    print(val_dict)
-    return val_dict
-
-
 def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_str, testset_size, metric_name="neg_mse"):
     data_query_oracle = Equation_evaluator(equation_filename, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -56,13 +34,16 @@ def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_
     return dict_of_rs
 
 
-def parse_eureqa_solutions(eureqa_basepath, noise_type, noise_scale):
+def parse_eureqa_solutions(eureqa_basepath, noise_type, noise_scale, is_numbered=True):
     df = pd.read_csv(eureqa_basepath)
     all_eureqa_r = {}
     result_dict = {}
     for i, row in df.iterrows():
         prog = row['benchmark']
-        idx = int(prog.split('_')[-1])
+        if is_numbered:
+            idx = int(prog.split('_')[-1])
+        else:
+            idx=prog.split("/")[-1]
         predicted = row['solution']
         result_dict[idx] = predicted
         equreqa_ri = compute_eureqa_all_metrics(equation_filename=prog + '.in', expr_str=result_dict[idx], testset_size=256,
@@ -74,17 +55,25 @@ def parse_eureqa_solutions(eureqa_basepath, noise_type, noise_scale):
     return all_eureqa_r
 
 
-def pretty_print_eureqa(all_eureqa_rs):
+def pretty_print_eureqa(all_eureqa_rs, is_numbered):
     for key in ['neg_nmse', 'neg_mse', 'neg_rmse', 'neg_nrmse']:
         # print('{}\ndata idx, gp, expand_gp, dso'.format(key))
         print(key, ", EUREQA")
-        for idx in range(26):
-            print(idx, end=", ")
-            if idx in all_eureqa_rs:
-                print(all_eureqa_rs[idx][key])
-            else:
-                print()
-        print()
+        if is_numbered:
+            for idx in range(26):
+                print(idx, end=", ")
+                if idx in all_eureqa_rs:
+                    print(all_eureqa_rs[idx][key])
+                else:
+                    print()
+        else:
+            for prog in all_eureqa_rs:
+                print(prog, end=", ")
+                if key in all_eureqa_rs[prog]:
+                    print(all_eureqa_rs[prog][key])
+                else:
+                    print(",")
+            print()
 
 
 if __name__ == '__main__':
@@ -95,8 +84,10 @@ if __name__ == '__main__':
     parser.add_argument('--noise_type', type=str, default="normal")
     parser.add_argument('--noise_scale', type=float, default=0.0)
     parser.add_argument('--eureqa_path', type=str, required=True)
+    parser.add_argument('--is_numbered', type=int, default=0)
 
     # Parse the argument
     args = parser.parse_args()
-    all_eureqa_r = parse_eureqa_solutions(args.eureqa_path, args.noise_type, args.noise_scale)
-    pretty_print_eureqa(all_eureqa_r)
+    all_eureqa_r = parse_eureqa_solutions(args.eureqa_path, args.noise_type, args.noise_scale, args.is_numbered)
+    print(all_eureqa_r)
+    pretty_print_eureqa(all_eureqa_r,args.is_numbered)
