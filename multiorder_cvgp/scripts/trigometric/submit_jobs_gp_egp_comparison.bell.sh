@@ -4,6 +4,7 @@ basepath=/depot/yexiang/apps/jiang631/data/scibench
 type=$1
 nv=$2
 nt=$3
+maxwidth=$4
 
 thispath=$basepath/multiorder_cvgp
 data_path=$basepath/data/unencrypted/equations_trigometric
@@ -39,9 +40,9 @@ do
 
 hostname
 
-$py3615 $thispath/main.py --equation_name $data_path/$eq_name \
+$py3615 $thispath/main.py --equation_name $data_path/$eq_name --maxwidth $maxwidth \
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.treegp.out
+        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.width${maxwidth}.treegp.out
 
 EOT
 
