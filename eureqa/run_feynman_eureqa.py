@@ -9,6 +9,13 @@ import datarobot as dr
 MAX_WAIT = 3600
 THRESHOLD = 1e-10
 
+var4 = ['FeynmanICh8Eq14', 'FeynmanICh13Eq4', 'FeynmanICh13Eq12', 'FeynmanICh18Eq4', 'FeynmanICh18Eq16', 'FeynmanICh24Eq6',
+        'FeynmanICh29Eq16', 'FeynmanICh32Eq17', 'FeynmanICh34Eq8', 'FeynmanICh40Eq1', 'FeynmanICh43Eq16', 'FeynmanICh44Eq4',
+        'FeynmanICh50Eq26', 'FeynmanIICh11Eq20', 'FeynmanIICh34Eq11', 'FeynmanIICh35Eq18', 'FeynmanIICh35Eq21', 'FeynmanIICh38Eq3',
+        'FeynmanIIICh10Eq19', 'FeynmanIIICh14Eq14', 'FeynmanIIICh21Eq20', 'FeynmanBonus1', 'FeynmanBonus3', 'FeynmanBonus11',
+        'FeynmanBonus19', ]
+var5 = ['FeynmanICh12Eq11', 'FeynmanIICh2Eq42', 'FeynmanIICh6Eq15a', 'FeynmanIICh11Eq3', 'FeynmanIICh11Eq17', 'FeynmanIICh36Eq38',
+        'FeynmanIIICh9Eq52', 'FeynmanBonus12', 'FeynmanBonus13', 'FeynmanBonus14', 'FeynmanBonus16', 'FeynmanBonus4']
 
 def work(arg):
     try:
@@ -173,11 +180,18 @@ def main(results_path, config_path, credential_path, mc, num_workers, seed_shift
     # Define the work
     args = []
     seeds = [i + seed_shift for i in range(mc)]
-    prog_num = 10
+
+    if nvars == 4:
+        file_array = var4
+    elif nvars == 5:
+        file_array = var5
+
     for seed in seeds:
-        for i in range(prog_num):
+
+        for filename in file_array:
+
             benchmarks = []
-            benchmark = dataset_path + "prog_" + str(i)
+            benchmark = dataset_path + filename
 
             benchmarks.append(benchmark)
 

@@ -173,11 +173,11 @@ def main(results_path, config_path, credential_path, mc, num_workers, seed_shift
     # Define the work
     args = []
     seeds = [i + seed_shift for i in range(mc)]
-    prog_num = 10
+    prog_num = (1, 26)
     for seed in seeds:
-        for i in range(prog_num):
+        for i in range(*prog_num):
             benchmarks = []
-            benchmark = dataset_path + "prog_" + str(i)
+            benchmark = dataset_path + "_" + str(i)
 
             benchmarks.append(benchmark)
 
