@@ -502,7 +502,8 @@ def protected_sigmoid(x1):
 protected_ops = [
     # Protected binary operators
     sciToken(protected_div, "div", arity=2, complexity=2),
-
+    sciToken(np.sin, "sin", arity=1, complexity=3),
+    sciToken(np.cos, "cos", arity=1, complexity=3),
     # Protected unary operators
     sciToken(protected_exp, "exp", arity=1, complexity=4),
     sciToken(protected_log, "log", arity=1, complexity=4),
