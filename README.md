@@ -13,7 +13,7 @@
 - `Eureqa`: the commercial genetic search algorithm.
 
 #### Extra
-- plots: the jupter notebook to generate our figure.
+- plots: the jupyter notebook to generate our figure.
 - result: contains all the output of all the programs, the training logs.
 
 
