@@ -9,10 +9,10 @@
 
 #### Baselines
 - `dso_classic`: public code implementation from https://github.com/brendenpetersen/deep-symbolic-optimization. It contains the imeplementation of methods `DSR, PQT, VPG, GPMeld `.
-- `ctrl_var_gp`: the inplemenattion of the our proposed control variable genetic programming algorithm and the classic genetic programming algorithm. We change the code that is relevant to the dataloader.
+- `gp_and_cvgp`: the re-implementation of the our proposed control variable genetic programming algorithm (https://github.com/jiangnanhugo/cvgp) and the classic genetic programming algorithm. We change the code that is relevant to the dataloader.
 - `Eureqa`: the commercial genetic search algorithm.
 
-#### Exrta
+#### Extra
 - plots: the jupter notebook to generate our figure.
 - result: contains all the output of all the programs, the training logs.
 

@@ -25,8 +25,9 @@ def create_geometric_generations(n_generations, nvar, ratio=4):
     for it in range(0, nvar):
         if gens[it] < 5:
             gens[it] = 5
+    gens=gens[::-1]
     print('generation #:', gens, 'sum=', sum(gens))
-    return gens[::-1]
+    return gens
 
 
 def create_uniform_generations(n_generations, nvar):

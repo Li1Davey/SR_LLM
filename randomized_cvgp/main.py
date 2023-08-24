@@ -27,7 +27,7 @@ config = {
 }
 
 
-def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, noise_scale):
+def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -35,7 +35,7 @@ def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, n
     regress_batchsize = 256
     opt_num_expr = 5
 
-    expr_obj_thres = 1E-6#data_query_oracle.expr_obj_thres
+    expr_obj_thres = 1E-6  # data_query_oracle.expr_obj_thres
     expr_consts_thres = config[metric_name]['expr_consts_thres']
 
     # gp hyper parameters
@@ -63,6 +63,7 @@ def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, n
     Program.set_execute(True)  # protected = True
 
     # set const_optimizer
+    Program.optimizer = optimizer
     Program.const_optimizer = ScipyMinimize()
     Program.noise_std = noise_scale
 
@@ -96,7 +97,10 @@ def run_randomized_control_variable_gp(equation_name, metric_name, noise_type, n
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument("--equation_name", help="the filename of the true program.")
-    # parser.add_argument("--scheduled_pace", type=int, default=6, help="The name of the noises.")
+    parser.add_argument('--optimizer',
+                        nargs='?',
+                        choices=['BFGS', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo','direct'],
+                        help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
@@ -111,4 +115,4 @@ if __name__ == '__main__':
     np.random.seed(seed)
     print('np.random seed=', seed)
 
-    run_randomized_control_variable_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
+    run_randomized_control_variable_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)

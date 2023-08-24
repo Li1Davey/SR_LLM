@@ -17,8 +17,8 @@ python3 $basepath/run_eureqa.py $dump_dir \
 	--config_path $basepath/config_${operators}.json \
 	--credential_path $basepath/credentials.json \
     --mc 1 \
-	--num_workers 10 \
-	--seed_shift 42 \
+	--num_workers 25 \
+	--seed_shift 10010 \
 	--dataset_path $basepath/data/equations_others/${datasource} \
 	--nvars $nvar
 

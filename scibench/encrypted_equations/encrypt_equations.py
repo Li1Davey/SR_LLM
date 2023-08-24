@@ -169,9 +169,9 @@ if __name__ == '__main__':
     from equations_others import *
 
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
-    from equations_feynman_extra import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman_extra')
+    # from equations_feynman_extra import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman_extra')
     # from equations_trigometric_extra import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
