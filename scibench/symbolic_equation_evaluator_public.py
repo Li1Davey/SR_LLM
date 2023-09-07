@@ -1,4 +1,6 @@
 import os
+import torch
+from torch import nn
 from typing import List, Set
 import scipy
 
@@ -12,8 +14,9 @@ import numpy as np
 import time
 
 EQUATION_EXTENSION = ".in"
-import cyfunc
-import array
+
+device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
+
 
 class Equation_evaluator(object):
     def __init__(self, true_equation_filename, noise_type='normal', noise_scale=0.0, metric_name="neg_nmse"):
@@ -23,7 +26,7 @@ class Equation_evaluator(object):
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
 
-        self.true_equation, self.num_vars, self.function_set, self.vars_range_and_types, self.expr, self.expr_obj_thres = self.__load_equation(
+        self.true_equation, self.num_vars, self.dim, self.function_set, self.vars_range_and_types, self.expr = self.__load_equation(
             true_equation_filename)
 
         # metric
@@ -47,10 +50,14 @@ class Equation_evaluator(object):
 
         one_equation = decrypt_equation(self.eq_name, key_filename=key_filename)
         num_vars = int(one_equation['num_vars'])
+        kwargs_list = [{'real': True} for _ in range(num_vars)]
+
+        assert len(kwargs_list) == num_vars
         self.num_vars = num_vars
-        x = [Symbol(f'X_{i}') for i in range(self.num_vars)]
-        return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['function_set'], \
-            one_equation['vars_range_and_types'], parse_expr(one_equation['expr']), one_equation['expr_obj_thres']
+
+        x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
+        return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['dim'], one_equation['function_set'], \
+            one_equation['vars_range_and_types'], parse_expr(one_equation['expr'])
 
     def evaluate(self, X, debug_mode=False):
         """
@@ -61,23 +68,32 @@ class Equation_evaluator(object):
 
         if self.true_equation is None:
             raise NotImplementedError('no equation is available')
-
-        self.y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
-        if np.sum(np.isnan(self.y_true)) >= 1:
-            raise OverflowError("the true expression contains Nan value")
-        if np.sum(np.isinf(self.y_true)) >= 1:
-            raise OverflowError("the true expression contains inf value")
-
+        y_true = self.true_equation.execute(X) + self.noises(self.noise_scale, batch_size)
         """
         the following part is used to double check if the preorder traversal correctly computes the output.
         """
         if debug_mode:
             y_hat = self.get_symbolic_output(X) + self.noises(self.noise_scale, batch_size)
-            for y_i, y_hat_i in zip(self.y_true, y_hat):
+            for y_i, y_hat_i in zip(y_true, y_hat):
                 if np.abs(y_i - y_hat_i) > 1e-10:
                     raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
+        return y_true
 
-        return self.y_true
+    def simulate_mul_steps(self, simulate_steps=20000):
+        Nx, Ny = self.dim[0][0], self.dim[0][1]
+        c0 = initialize_spinodal(Nx, Ny)
+        c0 = np.asarray(c0)
+        all_c = [c0]
+        for i in range(simulate_steps):
+            print(c0.shape)
+            c_new= self.true_equation.execute(c0, simulated_steps=False)
+            print(c_new.shape)
+            c_new_save = c_new
+            all_c.append(c_new_save)
+
+            c = c_new
+
+        return all_c
 
     def get_symbolic_output(self, X_test):
         var_x = self.expr.free_symbols
@@ -91,14 +107,11 @@ class Equation_evaluator(object):
             y_hat[idx] = self.expr.evalf(subs=val_dict)
         return y_hat
 
-    def _evaluate_loss(self, X, y_pred, verbose=False):
+    def _evaluate_loss(self, X, y_pred):
         """
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
         """
         y_true = self.evaluate(X)
-        if verbose:
-            print("X=", X[:2, :])
-            print("y_true: {}, y_pred: {}".format(y_true[:5], y_pred[:5]))
         if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             loss_val = self.metric(y_true, y_pred, np.var(y_true))
         elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
@@ -133,6 +146,21 @@ class Equation_evaluator(object):
 
     def get_function_set(self):
         return self.function_set
+
+
+def initialize_spinodal(Nx, Ny) -> np.ndarray:
+    """
+
+    Parameters
+    ----------
+    Nx, Ny: dimension of input
+
+    Returns
+    -------
+
+    """
+    c = 0.4 + 0.02 * (torch.rand(Nx, Ny) - 0.5)
+    return c.numpy()
 
 
 def construct_noise(noise_type):
@@ -197,15 +225,15 @@ def decrypt_equation(eq_file, key_filename=None):
     print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
-        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1), PlaceholderConstant(1.0)]
-
+        list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1)]
     protected_library = sciLibrary(list_of_tokens)
 
     sciProgram.library = protected_library
-    sciProgram.set_execute(protected=True)
+    sciProgram.set_execute(protected=True, simulated_exec=one_equation['simulated_exec'])
     #
     true_pr = build_program(preorder_traversal, protected_library)
     one_equation['eq_expression'] = true_pr
+
     print("-" * 20)
     for key in one_equation:
         print(key, "\t", one_equation[key])
@@ -311,6 +339,60 @@ class HardCodedConstant(sciToken):
         return self.value
 
 
+def LaplacianOp(inputs: np.ndarray, dx=1.0, dy=1.0):
+    '''
+    :param inputs: [batch, iH, iW], torch.float
+    :return: laplacian of inputs
+    '''
+    inputs = torch.from_numpy(inputs).to(torch.float)
+    conv_kernel = torch.tensor([[[[0, 1, 0], [1, -4, 1], [0, 1, 0]]]], dtype=torch.float)
+    unsqueezed = False
+    if inputs.dim() == 2:
+        inputs = torch.unsqueeze(inputs, 0)
+        unsqueezed = True
+    inputs1 = torch.cat([inputs[:, -1:, :], inputs, inputs[:, :1, :]], dim=1)
+    inputs2 = torch.cat([inputs1[:, :, -1:], inputs1, inputs1[:, :, :1]], dim=2)
+    conv_inputs = torch.unsqueeze(inputs2, dim=1)
+    result = torch.nn.functional.conv2d(input=conv_inputs, weight=conv_kernel).squeeze(dim=1) / (dx * dy)
+    if unsqueezed:
+        result = torch.squeeze(result, 0)
+    return result.numpy()
+
+
+def DifferentialOp(inputs: np.ndarray, diffx=False, d=1.0):
+    '''
+    :param inputs: [batch, iH, iW], torch.float
+    :param diffx: if true, compute dc/dx; else, compute dc/dy
+    :return:
+    '''
+    conv_kernel = torch.tensor([[[[-1, 0, 1]]]], dtype=torch.float)
+    unsqueezed = False
+    if inputs.dim() == 2:
+        inputs = torch.unsqueeze(inputs, 0)
+        unsqueezed = True
+    if diffx:
+        inputs = torch.transpose(inputs, -1, -2)
+    inputs1 = torch.cat([inputs[:, :, -1:], inputs, inputs[:, :, :1]], dim=2)
+    conv_inputs = torch.unsqueeze(inputs1, dim=1)
+    result = torch.nn.functional.conv2d(input=conv_inputs, weight=conv_kernel).squeeze(dim=1) / (2 * d)
+    if diffx:
+        result = torch.transpose(result, -1, -2)
+    if unsqueezed:
+        result = torch.squeeze(result, 0)
+    return result
+
+
+def ClampOp(inputs: np.ndarray):
+    """
+    clip the input to [0, 1]
+    :param inputs:
+    :return:
+    """
+    inputs = torch.from_numpy(inputs).to(torch.float)
+    clamped = torch.clamp(inputs, min=0.0, max=1.0)
+    return clamped.numpy()
+
+
 class sciLibrary(object):
     """
     Library of sciTokens. We use a list of sciTokens (instead of set or dict) since
@@ -385,9 +467,6 @@ def expneg(x1):
 def n3(x1):
     return np.power(x1, 3)
 
-def n2(x1):
-    return np.power(x1, 2)
-
 
 def n4(x1):
     return np.power(x1, 4)
@@ -410,6 +489,10 @@ def harmonic(x1):
 
 # Annotate unprotected ops
 unprotected_ops = [
+    # differential operators
+    sciToken(LaplacianOp, "laplacian", arity=1, complexity=4),
+    sciToken(DifferentialOp, "differential", arity=1, complexity=4),
+    sciToken(ClampOp, "clamp", arity=1, complexity=1),
     # Binary operators
     sciToken(np.add, "add", arity=2, complexity=1),
     sciToken(np.subtract, "sub", arity=2, complexity=1),
@@ -436,7 +519,6 @@ unprotected_ops = [
     sciToken(logabs, "logabs", arity=1, complexity=4),
     sciToken(expneg, "expneg", arity=1, complexity=4),
     sciToken(np.square, "n2", arity=1, complexity=2),
-
     sciToken(n3, "n3", arity=1, complexity=3),
     sciToken(n4, "n4", arity=1, complexity=3),
     sciToken(n5, "n5", arity=2, complexity=3),
@@ -502,8 +584,7 @@ def protected_sigmoid(x1):
 protected_ops = [
     # Protected binary operators
     sciToken(protected_div, "div", arity=2, complexity=2),
-    sciToken(np.sin, "sin", arity=1, complexity=3),
-    sciToken(np.cos, "cos", arity=1, complexity=3),
+
     # Protected unary operators
     sciToken(protected_exp, "exp", arity=1, complexity=4),
     sciToken(protected_log, "log", arity=1, complexity=4),
@@ -611,16 +692,13 @@ class sciProgram(object):
         self.tokens = tokens
 
     @classmethod
-    def set_execute(cls, protected):
+    def set_execute(cls, protected, simulated_exec):
         """Sets which execute method to use"""
-        # try:
-        import cyfunc
-        execute_function = cython_execute
-        sciProgram.have_cython = True
 
-        # except ImportError:
-        #     execute_function = python_execute
-        #     sciProgram.have_cython = False
+        if simulated_exec==True:
+            execute_function = python_execute2d
+        else:
+            execute_function = python_execute
 
         if protected:
             sciProgram.protected = True
@@ -672,7 +750,7 @@ class sciProgram(object):
 
             sciProgram.execute_function = unsafe_execute
 
-    def execute(self, X):
+    def execute(self, X, simulated_steps=False):
         """
         Execute program on input X.
 
@@ -683,6 +761,9 @@ class sciProgram(object):
         result : np.array or list of np.array
             In a single-object Program, returns just an array.
         """
+        # if simulated_steps == True:
+        #     result, ip = self.ex
+
         if not sciProgram.protected:
             # return some weired error.
             result, self.invalid, self.error_node, self.error_type = sciProgram.execute_function(self.traversal, X)
@@ -691,12 +772,92 @@ class sciProgram(object):
             # always protected. 1/div
         return result
 
+    def dfs_forward(self, inputs, ip):
+        """
+        evaluate the expression with inputs.
+        :param inputs:
+        :param ip: used for indexing in the expression.
+        :return:
+        """
+        if self.traversal[ip][1] == 'const':
+            # constants
+            return self.traversal[ip][0], ip + 1
+        elif self.traversal[ip][1] == 'var':
+            # inputs
+            return inputs[self.traversal[ip][1]], ip + 1
+        else:
+            # operators
+            # print('to process', self.tree[ip])
+            assert self.traversal[ip][1] == 'binary'
+            if self.traversal[ip][1] in ["add", "sub", "mul", "div"]:
+                # binary operators
+                eval_l, ip_l = self.dfs_forward(inputs, ip + 1)
+                eval_r, ip_r = self.dfs_forward(inputs, ip_l)
+                # print('eval_l', eval_l)
+                # print('eval_r', eval_r)
+                if self.traversal[ip][1].startswith("add"):
+                    return eval_l + eval_r, ip_r
+                elif self.traversal[ip][1].startswith("sub"):
+                    return eval_l - eval_r, ip_r
+                elif self.traversal[ip][1].startswith("mul"):
+                    return eval_l * eval_r, ip_r
+                elif self.traversal[ip][1].startswith("div"):
+                    return eval_l / eval_r, ip_r
+                else:
+                    assert False
+            else:
+                # singular operators
+                eval1, ip1 = self.dfs_forward(inputs, ip + 1)
+                if self.traversal[ip][1] == "laplacian":
+                    return LaplacianOp(eval1, dx=1.0, dy=1.0), ip1
+                elif self.traversal[ip][1].startswith("clamp"):
+                    return ClampOp(eval1), ip1
+                else:
+                    assert False
+
     def print_expression(self):
         print("\tExpression {}: {}".format(0, self.traversal))
 
     def __repr__(self):
         """Prints the program's traversal"""
         return ','.join([repr(t) for t in self.traversal])
+
+
+def python_execute2d(traversal, X):
+    """
+    Executes the program according to X using Python.
+
+    Parameters
+    ----------
+    X : array-like, shape = [1, n_features, n_feature], where n_samples is the number of samples and n_features is the number of features.
+
+    Returns
+    -------
+    y_hats : array-like, shape = [n_samples]
+        The result of executing the program on X.
+    """
+
+    apply_stack = []
+
+    for node in traversal:
+        apply_stack.append([node])
+
+        while len(apply_stack[-1]) == apply_stack[-1][0].arity + 1:
+            token = apply_stack[-1][0]
+            terminals = apply_stack[-1][1:]
+
+            if token.input_var is not None:
+                intermediate_result = X[:, :]
+            else:
+                intermediate_result = token(*terminals)
+            if len(apply_stack) != 1:
+                apply_stack.pop()
+                apply_stack[-1].append(intermediate_result)
+            else:
+                return intermediate_result
+
+    assert False, "Function should never get here!"
+    return None
 
 
 def python_execute(traversal, X):
@@ -734,29 +895,3 @@ def python_execute(traversal, X):
 
     assert False, "Function should never get here!"
     return None
-
-
-
-def cython_execute(traversal, X):
-    """
-    Execute cython function using given traversal over input X.
-
-    Parameters
-    ----------
-
-    traversal : list
-        A list of nodes representing the traversal over a Program.
-    X : np.array
-        The input values to execute the traversal over.
-
-    Returns
-    -------
-
-    result : float
-        The result of executing the traversal.
-    """
-    if len(traversal) > 1:
-        is_input_var = array.array('i', [t.input_var is not None for t in traversal])
-        return cyfunc.execute(X, len(traversal), traversal, is_input_var)
-    else:
-        return python_execute(traversal, X)

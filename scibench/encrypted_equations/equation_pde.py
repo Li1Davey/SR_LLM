@@ -1,0 +1,101 @@
+import numpy as np
+import torch
+import torch.nn as nn
+from collections import OrderedDict
+from base import KnownEquation, LogUniformSampling, IntegerUniformSampling, UniformSampling
+
+device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
+import os
+from sympy import MatrixSymbol, Matrix
+from diff_ops import LaplacianOp, DifferentialOp
+
+EQUATION_CLASS_DICT = OrderedDict()
+
+
+def register_eq_class(cls):
+    EQUATION_CLASS_DICT[cls.__name__] = cls
+    return cls
+
+
+def get_eq_obj(key, **kwargs):
+    if key in EQUATION_CLASS_DICT:
+        return EQUATION_CLASS_DICT[key](**kwargs)
+    raise KeyError(f'`{key}` is not expected as a equation object key')
+
+
+@register_eq_class
+class SpinodalDecomp64x64(KnownEquation):
+    _eq_name = 'Spinodal_Decomposition_64x64'
+    _function_set = ['add', 'sub', 'mul', 'div', 'clamp', 'laplacian', 'const']
+    expr_obj_thres = 0.01
+    expr_consts_thres = None
+    simulated_exec = True
+
+    def __init__(self):
+        # super(SpinodalDecomp, self).__init__()
+        # c is the input matrix; A, M, kappa is the constants in the expressions
+        self.A = np.random.randn(1)[0]  # .to(device)
+        self.M = np.random.randn(1)[0]  # .to(device)
+        self.kappa = np.random.randn(1)[0]  # .to(device)
+
+        self.lap = LaplacianOp()
+        self.diff = DifferentialOp()
+
+        self.dx = 1
+        self.dy = 1
+        self.Nx = 64
+        self.Ny = 64
+        self.dim = [(self.Nx, self.Ny), ]
+
+        self.dt = 1e-2
+
+        vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1, only_positive=True, dim=(self.Nx, self.Ny))]
+        self.x = [MatrixSymbol('X_0', self.Nx, self.Ny)]
+        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        c = self.x
+
+        self.torch_func = self.forward
+        self.sympy_eq = "EMPTY"
+        ### consts = [0:1.0, 1:2.0, 2:A(1), 3:kappa(0.5), 4:dt(1e-2), 5:M(1)]
+        consts = [1.0, 2.0, self.A, self.kappa, self.dt, self.M]
+
+        ### tree1 = 2 * self.A * c * (1 - c) * (1 - 2*c)
+        tree1 = [(2, "mul"), (0, 1), (2, "mul"), (0, 2), (2, "mul"), (1, 0), (2, "mul"), (2, "sub"), (0, 0), (1, 0), (2, "sub"),
+                 (0, 0), (2, "mul"), (0, 1), (1, 0)]
+        ### tree2 = self.kappa * self.lap(c, self.dx, self.dy)
+        tree2 = [(2, "mul"), (0, 3), (2, "laplacian"), (1, 0)]
+        # deltaF = 2 * self.A * c * (1-c) * (1-2*c) - self.kappa * self.lap(c, self.dx, self.dy)
+        deltaF = [(2, "sub")]
+        deltaF.extend(tree1)
+        deltaF.extend(tree2)
+        # dc = self.dt * self.lap(self.M*deltaF, self.dx, self.dy)
+        dc = [(2, "mul"), (0, 4), (2, "laplacian"), (2, "mul"), (0, 5)]
+        dc.extend(deltaF)
+        # c_new = torch.clamp(c + dc, min=0.0001, max=0.9999)
+        preorder_traversal = [(2, "clamp"), (2, "add"), (1, 0)]
+        preorder_traversal.extend(dc)
+        self.preorder_traversal = []
+        for x in preorder_traversal:
+            if x[0] == 0:
+                self.preorder_traversal.append((consts[x[1]], "const"))
+            elif x[0] == 1:
+                self.preorder_traversal.append((str(c[x[1]]), "var"))
+            elif x[0] == 2:
+                if x[1] in ['mul', 'sub', 'div', 'add']:
+                    self.preorder_traversal.append((x[1], "binary"))
+                elif x[1] == "laplacian":
+                    self.preorder_traversal.append(("laplacian", "unary"))
+                elif x[1] == "clamp":
+                    self.preorder_traversal.append((x[1], "unary"))
+        # print(self.preorder_traversal)
+
+    def forward(self, c):
+        # equation (4:18) + (4:17)
+        deltaF = 2 * self.A * c * (1 - c) * (1 - 2 * c) - self.kappa * self.lap(
+            c, self.dx, self.dy
+        )
+        # equation (4.16)
+        dc = self.dt * self.lap(self.M * deltaF, self.dx, self.dy)
+        # c_new = c+dc
+        c_new = torch.clamp(c + dc, min=0.0001, max=0.9999)
+        return c_new
