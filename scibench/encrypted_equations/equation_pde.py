@@ -87,13 +87,10 @@ class SpinodalDecomp64x64(KnownEquation):
                     self.preorder_traversal.append(("laplacian", "unary"))
                 elif x[1] == "clamp":
                     self.preorder_traversal.append((x[1], "unary"))
-        # print(self.preorder_traversal)
 
     def forward(self, c):
         # equation (4:18) + (4:17)
-        deltaF = 2 * self.A * c * (1 - c) * (1 - 2 * c) - self.kappa * self.lap(
-            c, self.dx, self.dy
-        )
+        deltaF = 2 * self.A * c * (1 - c) * (1 - 2 * c) - self.kappa * self.lap(c, self.dx, self.dy)
         # equation (4.16)
         dc = self.dt * self.lap(self.M * deltaF, self.dx, self.dy)
         # c_new = c+dc

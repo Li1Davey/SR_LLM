@@ -11,6 +11,11 @@ def to_csv(X, y, filename):
     np.savetxt(filename + ".csv", d, delimiter=",")
 
 
+def save_simulated_pde(all_phi, filename):
+    print("saving to:", filename)
+    np.save(filename, all_phi)
+
+
 if __name__ == '__main__':
     basepath = "/home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_pde/{}.in"
     to_folder = "/home/jiangnan/PycharmProjects/scibench/data/equations_pde/{}"
@@ -18,13 +23,12 @@ if __name__ == '__main__':
         filename = basepath.format(prog)
         data_query_oracle = Equation_evaluator(filename, noise_type='normal', noise_scale=0.0, metric_name='neg_mse')
         dataX = DataX(data_query_oracle.get_vars_range_and_types())
-        # batchsize = 100000
-        #
-        # # X = np.random.rand(batchsize, n_input) * 9.5 + 0.5
-        # X = dataX.randn(sample_size=batchsize)
-        y = data_query_oracle.simulate_mul_steps()
-        # print(X.shape, y.shape)
-        # filename_csv = to_folder.format(prog)
-        # to_csv(X, y, filename_csv)
-        # print(f"{prog} done......")
-        # print(one_eq['eq_expression'].execute(X))
+        batchsize = 100
+        simulated_steps = 2000
+        all_y = []
+        for bi in range(batchsize):
+            print(f'bi={bi}')
+            y = data_query_oracle.simulate_mul_steps(simulated_steps)
+            all_y.append(y)
+        output_filename = "_".join([prog, "bs" + str(batchsize), 'steps' + str(simulated_steps)])
+        save_simulated_pde(all_y, to_folder.format(output_filename))

@@ -84,10 +84,11 @@ class Equation_evaluator(object):
         c0 = initialize_spinodal(Nx, Ny)
         c0 = np.asarray(c0)
         all_c = [c0]
+        c=c0
         for i in range(simulate_steps):
-            print(c0.shape)
-            c_new= self.true_equation.execute(c0, simulated_steps=False)
-            print(c_new.shape)
+            # print(c0.shape)
+            c_new= self.true_equation.execute(c, simulated_steps=False)
+            # print(c_new.shape)
             c_new_save = c_new
             all_c.append(c_new_save)
 
@@ -827,13 +828,11 @@ def python_execute2d(traversal, X):
     """
     Executes the program according to X using Python.
 
-    Parameters
-    ----------
-    X : array-like, shape = [1, n_features, n_feature], where n_samples is the number of samples and n_features is the number of features.
+    X : array-like, shape = [1, n_features, n_feature], n_features is the number of features.
 
     Returns
     -------
-    y_hats : array-like, shape = [n_samples]
+    y_hats : array-like, shape = [1, n_features, n_feature]
         The result of executing the program on X.
     """
 
