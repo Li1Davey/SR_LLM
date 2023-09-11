@@ -79,21 +79,18 @@ class Equation_evaluator(object):
                     raise ArithmeticError(f'the difference are too large {y_i} {y_hat_i}')
         return y_true
 
-    def simulate_mul_steps(self, simulate_steps=20000):
-        Nx, Ny = self.dim[0][0], self.dim[0][1]
-        c0 = initialize_spinodal(Nx, Ny)
-        c0 = np.asarray(c0)
+    def execute_simulate(self, c0: np.ndarray, simulate_steps=20000, return_last_step=True):
         all_c = [c0]
-        c=c0
+        c = c0
         for i in range(simulate_steps):
-            # print(c0.shape)
-            c_new= self.true_equation.execute(c, simulated_steps=False)
-            # print(c_new.shape)
-            c_new_save = c_new
-            all_c.append(c_new_save)
 
+            c_new = self.true_equation.execute(c)
+            print(c.shape, '-->', c_new.shape)
+            if return_last_step:
+                all_c = c_new
+            else:
+                all_c.append(c_new)
             c = c_new
-
         return all_c
 
     def get_symbolic_output(self, X_test):
@@ -147,21 +144,6 @@ class Equation_evaluator(object):
 
     def get_function_set(self):
         return self.function_set
-
-
-def initialize_spinodal(Nx, Ny) -> np.ndarray:
-    """
-
-    Parameters
-    ----------
-    Nx, Ny: dimension of input
-
-    Returns
-    -------
-
-    """
-    c = 0.4 + 0.02 * (torch.rand(Nx, Ny) - 0.5)
-    return c.numpy()
 
 
 def construct_noise(noise_type):
@@ -696,7 +678,7 @@ class sciProgram(object):
     def set_execute(cls, protected, simulated_exec):
         """Sets which execute method to use"""
 
-        if simulated_exec==True:
+        if simulated_exec == True:
             execute_function = python_execute2d
         else:
             execute_function = python_execute
@@ -751,7 +733,7 @@ class sciProgram(object):
 
             sciProgram.execute_function = unsafe_execute
 
-    def execute(self, X, simulated_steps=False):
+    def execute(self, X):
         """
         Execute program on input X.
 
@@ -773,49 +755,6 @@ class sciProgram(object):
             # always protected. 1/div
         return result
 
-    def dfs_forward(self, inputs, ip):
-        """
-        evaluate the expression with inputs.
-        :param inputs:
-        :param ip: used for indexing in the expression.
-        :return:
-        """
-        if self.traversal[ip][1] == 'const':
-            # constants
-            return self.traversal[ip][0], ip + 1
-        elif self.traversal[ip][1] == 'var':
-            # inputs
-            return inputs[self.traversal[ip][1]], ip + 1
-        else:
-            # operators
-            # print('to process', self.tree[ip])
-            assert self.traversal[ip][1] == 'binary'
-            if self.traversal[ip][1] in ["add", "sub", "mul", "div"]:
-                # binary operators
-                eval_l, ip_l = self.dfs_forward(inputs, ip + 1)
-                eval_r, ip_r = self.dfs_forward(inputs, ip_l)
-                # print('eval_l', eval_l)
-                # print('eval_r', eval_r)
-                if self.traversal[ip][1].startswith("add"):
-                    return eval_l + eval_r, ip_r
-                elif self.traversal[ip][1].startswith("sub"):
-                    return eval_l - eval_r, ip_r
-                elif self.traversal[ip][1].startswith("mul"):
-                    return eval_l * eval_r, ip_r
-                elif self.traversal[ip][1].startswith("div"):
-                    return eval_l / eval_r, ip_r
-                else:
-                    assert False
-            else:
-                # singular operators
-                eval1, ip1 = self.dfs_forward(inputs, ip + 1)
-                if self.traversal[ip][1] == "laplacian":
-                    return LaplacianOp(eval1, dx=1.0, dy=1.0), ip1
-                elif self.traversal[ip][1].startswith("clamp"):
-                    return ClampOp(eval1), ip1
-                else:
-                    assert False
-
     def print_expression(self):
         print("\tExpression {}: {}".format(0, self.traversal))
 
@@ -828,11 +767,11 @@ def python_execute2d(traversal, X):
     """
     Executes the program according to X using Python.
 
-    X : array-like, shape = [1, n_features, n_feature], n_features is the number of features.
+    X : array-like, shape = [batch_size, n_features, n_feature], n_features is the number of features.
 
     Returns
     -------
-    y_hats : array-like, shape = [1, n_features, n_feature]
+    y_hats : array-like, shape = [batch_size, n_features, n_feature]
         The result of executing the program on X.
     """
 

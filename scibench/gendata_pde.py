@@ -28,7 +28,12 @@ if __name__ == '__main__':
         all_y = []
         for bi in range(batchsize):
             print(f'bi={bi}')
-            y = data_query_oracle.simulate_mul_steps(simulated_steps)
+            Nx, Ny = data_query_oracle.dim[0]
+            c0 = dataX.randn(batchsize).squeeze()
+            print(c0.shape)
+            y = data_query_oracle.execute_simulate(c0, simulated_steps)
             all_y.append(y)
         output_filename = "_".join([prog, "bs" + str(batchsize), 'steps' + str(simulated_steps)])
         save_simulated_pde(all_y, to_folder.format(output_filename))
+
+

@@ -15,10 +15,17 @@ class DataX(object):
                 self.data_X_samplers.append(LogUniformSampling(one_sample['range'], one_sample['only_positive']))
             elif one_sample['name'] == 'IntegerUniform':
                 self.data_X_samplers.append(IntegerSampling(one_sample['range'], one_sample['only_positive']))
+            elif one_sample['name'] == 'LogUniform2d':
+                self.data_X_samplers.append((LogUniformSampling2d(one_sample['range'], one_sample['only_positive'], one_sample['dim'])))
 
     def randn(self, sample_size):
+        """
+
+        :param sample_size: batch size
+        :return: return [#input_variables, sample_size, dimension of each variables]
+        """
         list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
-        return np.stack(list_of_X, axis=0).transpose()
+        return np.stack(list_of_X, axis=0)
 
 
 class DefaultSampling(object):
@@ -88,4 +95,24 @@ class IntegerSampling(DefaultSampling):
             np.random.shuffle(all_samples)
             return all_samples
 
-#
+
+class DefaultSampling2d(object):
+    def __init__(self, name, range, only_positive=False, dim=(1, 1)):
+        self.name = name
+        self.range = range
+        self.only_positive = only_positive
+        self.dim = dim
+
+
+class LogUniformSampling2d(DefaultSampling2d):
+    def __init__(self, ranges, only_positive=False, dim=(1, 1)):
+        super().__init__('LogUniform2d', ranges, only_positive, dim=dim)
+
+    def __call__(self, sample_size):
+        if self.only_positive:
+            # x ~ U(0.0, 1.0)
+            out= 0.4 + 0.02 * (np.random.uniform(self.range[0], self.range[1], size=(sample_size, self.dim[0], self.dim[1])) - 0.5)
+            print(out.shape)
+            return out
+        else:
+            raise NotImplementedError

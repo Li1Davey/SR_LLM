@@ -54,14 +54,26 @@ class DefaultSampling(object):
 
 class LogUniformSampling(DefaultSampling):
     def __init__(self, min_value, max_value, only_positive=False, dim=(1,)):
-        super().__init__('LogUniform', min_value, max_value, only_positive, dim=(1,))
+        super().__init__('LogUniform', min_value, max_value, only_positive, dim=dim)
 
 
 class IntegerUniformSampling(DefaultSampling):
     def __init__(self, min_value, max_value, only_positive=False, dim=(1,)):
-        super().__init__('IntegerUniform', int(min_value), int(max_value), only_positive, dim=(1,))
+        super().__init__('IntegerUniform', int(min_value), int(max_value), only_positive, dim=dim)
 
 
 class UniformSampling(DefaultSampling):
     def __init__(self, min_value, max_value, only_positive=False, dim=(1,)):
-        super().__init__('Uniform', min_value, max_value, only_positive, dim=(1,))
+        super().__init__('Uniform', min_value, max_value, only_positive, dim=dim)
+
+# class DefaultSampling2d(object):
+#     def __init__(self, name, min_value, max_value, only_positive=False, dim=(1, 1)):
+#         self.name = name
+#         self.range = range
+#         self.only_positive = only_positive
+#         self.dim = dim
+
+
+class LogUniformSampling2d(DefaultSampling):
+    def __init__(self, min_value, max_value, only_positive=False, dim=(1, 1)):
+        super().__init__('LogUniform2d', min_value, max_value, only_positive, dim=dim)

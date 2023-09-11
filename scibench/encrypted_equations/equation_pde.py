@@ -2,7 +2,7 @@ import numpy as np
 import torch
 import torch.nn as nn
 from collections import OrderedDict
-from base import KnownEquation, LogUniformSampling, IntegerUniformSampling, UniformSampling
+from base import KnownEquation, LogUniformSampling, IntegerUniformSampling, UniformSampling, LogUniformSampling2d
 
 device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
 import os
@@ -49,7 +49,7 @@ class SpinodalDecomp64x64(KnownEquation):
 
         self.dt = 1e-2
 
-        vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1, only_positive=True, dim=(self.Nx, self.Ny))]
+        vars_range_and_types = [LogUniformSampling2d(1e-3, 1.0, only_positive=True, dim=(self.Nx, self.Ny))]
         self.x = [MatrixSymbol('X_0', self.Nx, self.Ny)]
         super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
         c = self.x
