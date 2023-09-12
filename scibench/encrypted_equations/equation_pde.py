@@ -34,9 +34,9 @@ class SpinodalDecomp64x64(KnownEquation):
     def __init__(self):
         # super(SpinodalDecomp, self).__init__()
         # c is the input matrix; A, M, kappa is the constants in the expressions
-        self.A = np.random.randn(1)[0]  # .to(device)
-        self.M = np.random.randn(1)[0]  # .to(device)
-        self.kappa = np.random.randn(1)[0]  # .to(device)
+        self.A = 0.1#np.random.randn(1)[0]  # .to(device)
+        self.M = 0.2#np.random.randn(1)[0]  # .to(device)
+        self.kappa = 0.4#np.random.randn(1)[0]  # .to(device)
 
         self.lap = LaplacianOp()
         self.diff = DifferentialOp()
@@ -94,5 +94,38 @@ class SpinodalDecomp64x64(KnownEquation):
         # equation (4.16)
         dc = self.dt * self.lap(self.M * deltaF, self.dx, self.dy)
         # c_new = c+dc
-        c_new = torch.clamp(c + dc, min=0.0001, max=0.9999)
+        c_new = torch.clamp(c + dc, min=0, max=1)
         return c_new
+
+
+# @register_eq_class
+class GrainGrowth64x64(KnownEquation):
+    _eq_name = 'Grain_Growth_64x64'
+    _function_set = ['add', 'sub', 'mul', 'div', 'clamp', 'laplacian', 'const']
+    expr_obj_thres = 0.01
+    expr_consts_thres = None
+    simulated_exec = True
+
+    def __init__(self):
+        # self.A = np.random.randn(1)[0]
+        # self.M = np.random.randn(1)[0]  # .to(device)
+        # self.kappa = np.random.randn(1)[0]  # .to(device)
+
+        self.lap = LaplacianOp()
+        self.diff = DifferentialOp()
+
+        self.dx = 1
+        self.dy = 1
+        self.Nx = 64
+        self.Ny = 64
+        self.dim = [(self.Nx, self.Ny), ]
+
+        self.dt = 1e-2
+
+        vars_range_and_types = [LogUniformSampling2d(1e-3, 1.0, only_positive=True, dim=(self.Nx, self.Ny))]
+        self.x = [MatrixSymbol('X_0', self.Nx, self.Ny)]
+        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        c = self.x
+
+
+        self.sympy_eq = "EMPTY"

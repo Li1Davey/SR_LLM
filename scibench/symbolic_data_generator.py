@@ -112,7 +112,7 @@ class LogUniformSampling2d(DefaultSampling2d):
         if self.only_positive:
             # x ~ U(0.0, 1.0)
             out= 0.4 + 0.02 * (np.random.uniform(self.range[0], self.range[1], size=(sample_size, self.dim[0], self.dim[1])) - 0.5)
-            print(out.shape)
+            # print(out.shape)
             return out
         else:
             raise NotImplementedError

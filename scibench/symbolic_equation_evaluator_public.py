@@ -83,9 +83,8 @@ class Equation_evaluator(object):
         all_c = [c0]
         c = c0
         for i in range(simulate_steps):
-
             c_new = self.true_equation.execute(c)
-            print(c.shape, '-->', c_new.shape)
+            # print(c.shape, '-->', c_new.shape)
             if return_last_step:
                 all_c = c_new
             else:
@@ -122,6 +121,38 @@ class Equation_evaluator(object):
         Return a dictionary of all the loss values.
         """
         y_true = self.evaluate(X)
+        loss_val_dict = {}
+        for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
+            metric = make_regression_metric(metric_name)
+            loss_val = metric(y_true, y_pred, np.var(y_true))
+            loss_val_dict[metric_name] = loss_val
+        for metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+            metric = make_regression_metric(metric_name)
+            loss_val = metric(y_true, y_pred)
+            loss_val_dict[metric_name] = loss_val
+        return loss_val_dict
+
+    def _evaluate_simulate_loss(self, X, y_pred, simulate_steps):
+        """
+        Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
+        """
+        y_pred = y_pred.flatten()
+        y_true = self.execute_simulate(X, simulate_steps).flatten()
+
+        if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
+            loss_val = self.metric(y_true, y_pred, np.var(y_true))
+        elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+            loss_val = self.metric(y_true, y_pred)
+        else:
+            raise NotImplementedError(self.metric_name, "is not implemented....")
+        return loss_val
+
+    def _evaluate_simulate_all_loss(self, X, y_pred, simulate_steps):
+        """
+        Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
+        """
+        y_pred = y_pred.flatten()
+        y_true = self.execute_simulate(X, simulate_steps).flatten()
         loss_val_dict = {}
         for metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             metric = make_regression_metric(metric_name)
