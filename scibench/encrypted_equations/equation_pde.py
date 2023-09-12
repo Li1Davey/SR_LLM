@@ -34,9 +34,9 @@ class SpinodalDecomp64x64(KnownEquation):
     def __init__(self):
         # super(SpinodalDecomp, self).__init__()
         # c is the input matrix; A, M, kappa is the constants in the expressions
-        self.A = 0.1#np.random.randn(1)[0]  # .to(device)
-        self.M = 0.2#np.random.randn(1)[0]  # .to(device)
-        self.kappa = 0.4#np.random.randn(1)[0]  # .to(device)
+        self.A = 1#np.random.randn(1)[0]  # .to(device)
+        self.M = 1#np.random.randn(1)[0]  # .to(device)
+        self.kappa = 0.5#np.random.randn(1)[0]  # .to(device)
 
         self.lap = LaplacianOp()
         self.diff = DifferentialOp()

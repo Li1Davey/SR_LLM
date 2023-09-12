@@ -35,12 +35,10 @@ class SpinodalDecomp64x64(object):
         self.Ny = 64
         self.dim = [(self.Nx, self.Ny), ]
 
-
-
         # vars_range_and_types = [LogUniformSampling2d(1e-3, 1.0, only_positive=True, dim=(self.Nx, self.Ny))]
         # self.x = [MatrixSymbol('X_0', self.Nx, self.Ny)]
         # super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
-        c=['X_0']
+        c = ['X_0']
 
         self.torch_func = self.forward
         self.sympy_eq = "EMPTY"
@@ -124,7 +122,7 @@ if __name__ == '__main__':
         data_query_oracle = Equation_evaluator(filename, noise_type='normal', noise_scale=0.0, metric_name='neg_mse')
         dataX = DataX(data_query_oracle.get_vars_range_and_types())
         batchsize = 1
-        simulated_steps = 20000
+        simulated_steps = 2400
         Nx, Ny = data_query_oracle.dim[0]
         c0 = dataX.randn(batchsize).squeeze()
         print(c0.shape)
@@ -132,24 +130,25 @@ if __name__ == '__main__':
         # print(all_y[0].shape, len(all_y))
         # print(all_y[-1])
         output_filename = "_".join([prog, "bs" + str(batchsize), 'steps' + str(simulated_steps)])
-        # to_npz(all_y, to_folder.format(output_filename))
-        # to_mp4(all_y, to_folder.format(output_filename))
+        to_npz(all_y, to_folder.format(output_filename))
+        to_mp4(all_y, to_folder.format(output_filename))
 
-        spin = SpinodalDecomp64x64()
-        c0 = torch.from_numpy(c0)
-        c0= c0.type(torch.float)
-        all_phis = [c0.numpy()]
-        c = c0
-        for t in range(simulated_steps):
-            cnew = spin.forward(c)
-            all_phis.append(cnew.numpy())
-        print( len(all_y), len(all_phis))
+        # spin = SpinodalDecomp64x64()
+        # c0 = torch.from_numpy(c0)
+        # c0 = c0.type(torch.float)
+        # all_phis = [c0.numpy()]
+        # c = c0
+        # for t in range(simulated_steps):
+        #     cnew = spin.forward(c)
+        #     all_phis.append(cnew.numpy())
+        #     c = cnew
+        # print(len(all_y), len(all_phis))
         # print(all_phis[-1].numpy()[0])
-        to_mp4(all_phis, to_folder.format(output_filename))
-        for x, y in zip(all_y, all_phis):
-            if type(x) != np.ndarray:
-                print(np.sum(x.numpy()-y))
-            else:
-                print(np.sum(x[0]-y))
-            # print(y)
-            print('-'*40)
+        # to_mp4(all_phis, to_folder.format(output_filename))
+        # for x, y in zip(all_y, all_phis):
+        #     if type(x) != np.ndarray:
+        #         print(x.numpy().shape, y.shape, np.sum(x.numpy() - y))
+        #     else:
+        #         print(x.shape, y.shape, np.sum(x - y))
+        #     # print(y)
+        #     # print('-' * 40)
