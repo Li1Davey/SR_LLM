@@ -1,8 +1,9 @@
 import os
 import torch
-from torch import nn
 from typing import List, Set
 import scipy
+import array
+import cyfunc
 
 import json
 from cryptography.fernet import Fernet
@@ -706,13 +707,15 @@ class sciProgram(object):
         self.tokens = tokens
 
     @classmethod
-    def set_execute(cls, protected, simulated_exec):
+    def set_execute(cls, protected, simulated_exec=False):
         """Sets which execute method to use"""
 
         if simulated_exec == True:
             execute_function = python_execute2d
         else:
-            execute_function = python_execute
+            # execute_function = python_execute
+
+            execute_function = cython_execute
 
         if protected:
             sciProgram.protected = True
@@ -775,8 +778,6 @@ class sciProgram(object):
         result : np.array or list of np.array
             In a single-object Program, returns just an array.
         """
-        # if simulated_steps == True:
-        #     result, ip = self.ex
 
         if not sciProgram.protected:
             # return some weired error.
@@ -864,3 +865,25 @@ def python_execute(traversal, X):
 
     assert False, "Function should never get here!"
     return None
+
+def cython_execute(traversal, X):
+    """
+    Execute cython function using given traversal over input X.
+
+    Parameters
+    ----------
+
+    traversal : list
+        A list of nodes representing the traversal over a Program.
+    X : np.array
+        The input values to execute the traversal over.
+
+    Returns
+    -------
+
+    result : float
+        The result of executing the traversal.
+    """
+    if len(traversal) > 1:
+        is_input_var = array.array('i', [t.input_var is not None for t in traversal])
+        return cyfunc.execute(X, len(traversal), traversal, is_input_var)
