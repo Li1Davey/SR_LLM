@@ -147,7 +147,7 @@ class Equation_evaluator(object):
             raise NotImplementedError(self.metric_name, "is not implemented....")
         return loss_val
 
-    def _evaluate_simulate_all_loss(self, X, y_pred, simulate_steps):
+    def _evaluate_simulate_all_losses(self, X, y_pred, simulate_steps):
         """
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
         """

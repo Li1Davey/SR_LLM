@@ -3,13 +3,12 @@
 ### 0.1 Dependency packages
 
 ```bash
-pip install deap
 pip install Cython
 pip install cryptography
 ```
 
 
-### 1. Instructions to use the oracle
+### 1. Instructions to use the data oracle
 The following will be added to the paper appendix in the next revision.
 
 When we evaluate a new program in the `main.py`, we will execute the following command line argument:

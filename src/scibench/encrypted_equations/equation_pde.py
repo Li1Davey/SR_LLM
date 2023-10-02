@@ -107,25 +107,56 @@ class GrainGrowth64x64(KnownEquation):
     simulated_exec = True
 
     def __init__(self):
-        # self.A = np.random.randn(1)[0]
-        # self.M = np.random.randn(1)[0]  # .to(device)
+        self.A = 1 #np.random.randn(1)[0]
+        self.M = 1 #np.random.randn(1)[0]
         # self.kappa = np.random.randn(1)[0]  # .to(device)
 
         self.lap = LaplacianOp()
         self.diff = DifferentialOp()
 
-        self.dx = 1
-        self.dy = 1
+        self.dx = 0.5
+        self.dy = 0.5
         self.Nx = 64
         self.Ny = 64
         self.dim = [(self.Nx, self.Ny), ]
 
         self.dt = 1e-2
 
-        vars_range_and_types = [LogUniformSampling2d(1e-3, 1.0, only_positive=True, dim=(self.Nx, self.Ny))]
-        self.x = [MatrixSymbol('X_0', self.Nx, self.Ny)]
+        vars_range_and_types = [LogUniformSampling2d(1e-3, 1.0, only_positive=True, dim=(self.Nx, self.Ny)),
+                                LogUniformSampling2d(1e-3, 1.0, only_positive=True, dim=(self.Nx, self.Ny))]
+        self.x = [MatrixSymbol('X_0', self.Nx, self.Ny), MatrixSymbol('X_1', self.Nx, self.Ny)]
         super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
-        c = self.x
+        etas = self.x
+
+        self.L =  torch.tensor([5.0])#nn.Parameter(torch.randn(1) * 5 + 0.1, requires_grad=True)
+        self.kappa = torch.tensor(0.1   )#nn.Parameter(torch.randn(1) * 5 + 0.1, requires_grad=True)
+
+        self.lap = LaplacianOp()
+
+        # self.dtime = dt
 
 
         self.sympy_eq = "EMPTY"
+
+    def forward(self, etas):
+        n_grain = len(etas)
+        all_new_etas = None
+        sum_eta_2 = sum(eta ** 2 for eta in etas)
+
+        etas_new = [None] * n_grain
+        absL = torch.abs(self.L)
+        absKappa = torch.abs(self.kappa)
+        for i in range(0, n_grain):
+            dfdeta = -self.A * etas[i] + self.B * (etas[i]) ** 3
+
+            sq_sum = sum_eta_2 - (etas[i]) ** 2
+            dfdeta += 2 * etas[i] * sq_sum
+
+            lap_eta = self.lap(etas[i], self.dx, self.dy)
+
+            term1 = dfdeta
+            term1 = term1 - absKappa * lap_eta
+            etas_new[i] = etas[i] - self.dtime * absL * (term1)
+
+            fix_deviations(etas_new[i])
+        return etas_new
