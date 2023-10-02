@@ -1,2 +1,2 @@
 0
-{"eq_name": "Constant_6", "num_vars": 1, "vars_range_and_types": "[{\"name\": \"LogUniform\", \"range\": [0.1, 10], \"only_positive\": true}]", "function_set": ["add", "sub", "mul", "div", "pow", "exp", "const"], "eq_expression": "[('pow', 'binary'), ('X_0', 'var'), (0.426000000000000, 'const')]", "expr": "X_0**0.426", "expr_obj_thres": 0.01}
+{"eq_name": "Constant_6", "num_vars": 1, "dim": [1], "vars_range_and_types": "[{\"name\": \"LogUniform\", \"range\": [0.1, 10], \"dim\": [1], \"only_positive\": true}]", "function_set": ["add", "sub", "mul", "div", "pow", "exp", "const"], "eq_expression": "[('pow', 'binary'), ('X0', 'var'), (0.426000000000000, 'const')]", "simulated_exec": false, "expr": "X0**0.426", "expr_obj_thres": 0.01}

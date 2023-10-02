@@ -14,7 +14,9 @@ class KnownEquation(object):
         assert len(kwargs_list) == num_vars
         self.num_vars = num_vars
         self.vars_range_and_types = vars_range_and_types
-        # self.x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
+        self.x = [Symbol(f'X{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
+        # the dimension of each variables is 1 by default.
+        self.dim = [(1) for i in range(self.num_vars)]
         self.sympy_eq = None
 
     def vars_range_and_types_to_json_str(self):
@@ -65,6 +67,7 @@ class IntegerUniformSampling(DefaultSampling):
 class UniformSampling(DefaultSampling):
     def __init__(self, min_value, max_value, only_positive=False, dim=(1,)):
         super().__init__('Uniform', min_value, max_value, only_positive, dim=dim)
+
 
 # class DefaultSampling2d(object):
 #     def __init__(self, name, min_value, max_value, only_positive=False, dim=(1, 1)):

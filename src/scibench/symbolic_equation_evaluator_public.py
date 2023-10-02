@@ -3,7 +3,7 @@ import torch
 from typing import List, Set
 import scipy
 import array
-import cyfunc
+from scibench import cyfunc
 
 import json
 from cryptography.fernet import Fernet
@@ -56,7 +56,7 @@ class Equation_evaluator(object):
         assert len(kwargs_list) == num_vars
         self.num_vars = num_vars
 
-        x = [Symbol(f'X_{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
+        x = [Symbol(f'X{i}', **kwargs) for i, kwargs in enumerate(kwargs_list)]
         return one_equation['eq_expression'], int(one_equation['num_vars']), one_equation['dim'], one_equation['function_set'], \
             one_equation['vars_range_and_types'], parse_expr(one_equation['expr'])
 
@@ -638,7 +638,7 @@ def create_tokens(n_input_var: int, function_set: List, protected) -> List:
     """
 
     # Create input variable Tokens
-    tokens = [sciToken(name="X_{}".format(i), arity=0, complexity=0.0, function=None, input_var=i) for i in range(n_input_var)]
+    tokens = [sciToken(name="X{}".format(i), arity=0, complexity=0.0, function=None, input_var=i) for i in range(n_input_var)]
 
     for op in function_set:
         # Registered Token

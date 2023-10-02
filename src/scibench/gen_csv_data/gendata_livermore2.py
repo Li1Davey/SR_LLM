@@ -1,8 +1,6 @@
-import os
+from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 
-from symbolic_equation_evaluator_public import decrypt_equation, Equation_evaluator
-import numpy as np
-from symbolic_data_generator import *
+from scibench.symbolic_data_generator import *
 
 
 def to_csv(X, y, filename):
@@ -19,13 +17,11 @@ if __name__ == '__main__':
             filename = basepath.format(vari, prog)
             data_query_oracle = Equation_evaluator(filename, noise_type='normal', noise_scale=0.0, metric_name='neg_mse')
             dataX = DataX(data_query_oracle.get_vars_range_and_types())
-            batchsize = 100000
+            batchsize = 1000
 
-            # X = np.random.rand(batchsize, n_input) * 9.5 + 0.5
-            X = dataX.randn(sample_size=batchsize)
+            X = dataX.randn(sample_size=batchsize).T
             y = data_query_oracle.evaluate(X).reshape(-1, 1)
             print(X.shape, y.shape)
             filename_csv = to_folder.format(vari, prog)
-            to_csv(X, y, filename_csv)
+            # to_csv(X, y, filename_csv)
             print(f"{vari}-{prog} done......")
-            # print(one_eq['eq_expression'].execute(X))
