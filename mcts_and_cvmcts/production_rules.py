@@ -2,6 +2,38 @@ from gplearn.functions import make_function
 import numpy as np
 
 # production rules for each benchmark for SPL
+base_rules = ['A->A+A', 'A->A-A', 'A->A*A', 'A->A/A']
+inv_rules = ['A->1/A']
+sin_cos_rules = ['A->cos(A)', 'A->sin(A)']
+exp_rules = ['A->exp(A)']
+log_rules = ['A->log(A)']
+sqrt_rules = ['A->sqrt(A)']
+const_rules = ['A->C']
+
+
+def get_production_rules(nvars, operators_set):
+    """
+    nvars: number of input variables.
+    operators_set: set of mathematical operators.
+    """
+    rules = base_rules + get_vars_rules(nvars) + const_rules
+    if 'inv' in operators_set:
+        rules += inv_rules
+    if 'sin' in operators_set or 'cos' in operators_set:
+        rules += sin_cos_rules
+    if 'sqrt' in operators_set:
+        rules += sqrt_rules
+    if 'exp' in operators_set:
+        rules += exp_rules
+    if 'log' in operators_set:
+        rules += log_rules
+    return rules
+
+
+def get_vars_rules(nvars: int) -> list:
+    return [f'A->X{i}' for i in range(nvars)]
+
+
 production_rules = {
     'nguyen-1': ['A->A+A', 'A->A-A', 'A->A*A', 'A->A/A',
                  'A->x', 'A->x**2', 'A->x**4',
@@ -31,9 +63,7 @@ production_rules = {
                  'A->x', 'A->cos(x)', 'A->sin(x)', 'A->log(B)', 'A->sqrt(B)',
                  'B->B+B', 'B->B-B', 'B->x', 'B->x**2', 'B->x**3', 'B->1'],
 
-    'nguyen-8': ['A->A+A', 'A->A-A', 'A->A*A', 'A->A/A',
-                 'A->X0', 'A->C',# 'A->sin(A)', 'A->exp(A)', 'A->log(A)',
-                 'A->sqrt(A)'],
+    'nguyen-8': base_rules + get_vars_rules(1) + const_rules + sqrt_rules,
 
     'nguyen-9': ['A->A+A', 'A->A-A', 'A->A*A', 'A->A/A', 'A->exp(A)',
                  'A->1', 'A->x', 'A->y', 'A->cos(B)', 'A->sin(B)', 'B->B+B', 'B->B-B',

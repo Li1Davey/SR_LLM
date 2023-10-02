@@ -1,13 +1,17 @@
-import pandas as pd
+import numpy as np
 import time
 import argparse
-from MCTS_model import MCTS, score_with_est
-from production_rules import *
+from mcts_model import MCTS
+from production_rules import get_production_rules
 from utils import simplify_eq
+import random
+from scibench.symbolic_data_generator import DataX
+from scibench.symbolic_equation_evaluator_public import Equation_evaluator
+from regress_task import RegressTask
 
 
-def run_mcts(task: str, num_iterations: int, data_dir='data/', max_len=50, eta=0.9999,
-             max_module_init=10, num_aug=5, exp_rate=1 / np.sqrt(2),
+def run_mcts(task, num_iterations, production_rules, nt_nodes=['A'], max_len=50, eta=0.9999,
+             max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
              norm_threshold=1e-5):
     """
     Executes the main training loop of Symbolic Physics Learner.
@@ -16,8 +20,6 @@ def run_mcts(task: str, num_iterations: int, data_dir='data/', max_len=50, eta=0
     ----------
     task: benchmark task name.
     num_run" number of iterations.
-    data_dir : String object.
-        directory of training data samples. 
     max_len: maximum allowed length (number of production rules ) of discovered equations.
     eta: penalty factor for rewarding.
     max_module_init : Int object.
@@ -34,14 +36,7 @@ def run_mcts(task: str, num_iterations: int, data_dir='data/', max_len=50, eta=0
     """
 
     # define production rules and non-terminal nodes.
-    grammars = production_rules[task]
-    nt_nodes = ntn_map[task]
-
-    # read training and testing data as numpy matrix
-    train_data = pd.read_csv(data_dir + task + '_train.csv', header=None).to_numpy().T
-    test_data = pd.read_csv(data_dir + task + '_test.csv', header=None).to_numpy().T
-
-    num_success = 0
+    grammars = production_rules
     all_times = []
     all_eqs = []
 
@@ -57,11 +52,10 @@ def run_mcts(task: str, num_iterations: int, data_dir='data/', max_len=50, eta=0
     aug_grammars = ['A->A-A,A->C,A->C', 'A->sqrt(A),A->C', 'A->sqrt(A),A->A+A,A->X0,A->A/A, A->X0,A->X0']
 
     start_time = time.time()
-    discovery_time = 0
 
     for i_itr in range(num_iterations):
         print(f"i_itr={i_itr},")
-        mtcs_model = MCTS(data_sample=train_data,
+        mtcs_model = MCTS(task=task,
                           base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           nt_nodes=nt_nodes,
@@ -91,54 +85,62 @@ def run_mcts(task: str, num_iterations: int, data_dir='data/', max_len=50, eta=0
         max_module += module_grow_step
         exploration_rate *= 5
 
-        # check if solution is discovered. Early stop if it is.
-        test_score = score_with_est(simplify_eq(best_solution[0]),
-                                    0,
-                                    test_data,
-                                    mtcs_model.input_var_Xs,
-                                    eta=eta)[0]
-        if test_score >= 1 - norm_threshold:
-            num_success += 1
-            if discovery_time == 0:
-                discovery_time = end_time
-                all_times.append(discovery_time)
-            break
         print()
 
     all_eqs.append(simplify_eq(best_solution[0]))
     print('best solution: {}'.format(simplify_eq(best_solution[0])))
-    print('test score: {}'.format(test_score))
     print()
 
     return all_eqs, all_times
 
 
-def main(args):
-    # directory to save discovered results
-    output_folder = args.output_dir
-    # if true, discovered equations are saved to "output_folder" dir
-    save_eqs = True
+def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    nvar = data_query_oracle.get_nvars()
+    operators_set = data_query_oracle.get_operators_set()
 
-    task = args.task
-    all_eqs, all_times = run_mcts(task,
-                                  num_iterations=args.num_run)
+    regress_batchsize = 256
+    opt_num_expr = 1
+    allowed_input_tokens = np.ones(nvar, dtype=np.int32)
+    task = RegressTask(regress_batchsize,
+                       allowed_input_tokens,
+                       dataXgen,
+                       data_query_oracle)
 
-    if save_eqs:
-        output_file = open(output_folder + task + '.txt', 'w')
-        for eq in all_eqs:
-            output_file.write(eq + '\n')
-        output_file.close()
+    num_iterations = 100
+    production_rules = get_production_rules(nvar, operators_set)
+    all_eqs, all_times = run_mcts(task, production_rules, num_iterations, optimizer)
 
     print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
 
 
-def get_arguments():
-    parser = argparse.ArgumentParser(description='run_model')
-    parser.add_argument('--task', default='nguyen-1', type=str, help="dataset name")
-    parser.add_argument('--num_run', default=100, type=int, help='number of training iterations')
-    parser.add_argument('--output_dir', default='results/', type=str, help='output directory')
-    return parser.parse_args()
+def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
+    pass
 
 
 if __name__ == '__main__':
-    main(get_arguments())
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--equation_name", help="the filename of the true program.")
+    parser.add_argument('--optimizer',
+                        nargs='?',
+                        choices=['BFGS', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
+                        help='list servers, storage, or both (default: %(default)s)')
+    parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
+    parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
+    parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
+    parser.add_argument("--cv_mcts", action="store_true", help="whether run normal mcts (cv_mcts=False) or control_variable_mcts.")
+
+    args = parser.parse_args()
+
+    seed = int(time.perf_counter() * 10000) % 1000007
+    random.seed(seed)
+    print('random seed=', seed)
+
+    seed = int(time.perf_counter() * 10000) % 1000007
+    np.random.seed(seed)
+    print('np.random seed=', seed)
+    if args.cv_mcts:
+        cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
+    else:
+        mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)

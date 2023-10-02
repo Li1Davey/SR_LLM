@@ -27,7 +27,7 @@ class Equation_evaluator(object):
         metric_name: evaluation metric name for `y_true` and `y_pred`
         '''
 
-        self.true_equation, self.num_vars, self.dim, self.function_set, self.vars_range_and_types, self.expr = self.__load_equation(
+        self.true_equation, self.num_vars, self.dim, self.operators_set, self.vars_range_and_types, self.expr = self.__load_equation(
             true_equation_filename)
 
         # metric
@@ -85,7 +85,6 @@ class Equation_evaluator(object):
         c = c0
         for i in range(simulate_steps):
             c_new = self.true_equation.execute(c)
-            # print(c.shape, '-->', c_new.shape)
             if return_last_step:
                 all_c = c_new
             else:
@@ -174,8 +173,8 @@ class Equation_evaluator(object):
     def get_nvars(self):
         return self.num_vars
 
-    def get_function_set(self):
-        return self.function_set
+    def get_operators_set(self):
+        return self.operators_set
 
 
 def construct_noise(noise_type):

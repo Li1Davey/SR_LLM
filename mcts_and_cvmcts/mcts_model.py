@@ -1,20 +1,37 @@
 import sys
 import numpy as np
 from collections import defaultdict
-from scipy.optimize import minimize
 from utils import tree_to_eq
 from sympy import Symbol
-from sympy.parsing.sympy_parser import parse_expr
+from progam import score_with_est
 
 
 class MCTS(object):
     """
     hall_of_fame: ranked good expressions.
     """
-    def __init__(self, data_sample, base_grammars, aug_grammars, nt_nodes, max_len, max_module, aug_grammars_allowed,
+    # task = None  # Task
+    # library = None  # Library
+    # constants
+    const_optimizer = None  # Function to optimize constants
+    opt_num_expr = 1  # number of experiments done for optimization
+    expr_obj_thres = 1e-2
+    expr_consts_thres = 1e-3
+
+    # Cython-related static variables
+    have_cython = None  # Do we have cython installed
+    execute = None  # Link to execute. Either cython or python
+    cyfunc = None  # Link to cyfunc lib since we do an include inline
+
+    noise_std = 0.0
+
+    def __init__(self, task, base_grammars, aug_grammars, nt_nodes, max_len, max_module, aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999):
-        self.data_sample = data_sample
-        self.input_var_Xs = [Symbol('X' + str(i)) for i in range(data_sample.shape[0] - 1)]
+        # for generating input data and evaluate the output.
+        self.task = task
+        # number of input variables
+        self.nvars = self.task.data_query_oracle.get_nvars()
+        self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
         self.base_grammars = base_grammars
         self.grammars = base_grammars + [x for x in aug_grammars if x not in base_grammars]
         self.nt_nodes = nt_nodes
@@ -34,7 +51,7 @@ class MCTS(object):
         """
         return [self.grammars.index(x) for x in self.grammars if x.startswith(Node)]
 
-    def get_non_terminal_nodes(self, prod, prod_idx)->list:
+    def get_non_terminal_nodes(self, prod, prod_idx) -> list:
         """
         Get all the non-terminal nodes from right-hand side of a production rule grammar
         """
@@ -43,7 +60,7 @@ class MCTS(object):
         else:
             return [i for i in prod[3:] if i in self.nt_nodes]
 
-    def get_unvisited_children(self, state, node)->list:
+    def get_unvisited_children(self, state, node) -> list:
         """
         Pick an action to to visit the index of all unvisited child.
         """
@@ -66,11 +83,14 @@ class MCTS(object):
         ntn = self.get_non_terminal_nodes(action, action_idx) + ntn[1:]
 
         if not ntn:
+            self.task.rand_draw_X_non_fixed()
+            y_true = self.task.evaluate()
             reward, eq = score_with_est(tree_to_eq(state.split(',')),
-                                    len(state.split(',')),
-                                    self.data_sample,
-                                    self.input_var_Xs,
-                                    eta=self.eta)
+                                        len(state.split(',')),
+                                        self.task.X,
+                                        y_true,
+                                        self.input_var_Xs,
+                                        eta=self.eta)
             return state, ntn, reward, True, eq
         else:
             return state, ntn, 0, False, None
@@ -185,6 +205,7 @@ class MCTS(object):
         """
         Creates an random policy to select an unvisited child. 
         """
+
         def policy_fn(UC):
             if len(UC) != len(set(UC)):
                 print(UC)
@@ -295,86 +316,3 @@ class MCTS(object):
                 reward_his.append(best_solution[1])
 
         return reward_his, best_solution, self.hall_of_fame
-
-
-def score_with_est(eq, tree_size, data, input_var_Xs, eta=0.999):
-    """
-    Calculate reward score for a complete parse tree
-    If placeholder C is in the equation, also execute estimation for C
-    Reward = 1 / (1 + MSE) * Penalty ** num_term
-
-    Parameters
-    ----------
-    eq : Str object. the discovered equation (with placeholders for coefficients).
-    tree_size : Int object. number of production rules in the complete parse tree.
-    data : 2-d numpy array. measurement data, including independent and dependent variables (last row).
-
-    Returns
-    -------
-    score: Float
-        discovered equations.
-    eq: Str. discovered equations with estimated numerical values.
-    """
-
-    data_X = data[:-1, :]
-    y_true = data[-1, :]
-
-    ## count number of numerical values in eq
-    num_changing_consts = eq.count('C')
-    # print(eq, num_changing_consts)
-    if num_changing_consts == 0:  # zero constant
-        y_pred = reward(eq, data_X.T, input_var_Xs)
-    elif num_changing_consts >= 10:  # discourage over complicated numerical estimations
-        return 0, eq
-    else:
-        c_lst = ['c' + str(i) for i in range(num_changing_consts)]
-        for c in c_lst:
-            eq = eq.replace('C', c, 1)
-
-        def eq_test(c: list):
-            return np.linalg.norm(reward(eq, data_X.T, input_var_Xs, c) - y_true, 2)
-
-        x0 = np.random.rand(len(c_lst)) * 10
-        # optimize the constants in the expression
-        opt_result = minimize(eq_test, x0, method='Nelder-Mead', options={'xatol': 1e-3, 'fatol': 1e-3, 'maxiter': 50})
-        c_lst = opt_result['x'].tolist()
-        # t_optimized_obj = opt_result['fun']
-        eq_est = eq
-        # print('orig eq:', eq_est, c_lst)
-        for i in range(len(c_lst)):
-            eq_est = eq_est.replace('c' + str(i), str(c_lst[i]), 1)
-        eq = eq_est.replace('+-', '-')
-        y_pred = reward(eq, data_X.T, input_var_Xs)
-        # print(t_optimized_obj, y_pred)
-        # print('-'*40)
-
-    r = float(eta ** tree_size / (1.0 + np.linalg.norm(y_pred - y_true, 2) ** 2 / y_true.shape[0]))
-
-    return r, eq
-
-# TODO: change to C function
-def reward(expr_str: str, data_X: np.ndarray, input_var_Xs, consts=None):
-    """
-    evaluate the output of expression with the given input.
-    consts: list of constants.
-    """
-    expr = parse_expr(expr_str)
-    var_consts = list(expr.free_symbols)
-
-    y_hat = np.zeros(data_X.shape[0])
-    try:
-        for idx in range(data_X.shape[0]):
-            X = data_X[idx, :]
-            val_dict = {}
-            for x in input_var_Xs:
-                i = int(x.name[1:])
-                val_dict[x] = X[i]
-            if consts is not None:
-                for ci in var_consts:
-                    j = int(ci.name[1:])
-                    val_dict[ci] = consts[j]
-            y_hat[idx] = expr.evalf(subs=val_dict)
-    except TypeError as e:
-        # print(e, expr, consts, input_var_Xs, data_X.shape, val_dict)
-        return np.ones(data_X.shape[0])*np.infty
-    return y_hat
