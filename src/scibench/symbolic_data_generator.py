@@ -25,7 +25,11 @@ class DataX(object):
         :return: return [#input_variables, sample_size, dimension of each variables]
         """
         list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
-        return np.stack(list_of_X, axis=0)
+        return np.stack(list_of_X, axis=0).transpose()
+
+    def get_X_grids(self):
+        list_of_X_grid = [one_sampler.get_x_grid() for one_sampler in self.data_X_samplers]
+        return np.stack(list_of_X_grid, axis=0).transpose()
 
 
 class DefaultSampling(object):
@@ -56,6 +60,15 @@ class LogUniformSampling(DefaultSampling):
             all_samples = np.concatenate([pos_samples, neg_samples])
             np.random.shuffle(all_samples)
             return all_samples
+
+    def get_x_grid(self):
+        if self.only_positive:
+            return np.linspace(self.range[0], self.range[1], 10000)
+        else:
+            pos_grid = np.linspace(self.range[0], self.range[1], 5000)
+            neg_grid = -np.linspace(self.range[0], self.range[1], 5000)
+            all_grids = np.concatenate([neg_grid, pos_grid])
+            return all_grids
 
 
 class UniformSampling(DefaultSampling):
@@ -94,6 +107,15 @@ class IntegerSampling(DefaultSampling):
             all_samples = np.concatenate([pos_samples, neg_samples])
             np.random.shuffle(all_samples)
             return all_samples
+
+    def get_x_grid(self):
+        if self.only_positive:
+            return np.arange(self.range[0], self.range[1])
+        else:
+            pos_grid = np.arange(self.range[0], self.range[1])
+            neg_grid = -np.arange(self.range[0], self.range[1])
+            all_grids = np.concatenate([neg_grid, pos_grid])
+            return all_grids
 
 
 class DefaultSampling2d(object):
