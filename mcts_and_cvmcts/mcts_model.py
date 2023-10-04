@@ -314,5 +314,8 @@ class MCTS(object):
                 print("BACK-PROPAGATION STEP")
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
+                print("the Q table:")
+                print(self.QN)
+                print('-'*40)
 
         return reward_his, best_solution, self.hall_of_fame

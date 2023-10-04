@@ -10,9 +10,9 @@ from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
 
 
-def run_mcts(task, num_iterations, production_rules, nt_nodes=['A'], max_len=50, eta=0.9999,
+def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'], max_len=50, eta=0.9999,
              max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
-             norm_threshold=1e-5):
+             optimizer='BFGS'):
     """
     Executes the main training loop of Symbolic Physics Learner.
     
@@ -110,7 +110,8 @@ def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
 
     num_iterations = 100
     production_rules = get_production_rules(nvar, operators_set)
-    all_eqs, all_times = run_mcts(task, production_rules, num_iterations, optimizer)
+    print("The production rules are:", production_rules)
+    all_eqs, all_times = run_mcts(task, production_rules, num_iterations, optimizer=optimizer)
 
     print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
 

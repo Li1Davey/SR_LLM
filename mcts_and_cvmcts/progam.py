@@ -18,88 +18,6 @@ from utils import cached_property
 import utils as U
 
 
-def score_with_est(eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999):
-    """
-    Calculate reward score for a complete parse tree
-    If placeholder C is in the equation, also execute estimation for C
-    Reward = 1 / (1 + MSE) * Penalty ** num_term
-
-    Parameters
-    ----------
-    eq : Str object. the discovered equation (with placeholders for coefficients).
-    tree_size : Int object. number of production rules in the complete parse tree.
-    data : 2-d numpy array. measurement data, including independent and dependent variables (last row).
-
-    Returns
-    -------
-    score: Float
-        discovered equations.
-    eq: Str. discovered equations with estimated numerical values.
-    """
-
-    ## count number of numerical values in eq
-    num_changing_consts = eq.count('C')
-    # print(eq, num_changing_consts)
-    if num_changing_consts == 0:  # zero constant
-        y_pred = reward(eq, data_X.T, input_var_Xs)
-    elif num_changing_consts >= 10:  # discourage over complicated numerical estimations
-        return 0, eq
-    else:
-        c_lst = ['c' + str(i) for i in range(num_changing_consts)]
-        for c in c_lst:
-            eq = eq.replace('C', c, 1)
-
-        def eq_test(c: list):
-            return np.linalg.norm(reward(eq, data_X.T, input_var_Xs, c) - y_true, 2)
-
-        x0 = np.random.rand(len(c_lst)) * 10
-        # optimize the constants in the expression
-        opt_result = minimize(eq_test, x0, method='Nelder-Mead', options={'xatol': 1e-3, 'fatol': 1e-3, 'maxiter': 50})
-        c_lst = opt_result['x'].tolist()
-        # t_optimized_obj = opt_result['fun']
-        eq_est = eq
-        # print('orig eq:', eq_est, c_lst)
-        for i in range(len(c_lst)):
-            eq_est = eq_est.replace('c' + str(i), str(c_lst[i]), 1)
-        eq = eq_est.replace('+-', '-')
-        y_pred = reward(eq, data_X.T, input_var_Xs)
-        # print(t_optimized_obj, y_pred)
-        # print('-'*40)
-
-    r = float(eta ** tree_size / (1.0 + np.linalg.norm(y_pred - y_true, 2) ** 2 / y_true.shape[0]))
-
-    return r, eq
-
-
-# TODO: change to C function
-def reward(expr_str: str, data_X: np.ndarray, input_var_Xs, consts=None):
-    """
-    evaluate the output of expression with the given input.
-    consts: list of constants.
-    """
-    expr = parse_expr(expr_str)
-    f = lambdify(input_var_Xs, expr, 'numpy')
-    y_hat = f(data_X)
-    var_consts = list(expr.free_symbols)
-
-    y_hat = np.zeros(data_X.shape[0])
-    try:
-        for idx in range(data_X.shape[0]):
-            X = data_X[idx, :]
-            val_dict = {}
-            for x in input_var_Xs:
-                i = int(x.name[1:])
-                val_dict[x] = X[i]
-            if consts is not None:
-                for ci in var_consts:
-                    j = int(ci.name[1:])
-                    val_dict[ci] = consts[j]
-            y_hat[idx] = expr.evalf(subs=val_dict)
-    except TypeError as e:
-        # print(e, expr, consts, input_var_Xs, data_X.shape, val_dict)
-        return np.ones(data_X.shape[0]) * np.infty
-    return y_hat
-
 
 class Program(object):
     """
@@ -186,6 +104,103 @@ class Program(object):
             self._init(tokens, allow_change_tokens)
         self.freezed = False
         self.optimizer = optimizer
+    def score_with_est(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, verbose=False):
+        """
+        Calculate reward score for a complete parse tree
+        If placeholder C is in the equation, also execute estimation for C
+        Reward = 1 / (1 + MSE) * Penalty ** num_term
+
+        Parameters
+        ----------
+        eq : Str object. the discovered equation (with placeholders for coefficients).
+        tree_size : Int object. number of production rules in the complete parse tree.
+        data : 2-d numpy array. measurement data, including independent and dependent variables (last row).
+
+        Returns
+        -------
+        score: Float
+            discovered equations.
+        eq: Str. discovered equations with estimated numerical values.
+        """
+        print('The equation is:', eq)
+        if 'A' in eq:  # not a valid equation
+            return 0, eq
+        # count number of constant values in equation
+        num_changing_consts = eq.count('C')
+        # print(eq, num_changing_consts)
+        if num_changing_consts == 0:  # zero constant
+
+            y_pred = execute(eq, data_X.T, input_var_Xs)
+        elif num_changing_consts >= 10:  # discourage over complicated numerical estimations
+            return 0, eq
+        else:
+            c_lst = ['c' + str(i) for i in range(num_changing_consts)]
+            for c in c_lst:
+                eq = eq.replace('C', c, 1)
+
+            def f(consts: list):
+                eq_est = eq
+                for i in range(len(consts)):
+                    eq_est = eq_est.replace('c' + str(i), str(consts[i]), 1)
+                eq_est = eq_est.replace('+-', '-')
+                y_pred=execute(eq_est, data_X.T, input_var_Xs)
+
+                return np.linalg.norm(y_pred - y_true, 2)
+
+            x0 = np.random.rand(len(c_lst)) * 10
+            # optimize the constants in the expression
+            opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-6, 'fatol': 1e-6, 'maxiter': 50})
+            c_lst = opt_result['x'].tolist()
+            t_optimized_obj = opt_result['fun']
+            if verbose:
+                print(opt_result)
+            eq_est = eq
+
+            for i in range(len(c_lst)):
+                eq_est = eq_est.replace('c' + str(i), str(c_lst[i]), 1)
+            eq = eq_est.replace('+-', '-')
+            print('optimized eq:', eq)
+            y_pred = execute(eq, data_X.T, input_var_Xs)
+
+        r = float(eta ** tree_size / (1.0 + np.linalg.norm(y_pred - y_true, 2) ** 2 / y_true.shape[0]))
+
+        return r, eq
+
+
+# TODO: change to C function
+def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
+    """
+    evaluate the output of expression with the given input.
+    consts: list of constants.
+    """
+    expr = parse_expr(expr_str)
+    used_vars, used_idx = [], []
+    for idx, xi in enumerate(input_var_Xs):
+        if str(xi) in expr_str:
+            used_idx.append(idx)
+            used_vars.append(xi)
+
+
+    try:
+        f = lambdify(used_vars, expr, 'numpy')
+        if len(used_idx) != 0:
+            y_hat = f(*[data_X[i] for i in used_idx])
+        else:
+            y_hat = float(expr)
+        if y_hat is complex:
+            return np.ones(data_X.shape[-1]) * np.infty
+    except TypeError as e:
+        print(e, expr, input_var_Xs, data_X.shape)
+        y_hat=np.ones(data_X.shape[-1]) * np.infty
+    except KeyError as e:
+        print(e, expr)
+        y_hat=np.ones(data_X.shape[-1]) * np.infty
+
+    return y_hat
+
+
+
+
 
     def set_vf(self, vf: list):
         """set of free variables"""
@@ -236,8 +251,7 @@ class Program(object):
         #
         # if self.have_cython and self.len_traversal > 1:
         #     self.is_input_var = [t.input_var is not None for t in self.traversal]
-        #
-        # self.invalid = False  # always false.
+
         # self.tokens = tokens
         # self.n_var = self.task.n_input
         # self.vf = None
@@ -303,8 +317,6 @@ class Program(object):
         # remove  r
         if 'r' in self.__dict__:
             del self.__dict__['r']
-        if 'evaluate' in self.__dict__:
-            del self.__dict__['evaluate']
         if 'expr_objs' in self.__dict__:
             del self.__dict__['expr_objs']
         if 'expr_consts' in self.__dict__:
@@ -404,8 +416,6 @@ class Program(object):
             elif Program.noise_std > 0:
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
             else:
-                # change the method from BFGS to Nelder-Mead to improve the precision.
-                # opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000})
                 opt_result = minimize(f, x0, method='BFGS', options={'maxiter': 1000})
 
             t_optimized_constants = opt_result['x']
