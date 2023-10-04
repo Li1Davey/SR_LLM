@@ -83,7 +83,7 @@ def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'],mcts_iterati
             print(gi)
         print('-' * 20)
         reward_his.append(best_solution[1])
-        print
+
         print('Hall of Fame:')
         for i in range(min(10, len(hof))):
             print(hof[i][-2], hof[i][-1], hof[i][0])
