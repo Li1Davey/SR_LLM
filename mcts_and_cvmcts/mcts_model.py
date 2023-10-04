@@ -3,7 +3,6 @@ import numpy as np
 from collections import defaultdict
 from utils import tree_to_eq
 from sympy import Symbol
-from progam import score_with_est
 
 
 class MCTS(object):
@@ -11,17 +10,12 @@ class MCTS(object):
     hall_of_fame: ranked good expressions.
     """
     # task = None  # Task
-    # library = None  # Library
+    program = None
     # constants
     const_optimizer = None  # Function to optimize constants
     opt_num_expr = 1  # number of experiments done for optimization
     expr_obj_thres = 1e-2
     expr_consts_thres = 1e-3
-
-    # Cython-related static variables
-    have_cython = None  # Do we have cython installed
-    execute = None  # Link to execute. Either cython or python
-    cyfunc = None  # Link to cyfunc lib since we do an include inline
 
     noise_std = 0.0
 
@@ -85,12 +79,12 @@ class MCTS(object):
         if not ntn:
             self.task.rand_draw_X_non_fixed()
             y_true = self.task.evaluate()
-            reward, eq = score_with_est(tree_to_eq(state.split(',')),
-                                        len(state.split(',')),
-                                        self.task.X,
-                                        y_true,
-                                        self.input_var_Xs,
-                                        eta=self.eta)
+            reward, eq = self.program.optimize(tree_to_eq(state.split(',')),
+                                               len(state.split(',')),
+                                               self.task.X,
+                                               y_true,
+                                               self.input_var_Xs,
+                                               eta=self.eta)
             return state, ntn, reward, True, eq
         else:
             return state, ntn, 0, False, None
@@ -266,7 +260,7 @@ class MCTS(object):
 
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
-                print("")
+                print("following UCB_policy...")
                 prob = ucb_policy(state, ntn[0])
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn)
@@ -280,6 +274,7 @@ class MCTS(object):
 
                     if state.count(',') >= self.max_len:
                         unvisited_children = []
+                        print("BACK-PROPAGATION STEP")
                         self.back_propagate(state, action, 0)
                         reward_his.append(best_solution[1])
                         break
@@ -289,7 +284,7 @@ class MCTS(object):
                         self.update_hall_of_fame(next_state, reward, eq)
                         self.update_QN_scale(reward)
                         best_solution = (eq, reward)
-
+                    print("BACK-PROPAGATION STEP")
                     self.back_propagate(state, action, reward)
                     reward_his.append(best_solution[1])
                     break
@@ -315,7 +310,8 @@ class MCTS(object):
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 print("the Q table:")
-                print(self.QN)
-                print('-'*40)
+                for key in self.QN:
+                    print(key, self.QN[key])
+                print('-' * 40)
 
         return reward_his, best_solution, self.hall_of_fame

@@ -8,11 +8,12 @@ import random
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
+from progam import Program
 
 
-def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'], max_len=50, eta=0.9999,
-             max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
-             optimizer='BFGS'):
+def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'],mcts_iterations=100,
+             max_len=50, eta=0.9999, max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
+             ):
     """
     Executes the main training loop of Symbolic Physics Learner.
     
@@ -49,12 +50,13 @@ def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'], max_len=50,
     max_module = max_module_init
     reward_his = []
     hof = []
-    aug_grammars = ['A->A-A,A->C,A->C', 'A->sqrt(A),A->C', 'A->sqrt(A),A->A+A,A->X0,A->A/A, A->X0,A->X0']
+    aug_grammars = []
 
     start_time = time.time()
 
     for i_itr in range(num_iterations):
-        print(f"i_itr={i_itr},")
+
+        print('++++++++++++ITERATION {} ++++++++++++'.format(i_itr))
         mtcs_model = MCTS(task=task,
                           base_grammars=grammars,
                           aug_grammars=aug_grammars,
@@ -65,7 +67,7 @@ def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'], max_len=50,
                           exploration_rate=exploration_rate,
                           eta=eta)
 
-        _, current_solution, population = mtcs_model.MCTS_run(num_iterations,
+        _, current_solution, population = mtcs_model.MCTS_run(mcts_iterations,
                                                               num_simulations=10,
                                                               verbose=True)
 
@@ -76,8 +78,15 @@ def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'], max_len=50,
         else:
             hof = sorted(list(set(hof + population)), key=lambda x: x[1])
         aug_grammars = [x[0] for x in hof[-num_aug:]]
-        print("aug_grammars:", aug_grammars)
+        print("aug_grammars:")
+        for gi in aug_grammars:
+            print(gi)
+        print('-' * 20)
         reward_his.append(best_solution[1])
+        print
+        print('Hall of Fame:')
+        for i in range(min(10, len(hof))):
+            print(hof[i][-2], hof[i][-1], hof[i][0])
 
         if current_solution[1] > best_solution[1]:
             best_solution = current_solution
@@ -107,11 +116,12 @@ def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                        allowed_input_tokens,
                        dataXgen,
                        data_query_oracle)
+    MCTS.program = Program(nvar, opt_num_expr, optimizer)
 
     num_iterations = 100
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
-    all_eqs, all_times = run_mcts(task, production_rules, num_iterations, optimizer=optimizer)
+    all_eqs, all_times = run_mcts(task, production_rules, num_iterations)
 
     print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
 

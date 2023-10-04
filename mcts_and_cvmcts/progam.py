@@ -18,93 +18,26 @@ from utils import cached_property
 import utils as U
 
 
-
 class Program(object):
-    """
-    The executable program representing the symbolic expression.
-
-    The program comprises unary/binary operators, constant placeholders
-    (to-be-optimized), input variables, and hard-coded constants.
-
-    Parameters
-    ----------
-    tokens : list of integers
-        A list of integers corresponding to tokens in the library. "Dangling"
-        programs are completed with repeated "x1" until the expression
-        completes.
-
-    Attributes
-    ----------
-    traversal : list
-        List of operators (type: Function) and terminals (type: int, float, or
-        str ("const")) encoding the pre-order traversal of the expression tree.
-
-    tokens : np.ndarray (dtype: int)
-        Array of integers whose values correspond to indices
-
-    allow_change_tokens: np.ndarray (dtype: int)
-        if each token allows to be changed during GP.
-
-    const_pos : list of int
-        A list of indicies of constant placeholders along the traversal.
-
-    num_changing_const: int
-        number of changing constant.
-
-    float_pos : list of float
-        A list of indices of constants placeholders or floating-point constants
-        along the traversal.
-
-    sympy_expr : str
-        The (lazily calculated) SymPy expression corresponding to the program.
-        Used for pretty printing _only_.
-
-    complexity : float
-        The (lazily calcualted) complexity of the program.
-
-    r : float
-        The (lazily calculated) reward of the program.
-
-    expr_objs: array of floats
-        The objective functions done with opt_num_expr experiments during optimization.
-
-    expr_consts: 2-d array of floats
-        The optimized constant values with opt_num_expr experiments during optimization.
-
-    count : int
-        The number of times this Program has been sampled.
-
-    str : str
-        String representation of tokens. Useful as unique identifier.
-    """
     # Static variables
-    task = None  # Task
-    library = None  # Library
-    const_optimizer = None  # Function to optimize constants
-
-    opt_num_expr = 32  # number of experiments done for optimization
-
     expr_obj_thres = 1e-2  # expression objective threshold
     expr_consts_thres = 1e-3
 
-    # Cython-related static variables
-    have_cython = None  # Do we have cython installed
-    execute = None  # Link to execute. Either cython or python
-    cyfunc = None  # Link to cyfunc lib since we do an include inline
-
-    noise_std = 0.0
-
-    def __init__(self, tokens=None, allow_change_tokens=None, optimizer="BFGS"):
+    def __init__(self, n_vars, opt_num_expr, optimizer="BFGS"):
         """
-        Builds the Program from a list of integers corresponding to Tokens.
+        opt_num_expr:  # number of experiments done for optimization
         """
 
         # Can be empty if we are unpickling
-        if tokens is not None:
-            self._init(tokens, allow_change_tokens)
+        # if tokens is not None:
+        #     self._init(tokens, allow_change_tokens)
         self.freezed = False
+        self.n_vars = n_vars
         self.optimizer = optimizer
-    def score_with_est(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, verbose=False):
+
+        self.opt_num_expr = opt_num_expr
+
+    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, verbose=False):
         """
         Calculate reward score for a complete parse tree
         If placeholder C is in the equation, also execute estimation for C
@@ -114,20 +47,18 @@ class Program(object):
         ----------
         eq : Str object. the discovered equation (with placeholders for coefficients).
         tree_size : Int object. number of production rules in the complete parse tree.
-        data : 2-d numpy array. measurement data, including independent and dependent variables (last row).
+        (data_X, y_true) : 2-d numpy array.
 
         Returns
         -------
-        score: Float
-            discovered equations.
-        eq: Str. discovered equations with estimated numerical values.
+        score: discovered equations.
+        eq: discovered equations with estimated numerical values.
         """
         print('The equation is:', eq)
         if 'A' in eq:  # not a valid equation
             return 0, eq
-        # count number of constant values in equation
+        # count number of constants in equation
         num_changing_consts = eq.count('C')
-        # print(eq, num_changing_consts)
         if num_changing_consts == 0:  # zero constant
 
             y_pred = execute(eq, data_X.T, input_var_Xs)
@@ -143,13 +74,44 @@ class Program(object):
                 for i in range(len(consts)):
                     eq_est = eq_est.replace('c' + str(i), str(consts[i]), 1)
                 eq_est = eq_est.replace('+-', '-')
-                y_pred=execute(eq_est, data_X.T, input_var_Xs)
+                y_pred = execute(eq_est, data_X.T, input_var_Xs)
 
                 return np.linalg.norm(y_pred - y_true, 2)
 
             x0 = np.random.rand(len(c_lst)) * 10
             # optimize the constants in the expression
-            opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-6, 'fatol': 1e-6, 'maxiter': 50})
+            if self.optimizer == 'Nelder-Mead':
+                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-6, 'fatol': 1e-6, 'maxiter': 50})
+            elif self.optimizer == 'BFGS':
+                opt_result = minimize(f, x0, method='BFGS', options={'maxiter': 50})
+            elif self.optimizer == 'CG':
+                opt_result = minimize(f, x0, method='CG', options={'maxiter': 50})
+            elif self.optimizer == 'L-BFGS-B':
+                opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': 50})
+            elif self.optimizer == "basinhopping":
+                minimizer_kwargs = {"method": "Nelder-Mead",
+                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
+                opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=50)
+            elif self.optimizer == 'dual_annealing':
+                minimizer_kwargs = {"method": "Nelder-Mead",
+                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
+                lw = [-10] * self.n_vars
+                up = [10] * self.n_vars
+                bounds = list(zip(lw, up))
+                opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, niter=50)
+            elif self.optimizer == 'shgo':
+                minimizer_kwargs = {"method": "Nelder-Mead",
+                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
+                lw = [-10] * self.n_vars
+                up = [10] * self.n_vars
+                bounds = list(zip(lw, up))
+                opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': 50})
+            elif self.optimizer == "direct":
+                lw = [-10] * self.n_vars
+                up = [10] * self.n_vars
+                bounds = list(zip(lw, up))
+                opt_result = direct(f, bounds, maxiter=500)
+
             c_lst = opt_result['x'].tolist()
             t_optimized_obj = opt_result['fun']
             if verbose:
@@ -180,7 +142,6 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
             used_idx.append(idx)
             used_vars.append(xi)
 
-
     try:
         f = lambdify(used_vars, expr, 'numpy')
         if len(used_idx) != 0:
@@ -191,16 +152,12 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
             return np.ones(data_X.shape[-1]) * np.infty
     except TypeError as e:
         print(e, expr, input_var_Xs, data_X.shape)
-        y_hat=np.ones(data_X.shape[-1]) * np.infty
+        y_hat = np.ones(data_X.shape[-1]) * np.infty
     except KeyError as e:
         print(e, expr)
-        y_hat=np.ones(data_X.shape[-1]) * np.infty
+        y_hat = np.ones(data_X.shape[-1]) * np.infty
 
     return y_hat
-
-
-
-
 
     def set_vf(self, vf: list):
         """set of free variables"""
@@ -225,20 +182,7 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
             if v not in self.vf:
                 self.vf.append(v)
 
-    def update_with_other_vf(self, other_vf, verbose=False):
-        """update the set of free variables to be: the original"""
-        # if np.random.rand() < 0.5 and len(other_vf) > 0:
-        # print("crossover update with other vf self.vf {} other.vf {}".format(self.vf, other_vf), end='\t')
-        for x in other_vf:
-            if x not in self.vf:
-                self.vf.append(x)
-
-        if verbose:
-            print("->".join([str(v) for v in self.vf]))
-
     def _init(self, tokens: np.ndarray, allow_change_tokens: np.ndarray):
-        # pre-order of the program. the most important thing.
-        self.traversal = [Program.library[t] for t in tokens]
         # added part: which token is allowed to be token. 1 means allowed
         self.allow_change_tokens = allow_change_tokens
         # position of the constant
@@ -305,14 +249,6 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
         # the place the token can be changed
         return [i for i, t in enumerate(self.allow_change_tokens) if t == 1]
 
-    def summary_constant_pos(self):
-        """ return the index of 'summary constants' """
-        return [pos for i, pos in enumerate(self.const_pos) if self.allow_change_tokens[pos]]
-
-    def all_tokens_pos(self):
-        # the place of the tokens that can be changed
-        return [i for i in range(len(self.allow_change_tokens))]
-
     def remove_r_evaluate(self):
         # remove  r
         if 'r' in self.__dict__:
@@ -373,7 +309,7 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
 
         # do more than one experiment, so that we can set x2-x4 with different constant value.
         self.task.rand_draw_X_fixed()
-        for expr in range(self.opt_num_expr):
+        for _ in range(self.opt_num_expr):
             # Do the optimization
             x0 = np.random.rand(self.num_changing_consts) * 10  # Initial guess
 
