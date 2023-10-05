@@ -26,16 +26,29 @@ class Program(object):
     def __init__(self, n_vars, opt_num_expr, optimizer="BFGS"):
         """
         opt_num_expr:  # number of experiments done for optimization
+        vf: indicator vector for free variables. vf[i]=1 for xi is a free variable
         """
 
         # Can be empty if we are unpickling
         # if tokens is not None:
-        #     self._init(tokens, allow_change_tokens)
-        self.freezed = False
+        #
+        self.vf = np.zeros(n_vars)
+
+        # self.freezed = False
         self.n_vars = n_vars
         self.optimizer = optimizer
 
         self.opt_num_expr = opt_num_expr
+
+    def set_vf(self, xi: int):
+        """set of free variables"""
+
+        if 0 <= xi < len(self.vf):
+            self.vf[xi] = 1
+            print('xi is:', xi, 'new vf is:', self.vf)
+
+    def get_vf(self):
+        return self.vf
 
     def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, verbose=False):
         """
@@ -60,7 +73,6 @@ class Program(object):
         # count number of constants in equation
         num_changing_consts = eq.count('C')
         if num_changing_consts == 0:  # zero constant
-
             y_pred = execute(eq, data_X.T, input_var_Xs)
         elif num_changing_consts >= 10:  # discourage over complicated numerical estimations
             return 0, eq
@@ -77,59 +89,68 @@ class Program(object):
                 y_pred = execute(eq_est, data_X.T, input_var_Xs)
 
                 return np.linalg.norm(y_pred - y_true, 2)
+            #
 
-            x0 = np.random.rand(len(c_lst)) * 10
-            # optimize the constants in the expression
-            if self.optimizer == 'Nelder-Mead':
-                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-6, 'fatol': 1e-6, 'maxiter': 50})
-            elif self.optimizer == 'BFGS':
-                opt_result = minimize(f, x0, method='BFGS', options={'maxiter': 50})
-            elif self.optimizer == 'CG':
-                opt_result = minimize(f, x0, method='CG', options={'maxiter': 50})
-            elif self.optimizer == 'L-BFGS-B':
-                opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': 50})
-            elif self.optimizer == "basinhopping":
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
-                opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=50)
-            elif self.optimizer == 'dual_annealing':
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
-                lw = [-10] * self.n_vars
-                up = [10] * self.n_vars
-                bounds = list(zip(lw, up))
-                opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, niter=50)
-            elif self.optimizer == 'shgo':
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
-                lw = [-10] * self.n_vars
-                up = [10] * self.n_vars
-                bounds = list(zip(lw, up))
-                opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': 50})
-            elif self.optimizer == "direct":
-                lw = [-10] * self.n_vars
-                up = [10] * self.n_vars
-                bounds = list(zip(lw, up))
-                opt_result = direct(f, bounds, maxiter=500)
+            optimized_constants = []
+            optimized_obj = []
 
-            c_lst = opt_result['x'].tolist()
-            t_optimized_obj = opt_result['fun']
-            if verbose:
-                print(opt_result)
-            eq_est = eq
+            # do more than one experiment,
+            for _ in range(self.opt_num_expr):
+                x0 = np.random.rand(len(c_lst)) * 10
+                # optimize the constants in the expression
+                if self.optimizer == 'Nelder-Mead':
+                    opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-6, 'fatol': 1e-6, 'maxiter': 50})
+                elif self.optimizer == 'BFGS':
+                    opt_result = minimize(f, x0, method='BFGS', options={'maxiter': 50})
+                elif self.optimizer == 'CG':
+                    opt_result = minimize(f, x0, method='CG', options={'maxiter': 50})
+                elif self.optimizer == 'L-BFGS-B':
+                    opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': 50})
+                elif self.optimizer == "basinhopping":
+                    minimizer_kwargs = {"method": "Nelder-Mead",
+                                        "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
+                    opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=50)
+                elif self.optimizer == 'dual_annealing':
+                    minimizer_kwargs = {"method": "Nelder-Mead",
+                                        "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
+                    lw = [-10] * self.n_vars
+                    up = [10] * self.n_vars
+                    bounds = list(zip(lw, up))
+                    opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, niter=50)
+                elif self.optimizer == 'shgo':
+                    minimizer_kwargs = {"method": "Nelder-Mead",
+                                        "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 50}}
+                    lw = [-10] * self.n_vars
+                    up = [10] * self.n_vars
+                    bounds = list(zip(lw, up))
+                    opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': 50})
+                elif self.optimizer == "direct":
+                    lw = [-10] * self.n_vars
+                    up = [10] * self.n_vars
+                    bounds = list(zip(lw, up))
+                    opt_result = direct(f, bounds, maxiter=500)
 
-            for i in range(len(c_lst)):
-                eq_est = eq_est.replace('c' + str(i), str(c_lst[i]), 1)
-            eq = eq_est.replace('+-', '-')
-            print('optimized eq:', eq)
-            y_pred = execute(eq, data_X.T, input_var_Xs)
+
+                t_optimized_constants = opt_result['x']
+                c_lst = t_optimized_constants.tolist()
+                t_optimized_obj = opt_result['fun']
+
+                optimized_constants.append(t_optimized_constants)
+                if verbose:
+                    print(opt_result)
+                eq_est = eq
+
+                for i in range(len(c_lst)):
+                    eq_est = eq_est.replace('c' + str(i), str(c_lst[i]), 1)
+                eq = eq_est.replace('+-', '-')
+                print('optimized eq:', eq)
+                y_pred = execute(eq, data_X.T, input_var_Xs)
 
         r = float(eta ** tree_size / (1.0 + np.linalg.norm(y_pred - y_true, 2) ** 2 / y_true.shape[0]))
 
         return r, eq
 
 
-# TODO: change to C function
 def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
     """
     evaluate the output of expression with the given input.
@@ -159,46 +180,45 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
 
     return y_hat
 
-    def set_vf(self, vf: list):
-        """set of free variables"""
-        self.vf = vf
 
-    def pick_new_random_vf(self, verbose=False):
-        """add a new variable to vf (set of free variables)"""
-        candidates = [i for i in range(self.n_var) if i not in self.vf]
-        if len(candidates) == 0:
-            return False
-        new_variable = np.random.choice(candidates)
-        self.vf.append(new_variable)
-        if verbose:
-            print(f"{self.__repr__()}")
-        return True
+def pick_new_random_vf(self, verbose=False):
+    """add a new variable to vf (set of free variables)"""
+    candidates = [i for i in range(self.n_var) if i not in self.vf]
+    if len(candidates) == 0:
+        return False
+    new_variable = np.random.choice(candidates)
+    self.vf.append(new_variable)
+    if verbose:
+        print(f"{self.__repr__()}")
+    return True
 
-    def set_self_vf(self):
-        appeared_variables = set([t.input_var for t in self.traversal if t.input_var is not None])
-        if self.vf is None:
-            self.vf = []
-        for v in set(appeared_variables):
-            if v not in self.vf:
-                self.vf.append(v)
 
-    def _init(self, tokens: np.ndarray, allow_change_tokens: np.ndarray):
-        # added part: which token is allowed to be token. 1 means allowed
-        self.allow_change_tokens = allow_change_tokens
-        # position of the constant
-        # self.const_pos = [i for i, t in enumerate(self.traversal) if isinstance(t, PlaceholderConstant)]
-        # self.num_changing_consts = 0
-        # for pos in self.const_pos:  # compute num_changing_consts
-        #     if self.allow_change_tokens[pos]:
-        #         self.num_changing_consts += 1
-        # self.len_traversal = len(self.traversal)
-        #
-        # if self.have_cython and self.len_traversal > 1:
-        #     self.is_input_var = [t.input_var is not None for t in self.traversal]
+def set_self_vf(self):
+    appeared_variables = set([t.input_var for t in self.traversal if t.input_var is not None])
+    if self.vf is None:
+        self.vf = []
+    for v in set(appeared_variables):
+        if v not in self.vf:
+            self.vf.append(v)
 
-        # self.tokens = tokens
-        # self.n_var = self.task.n_input
-        # self.vf = None
+
+def _init(self, tokens: np.ndarray, allow_change_tokens: np.ndarray):
+    # added part: which token is allowed to be token. 1 means allowed
+    self.allow_change_tokens = allow_change_tokens
+    # position of the constant
+    # self.const_pos = [i for i, t in enumerate(self.traversal) if isinstance(t, PlaceholderConstant)]
+    # self.num_changing_consts = 0
+    # for pos in self.const_pos:  # compute num_changing_consts
+    #     if self.allow_change_tokens[pos]:
+    #         self.num_changing_consts += 1
+    # self.len_traversal = len(self.traversal)
+    #
+    # if self.have_cython and self.len_traversal > 1:
+    #     self.is_input_var = [t.input_var is not None for t in self.traversal]
+
+    # self.tokens = tokens
+    # self.n_var = self.task.n_input
+    # self.vf = None
 
     # def clone(self):
     #     new_me = Program(self.tokens, self.allow_change_tokens)
@@ -220,170 +240,151 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
     #
     #     return new_me
 
-    def __getstate__(self, verbse=False):
-        # for printing purpose
-        have_r = "r" in self.__dict__
-        have_evaluate = "evaluate" in self.__dict__
 
-        if verbse:
-            state_dict = {
-                'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
-                'allow_change_tokens': self.allow_change_tokens.tolist(),
-                'have_r': bool(have_r),
-                'r': float(self.r) if have_r else 'No r',
-                'fixed_column': self.task.fixed_column,
-                'have_evaluate': bool(have_evaluate),
-                'evaluate': self.evaluate if have_evaluate else float(-np.inf),
-            }
+def __getstate__(self, verbse=False):
+    # for printing purpose
+    have_r = "r" in self.__dict__
+    have_evaluate = "evaluate" in self.__dict__
+
+    if verbse:
+        state_dict = {
+            'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
+            'allow_change_tokens': self.allow_change_tokens.tolist(),
+            'have_r': bool(have_r),
+            'r': float(self.r) if have_r else 'No r',
+            'fixed_column': self.task.fixed_column,
+            'have_evaluate': bool(have_evaluate),
+            'evaluate': self.evaluate if have_evaluate else float(-np.inf),
+        }
+    else:
+        state_dict = {
+            'vf': self.vf if self.vf is not None else 'None',
+            'r': float(self.r) if have_r else 'No r',
+            'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
+            'allow_change_tokens': self.allow_change_tokens.tolist(),
+        }
+
+    return state_dict
+
+
+def remove_r_evaluate(self):
+    # remove  r
+    if 'r' in self.__dict__:
+        del self.__dict__['r']
+    if 'expr_objs' in self.__dict__:
+        del self.__dict__['expr_objs']
+    if 'expr_consts' in self.__dict__:
+        del self.__dict__['expr_consts']
+
+
+
+
+def optimize(self):
+    """
+    Optimizes PlaceholderConstant tokens against the reward function. The
+    optimized values are stored in the traversal.
+    """
+    # find the best constant value and fit the equation.
+    if len(self.const_pos) == 0 or self.num_changing_consts == 0:
+        # there is no constant in the expression
+        return
+
+    # Define the objective function: negative reward
+    def f(consts):
+        # replace all the constant in self.traversal with the given constant.
+        self.set_constants(consts)
+
+        # evaluate the different between predicted y and the ground truth y
+        r = self.task.reward_function(self)
+        # minimize the objective function
+        obj = -r  # Constant optimizer minimizes the objective function
+
+        # Need to reset to False so that a single invalid call during
+        # constant optimization doesn't render the whole Program invalid.
+        self.invalid = False
+
+        return obj
+
+    optimized_constants = []
+    optimized_obj = []
+
+    # do more than one experiment, so that we can set x2-x4 with different constant value.
+    self.task.rand_draw_X_fixed()
+    for _ in range(self.opt_num_expr):
+        # Do the optimization
+        x0 = np.random.rand(self.num_changing_consts) * 10  # Initial guess
+
+        self.task.rand_draw_data_with_X_fixed()
+        # the returned constant, and the objective function.
+        # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
+
+        if self.optimizer == "basinhopping":
+            minimizer_kwargs = {"method": "Nelder-Mead",
+                                "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
+            opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=500)
+
+            # print(opt_result)
+        elif self.optimizer == 'dual_annealing':
+            minimizer_kwargs = {"method": "Nelder-Mead",
+                                "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
+            lw = [-10] * self.n_var
+            up = [10] * self.n_var
+            bounds = list(zip(lw, up))
+            opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, niter=500)
+        elif self.optimizer == 'shgo':
+
+            minimizer_kwargs = {"method": "Nelder-Mead",
+                                "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
+            lw = [-10] * self.n_var
+            up = [10] * self.n_var
+            bounds = list(zip(lw, up))
+            opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': 5})
+        elif self.optimizer == "direct":
+            lw = [-10] * self.n_var
+            up = [10] * self.n_var
+            bounds = list(zip(lw, up))
+            opt_result = direct(f, bounds, maxiter=500)
+        elif self.optimizer == 'Nelder-Mead':
+            opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000})
+        elif self.optimizer == 'CG':
+            opt_result = minimize(f, x0, method='CG', options={'maxiter': 1000})
+        elif self.optimizer == 'L-BFGS-B':
+            opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': 1000})
+        elif Program.noise_std > 0:
+            opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
         else:
-            state_dict = {
-                'vf': self.vf if self.vf is not None else 'None',
-                'r': float(self.r) if have_r else 'No r',
-                'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
-                'allow_change_tokens': self.allow_change_tokens.tolist(),
-            }
+            opt_result = minimize(f, x0, method='BFGS', options={'maxiter': 1000})
 
-        return state_dict
+        t_optimized_constants = opt_result['x']
+        t_optimized_obj = opt_result['fun']
 
-    def allow_change_pos(self):
-        # the place the token can be changed
-        return [i for i, t in enumerate(self.allow_change_tokens) if t == 1]
+        optimized_constants.append(t_optimized_constants)
 
-    def remove_r_evaluate(self):
-        # remove  r
-        if 'r' in self.__dict__:
-            del self.__dict__['r']
-        if 'expr_objs' in self.__dict__:
-            del self.__dict__['expr_objs']
-        if 'expr_consts' in self.__dict__:
-            del self.__dict__['expr_consts']
+        # add validated data as the obj
+        self.task.rand_draw_data_with_X_fixed()
+        validate_obj = -self.task.reward_function(self)
+        optimized_obj.append(validate_obj)
 
-    def execute(self, X):
-        """
-        Execute program on input X.
-        Parameters
-        ==========
-        X : np.array
-            Input to execute the Program over.
-        Returns
-        =======
-        result : np.array or list of np.array
-            In a single-object Program, returns just an array. In a multi-object Program, returns a list of arrays.
-        """
-        if not Program.protected:
-            # return some weired error.
-            result, self.invalid, self.error_node, self.error_type = Program.execute_function(self.traversal, X)
-        else:
-            result = Program.execute_function(self.traversal, X)
-            # always protected. 1/div
-        return result
+    optimized_obj = np.array(optimized_obj)
+    optimized_constants = np.array(optimized_constants)
 
-    def optimize(self):
-        """
-        Optimizes PlaceholderConstant tokens against the reward function. The
-        optimized values are stored in the traversal.
-        """
-        # find the best constant value and fit the equation.
-        if len(self.const_pos) == 0 or self.num_changing_consts == 0:
-            # there is no constant in the expression
-            return
+    # print('optimized_obj=', optimized_obj)
+    # print('optimized_consts=', optimized_constants)
+    # if obj close to zero, we get a good expression.
+    # rember all the objective function and constant across all the iterations, so that we know which one is a real constant, which one is a variable.
+    self.expr_objs = optimized_obj
+    self.expr_consts = optimized_constants
 
-        # Define the objective function: negative reward
-        def f(consts):
-            # replace all the constant in self.traversal with the given constant.
-            self.set_constants(consts)
+    assert self.expr_objs.shape[0] == self.opt_num_expr
+    assert len(self.expr_objs.shape) == 1
 
-            # evaluate the different between predicted y and the ground truth y
-            r = self.task.reward_function(self)
-            # minimize the objective function
-            obj = -r  # Constant optimizer minimizes the objective function
+    # print('expr_objs=', self.expr_objs.tolist())
+    # print('expr_consts=', self.expr_consts.tolist())
 
-            # Need to reset to False so that a single invalid call during
-            # constant optimization doesn't render the whole Program invalid.
-            self.invalid = False
-
-            return obj
-
-        optimized_constants = []
-        optimized_obj = []
-
-        # do more than one experiment, so that we can set x2-x4 with different constant value.
-        self.task.rand_draw_X_fixed()
-        for _ in range(self.opt_num_expr):
-            # Do the optimization
-            x0 = np.random.rand(self.num_changing_consts) * 10  # Initial guess
-
-            self.task.rand_draw_data_with_X_fixed()
-            # the returned constant, and the objective function.
-            # t_optimized_constants, t_optimized_obj = Program.const_optimizer(f, x0)
-
-            if self.optimizer == "basinhopping":
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
-                opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=500)
-
-                # print(opt_result)
-            elif self.optimizer == 'dual_annealing':
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
-                lw = [-10] * self.n_var
-                up = [10] * self.n_var
-                bounds = list(zip(lw, up))
-                opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, niter=500)
-            elif self.optimizer == 'shgo':
-
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000}}
-                lw = [-10] * self.n_var
-                up = [10] * self.n_var
-                bounds = list(zip(lw, up))
-                opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': 5})
-            elif self.optimizer == "direct":
-                lw = [-10] * self.n_var
-                up = [10] * self.n_var
-                bounds = list(zip(lw, up))
-                opt_result = direct(f, bounds, maxiter=500)
-            elif self.optimizer == 'Nelder-Mead':
-                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': 1000})
-            elif self.optimizer == 'CG':
-                opt_result = minimize(f, x0, method='CG', options={'maxiter': 1000})
-            elif self.optimizer == 'L-BFGS-B':
-                opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': 1000})
-            elif Program.noise_std > 0:
-                opt_result = minimize(f, x0, method='Nelder-Mead', options={'eps': Program.noise_std})
-            else:
-                opt_result = minimize(f, x0, method='BFGS', options={'maxiter': 1000})
-
-            t_optimized_constants = opt_result['x']
-            t_optimized_obj = opt_result['fun']
-
-            optimized_constants.append(t_optimized_constants)
-
-            # add validated data as the obj
-            self.task.rand_draw_data_with_X_fixed()
-            validate_obj = -self.task.reward_function(self)
-            optimized_obj.append(validate_obj)
-
-        optimized_obj = np.array(optimized_obj)
-        optimized_constants = np.array(optimized_constants)
-
-        # print('optimized_obj=', optimized_obj)
-        # print('optimized_consts=', optimized_constants)
-        # if obj close to zero, we get a good expression.
-        # rember all the objective function and constant across all the iterations, so that we know which one is a real constant, which one is a variable.
-        self.expr_objs = optimized_obj
-        self.expr_consts = optimized_constants
-
-        assert self.expr_objs.shape[0] == self.opt_num_expr
-        assert len(self.expr_objs.shape) == 1
-
-        # print('expr_objs=', self.expr_objs.tolist())
-        # print('expr_consts=', self.expr_consts.tolist())
-
-        # Set the optimized constants
-        # set the value of optimized constants with the last optimized constants
-        # (the values of the constants may change, so only the last one makes sense; the mean does not make sense). Nan Comments: Why not use average?
-        self.set_constants(t_optimized_constants)
+    # Set the optimized constants
+    # set the value of optimized constants with the last optimized constants
+    # (the values of the constants may change, so only the last one makes sense; the mean does not make sense). Nan Comments: Why not use average?
+    self.set_constants(t_optimized_constants)
 
     # def freeze_equation(self):
     #     if len(self.const_pos) == 0 or self.num_changing_consts == 0:
@@ -429,112 +430,121 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
     #             self.traversal[pos] = PlaceholderConstant(consts[consts_tp])
     #             consts_tp += 1
 
-    @classmethod
-    def clear_cache(cls):
-        """Clears the class' cache"""
-        cls.cache = {}
 
-    @classmethod
-    def set_task(cls, task):
-        """Sets the class' Task"""
-        Program.task = task
-        Program.library = task.library
+@classmethod
+def clear_cache(cls):
+    """Clears the class' cache"""
+    cls.cache = {}
 
-    @classmethod
-    def set_complexity(cls, name):
-        """Sets the class' complexity function"""
 
-        all_functions = {
-            # No complexity
-            None: lambda p: 0.0,
-            # Length of sequence
-            "length": lambda p: len(p.traversal),
-            # Sum of token-wise complexities
-            "token": lambda p: sum([t.complexity for t in p.traversal]),
-        }
+@classmethod
+def set_task(cls, task):
+    """Sets the class' Task"""
+    Program.task = task
+    Program.library = task.library
 
-        assert name in all_functions, "Unrecognzied complexity function name."
 
-        Program.complexity_function = lambda p: all_functions[name](p)
+@classmethod
+def set_complexity(cls, name):
+    """Sets the class' complexity function"""
 
-    @classmethod
-    def set_execute(cls, protected):
-        """Sets which execute method to use"""
+    all_functions = {
+        # No complexity
+        None: lambda p: 0.0,
+        # Length of sequence
+        "length": lambda p: len(p.traversal),
+        # Sum of token-wise complexities
+        "token": lambda p: sum([t.complexity for t in p.traversal]),
+    }
 
-        # Check if cython_execute can be imported; if not, fall back to python_execute
-        # try:
-        import scibench.cyfunc
-        from scibench.symbolic_equation_evaluator_public import cython_execute
-        execute_function = cython_execute
-        Program.have_cython = True
+    assert name in all_functions, "Unrecognzied complexity function name."
 
-        if protected:
-            Program.protected = True
-            Program.execute_function = execute_function
+    Program.complexity_function = lambda p: all_functions[name](p)
+
+
+@classmethod
+def set_execute(cls, protected):
+    """Sets which execute method to use"""
+
+    # Check if cython_execute can be imported; if not, fall back to python_execute
+    # try:
+    import scibench.cyfunc
+    from scibench.symbolic_equation_evaluator_public import cython_execute
+    execute_function = cython_execute
+    Program.have_cython = True
+
+    if protected:
+        Program.protected = True
+        Program.execute_function = execute_function
+    else:
+        Program.protected = False
+
+        # Define closure for execute function
+        def unsafe_execute(traversal, X):
+            """This is a wrapper for execute_function. If a floating-point error
+            would be hit, a warning is logged instead, p.invalid is set to True,
+            and the appropriate nan/inf value is returned. It's up to the task's
+            reward function to decide how to handle nans/infs."""
+
+            with np.errstate(all='log'):
+                y = execute_function(traversal, X)
+                return y
+
+        Program.execute_function = unsafe_execute
+
+
+def _set_dataX_allowed_input_tokens(self, allowed_input_token, verbose=False):
+    """Input is a set of free input variables"""
+    free_input_tokens = np.zeros(self.n_var, dtype=np.int32)
+    if allowed_input_token:
+        for vari in allowed_input_token:
+            free_input_tokens[vari] = 1
+    self.task.set_allowed_inputs(free_input_tokens)
+    if verbose:
+        print("For dataX: {} Program.task.allowed_input:{} fixed_column:{}".format(
+            allowed_input_token, Program.task.allowed_input, Program.task.fixed_column))
+
+
+@cached_property
+def r(self):
+    """Evaluates and returns the reward of the program"""
+    self._set_dataX_allowed_input_tokens(self.vf, verbose=False)
+    with warnings.catch_warnings():
+        # print('===before optimize===')
+
+        # Optimize any PlaceholderConstants
+        self.optimize()
+
+        if 'expr_objs' in self.__dict__:
+            return -np.mean(self.expr_objs)
         else:
-            Program.protected = False
+            # this means there is no constants to be optimized.
+            self.expr_objs = []
+            self.task.rand_draw_X_fixed()
+            # Nan: note that the values of controled variable stay the same for `opt_num_expr` tryouts.
+            for expr in range(self.opt_num_expr):
+                self.task.rand_draw_data_with_X_fixed()
+                self.expr_objs.append(self.task.reward_function(self))
+            self.expr_objs = np.array(self.expr_objs)
+            return np.mean(self.expr_objs)
 
-            # Define closure for execute function
-            def unsafe_execute(traversal, X):
-                """This is a wrapper for execute_function. If a floating-point error
-                would be hit, a warning is logged instead, p.invalid is set to True,
-                and the appropriate nan/inf value is returned. It's up to the task's
-                reward function to decide how to handle nans/infs."""
 
-                with np.errstate(all='log'):
-                    y = execute_function(traversal, X)
-                    return y
+@cached_property
+def evaluate(self):
+    """Evaluates and returns the evaluation metrics of the program."""
 
-            Program.execute_function = unsafe_execute
+    # Program must be optimized before computing evaluate
+    if "r" not in self.__dict__:
+        print("WARNING: Evaluating Program before computing its reward. Program will be optimized first.")
+        self.optimize()
 
-    def _set_dataX_allowed_input_tokens(self, allowed_input_token, verbose=False):
-        """Input is a set of free input variables"""
-        free_input_tokens = np.zeros(self.n_var, dtype=np.int32)
-        if allowed_input_token:
-            for vari in allowed_input_token:
-                free_input_tokens[vari] = 1
-        self.task.set_allowed_inputs(free_input_tokens)
-        if verbose:
-            print("For dataX: {} Program.task.allowed_input:{} fixed_column:{}".format(
-                allowed_input_token, Program.task.allowed_input, Program.task.fixed_column))
+    return self.task.evaluate(self)
 
-    @cached_property
-    def r(self):
-        """Evaluates and returns the reward of the program"""
-        self._set_dataX_allowed_input_tokens(self.vf, verbose=False)
-        with warnings.catch_warnings():
-            # print('===before optimize===')
 
-            # Optimize any PlaceholderConstants
-            self.optimize()
+def print_expression(self):
+    print("{}".format(self.traversal))
 
-            if 'expr_objs' in self.__dict__:
-                return -np.mean(self.expr_objs)
-            else:
-                # this means there is no constants to be optimized.
-                self.expr_objs = []
-                self.task.rand_draw_X_fixed()
-                # Nan: note that the values of controled variable stay the same for `opt_num_expr` tryouts.
-                for expr in range(self.opt_num_expr):
-                    self.task.rand_draw_data_with_X_fixed()
-                    self.expr_objs.append(self.task.reward_function(self))
-                self.expr_objs = np.array(self.expr_objs)
-                return np.mean(self.expr_objs)
 
-    @cached_property
-    def evaluate(self):
-        """Evaluates and returns the evaluation metrics of the program."""
-
-        # Program must be optimized before computing evaluate
-        if "r" not in self.__dict__:
-            print("WARNING: Evaluating Program before computing its reward. Program will be optimized first.")
-            self.optimize()
-
-        return self.task.evaluate(self)
-
-    def print_expression(self):
-        print("{}".format(self.traversal))
-
-    def __repr__(self):
-        """Prints the program's traversal"""
-        return ','.join([repr(t) for t in self.traversal])
+def __repr__(self):
+    """Prints the program's traversal"""
+    return ','.join([repr(t) for t in self.traversal])

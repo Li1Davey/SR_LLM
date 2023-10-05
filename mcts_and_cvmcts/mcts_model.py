@@ -9,7 +9,7 @@ class MCTS(object):
     """
     hall_of_fame: ranked good expressions.
     """
-    # task = None  # Task
+    task = None  # Task
     program = None
     # constants
     const_optimizer = None  # Function to optimize constants
@@ -19,10 +19,9 @@ class MCTS(object):
 
     noise_std = 0.0
 
-    def __init__(self, task, base_grammars, aug_grammars, nt_nodes, max_len, max_module, aug_grammars_allowed,
+    def __init__(self, base_grammars, aug_grammars, nt_nodes, max_len, max_module, aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999):
         # for generating input data and evaluate the output.
-        self.task = task
         # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
@@ -77,7 +76,7 @@ class MCTS(object):
         ntn = self.get_non_terminal_nodes(action, action_idx) + ntn[1:]
 
         if not ntn:
-            self.task.rand_draw_X_non_fixed()
+            self.task.rand_draw_data_with_X_fixed()
             y_true = self.task.evaluate()
             reward, eq = self.program.optimize(tree_to_eq(state.split(',')),
                                                len(state.split(',')),

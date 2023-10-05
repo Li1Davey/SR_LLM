@@ -2,8 +2,8 @@ import numpy as np
 import time
 import argparse
 from mcts_model import MCTS
-from production_rules import get_production_rules
-from utils import simplify_eq
+from production_rules import get_production_rules, get_ith_var_rules
+from utils import simplify_eq, create_uniform_generations
 import random
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
@@ -11,7 +11,7 @@ from regress_task import RegressTask
 from progam import Program
 
 
-def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'],mcts_iterations=100,
+def run_mcts(production_rules, num_iterations, nt_nodes=['A'], mcts_iterations=100,
              max_len=50, eta=0.9999, max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
              ):
     """
@@ -57,8 +57,7 @@ def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'],mcts_iterati
     for i_itr in range(num_iterations):
 
         print('++++++++++++ITERATION {} ++++++++++++'.format(i_itr))
-        mtcs_model = MCTS(task=task,
-                          base_grammars=grammars,
+        mtcs_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           nt_nodes=nt_nodes,
                           max_len=max_len,
@@ -76,8 +75,8 @@ def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'],mcts_iterati
         if not hof:
             hof = population
         else:
-            hof = sorted(list(set(hof + population)), key=lambda x: x[1])
-        aug_grammars = [x[0] for x in hof[-num_aug:]]
+            hof = sorted(list(set(hof + population)), key=lambda x: x[1], reverse=True)
+        aug_grammars = [x[0] for x in hof[:num_aug]]
         print("aug_grammars:")
         for gi in aug_grammars:
             print(gi)
@@ -103,6 +102,95 @@ def run_mcts(task, production_rules, num_iterations, nt_nodes=['A'],mcts_iterati
     return all_eqs, all_times
 
 
+def run_cv_mcts(production_rules, num_iterations: list, nt_nodes=['A'], mcts_iterations=100,
+                max_len=50, eta=0.9999, max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
+                ):
+    """
+    Executes the main training loop of Symbolic Physics Learner.
+    num_run: number of iterations.
+    max_len: maximum allowed length (number of production rules ) of discovered equations.
+    eta: penalty factor for rewarding.
+    max_module_init : Int object.
+        initial maximum length for module transplantation candidates.
+    num_aug : number of trees for module transplantation.
+    exp_rate: initial exploration rate.
+
+    all_eqs: List<Str>. discovered equations.
+    success_rate: Float. success rate of all runs performed.
+    all_times: List<Float>. runtimes for successful runs.
+    """
+
+    # define production rules and non-terminal nodes.
+    grammars = production_rules
+    all_times = []
+    all_eqs = []
+
+    # number of module max size increase after each transplantation
+    module_grow_step = (max_len - max_module_init) / np.sum(num_iterations)
+
+    best_solution = ('nothing', 0)
+
+    exploration_rate = exp_rate
+    max_module = max_module_init
+    reward_his = []
+    hof = []
+    aug_grammars = []
+
+    start_time = time.time()
+    for round_idx in range(len(num_iterations)):
+        print("update set of free variable and grammars")
+        MCTS.program.set_vf(round_idx)
+        allowed_inputs = MCTS.program.get_vf()
+        MCTS.task.set_allowed_inputs(allowed_inputs)
+
+        grammars += get_ith_var_rules(round_idx)
+        for it in range(num_iterations[round_idx]):
+            print('++++++++++++ ROUND {} ITERATION {} ++++++++++++'.format(round_idx, it))
+            mtcs_model = MCTS(base_grammars=grammars,
+                              aug_grammars=aug_grammars,
+                              nt_nodes=nt_nodes,
+                              max_len=max_len,
+                              max_module=max_module,
+                              aug_grammars_allowed=num_aug,
+                              exploration_rate=exploration_rate,
+                              eta=eta)
+
+            _, current_solution, population = mtcs_model.MCTS_run(mcts_iterations,
+                                                                  num_simulations=10,
+                                                                  verbose=True)
+
+            end_time = time.time() - start_time
+
+            if not hof:
+                hof = population
+            else:
+                hof = sorted(list(set(hof + population)), key=lambda x: x[1], reverse=True)
+            aug_grammars = [x[0] for x in hof[:num_aug]]
+            print("aug_grammars:")
+            for gi in aug_grammars:
+                print(gi)
+            print('-' * 20)
+            reward_his.append(best_solution[1])
+
+            print('Hall of Fame:')
+            for i in range(min(10, len(hof))):
+                print(hof[i][-2], hof[i][-1], hof[i][0])
+
+            if current_solution[1] > best_solution[1]:
+                best_solution = current_solution
+            # print(best_solution)
+            max_module += module_grow_step
+            exploration_rate *= 5
+
+            print()
+
+        all_eqs.append(simplify_eq(best_solution[0]))
+        print('best solution: {}'.format(simplify_eq(best_solution[0])))
+        exit()
+
+    return all_eqs, all_times
+
+
 def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -112,22 +200,43 @@ def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     regress_batchsize = 256
     opt_num_expr = 1
     allowed_input_tokens = np.ones(nvar, dtype=np.int32)
-    task = RegressTask(regress_batchsize,
-                       allowed_input_tokens,
-                       dataXgen,
-                       data_query_oracle)
+    MCTS.task = RegressTask(regress_batchsize,
+                            allowed_input_tokens,
+                            dataXgen,
+                            data_query_oracle)
     MCTS.program = Program(nvar, opt_num_expr, optimizer)
 
     num_iterations = 100
+
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
-    all_eqs, all_times = run_mcts(task, production_rules, num_iterations)
+    all_eqs, all_times = run_mcts(production_rules, num_iterations)
 
     print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
 
 
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
-    pass
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    nvar = data_query_oracle.get_nvars()
+    operators_set = data_query_oracle.get_operators_set()
+
+    regress_batchsize = 256
+    opt_num_expr = 1
+    allowed_input_tokens = np.ones(nvar, dtype=np.int32)
+    MCTS.task = RegressTask(regress_batchsize,
+                            allowed_input_tokens,
+                            dataXgen,
+                            data_query_oracle)
+    MCTS.program = Program(nvar, opt_num_expr, optimizer)
+
+    num_iterations = 100
+    num_iterations = create_uniform_generations(num_iterations, nvar + 1)
+    production_rules = get_production_rules(0, operators_set)
+    print("The production rules are:", production_rules)
+    all_eqs, all_times = run_cv_mcts(production_rules, num_iterations)
+
+    print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
 
 
 if __name__ == '__main__':

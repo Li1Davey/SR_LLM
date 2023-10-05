@@ -7,17 +7,17 @@ set -x
 basepath=/home/jiangnan/PycharmProjects/scibench
 py3=/home/jiangnan/miniconda3/bin/python
 type=sincos
-nv=3
-nt=22
+nv=2
+nt=11
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_trigometric
-
+opt=BFGS
 
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
-for prog in 0;
+for prog in {0..5};
 do
     eq_name=${type}_nv${nv}_nt${nt}_prog_${prog}.in
     echo "submit $eq_name"
@@ -33,8 +33,8 @@ do
     	echo "create dir: $log_dir"
     	mkdir -p $log_dir
 	fi
-	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.randgp.out"
-	$py3 $thispath/main.py --equation_name $data_path/$eq_name \
-        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.randgp.out &
+	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.out"
+	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt\
+        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.out &
 
 done
