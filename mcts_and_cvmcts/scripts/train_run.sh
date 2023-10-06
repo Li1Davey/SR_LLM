@@ -6,9 +6,9 @@ set -x
 #py3615=/home/jiang631/workspace/miniconda3/envs/py3615/bin/python3
 basepath=/home/jiangnan/PycharmProjects/scibench
 py3=/home/jiangnan/miniconda3/bin/python
-type=sincos
-nv=2
-nt=11
+type=$1
+nv=$2
+nt=$3
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_trigometric
@@ -17,7 +17,7 @@ opt=BFGS
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
-for prog in {0..5};
+for prog in {0..9};
 do
     eq_name=${type}_nv${nv}_nt${nt}_prog_${prog}.in
     echo "submit $eq_name"
