@@ -95,17 +95,19 @@ class MCTS(object):
     def freeze_equations(self, list_of_grammars, opt_num_expr):
         freezed_grams = []
         is_freezed = False
+        aug_nt_nodes = []
         for one_grams, one_reward, expr in list_of_grammars:
             self.optimized_constants = []
             self.optimized_obj = []
             empty_grammars = []
+            one_aug_nodes = []
             state = 'f->A,' + one_grams
             state = state.split(',')
             expr_template = tree_to_eq(state)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
                 self.task.rand_draw_data_with_X_fixed()
-
+                print(self.task.X[:5, :])
                 y_true = self.task.evaluate()
                 _, eq, opt_consts, opt_obj = self.program.optimize(expr_template,
                                                                    len(state),
@@ -124,30 +126,34 @@ class MCTS(object):
             num_changing_consts = one_grams.count('C')
             is_summary_constants = np.zeros(num_changing_consts)
             # convert the
-            one_grams.replace('B', 'A')
+            one_grams = one_grams.replace('B', 'A')
             if np.max(self.optimized_obj) <= self.expr_obj_thres:
                 for ci in range(num_changing_consts):
-                    print(np.std(self.optimized_constants[ci]), ci, self.expr_consts_thres)
-                    if np.std(self.optimized_constants[ci]) <= self.expr_consts_thres:
+                    print(np.std(self.optimized_constants[:, ci]), ci, self.expr_consts_thres)
+                    if np.std(self.optimized_constants[:, ci]) <= self.expr_consts_thres:
                         # print(self.optimized_constants, ci, self.expr_consts_thres)
-                        print('this is a real standlone constant')
+                        print(f'c{ci} is a standlone constant')
                     else:
-                        print('this is a real summary constant')
-                        print(ci, 'A->B')
+                        print(f'c{ci} is a summary constant')
                         is_summary_constants[ci] = 1
-                cidx = 0
+                cidx = -1
                 for one_rule in one_grams.split(','):
-                    if one_rule == 'A->C' and is_summary_constants[cidx] == 1:
+                    if one_rule == 'A->C':
                         cidx += 1
-                        # B stands for a sub-expression. We want to replace the summary constant with a sub-expression in the next round.
-                        empty_grammars.append('A->B')
-                        is_freezed = True
+                        if is_summary_constants[cidx] == 1:
+                            # B stands for a sub-expression. We want to replace the summary constant with a sub-expression in the next round.
+                            empty_grammars.append('A->B')
+                            one_aug_nodes.append('B')
+                            is_freezed = True
+                        else:
+                            empty_grammars.append(one_rule)
                     else:
                         empty_grammars.append(one_rule)
             else:
                 empty_grammars = one_grams.split(',')
-            freezed_grams.append(','.join(empty_grammars))
-        return is_freezed, freezed_grams
+            freezed_grams.append(';'.join(empty_grammars))
+            aug_nt_nodes.append(one_aug_nodes)
+        return is_freezed, freezed_grams, aug_nt_nodes
 
     def rollout(self, num_play, state_initial, ntn_initial):
         """
@@ -360,7 +366,6 @@ class MCTS(object):
                 print("follow uniform_random_policy:", unvisited_children)
                 prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children, p=prob / np.sum(prob))
-
                 if self.grammars[action] in self.aug_grammars:
                     ntn.extend(self.aug_nt_nodes[self.aug_grammars.index(self.grammars[action])])
                     print("new ntn is:", ntn)

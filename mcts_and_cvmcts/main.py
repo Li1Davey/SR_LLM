@@ -3,7 +3,7 @@ import time
 import argparse
 from mcts_model import MCTS
 from production_rules import get_production_rules, get_ith_var_rules
-from utils import simplify_eq, create_uniform_generations
+from utils import simplify_eq, create_uniform_generations, tree_to_eq
 import random
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
@@ -129,7 +129,7 @@ def run_cv_mcts(
     # number of module max size increase after each transplantation
     module_grow_step = (max_len - max_module_init) / np.sum(num_iterations)
 
-    best_solution = ('nothing', 0)
+
 
     exploration_rate = exp_rate
     max_module = max_module_init
@@ -151,7 +151,8 @@ def run_cv_mcts(
         nt_nodes.append('B')
         grammars.extend(get_production_rules(0, operators_set, non_terminal_node='B'))
         grammars.extend(get_ith_var_rules(round_idx + 1, non_terminal_node='B'))
-        aug_grammars.append('A->A+A;A->B;A->A/A;A->B;A->X0')
+        aug_grammars.append('A->A+A;A->A+A;A->A*A;A->B;A->X0;A->A/A;A->B;A->X0;A->C')
+        print(tree_to_eq('f->A,A->A+A,A->A+A,A->A*A,A->C,A->X0,A->A/A,A->C,A->X0,A->C'.split(',')))
         aug_nt_nodes = [['B', 'B']]
         # debug ends
         mcts_model = MCTS(base_grammars=grammars,
@@ -164,23 +165,20 @@ def run_cv_mcts(
                           exploration_rate=exploration_rate,
                           eta=eta)
 
-        _, current_solution, population = mcts_model.MCTS_run(mcts_iterations,
-                                                              num_simulations=500,  # num_iterations[round_idx],
-                                                              verbose=True)
-
-        end_time = time.time() - start_time
-
-        if not hof:
-            hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
-        else:
-            hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
+        # _, current_solution, population = mcts_model.MCTS_run(mcts_iterations,
+        #                                                       num_simulations=500,  # num_iterations[round_idx],
+        #                                                       verbose=True)
+        #
+        # end_time = time.time() - start_time
+        #
+        # if not hof:
+        #     hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
+        # else:
+        #     hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
         # aug_grammars = list(set([x[0] for x in hof[:num_aug]]))
         aug_grams_debug = [
-            ('A->A+A,A->C,A->A/A,A->C,A->X0', 0.9920393649645961, '0.6201130434733905+1.428244730937951/X0'),
-            ('A->A/A,A->C,A->X0', 0.9810327810358743, '0.1946593503512733/X0'),
-            ('A->A/A,A->A/A,A->C,A->C,A->X0', 0.980599373664074, '0.7977482335818475/4.095637785092841/X0'),
-            ('A->A/A,A->C,A->X0', 0.9802308231636607, '0.19818029829901504/X0')]
-        freezed, aug_grammars = mcts_model.freeze_equations(aug_grams_debug,
+            ('A->A+A,A->A+A,A->A*A,A->B,A->X0,A->A/A,A->B,A->X0,A->C,B->C,B->B/B,B->C,B->X1', 0.9920393649645961, '-0.12545874191252*X0+0.4378999964344581/X1/X0+14.740017243123066')]
+        freezed, aug_grammars,aug_nt_nodes = mcts_model.freeze_equations(aug_grams_debug,
                                                             opt_num_expr)  # mcts_model.freeze_equations(hof[:num_aug], opt_num_expr)
         print('++++++++++++ ROUND {} AUG Grammar ++++++++++++'.format(round_idx, ))
         for gi in aug_grammars:
@@ -188,25 +186,25 @@ def run_cv_mcts(
         print('-' * 20)
         if freezed == True:
             nt_nodes.append('B')
+            nt_nodes = list(set(nt_nodes)).sort()
             grammars.extend(get_production_rules(0, operators_set, non_terminal_node='B'))
             grammars.extend(get_ith_var_rules(round_idx + 1, non_terminal_node='B'))
-            grammars = list(set(grammars))
-        reward_his.append(best_solution[1])
+            grammars = list(set(grammars)).sort()
+
 
         print('Hall of Fame:')
         for i in range(min(10, len(hof))):
             print(hof[i][-2], hof[i][-1], hof[i][0])
 
-        if current_solution[1] > best_solution[1]:
-            best_solution = current_solution
         # print(best_solution)
         max_module += module_grow_step
         exploration_rate *= 5
 
         print()
 
-    all_eqs.append(simplify_eq(best_solution[0]))
-    print('best solution: {}'.format(simplify_eq(best_solution[0])))
+    print('final hof')
+    for hi in hof:
+        print(hi[-2], hi[-1], hi[0])
 
     return all_eqs, all_times
 
