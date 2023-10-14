@@ -9,11 +9,12 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
     nvars: number of input variables.
     operators_set: set of mathematical operators.
+    Return: for example, A->A+A, A->A-A, A->A*A, A->A/A
     """
-    base_rules = [f'{non_terminal_node}->{non_terminal_node}+{non_terminal_node}',
-                  # f'{non_terminal_node}->{non_terminal_node}-{non_terminal_node}',
+    base_rules = [f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
+                  f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
                   f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}']
-    inv_rules = [f'{non_terminal_node}->{non_terminal_node}/{non_terminal_node}']
+    div_rules = [f'{non_terminal_node}->({non_terminal_node})/({non_terminal_node})']
     sin_cos_rules = [f'{non_terminal_node}->cos({non_terminal_node})', f'{non_terminal_node}->sin({non_terminal_node})']
     exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
     log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
@@ -21,8 +22,8 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     const_rules = [f'{non_terminal_node}->C']
 
     rules = base_rules + get_vars_rules(nvars) + const_rules
-    if 'inv' in operators_set:
-        rules += inv_rules
+    if 'div' in operators_set:
+        rules += div_rules
     if 'sin' in operators_set or 'cos' in operators_set:
         rules += sin_cos_rules
     if 'sqrt' in operators_set:

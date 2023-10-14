@@ -1,12 +1,12 @@
 import sympy
 from sympy import simplify, expand
+from sympy.parsing.sympy_parser import parse_expr
 
 
-def simplify_eq(eq: sympy.Expr) -> str:
-    '''
-    only used to pretty print the expression at the end of the program.
-    '''
-    return str(expand(simplify(eq)))
+def pretty_print_expr(eq) -> str:
+    if type(eq) == str:
+        eq = parse_expr(eq)
+    return str(simplify(eq))
 
 
 def tree_to_eq(prods):
@@ -55,4 +55,3 @@ def create_uniform_generations(n_generations, nvar):
     gens[0] = n_generations
     print('generation #:', gens, 'sum=', sum(gens))
     return gens
-

@@ -14,7 +14,7 @@ from sympy import pretty, lambdify
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, direct, shgo, dual_annealing
 
-from utils import tree_to_eq
+from utils import pretty_print_expr
 
 
 class Program(object):
@@ -69,7 +69,7 @@ class Program(object):
         score: discovered equations.
         eq: discovered equations with estimated numerical values.
         """
-        print('The equation is:', eq)
+        # print('The equation is:', eq, '\t simplified:', simplify_eq(parse_expr(eq)))
         if 'A' in eq or 'B' in eq:  # not a valid equation
             return 0, eq, None, None
         # count number of constants in equation
@@ -96,14 +96,12 @@ class Program(object):
 
                 return np.linalg.norm(y_pred - y_true, 2)
 
-            #
-
             # do more than one experiment,
 
             x0 = np.random.rand(len(c_lst)) * 10
             # optimize the constants in the expression
             if self.optimizer == 'Nelder-Mead':
-                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-6, 'fatol': 1e-6, 'maxiter': max_opt_iter})
+                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
             elif self.optimizer == 'BFGS':
                 opt_result = minimize(f, x0, method='BFGS', options={'maxiter': max_opt_iter})
             elif self.optimizer == 'CG':
@@ -112,25 +110,25 @@ class Program(object):
                 opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': max_opt_iter})
             elif self.optimizer == "basinhopping":
                 minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': max_opt_iter}}
+                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter}}
                 opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=max_opt_iter)
             elif self.optimizer == 'dual_annealing':
                 minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': max_opt_iter}}
-                lw = [-10] * self.n_vars
-                up = [10] * self.n_vars
+                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter}}
+                lw = [-5] * num_changing_consts
+                up = [5] * num_changing_consts
                 bounds = list(zip(lw, up))
-                opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, niter=max_opt_iter)
+                opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, maxiter=max_opt_iter)
             elif self.optimizer == 'shgo':
                 minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-30, 'fatol': 1e-30, 'maxiter': max_opt_iter}}
-                lw = [-10] * self.n_vars
-                up = [10] * self.n_vars
+                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter}}
+                lw = [-5] * num_changing_consts
+                up = [5] * num_changing_consts
                 bounds = list(zip(lw, up))
                 opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
             elif self.optimizer == "direct":
-                lw = [-10] * self.n_vars
-                up = [10] * self.n_vars
+                lw = [-5] * num_changing_consts
+                up = [5] * num_changing_consts
                 bounds = list(zip(lw, up))
                 opt_result = direct(f, bounds, maxiter=max_opt_iter)
 
@@ -150,12 +148,13 @@ class Program(object):
             eq = eq.replace('--', '+')
             eq = eq.replace('-+', '-')
             eq = eq.replace('++', '+')
-            print('optimized eq:', eq)
+            print('optimized eq:', eq, '\t simplified:', pretty_print_expr(parse_expr(eq)))
             y_pred = execute(eq, data_X.T, input_var_Xs)
 
         r = float(eta ** tree_size / (1.0 + np.linalg.norm(y_pred - y_true, 2) ** 2 / y_true.shape[0]))
 
         return r, eq, t_optimized_constants, t_optimized_obj
+
 
 
 def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):

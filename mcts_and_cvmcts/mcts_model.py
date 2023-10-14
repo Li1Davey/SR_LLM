@@ -1,9 +1,9 @@
 import sys
 import numpy as np
 from collections import defaultdict
-from utils import tree_to_eq
+from utils import tree_to_eq, pretty_print_expr
 from sympy import Symbol
-
+from progam import execute
 
 class MCTS(object):
     """
@@ -305,7 +305,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_iterations, num_simulations=50, verbose=False, print_freq=100):
+    def MCTS_run(self, num_iterations, num_simulations=50, verbose=False, print_freq=1):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -325,9 +325,7 @@ class MCTS(object):
         for iter in range(1, num_iterations + 1):
             if iter % print_freq == 0 and verbose:
                 print("\rIteration {}/{}...".format(iter, num_iterations))
-                for i in range(min(len(self.hall_of_fame), 10)):
-                    print(self.hall_of_fame[i])
-                # print("current reward {:.4f}. expr {}")
+                self.print_hofs(verbose=verbose)
                 sys.stdout.flush()
 
             state = 'f->A'
@@ -395,9 +393,37 @@ class MCTS(object):
                 print("BACK-PROPAGATION STEP")
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
-                # print("the Q table:")
-                # for key in self.QN:
-                #     print(key, self.QN[key])
-                # print('-' * 40)
 
         return reward_his, best_solution, self.hall_of_fame
+
+    def print_hofs(self, verbose=False):
+        self.task.rand_draw_X_fixed()
+        self.task.rand_draw_data_with_X_fixed()
+        print("PRINT HOF")
+        print("=" * 20)
+        for pr in self.hall_of_fame:
+            if verbose:
+                print('        ' + str(get_state(pr)), end="\n")
+                self.print_reward_function_all_metrics(pr[2])
+            else:
+                print('        ' + str(get_state(pr)), end="\n")
+        print("="*20)
+
+    def print_reward_function_all_metrics(self, expr_str):
+        """used for print the error for all metrics between the predicted program `p` and true program."""
+        y_hat = execute(expr_str, self.task.X.T, self.input_var_Xs)
+        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.X, y_hat)
+        print('-' * 30)
+        for mertic_name in dict_of_result:
+            print(f"{mertic_name} {dict_of_result[mertic_name]}")
+        print('-' * 30)
+
+
+def get_state(pr):
+    state_dict = {
+        'reward': pr[1],
+        'pretty expr': pretty_print_expr(pr[2]),
+        'expr': pr[2],
+        'rules': pr[0],
+    }
+    return state_dict

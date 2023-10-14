@@ -3,7 +3,7 @@ import time
 import argparse
 from mcts_model import MCTS
 from production_rules import get_production_rules, get_ith_var_rules
-from utils import simplify_eq, create_uniform_generations, tree_to_eq
+from utils import pretty_print_expr, create_uniform_generations
 import random
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
@@ -45,59 +45,34 @@ def run_mcts(
     # number of module max size increase after each transplantation
     module_grow_step = (max_len - max_module_init) / num_iterations
 
-    best_solution = ('nothing', 0)
-
     exploration_rate = exp_rate
     max_module = max_module_init
-    reward_his = []
     hof = []
     aug_grammars = []
 
     start_time = time.time()
 
-    mtcs_model = MCTS(base_grammars=grammars,
+    mcts_model = MCTS(base_grammars=grammars,
                       aug_grammars=aug_grammars,
                       nt_nodes=nt_nodes,
+                      aug_nt_nodes=[],
                       max_len=max_len,
                       max_module=max_module,
                       aug_grammars_allowed=num_aug,
                       exploration_rate=exploration_rate,
                       eta=eta)
-
-    _, current_solution, population = mtcs_model.MCTS_run(mcts_iterations,
+    _, current_solution, population = mcts_model.MCTS_run(mcts_iterations,
                                                           num_simulations=num_iterations,
                                                           verbose=True)
 
     end_time = time.time() - start_time
-
+    mcts_model.print_hofs(verbose=True)
     if not hof:
         hof = population
     else:
         hof = sorted(list(set(hof + population)), key=lambda x: x[1], reverse=True)
-    aug_grammars = [x[0] for x in hof[:num_aug]]
-    print("aug_grammars:")
-    for gi in aug_grammars:
-        print(gi)
-    print('-' * 20)
-    reward_his.append(best_solution[1])
 
-    print('Hall of Fame:')
-    for i in range(min(10, len(hof))):
-        print(hof[i][-2], hof[i][-1], hof[i][0])
-
-    if current_solution[1] > best_solution[1]:
-        best_solution = current_solution
-    # print(best_solution)
-    max_module += module_grow_step
-    exploration_rate *= 5
-
-    print()
-
-    all_eqs.append(simplify_eq(best_solution[0]))
-    print('best solution: {}'.format(simplify_eq(best_solution[0])))
-    print()
-
-    return all_eqs, all_times
+    print("time=", end_time)
 
 
 def run_cv_mcts(
