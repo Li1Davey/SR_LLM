@@ -3,7 +3,7 @@ set -x
 
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
-py3=/home/jiang631/workspace/miniconda3/envs/py3615/bin/python3
+py3=/home/jiang631/workspace/miniconda3/bin/python3
 #basepath=/home/jiangnan/PycharmProjects/scibench
 #py3=/home/jiangnan/miniconda3/bin/python
 type=$1
