@@ -3,14 +3,16 @@ import numpy as np
 
 class RegressTask(object):
     """
-    input parameters:
-
-    batchsize: batch size
-    allowed_input: 1 if the input variable is free. 0 if the input variable is controlled.
-    dataX: generate the input data.
+    used to handle input data 'X' for querying the data oracle.
+    also used to set the controlled variables in input data `X`
     """
 
     def __init__(self, batchsize, allowed_input, dataX, data_query_oracle):
+        """
+            batchsize: batch size
+            allowed_input: 1 if the input variable is free. 0 if the input variable is controlled.
+            dataX: generate the input data.
+            """
         self.batchsize = batchsize
         self.allowed_input = allowed_input
         self.n_input = allowed_input.size

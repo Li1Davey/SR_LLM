@@ -1,9 +1,11 @@
 import sympy
 from sympy import simplify, expand
-import functools
 
 
 def simplify_eq(eq: sympy.Expr) -> str:
+    '''
+    only used to pretty print the expression at the end of the program.
+    '''
     return str(expand(simplify(eq)))
 
 

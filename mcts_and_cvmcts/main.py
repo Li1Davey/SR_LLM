@@ -129,31 +129,29 @@ def run_cv_mcts(
     # number of module max size increase after each transplantation
     module_grow_step = (max_len - max_module_init) / np.sum(num_iterations)
 
-
-
     exploration_rate = exp_rate
     max_module = max_module_init
-    reward_his = []
     hof = []
+    aug_nt_nodes = []
     aug_grammars = []
 
     start_time = time.time()
     for round_idx in range(len(num_iterations)):
         print("update set of free variable and grammars")
         MCTS.program.set_vf(round_idx)
-        MCTS.program.set_vf(round_idx + 1)
+        # MCTS.program.set_vf(round_idx + 1)
         allowed_inputs = MCTS.program.get_vf()
         MCTS.task.set_allowed_inputs(allowed_inputs)
         if round_idx < len(num_iterations) - 1:
             grammars += get_ith_var_rules(round_idx)
         print('++++++++++++ ROUND {}  ++++++++++++'.format(round_idx))
         # debug begin
-        nt_nodes.append('B')
-        grammars.extend(get_production_rules(0, operators_set, non_terminal_node='B'))
-        grammars.extend(get_ith_var_rules(round_idx + 1, non_terminal_node='B'))
-        aug_grammars.append('A->A+A;A->A+A;A->A*A;A->B;A->X0;A->A/A;A->B;A->X0;A->C')
-        print(tree_to_eq('f->A,A->A+A,A->A+A,A->A*A,A->C,A->X0,A->A/A,A->C,A->X0,A->C'.split(',')))
-        aug_nt_nodes = [['B', 'B']]
+        # nt_nodes.append('B')
+        # grammars.extend(get_production_rules(0, operators_set, non_terminal_node='B'))
+        # grammars.extend(get_ith_var_rules(round_idx + 1, non_terminal_node='B'))
+        # aug_grammars.append('A->A+A;A->A+A;A->A*A;A->B;A->X0;A->A/A;A->B;A->X0;A->C')
+        # print(tree_to_eq('f->A,A->A+A,A->A+A,A->A*A,A->C,A->X0,A->A/A,A->C,A->X0,A->C'.split(',')))
+
         # debug ends
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
@@ -165,21 +163,21 @@ def run_cv_mcts(
                           exploration_rate=exploration_rate,
                           eta=eta)
 
-        # _, current_solution, population = mcts_model.MCTS_run(mcts_iterations,
-        #                                                       num_simulations=500,  # num_iterations[round_idx],
-        #                                                       verbose=True)
+        _, current_solution, population = mcts_model.MCTS_run(mcts_iterations,
+                                                              num_simulations=50,  # num_iterations[round_idx],
+                                                              verbose=True)
         #
         # end_time = time.time() - start_time
         #
-        # if not hof:
-        #     hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
-        # else:
-        #     hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
+        if not hof:
+            hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
+        else:
+            hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
         # aug_grammars = list(set([x[0] for x in hof[:num_aug]]))
-        aug_grams_debug = [
-            ('A->A+A,A->A+A,A->A*A,A->B,A->X0,A->A/A,A->B,A->X0,A->C,B->C,B->B/B,B->C,B->X1', 0.9920393649645961, '-0.12545874191252*X0+0.4378999964344581/X1/X0+14.740017243123066')]
-        freezed, aug_grammars,aug_nt_nodes = mcts_model.freeze_equations(aug_grams_debug,
-                                                            opt_num_expr)  # mcts_model.freeze_equations(hof[:num_aug], opt_num_expr)
+        # aug_grams_debug = [
+        #     ('A->A+A,A->A+A,A->A*A,A->B,A->X0,A->A/A,A->B,A->X0,A->C,B->C,B->B/B,B->C,B->X1', 0.9920393649645961, '-0.12545874191252*X0+0.4378999964344581/X1/X0+14.740017243123066')]
+        freezed, aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(hof,
+                                                                          opt_num_expr)  # mcts_model.freeze_equations(hof[:num_aug], opt_num_expr)
         print('++++++++++++ ROUND {} AUG Grammar ++++++++++++'.format(round_idx, ))
         for gi in aug_grammars:
             print(gi)
@@ -190,7 +188,7 @@ def run_cv_mcts(
             grammars.extend(get_production_rules(0, operators_set, non_terminal_node='B'))
             grammars.extend(get_ith_var_rules(round_idx + 1, non_terminal_node='B'))
             grammars = list(set(grammars)).sort()
-
+            print("new grammars:", grammars)
 
         print('Hall of Fame:')
         for i in range(min(10, len(hof))):

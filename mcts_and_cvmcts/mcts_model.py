@@ -93,6 +93,17 @@ class MCTS(object):
             return state, ntn, 0, False, None
 
     def freeze_equations(self, list_of_grammars, opt_num_expr):
+        """
+        decide summary constants and stand alone constants.
+        Parameters
+        ----------
+        list_of_grammars
+        opt_num_expr
+
+        Returns
+        -------
+
+        """
         freezed_grams = []
         is_freezed = False
         aug_nt_nodes = []
@@ -384,9 +395,9 @@ class MCTS(object):
                 print("BACK-PROPAGATION STEP")
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
-                print("the Q table:")
-                for key in self.QN:
-                    print(key, self.QN[key])
-                print('-' * 40)
+                # print("the Q table:")
+                # for key in self.QN:
+                #     print(key, self.QN[key])
+                # print('-' * 40)
 
         return reward_his, best_solution, self.hall_of_fame
