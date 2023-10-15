@@ -52,7 +52,7 @@ class Program(object):
     def get_vf(self):
         return self.vf
 
-    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999,max_opt_iter=50, verbose=False):
+    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999,max_opt_iter=100, verbose=False):
         """
         Calculate reward score for a complete parse tree
         If placeholder C is in the equation, also execute estimation for C

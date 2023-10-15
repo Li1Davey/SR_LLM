@@ -12,7 +12,7 @@ from progam import Program
 
 
 def run_mcts(
-        production_rules, num_iterations, nt_nodes=['A'], mcts_iterations=100,
+        production_rules, num_iterations, nt_nodes=['A'], num_simulations=100,
         max_len=50, eta=0.9999, max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
 ):
     """
@@ -61,8 +61,8 @@ def run_mcts(
                       aug_grammars_allowed=num_aug,
                       exploration_rate=exploration_rate,
                       eta=eta)
-    _, current_solution, population = mcts_model.MCTS_run(mcts_iterations,
-                                                          num_simulations=num_iterations,
+    _, current_solution, population = mcts_model.MCTS_run(num_iterations,
+                                                          num_simulations=num_simulations,
                                                           verbose=True)
 
     end_time = time.time() - start_time
@@ -196,11 +196,11 @@ def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
 
-    num_iterations = 100
+    num_iterations = 10000
 
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
-    all_eqs, all_times = run_mcts(production_rules, num_iterations)
+    all_eqs, all_times = run_mcts(production_rules=production_rules, num_iterations=num_iterations)
 
     print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
 
