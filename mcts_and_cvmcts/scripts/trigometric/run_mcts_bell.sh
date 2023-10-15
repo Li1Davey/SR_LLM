@@ -37,14 +37,14 @@ do
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="egp_$trimed_name"
-#SBATCH --output=$log_dir/${short_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.egp.out
+#SBATCH --job-name="mcts-${type}${nv}${nt}"
+#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
 #SBATCH --mem=2048MB
 
 hostname
-	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt\
+$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt\
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.out
 EOT
 done
