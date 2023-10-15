@@ -305,7 +305,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_iterations, num_simulations=50, verbose=False, print_freq=1):
+    def MCTS_run(self, num_iterations, num_simulations=50, verbose=False, print_freq=5):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -324,7 +324,7 @@ class MCTS(object):
 
         for iter in range(1, num_iterations + 1):
             if iter % print_freq == 0 and verbose:
-                print("\rIteration {}/{}...".format(iter, num_iterations))
+                print("\tIteration {}/{}...".format(iter, num_iterations))
                 self.print_hofs(verbose=verbose)
                 sys.stdout.flush()
 

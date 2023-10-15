@@ -76,7 +76,7 @@ def run_mcts(
 
 
 def run_cv_mcts(
-        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], mcts_iterations=100,
+        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], mcts_iterations=1000,
         max_len=50, eta=0.9999, max_module_init=10, num_aug=10, exp_rate=1 / np.sqrt(2),
 ):
     """
