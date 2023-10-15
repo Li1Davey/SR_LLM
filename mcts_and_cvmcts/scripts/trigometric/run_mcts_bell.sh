@@ -3,7 +3,7 @@ set -x
 
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
-py3=/home/jiang631/workspace/miniconda3/bin/python3
+py310=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 #basepath=/home/jiangnan/PycharmProjects/scibench
 #py3=/home/jiangnan/miniconda3/bin/python
 type=$1
@@ -44,7 +44,7 @@ do
 #SBATCH --mem=2048MB
 
 hostname
-$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt\
+$py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt\
         		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.out
 EOT
 done
