@@ -13,7 +13,7 @@ from progam import Program
 
 def run_mcts(
         production_rules, num_iterations, nt_nodes=['A'], num_simulations=100,
-        max_len=50, eta=0.9999, max_module_init=10, num_aug=50, exp_rate=1 / np.sqrt(2),
+        max_len=50, eta=0.9999, max_module_init=30, num_aug=50, exp_rate=1 / np.sqrt(2),
 ):
     """
     Executes the main training loop of Symbolic Physics Learner.
@@ -77,7 +77,7 @@ def run_mcts(
 
 def run_cv_mcts(
         operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], mcts_iterations=1000,
-        max_len=50, eta=0.9999, max_module_init=10, num_aug=10, exp_rate=1 / np.sqrt(2),
+        max_len=50, eta=0.9999, max_module_init=30, num_aug=10, exp_rate=1 / np.sqrt(2),
 ):
     """
     Executes the main training loop of Symbolic Physics Learner.

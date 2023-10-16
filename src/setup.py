@@ -10,7 +10,9 @@ required = [
     "cython",
     "numpy",
     "sympy",
-    "click"
+    "click",
+    "cryptography",
+    "torch"
 ]
 
 setup(name='scibench',
