@@ -1,9 +1,12 @@
 import sys
 import numpy as np
 from collections import defaultdict
-from utils import tree_to_eq, pretty_print_expr
 from sympy import Symbol
+
+from production_rules import production_rules_to_expr
 from progam import execute
+from utils import pretty_print_expr
+
 
 class MCTS(object):
     """
@@ -19,7 +22,7 @@ class MCTS(object):
 
     noise_std = 0.0
 
-    def __init__(self, base_grammars, aug_grammars, nt_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
+    def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999):
         # for generating input data and evaluate the output.
         # number of input variables
@@ -29,7 +32,7 @@ class MCTS(object):
         self.aug_grammars = aug_grammars
         self.grammars = base_grammars + [x for x in aug_grammars if x not in base_grammars]
         self.aug_nt_nodes = aug_nt_nodes
-        self.nt_nodes = nt_nodes
+        self.non_terminal_nodes = non_terminal_nodes
         self.max_len = max_len
         self.max_module = max_module
         self.max_aug = aug_grammars_allowed
@@ -53,7 +56,7 @@ class MCTS(object):
         if prod_idx >= len(self.base_grammars):
             return []
         else:
-            return [i for i in prod[3:] if i in self.nt_nodes]
+            return [i for i in prod[3:] if i in self.non_terminal_nodes]
 
     def get_unvisited_children(self, state, node) -> list:
         """
@@ -82,7 +85,7 @@ class MCTS(object):
             y_true = self.task.evaluate()
 
             state = state.replace(';', ',')
-            reward, eq, _, _ = self.program.optimize(tree_to_eq(state.split(',')),
+            reward, eq, _, _ = self.program.optimize(production_rules_to_expr(state.split(',')),
                                                      len(state.split(',')),
                                                      self.task.X,
                                                      y_true,
@@ -99,10 +102,6 @@ class MCTS(object):
         ----------
         list_of_grammars
         opt_num_expr
-
-        Returns
-        -------
-
         """
         freezed_grams = []
         is_freezed = False
@@ -114,7 +113,7 @@ class MCTS(object):
             one_aug_nodes = []
             state = 'f->A,' + one_grams
             state = state.split(',')
-            expr_template = tree_to_eq(state)
+            expr_template = production_rules_to_expr(state)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
                 self.task.rand_draw_data_with_X_fixed()
@@ -168,9 +167,12 @@ class MCTS(object):
 
     def rollout(self, num_play, state_initial, ntn_initial):
         """
-        Perform a n-play rollout simulation, get the maximum reward
+        Perform `num_play` simulation, get the maximum reward
         """
         best_eq = ''
+        reward = 0
+        next_state = None
+        eq = ''
         best_r = 0
         for n in range(num_play):
             done = False
@@ -185,6 +187,7 @@ class MCTS(object):
                 ntn = ntn_next
 
                 if state.count(',') >= self.max_len:
+                    # tree depth shall be less than max_len
                     break
 
             if done:
@@ -199,6 +202,7 @@ class MCTS(object):
     def update_ucb_mcts(self, state, action):
         """
         Get the ucb score for a given child of current node
+        Q and N values are stored in QN matrix.
         """
         next_state = state + ',' + action
         Q_child = self.QN[next_state][0]
@@ -275,7 +279,7 @@ class MCTS(object):
 
         return policy_fn
 
-    def get_uniform_random_policy(self, nA):
+    def get_uniform_random_policy(self):
         """
         Creates an random policy to select an unvisited child.
         """
@@ -317,15 +321,15 @@ class MCTS(object):
         # The policy we're following:
         # ucb_policy for fully expanded node and uniform_random_policy for not fully expanded node
         ucb_policy = self.get_ucb_policy(nA)
-        uniform_random_policy = self.get_uniform_random_policy(nA)
+        uniform_random_policy = self.get_uniform_random_policy()
 
         reward_his = []
         best_solution = ('nothing', 0)
 
-        for iter in range(1, num_iterations + 1):
-            if iter % print_freq == 0 and verbose:
-                print("\tIteration {}/{}...".format(iter, num_iterations))
-                self.print_hofs(verbose=verbose)
+        for t in range(1, num_iterations + 1):
+            if t % print_freq == 0 and verbose:
+                print("\tIteration {}/{}...".format(t, num_iterations))
+                self.print_hofs(verbose=False)
                 sys.stdout.flush()
 
             state = 'f->A'
@@ -407,7 +411,7 @@ class MCTS(object):
                 self.print_reward_function_all_metrics(pr[2])
             else:
                 print('        ' + str(get_state(pr)), end="\n")
-        print("="*20)
+        print("=" * 20)
 
     def print_reward_function_all_metrics(self, expr_str):
         """used for print the error for all metrics between the predicted program `p` and true program."""
@@ -422,7 +426,7 @@ class MCTS(object):
 def get_state(pr):
     state_dict = {
         'reward': pr[1],
-        'pretty expr': pretty_print_expr(pr[2]),
+        'pret-expr': pretty_print_expr(pr[2]),
         'expr': pr[2],
         'rules': pr[0],
     }

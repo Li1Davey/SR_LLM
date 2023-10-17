@@ -1,15 +1,10 @@
 """Class for symbolic expression object or program."""
-
-import array
-from typing import List
-import warnings
-
 import numpy as np
 
 np.set_printoptions(precision=4, linewidth=np.inf)
 
 from sympy.parsing.sympy_parser import parse_expr
-from sympy import pretty, lambdify
+from sympy import lambdify
 
 from scipy.optimize import minimize
 from scipy.optimize import basinhopping, direct, shgo, dual_annealing
@@ -33,7 +28,6 @@ class Program(object):
         #
         self.vf = np.zeros(n_vars)
 
-        # self.freezed = False
         self.n_vars = n_vars
         self.optimizer = optimizer
 
@@ -47,12 +41,10 @@ class Program(object):
             self.vf[xi] = 1
             print('xi is:', xi, 'new vf is:', self.vf)
 
-
-
     def get_vf(self):
         return self.vf
 
-    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999,max_opt_iter=100, verbose=False):
+    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=100, verbose=False):
         """
         Calculate reward score for a complete parse tree
         If placeholder C is in the equation, also execute estimation for C
@@ -71,7 +63,7 @@ class Program(object):
         """
         # print('The equation is:', eq, '\t simplified:', simplify_eq(parse_expr(eq)))
         if 'A' in eq or 'B' in eq:  # not a valid equation
-            return 0, eq, None, None
+            return 0, eq, 0, 0
         # count number of constants in equation
         num_changing_consts = eq.count('C')
         t_optimized_constants, t_optimized_obj = 0, 0
@@ -97,7 +89,6 @@ class Program(object):
                 return np.linalg.norm(y_pred - y_true, 2)
 
             # do more than one experiment,
-
             x0 = np.random.rand(len(c_lst)) * 10
             # optimize the constants in the expression
             if self.optimizer == 'Nelder-Mead':
@@ -156,7 +147,6 @@ class Program(object):
         return r, eq, t_optimized_constants, t_optimized_obj
 
 
-
 def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
     """
     evaluate the output of expression with the given input.
@@ -168,7 +158,6 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
         if str(xi) in expr_str:
             used_idx.append(idx)
             used_vars.append(xi)
-
     try:
         f = lambdify(used_vars, expr, 'numpy')
         if len(used_idx) != 0:
@@ -185,4 +174,3 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
         y_hat = np.ones(data_X.shape[-1]) * np.infty
 
     return y_hat
-

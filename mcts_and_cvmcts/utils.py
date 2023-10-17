@@ -1,29 +1,14 @@
-import sympy
-from sympy import simplify, expand
+from sympy import simplify
 from sympy.parsing.sympy_parser import parse_expr
 
 
 def pretty_print_expr(eq) -> str:
+    '''
+    ask sympy simplify to pretty print the expression.
+    '''
     if type(eq) == str:
         eq = parse_expr(eq)
     return str(simplify(eq))
-
-
-def tree_to_eq(prods):
-    """
-    Convert a parse tree to equation form
-    """
-    seq = ['f']
-    for prod in prods:
-        for ix, s in enumerate(seq):
-            if s == prod[0]:
-                seq = seq[:ix] + list(prod[3:]) + seq[ix + 1:]
-                break
-    try:
-        output = ''.join(seq)
-        return output
-    except:
-        return ''
 
 
 def create_geometric_generations(n_generations, nvar, ratio=4):

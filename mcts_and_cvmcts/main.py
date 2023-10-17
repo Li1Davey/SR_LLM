@@ -54,7 +54,7 @@ def run_mcts(
 
     mcts_model = MCTS(base_grammars=grammars,
                       aug_grammars=aug_grammars,
-                      nt_nodes=nt_nodes,
+                      non_terminal_nodes=nt_nodes,
                       aug_nt_nodes=[],
                       max_len=max_len,
                       max_module=max_module,
@@ -130,7 +130,7 @@ def run_cv_mcts(
         # debug ends
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
-                          nt_nodes=nt_nodes,
+                          non_terminal_nodes=nt_nodes,
                           aug_nt_nodes=aug_nt_nodes,
                           max_len=max_len,
                           max_module=max_module,
