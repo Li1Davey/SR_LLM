@@ -309,7 +309,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_iterations, num_simulations=50, verbose=False, print_freq=5):
+    def MCTS_run(self, num_episodes, num_simulations=50, verbose=False, print_freq=5):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -326,9 +326,9 @@ class MCTS(object):
         reward_his = []
         best_solution = ('nothing', 0)
 
-        for t in range(1, num_iterations + 1):
+        for t in range(1, num_episodes + 1):
             if t % print_freq == 0 and verbose:
-                print("\tIteration {}/{}...".format(t, num_iterations))
+                print("\tIteration {}/{}...".format(t, num_episodes))
                 self.print_hofs(verbose=False)
                 sys.stdout.flush()
 
@@ -405,7 +405,7 @@ class MCTS(object):
         self.task.rand_draw_data_with_X_fixed()
         print("PRINT HOF")
         print("=" * 20)
-        for pr in self.hall_of_fame:
+        for pr in self.hall_of_fame[::-1]:
             if verbose:
                 print('        ' + str(get_state(pr)), end="\n")
                 self.print_reward_function_all_metrics(pr[2])

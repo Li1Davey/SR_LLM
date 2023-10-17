@@ -12,20 +12,22 @@ from progam import Program
 
 
 def run_mcts(
-        production_rules, num_iterations, nt_nodes=['A'], num_simulations=100,
-        max_len=50, eta=0.9999, max_module_init=30, num_aug=50, exp_rate=1 / np.sqrt(2),
+        production_rules, non_terminal_nodes=['A'], num_episodes=10000, num_simulations=100,
+        max_len=100, eta=0.9999, max_module_init=15, num_aug=50, exp_rate=1 / np.sqrt(2),
+        num_transplant=20, norm_threshold=1e-20
 ):
     """
     Executes the main training loop of Symbolic Physics Learner.
     
     Parameters
     ----------
-    task: benchmark task name.
-    num_run" number of iterations.
+    production_rules: rules to generate expressions
+    num_episodes: number of iterations.
+    non_terminal_nodes: used in production rules
+    num_simulations
     max_len: maximum allowed length (number of production rules ) of discovered equations.
     eta: penalty factor for rewarding.
-    max_module_init : Int object.
-        initial maximum length for module transplantation candidates. 
+    max_module_init:  initial maximum length for module transplantation candidates.
     num_aug : number of trees for module transplantation.
     exp_rate: initial exploration rate.
     norm_threshold: numerical error tolerance for norm calculation, a very small value.
@@ -39,40 +41,55 @@ def run_mcts(
 
     # define production rules and non-terminal nodes.
     grammars = production_rules
-    all_times = []
-    all_eqs = []
+    best_solution = ('nothing', 0)
 
     # number of module max size increase after each transplantation
-    module_grow_step = (max_len - max_module_init) / num_iterations
+    module_grow_step = (max_len - max_module_init) / num_transplant
 
     exploration_rate = exp_rate
     max_module = max_module_init
-    hof = []
+    best_modules = []
+    reward_his = []
     aug_grammars = []
 
     start_time = time.time()
+    for i_itr in range(num_transplant):
+        print("transplanation step=", i_itr)
+        print(aug_grammars)
+        mcts_model = MCTS(base_grammars=grammars,
+                          aug_grammars=aug_grammars,
+                          non_terminal_nodes=non_terminal_nodes,
+                          aug_nt_nodes=[],
+                          max_len=max_len,
+                          max_module=max_module,
+                          aug_grammars_allowed=num_aug,
+                          exploration_rate=exploration_rate,
+                          eta=eta)
+        _, current_solution, good_modules = mcts_model.MCTS_run(num_episodes,
+                                                                num_simulations=num_simulations,
+                                                                verbose=True)
 
-    mcts_model = MCTS(base_grammars=grammars,
-                      aug_grammars=aug_grammars,
-                      non_terminal_nodes=nt_nodes,
-                      aug_nt_nodes=[],
-                      max_len=max_len,
-                      max_module=max_module,
-                      aug_grammars_allowed=num_aug,
-                      exploration_rate=exploration_rate,
-                      eta=eta)
-    _, current_solution, population = mcts_model.MCTS_run(num_iterations,
-                                                          num_simulations=num_simulations,
-                                                          verbose=True)
+        mcts_model.print_hofs(verbose=True)
+        if not best_modules:
+            best_modules = good_modules
+        else:
+            best_modules = sorted(list(set(best_modules + good_modules)), key=lambda x: x[1], reverse=True)
 
+        aug_grammars = [x[0] for x in best_modules[:num_aug]]
+
+        if best_modules[0][1] >= 1 - norm_threshold:
+            print("find the ground-truth expression, whole program terminates...")
+            break
+
+        reward_his.append(best_solution[1])
+
+        if current_solution[1] > best_solution[1]:
+            best_solution = current_solution
+        # print(best_solution)
+        max_module += module_grow_step
+        exploration_rate *= 5
     end_time = time.time() - start_time
-    mcts_model.print_hofs(verbose=True)
-    if not hof:
-        hof = population
-    else:
-        hof = sorted(list(set(hof + population)), key=lambda x: x[1], reverse=True)
-
-    print("time=", end_time)
+    print("MCTS time:", np.round(np.mean(end_time), 3), 'seconds')
 
 
 def run_cv_mcts(
@@ -182,7 +199,7 @@ def run_cv_mcts(
     return all_eqs, all_times
 
 
-def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
+def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -196,13 +213,9 @@ def mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
 
-    num_iterations = 10000
-
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
-    all_eqs, all_times = run_mcts(production_rules=production_rules, num_iterations=num_iterations)
-
-    print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
+    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
 
 
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
@@ -236,9 +249,11 @@ if __name__ == '__main__':
                         choices=['BFGS', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
+    parser.add_argument("--num_episodes", type=int, default=10000, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
-    parser.add_argument("--cv_mcts", action="store_true", help="whether run normal mcts (cv_mcts=False) or control_variable_mcts.")
+    parser.add_argument("--cv_mcts", action="store_true",
+                        help="whether run normal mcts (cv_mcts=False) or control variable mcts (cv_mcts=True).")
 
     args = parser.parse_args()
 
@@ -252,4 +267,4 @@ if __name__ == '__main__':
     if args.cv_mcts:
         cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
     else:
-        mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
+        mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
