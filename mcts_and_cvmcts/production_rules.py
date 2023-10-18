@@ -1,7 +1,3 @@
-from gplearn.functions import make_function
-import numpy as np
-
-
 def production_rules_to_expr(list_of_production_rules):
     """
     Convert a list of production rules to the exact symbolic equation.
@@ -28,7 +24,6 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
                   f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}']
     div_rules = [f'{non_terminal_node}->({non_terminal_node})/({non_terminal_node})']
     inv_rules = [f'{non_terminal_node}->1/({non_terminal_node})']
-    sin_cos_rules = [f'{non_terminal_node}->cos({non_terminal_node})', f'{non_terminal_node}->sin({non_terminal_node})']
     exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
     log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
     sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
