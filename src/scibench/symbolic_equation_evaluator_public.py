@@ -29,7 +29,6 @@ class Equation_evaluator(object):
 
         self.true_equation, self.num_vars, self.dim, self.operators_set, self.vars_range_and_types, self.expr = self.__load_equation(
             true_equation_filename)
-
         # metric
         self.metric_name = metric_name
         self.metric = make_regression_metric(metric_name)

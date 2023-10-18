@@ -51,7 +51,7 @@ class SpinodalDecomp64x64(KnownEquation):
 
         vars_range_and_types = [LogUniformSampling2d(1e-3, 1.0, only_positive=True, dim=(self.Nx, self.Ny))]
         super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
-        self.x = [MatrixSymbol('X_0', self.Nx, self.Ny)]
+        self.x = [MatrixSymbol('X0', self.Nx, self.Ny)]
         c = self.x
 
         self.torch_func = self.forward
