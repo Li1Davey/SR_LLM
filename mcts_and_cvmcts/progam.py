@@ -101,25 +101,25 @@ class Program(object):
                 opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': max_opt_iter})
             elif self.optimizer == "basinhopping":
                 minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter}}
+                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
                 opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=max_opt_iter)
             elif self.optimizer == 'dual_annealing':
                 minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter}}
+                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
                 lw = [-5] * num_changing_consts
                 up = [5] * num_changing_consts
                 bounds = list(zip(lw, up))
                 opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, maxiter=max_opt_iter)
             elif self.optimizer == 'shgo':
                 minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter}}
+                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
                 lw = [-5] * num_changing_consts
                 up = [5] * num_changing_consts
                 bounds = list(zip(lw, up))
                 opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
             elif self.optimizer == "direct":
-                lw = [-5] * num_changing_consts
-                up = [5] * num_changing_consts
+                lw = [-10] * num_changing_consts
+                up = [10] * num_changing_consts
                 bounds = list(zip(lw, up))
                 opt_result = direct(f, bounds, maxiter=max_opt_iter)
 
@@ -167,10 +167,10 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
         if y_hat is complex:
             return np.ones(data_X.shape[-1]) * np.infty
     except TypeError as e:
-        print(e, expr, input_var_Xs, data_X.shape)
+        # print(e, expr, input_var_Xs, data_X.shape)
         y_hat = np.ones(data_X.shape[-1]) * np.infty
     except KeyError as e:
-        print(e, expr)
+        # print(e, expr)
         y_hat = np.ones(data_X.shape[-1]) * np.infty
 
     return y_hat

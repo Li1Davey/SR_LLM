@@ -12,9 +12,9 @@ from progam import Program
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=10000, num_simulations=100,
-        max_len=100, eta=0.9999, max_module_init=15, num_aug=50, exp_rate=1 / np.sqrt(2),
-        num_transplant=20, norm_threshold=1e-20
+        production_rules, non_terminal_nodes=['A'], num_episodes=10000, num_simulations=50,
+        max_len=100, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
+        num_transplant=5, norm_threshold=1e-10
 ):
     """
     Executes the main training loop of Symbolic Physics Learner.
@@ -76,6 +76,9 @@ def run_mcts(
             best_modules = sorted(list(set(best_modules + good_modules)), key=lambda x: x[1], reverse=True)
 
         aug_grammars = [x[0] for x in best_modules[:num_aug]]
+        print("AUG Grammars")
+        for gi in aug_grammars:
+            print(gi)
 
         if best_modules[0][1] >= 1 - norm_threshold:
             print("find the ground-truth expression, whole program terminates...")
@@ -91,6 +94,23 @@ def run_mcts(
     end_time = time.time() - start_time
     print("MCTS time:", np.round(np.mean(end_time), 3), 'seconds')
 
+def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
+    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
+    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
+    nvar = data_query_oracle.get_nvars()
+    operators_set = data_query_oracle.get_operators_set()
+
+    regress_batchsize = 256
+    allowed_input_tokens = np.ones(nvar, dtype=np.int32)
+    MCTS.task = RegressTask(regress_batchsize,
+                            allowed_input_tokens,
+                            dataXgen,
+                            data_query_oracle)
+    MCTS.program = Program(nvar, optimizer)
+
+    production_rules = get_production_rules(nvar, operators_set)
+    print("The production rules are:", production_rules)
+    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
 
 def run_cv_mcts(
         operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], mcts_iterations=1000,
@@ -199,23 +219,7 @@ def run_cv_mcts(
     return all_eqs, all_times
 
 
-def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
-    data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
-    dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
-    nvar = data_query_oracle.get_nvars()
-    operators_set = data_query_oracle.get_operators_set()
 
-    regress_batchsize = 256
-    allowed_input_tokens = np.ones(nvar, dtype=np.int32)
-    MCTS.task = RegressTask(regress_batchsize,
-                            allowed_input_tokens,
-                            dataXgen,
-                            data_query_oracle)
-    MCTS.program = Program(nvar, optimizer)
-
-    production_rules = get_production_rules(nvar, operators_set)
-    print("The production rules are:", production_rules)
-    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
 
 
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):

@@ -42,6 +42,7 @@ class MCTS(object):
         self.QN = defaultdict(lambda: np.zeros(2))
         self.scale = 0
         self.eta = eta
+        self.control_variable=False
 
     def valid_production_rules(self, Node):
         """
@@ -82,6 +83,7 @@ class MCTS(object):
 
         if not ntn:
             self.task.rand_draw_data_with_X_fixed()
+
             y_true = self.task.evaluate()
 
             state = state.replace(';', ',')
@@ -233,7 +235,7 @@ class MCTS(object):
         self.QN[state + ',' + action][1] += 1
 
         while state:
-            print("the state is", state)
+            # print("the state is", state)
             if self.scale != 0:
                 self.QN[state][0] += reward / self.scale
             else:
@@ -345,7 +347,7 @@ class MCTS(object):
                 print("following UCB_policy...")
                 prob = ucb_policy(state, ntn[0])
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
-                if self.grammars[action] in self.aug_grammars:
+                if self.control_variable and self.grammars[action] in self.aug_grammars:
                     ntn.extend(self.aug_nt_nodes[self.aug_grammars.index(self.grammars[action])])
                     print("new ntn is:", ntn)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
@@ -379,7 +381,7 @@ class MCTS(object):
                 print("follow uniform_random_policy:", unvisited_children)
                 prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children, p=prob / np.sum(prob))
-                if self.grammars[action] in self.aug_grammars:
+                if self.control_variable and self.grammars[action] in self.aug_grammars:
                     ntn.extend(self.aug_nt_nodes[self.aug_grammars.index(self.grammars[action])])
                     print("new ntn is:", ntn)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
@@ -426,7 +428,7 @@ class MCTS(object):
 def get_state(pr):
     state_dict = {
         'reward': pr[1],
-        'pret-expr': pretty_print_expr(pr[2]),
+        'pretty-eq': pretty_print_expr(pr[2]),
         'expr': pr[2],
         'rules': pr[0],
     }

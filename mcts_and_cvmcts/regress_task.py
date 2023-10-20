@@ -31,18 +31,15 @@ class RegressTask(object):
         self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
     def rand_draw_X_non_fixed(self):
-        self.X = self.dataX.randn(sample_size=self.batchsize)
+        self.X = self.dataX.randn(sample_size=self.batchsize).T
 
     def rand_draw_X_fixed(self):
         self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
 
     def rand_draw_data_with_X_fixed(self):
-        self.X = self.dataX.randn(sample_size=self.batchsize)
+        self.X = self.dataX.randn(sample_size=self.batchsize).T
         if len(self.fixed_column):
             self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
-
-
-
 
     def evaluate(self):
         return self.data_query_oracle.evaluate(self.X)
