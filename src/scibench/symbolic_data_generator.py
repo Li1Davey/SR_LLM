@@ -25,11 +25,11 @@ class DataX(object):
         :return: return [#input_variables, sample_size, dimension of each variables]
         """
         list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
-        return np.stack(list_of_X, axis=0).transpose()
+        return np.stack(list_of_X, axis=0).squeeze()
 
-    def get_X_grids(self):
-        list_of_X_grid = [one_sampler.get_x_grid() for one_sampler in self.data_X_samplers]
-        return np.stack(list_of_X_grid, axis=0).transpose()
+    # def get_X_grids(self):
+    #     list_of_X_grid = [one_sampler.get_x_grid() for one_sampler in self.data_X_samplers]
+    #     return np.stack(list_of_X_grid, axis=0).transpose()
 
 
 class DefaultSampling(object):

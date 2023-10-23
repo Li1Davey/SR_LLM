@@ -357,8 +357,8 @@ def LaplacianOp(inputs: np.ndarray, dx=1.0, dy=1.0):
     :param inputs: [batch, iH, iW], torch.float
     :return: laplacian of inputs
     '''
-    inputs = torch.from_numpy(inputs).to(torch.float)
-    conv_kernel = torch.tensor([[[[0, 1, 0], [1, -4, 1], [0, 1, 0]]]], dtype=torch.float)
+    inputs = torch.from_numpy(inputs).to(torch.double)
+    conv_kernel = torch.tensor([[[[0, 1, 0], [1, -4, 1], [0, 1, 0]]]], dtype=torch.double)
     unsqueezed = False
     if inputs.dim() == 2:
         inputs = torch.unsqueeze(inputs, 0)
@@ -378,7 +378,7 @@ def DifferentialOp(inputs: np.ndarray, diffx=False, d=1.0):
     :param diffx: if true, compute dc/dx; else, compute dc/dy
     :return:
     '''
-    conv_kernel = torch.tensor([[[[-1, 0, 1]]]], dtype=torch.float)
+    conv_kernel = torch.tensor([[[[-1, 0, 1]]]], dtype=torch.double)
     unsqueezed = False
     if inputs.dim() == 2:
         inputs = torch.unsqueeze(inputs, 0)
@@ -401,7 +401,7 @@ def ClampOp(inputs: np.ndarray):
     :param inputs:
     :return:
     """
-    inputs = torch.from_numpy(inputs).to(torch.float)
+    inputs = torch.from_numpy(inputs).to(torch.double)
     clamped = torch.clamp(inputs, min=0.0, max=1.0)
     return clamped.numpy()
 
