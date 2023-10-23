@@ -73,7 +73,7 @@ def run_mcts(
         if not best_modules:
             best_modules = good_modules
         else:
-            best_modules = sorted(list(set(best_modules + good_modules)), key=lambda x: x[1], reverse=True)
+            best_modules = sorted(list(set(best_modules + good_modules)), key=lambda x: x[1])
 
         aug_grammars = [x[0] for x in best_modules[:num_aug]]
         print("AUG Grammars")

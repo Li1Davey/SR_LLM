@@ -331,7 +331,7 @@ class MCTS(object):
         for t in range(1, num_episodes + 1):
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
-                self.print_hofs(verbose=False)
+                self.print_hofs(verbose=True)
                 sys.stdout.flush()
 
             state = 'f->A'
@@ -407,7 +407,7 @@ class MCTS(object):
         self.task.rand_draw_data_with_X_fixed()
         print("PRINT HOF")
         print("=" * 20)
-        for pr in self.hall_of_fame[::-1]:
+        for pr in self.hall_of_fame:
             if verbose:
                 print('        ' + str(get_state(pr)), end="\n")
                 self.print_reward_function_all_metrics(pr[2])
