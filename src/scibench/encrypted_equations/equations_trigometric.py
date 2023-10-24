@@ -1270,7 +1270,7 @@ class sincos_nv5_nt55_prog_5(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_46(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1300,7 +1300,7 @@ class inv_nv5_nt58_prog_46(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_0(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1330,7 +1330,7 @@ class inv_nv5_nt58_prog_0(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_35(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1359,7 +1359,7 @@ class inv_nv5_nt58_prog_35(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_8(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1388,7 +1388,7 @@ class inv_nv5_nt58_prog_8(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_42(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1417,7 +1417,7 @@ class inv_nv5_nt58_prog_42(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_33(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1446,7 +1446,7 @@ class inv_nv5_nt58_prog_33(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_20(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1475,7 +1475,7 @@ class inv_nv5_nt58_prog_20(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_14(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1504,7 +1504,7 @@ class inv_nv5_nt58_prog_14(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_31(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1533,7 +1533,7 @@ class inv_nv5_nt58_prog_31(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_48(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1562,7 +1562,7 @@ class inv_nv5_nt58_prog_48(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_41(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1591,7 +1591,7 @@ class inv_nv5_nt58_prog_41(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_7(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1620,7 +1620,7 @@ class inv_nv5_nt58_prog_7(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_37(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1649,7 +1649,7 @@ class inv_nv5_nt58_prog_37(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_15(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1679,7 +1679,7 @@ class inv_nv5_nt58_prog_15(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_23(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1709,7 +1709,7 @@ class inv_nv5_nt58_prog_23(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_30(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1739,7 +1739,7 @@ class inv_nv5_nt58_prog_30(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_28(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1768,7 +1768,7 @@ class inv_nv5_nt58_prog_28(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_17(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1797,7 +1797,7 @@ class inv_nv5_nt58_prog_17(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_43(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1827,7 +1827,7 @@ class inv_nv5_nt58_prog_43(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_2(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1857,7 +1857,7 @@ class inv_nv5_nt58_prog_2(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_4(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1886,7 +1886,7 @@ class inv_nv5_nt58_prog_4(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_45(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1915,7 +1915,7 @@ class inv_nv5_nt58_prog_45(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_49(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1944,7 +1944,7 @@ class inv_nv5_nt58_prog_49(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_11(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1973,7 +1973,7 @@ class inv_nv5_nt58_prog_11(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_10(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2002,7 +2002,7 @@ class inv_nv5_nt58_prog_10(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_1(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2031,7 +2031,7 @@ class inv_nv5_nt58_prog_1(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_40(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2061,7 +2061,7 @@ class inv_nv5_nt58_prog_40(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_29(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2091,7 +2091,7 @@ class inv_nv5_nt58_prog_29(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_22(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2121,7 +2121,7 @@ class inv_nv5_nt58_prog_22(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_27(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2151,7 +2151,7 @@ class inv_nv5_nt58_prog_27(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_34(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2180,7 +2180,7 @@ class inv_nv5_nt58_prog_34(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_16(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2210,7 +2210,7 @@ class inv_nv5_nt58_prog_16(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_13(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2239,7 +2239,7 @@ class inv_nv5_nt58_prog_13(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_47(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2268,7 +2268,7 @@ class inv_nv5_nt58_prog_47(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_36(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2297,7 +2297,7 @@ class inv_nv5_nt58_prog_36(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_44(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2327,7 +2327,7 @@ class inv_nv5_nt58_prog_44(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_6(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2357,7 +2357,7 @@ class inv_nv5_nt58_prog_6(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_18(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2387,7 +2387,7 @@ class inv_nv5_nt58_prog_18(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_3(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2416,7 +2416,7 @@ class inv_nv5_nt58_prog_3(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_24(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2445,7 +2445,7 @@ class inv_nv5_nt58_prog_24(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_12(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2475,7 +2475,7 @@ class inv_nv5_nt58_prog_12(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_25(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2504,7 +2504,7 @@ class inv_nv5_nt58_prog_25(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_21(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2533,7 +2533,7 @@ class inv_nv5_nt58_prog_21(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_26(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2562,7 +2562,7 @@ class inv_nv5_nt58_prog_26(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_39(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2592,7 +2592,7 @@ class inv_nv5_nt58_prog_39(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_19(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2621,7 +2621,7 @@ class inv_nv5_nt58_prog_19(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_38(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2650,7 +2650,7 @@ class inv_nv5_nt58_prog_38(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_9(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2679,7 +2679,7 @@ class inv_nv5_nt58_prog_9(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_32(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2709,7 +2709,7 @@ class inv_nv5_nt58_prog_32(KnownEquation):
 @register_eq_class
 class inv_nv5_nt58_prog_5(KnownEquation):
     _eq_name = 'inv_nv5_nt58_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -2738,7 +2738,7 @@ class inv_nv5_nt58_prog_5(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_46(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2773,7 +2773,7 @@ class sincosinv_nv6_nt610_prog_46(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_0(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2808,7 +2808,7 @@ class sincosinv_nv6_nt610_prog_0(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_35(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2842,7 +2842,7 @@ class sincosinv_nv6_nt610_prog_35(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_8(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2876,7 +2876,7 @@ class sincosinv_nv6_nt610_prog_8(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_42(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2910,7 +2910,7 @@ class sincosinv_nv6_nt610_prog_42(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_33(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2944,7 +2944,7 @@ class sincosinv_nv6_nt610_prog_33(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_20(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -2977,7 +2977,7 @@ class sincosinv_nv6_nt610_prog_20(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_14(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3011,7 +3011,7 @@ class sincosinv_nv6_nt610_prog_14(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_31(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3045,7 +3045,7 @@ class sincosinv_nv6_nt610_prog_31(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_48(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3079,7 +3079,7 @@ class sincosinv_nv6_nt610_prog_48(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_41(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3113,7 +3113,7 @@ class sincosinv_nv6_nt610_prog_41(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_7(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3147,7 +3147,7 @@ class sincosinv_nv6_nt610_prog_7(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_37(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3181,7 +3181,7 @@ class sincosinv_nv6_nt610_prog_37(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_15(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3215,7 +3215,7 @@ class sincosinv_nv6_nt610_prog_15(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_23(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3249,7 +3249,7 @@ class sincosinv_nv6_nt610_prog_23(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_30(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3284,7 +3284,7 @@ class sincosinv_nv6_nt610_prog_30(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_28(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3318,7 +3318,7 @@ class sincosinv_nv6_nt610_prog_28(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_17(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3352,7 +3352,7 @@ class sincosinv_nv6_nt610_prog_17(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_43(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3386,7 +3386,7 @@ class sincosinv_nv6_nt610_prog_43(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_2(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3420,7 +3420,7 @@ class sincosinv_nv6_nt610_prog_2(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_4(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3454,7 +3454,7 @@ class sincosinv_nv6_nt610_prog_4(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_45(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3489,7 +3489,7 @@ class sincosinv_nv6_nt610_prog_45(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_49(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3523,7 +3523,7 @@ class sincosinv_nv6_nt610_prog_49(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_11(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3556,7 +3556,7 @@ class sincosinv_nv6_nt610_prog_11(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_10(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3590,7 +3590,7 @@ class sincosinv_nv6_nt610_prog_10(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_1(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3624,7 +3624,7 @@ class sincosinv_nv6_nt610_prog_1(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_40(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3658,7 +3658,7 @@ class sincosinv_nv6_nt610_prog_40(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_29(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3692,7 +3692,7 @@ class sincosinv_nv6_nt610_prog_29(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_22(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3728,7 +3728,7 @@ class sincosinv_nv6_nt610_prog_22(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_27(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3763,7 +3763,7 @@ class sincosinv_nv6_nt610_prog_27(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_34(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3797,7 +3797,7 @@ class sincosinv_nv6_nt610_prog_34(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_16(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3831,7 +3831,7 @@ class sincosinv_nv6_nt610_prog_16(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_13(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3865,7 +3865,7 @@ class sincosinv_nv6_nt610_prog_13(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_47(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3899,7 +3899,7 @@ class sincosinv_nv6_nt610_prog_47(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_36(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3933,7 +3933,7 @@ class sincosinv_nv6_nt610_prog_36(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_44(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -3967,7 +3967,7 @@ class sincosinv_nv6_nt610_prog_44(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_6(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4001,7 +4001,7 @@ class sincosinv_nv6_nt610_prog_6(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_18(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4035,7 +4035,7 @@ class sincosinv_nv6_nt610_prog_18(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_3(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4069,7 +4069,7 @@ class sincosinv_nv6_nt610_prog_3(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_24(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4105,7 +4105,7 @@ class sincosinv_nv6_nt610_prog_24(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_12(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4138,7 +4138,7 @@ class sincosinv_nv6_nt610_prog_12(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_25(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4172,7 +4172,7 @@ class sincosinv_nv6_nt610_prog_25(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_21(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4206,7 +4206,7 @@ class sincosinv_nv6_nt610_prog_21(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_26(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4241,7 +4241,7 @@ class sincosinv_nv6_nt610_prog_26(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_39(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4275,7 +4275,7 @@ class sincosinv_nv6_nt610_prog_39(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_19(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4309,7 +4309,7 @@ class sincosinv_nv6_nt610_prog_19(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_38(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4343,7 +4343,7 @@ class sincosinv_nv6_nt610_prog_38(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_9(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4377,7 +4377,7 @@ class sincosinv_nv6_nt610_prog_9(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_32(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -4411,7 +4411,7 @@ class sincosinv_nv6_nt610_prog_32(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt610_prog_5(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt610_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -7983,7 +7983,7 @@ class sincos_nv2_nt11_prog_5(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_46(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8000,7 +8000,7 @@ class inv_nv3_nt22_prog_46(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_0(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8016,7 +8016,7 @@ class inv_nv3_nt22_prog_0(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_35(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8032,7 +8032,7 @@ class inv_nv3_nt22_prog_35(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_8(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8048,7 +8048,7 @@ class inv_nv3_nt22_prog_8(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_42(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8064,7 +8064,7 @@ class inv_nv3_nt22_prog_42(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_33(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8080,7 +8080,7 @@ class inv_nv3_nt22_prog_33(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_20(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8096,7 +8096,7 @@ class inv_nv3_nt22_prog_20(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_14(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8112,7 +8112,7 @@ class inv_nv3_nt22_prog_14(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_31(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8128,7 +8128,7 @@ class inv_nv3_nt22_prog_31(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_48(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8144,7 +8144,7 @@ class inv_nv3_nt22_prog_48(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_41(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8160,7 +8160,7 @@ class inv_nv3_nt22_prog_41(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_7(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8176,7 +8176,7 @@ class inv_nv3_nt22_prog_7(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_37(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8192,7 +8192,7 @@ class inv_nv3_nt22_prog_37(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_15(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8208,7 +8208,7 @@ class inv_nv3_nt22_prog_15(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_23(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8224,7 +8224,7 @@ class inv_nv3_nt22_prog_23(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_30(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8240,7 +8240,7 @@ class inv_nv3_nt22_prog_30(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_28(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8257,7 +8257,7 @@ class inv_nv3_nt22_prog_28(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_17(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8273,7 +8273,7 @@ class inv_nv3_nt22_prog_17(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_43(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8289,7 +8289,7 @@ class inv_nv3_nt22_prog_43(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_2(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8305,7 +8305,7 @@ class inv_nv3_nt22_prog_2(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_4(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8321,7 +8321,7 @@ class inv_nv3_nt22_prog_4(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_45(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8337,7 +8337,7 @@ class inv_nv3_nt22_prog_45(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_49(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8354,7 +8354,7 @@ class inv_nv3_nt22_prog_49(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_11(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8370,7 +8370,7 @@ class inv_nv3_nt22_prog_11(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_10(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8386,7 +8386,7 @@ class inv_nv3_nt22_prog_10(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_1(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8402,7 +8402,7 @@ class inv_nv3_nt22_prog_1(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_40(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8418,7 +8418,7 @@ class inv_nv3_nt22_prog_40(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_29(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8434,7 +8434,7 @@ class inv_nv3_nt22_prog_29(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_22(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8450,7 +8450,7 @@ class inv_nv3_nt22_prog_22(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_27(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8466,7 +8466,7 @@ class inv_nv3_nt22_prog_27(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_34(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8482,7 +8482,7 @@ class inv_nv3_nt22_prog_34(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_16(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8498,7 +8498,7 @@ class inv_nv3_nt22_prog_16(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_13(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8514,7 +8514,7 @@ class inv_nv3_nt22_prog_13(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_47(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8530,7 +8530,7 @@ class inv_nv3_nt22_prog_47(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_36(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8546,7 +8546,7 @@ class inv_nv3_nt22_prog_36(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_44(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8562,7 +8562,7 @@ class inv_nv3_nt22_prog_44(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_6(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8579,7 +8579,7 @@ class inv_nv3_nt22_prog_6(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_18(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8595,7 +8595,7 @@ class inv_nv3_nt22_prog_18(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_3(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8611,7 +8611,7 @@ class inv_nv3_nt22_prog_3(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_24(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8627,7 +8627,7 @@ class inv_nv3_nt22_prog_24(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_12(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8643,7 +8643,7 @@ class inv_nv3_nt22_prog_12(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_25(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8659,7 +8659,7 @@ class inv_nv3_nt22_prog_25(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_21(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8675,7 +8675,7 @@ class inv_nv3_nt22_prog_21(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_26(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8691,7 +8691,7 @@ class inv_nv3_nt22_prog_26(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_39(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8708,7 +8708,7 @@ class inv_nv3_nt22_prog_39(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_19(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8724,7 +8724,7 @@ class inv_nv3_nt22_prog_19(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_38(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8740,7 +8740,7 @@ class inv_nv3_nt22_prog_38(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_9(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8756,7 +8756,7 @@ class inv_nv3_nt22_prog_9(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_32(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -8773,7 +8773,7 @@ class inv_nv3_nt22_prog_32(KnownEquation):
 @register_eq_class
 class inv_nv3_nt22_prog_5(KnownEquation):
     _eq_name = 'inv_nv3_nt22_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -10300,7 +10300,7 @@ class sincos_nv5_nt58_prog_5(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_46(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10329,7 +10329,7 @@ class sincosinv_nv5_nt58_prog_46(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_0(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10359,7 +10359,7 @@ class sincosinv_nv5_nt58_prog_0(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_35(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10388,7 +10388,7 @@ class sincosinv_nv5_nt58_prog_35(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_8(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10418,7 +10418,7 @@ class sincosinv_nv5_nt58_prog_8(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_42(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10450,7 +10450,7 @@ class sincosinv_nv5_nt58_prog_42(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_33(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10480,7 +10480,7 @@ class sincosinv_nv5_nt58_prog_33(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_20(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10511,7 +10511,7 @@ class sincosinv_nv5_nt58_prog_20(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_14(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10541,7 +10541,7 @@ class sincosinv_nv5_nt58_prog_14(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_31(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10570,7 +10570,7 @@ class sincosinv_nv5_nt58_prog_31(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_48(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10601,7 +10601,7 @@ class sincosinv_nv5_nt58_prog_48(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_41(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10632,7 +10632,7 @@ class sincosinv_nv5_nt58_prog_41(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_7(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10661,7 +10661,7 @@ class sincosinv_nv5_nt58_prog_7(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_37(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10690,7 +10690,7 @@ class sincosinv_nv5_nt58_prog_37(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_15(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10720,7 +10720,7 @@ class sincosinv_nv5_nt58_prog_15(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_23(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10750,7 +10750,7 @@ class sincosinv_nv5_nt58_prog_23(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_30(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10781,7 +10781,7 @@ class sincosinv_nv5_nt58_prog_30(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_28(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10812,7 +10812,7 @@ class sincosinv_nv5_nt58_prog_28(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_17(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10842,7 +10842,7 @@ class sincosinv_nv5_nt58_prog_17(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_43(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10871,7 +10871,7 @@ class sincosinv_nv5_nt58_prog_43(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_2(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10901,7 +10901,7 @@ class sincosinv_nv5_nt58_prog_2(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_4(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10931,7 +10931,7 @@ class sincosinv_nv5_nt58_prog_4(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_45(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10961,7 +10961,7 @@ class sincosinv_nv5_nt58_prog_45(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_49(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -10990,7 +10990,7 @@ class sincosinv_nv5_nt58_prog_49(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_11(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11019,7 +11019,7 @@ class sincosinv_nv5_nt58_prog_11(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_10(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11048,7 +11048,7 @@ class sincosinv_nv5_nt58_prog_10(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_1(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11077,7 +11077,7 @@ class sincosinv_nv5_nt58_prog_1(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_40(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11106,7 +11106,7 @@ class sincosinv_nv5_nt58_prog_40(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_29(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11137,7 +11137,7 @@ class sincosinv_nv5_nt58_prog_29(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_22(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11166,7 +11166,7 @@ class sincosinv_nv5_nt58_prog_22(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_27(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11196,7 +11196,7 @@ class sincosinv_nv5_nt58_prog_27(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_34(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11225,7 +11225,7 @@ class sincosinv_nv5_nt58_prog_34(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_16(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11254,7 +11254,7 @@ class sincosinv_nv5_nt58_prog_16(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_13(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11283,7 +11283,7 @@ class sincosinv_nv5_nt58_prog_13(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_47(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11313,7 +11313,7 @@ class sincosinv_nv5_nt58_prog_47(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_36(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11344,7 +11344,7 @@ class sincosinv_nv5_nt58_prog_36(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_44(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11373,7 +11373,7 @@ class sincosinv_nv5_nt58_prog_44(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_6(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11402,7 +11402,7 @@ class sincosinv_nv5_nt58_prog_6(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_18(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11431,7 +11431,7 @@ class sincosinv_nv5_nt58_prog_18(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_3(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11459,7 +11459,7 @@ class sincosinv_nv5_nt58_prog_3(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_24(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11490,7 +11490,7 @@ class sincosinv_nv5_nt58_prog_24(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_12(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11521,7 +11521,7 @@ class sincosinv_nv5_nt58_prog_12(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_25(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11550,7 +11550,7 @@ class sincosinv_nv5_nt58_prog_25(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_21(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11579,7 +11579,7 @@ class sincosinv_nv5_nt58_prog_21(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_26(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11609,7 +11609,7 @@ class sincosinv_nv5_nt58_prog_26(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_39(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11639,7 +11639,7 @@ class sincosinv_nv5_nt58_prog_39(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_19(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11670,7 +11670,7 @@ class sincosinv_nv5_nt58_prog_19(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_38(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11699,7 +11699,7 @@ class sincosinv_nv5_nt58_prog_38(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_9(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11729,7 +11729,7 @@ class sincosinv_nv5_nt58_prog_9(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_32(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11758,7 +11758,7 @@ class sincosinv_nv5_nt58_prog_32(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt58_prog_5(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt58_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11789,7 +11789,7 @@ class sincosinv_nv5_nt58_prog_5(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_46(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11814,7 +11814,7 @@ class sincosinv_nv5_nt55_prog_46(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_0(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11839,7 +11839,7 @@ class sincosinv_nv5_nt55_prog_0(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_35(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11864,7 +11864,7 @@ class sincosinv_nv5_nt55_prog_35(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_8(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11888,7 +11888,7 @@ class sincosinv_nv5_nt55_prog_8(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_42(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11912,7 +11912,7 @@ class sincosinv_nv5_nt55_prog_42(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_33(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11937,7 +11937,7 @@ class sincosinv_nv5_nt55_prog_33(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_20(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11961,7 +11961,7 @@ class sincosinv_nv5_nt55_prog_20(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_14(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -11986,7 +11986,7 @@ class sincosinv_nv5_nt55_prog_14(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_31(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12010,7 +12010,7 @@ class sincosinv_nv5_nt55_prog_31(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_48(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12035,7 +12035,7 @@ class sincosinv_nv5_nt55_prog_48(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_41(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12061,7 +12061,7 @@ class sincosinv_nv5_nt55_prog_41(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_7(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12087,7 +12087,7 @@ class sincosinv_nv5_nt55_prog_7(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_37(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12111,7 +12111,7 @@ class sincosinv_nv5_nt55_prog_37(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_15(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12136,7 +12136,7 @@ class sincosinv_nv5_nt55_prog_15(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_23(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12161,7 +12161,7 @@ class sincosinv_nv5_nt55_prog_23(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_30(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12186,7 +12186,7 @@ class sincosinv_nv5_nt55_prog_30(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_28(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12211,7 +12211,7 @@ class sincosinv_nv5_nt55_prog_28(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_17(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12234,7 +12234,7 @@ class sincosinv_nv5_nt55_prog_17(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_43(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12260,7 +12260,7 @@ class sincosinv_nv5_nt55_prog_43(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_2(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12283,7 +12283,7 @@ class sincosinv_nv5_nt55_prog_2(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_4(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12308,7 +12308,7 @@ class sincosinv_nv5_nt55_prog_4(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_45(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12333,7 +12333,7 @@ class sincosinv_nv5_nt55_prog_45(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_49(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12357,7 +12357,7 @@ class sincosinv_nv5_nt55_prog_49(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_11(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12382,7 +12382,7 @@ class sincosinv_nv5_nt55_prog_11(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_10(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12408,7 +12408,7 @@ class sincosinv_nv5_nt55_prog_10(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_1(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12434,7 +12434,7 @@ class sincosinv_nv5_nt55_prog_1(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_40(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12459,7 +12459,7 @@ class sincosinv_nv5_nt55_prog_40(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_29(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12484,7 +12484,7 @@ class sincosinv_nv5_nt55_prog_29(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_22(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12509,7 +12509,7 @@ class sincosinv_nv5_nt55_prog_22(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_27(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12534,7 +12534,7 @@ class sincosinv_nv5_nt55_prog_27(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_34(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12559,7 +12559,7 @@ class sincosinv_nv5_nt55_prog_34(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_16(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12585,7 +12585,7 @@ class sincosinv_nv5_nt55_prog_16(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_13(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12608,7 +12608,7 @@ class sincosinv_nv5_nt55_prog_13(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_47(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12633,7 +12633,7 @@ class sincosinv_nv5_nt55_prog_47(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_36(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12658,7 +12658,7 @@ class sincosinv_nv5_nt55_prog_36(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_44(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12683,7 +12683,7 @@ class sincosinv_nv5_nt55_prog_44(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_6(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12708,7 +12708,7 @@ class sincosinv_nv5_nt55_prog_6(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_18(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12733,7 +12733,7 @@ class sincosinv_nv5_nt55_prog_18(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_3(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12758,7 +12758,7 @@ class sincosinv_nv5_nt55_prog_3(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_24(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12783,7 +12783,7 @@ class sincosinv_nv5_nt55_prog_24(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_12(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12808,7 +12808,7 @@ class sincosinv_nv5_nt55_prog_12(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_25(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12833,7 +12833,7 @@ class sincosinv_nv5_nt55_prog_25(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_21(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12858,7 +12858,7 @@ class sincosinv_nv5_nt55_prog_21(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_26(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12884,7 +12884,7 @@ class sincosinv_nv5_nt55_prog_26(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_39(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12909,7 +12909,7 @@ class sincosinv_nv5_nt55_prog_39(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_19(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12934,7 +12934,7 @@ class sincosinv_nv5_nt55_prog_19(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_38(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12958,7 +12958,7 @@ class sincosinv_nv5_nt55_prog_38(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_9(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -12983,7 +12983,7 @@ class sincosinv_nv5_nt55_prog_9(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_32(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -13008,7 +13008,7 @@ class sincosinv_nv5_nt55_prog_32(KnownEquation):
 @register_eq_class
 class sincosinv_nv5_nt55_prog_5(KnownEquation):
     _eq_name = 'sincosinv_nv5_nt55_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -14777,7 +14777,7 @@ class sincos_nv6_nt610_prog_5(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_46(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -14807,7 +14807,7 @@ class inv_nv6_nt68_prog_46(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_0(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -14836,7 +14836,7 @@ class inv_nv6_nt68_prog_0(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_35(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -14867,7 +14867,7 @@ class inv_nv6_nt68_prog_35(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_8(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -14898,7 +14898,7 @@ class inv_nv6_nt68_prog_8(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_42(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -14928,7 +14928,7 @@ class inv_nv6_nt68_prog_42(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_33(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -14958,7 +14958,7 @@ class inv_nv6_nt68_prog_33(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_20(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -14989,7 +14989,7 @@ class inv_nv6_nt68_prog_20(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_14(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15019,7 +15019,7 @@ class inv_nv6_nt68_prog_14(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_31(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15050,7 +15050,7 @@ class inv_nv6_nt68_prog_31(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_48(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15080,7 +15080,7 @@ class inv_nv6_nt68_prog_48(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_41(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15110,7 +15110,7 @@ class inv_nv6_nt68_prog_41(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_7(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15140,7 +15140,7 @@ class inv_nv6_nt68_prog_7(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_37(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15169,7 +15169,7 @@ class inv_nv6_nt68_prog_37(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_15(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15199,7 +15199,7 @@ class inv_nv6_nt68_prog_15(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_23(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15229,7 +15229,7 @@ class inv_nv6_nt68_prog_23(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_30(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15259,7 +15259,7 @@ class inv_nv6_nt68_prog_30(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_28(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15290,7 +15290,7 @@ class inv_nv6_nt68_prog_28(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_17(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15320,7 +15320,7 @@ class inv_nv6_nt68_prog_17(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_43(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15350,7 +15350,7 @@ class inv_nv6_nt68_prog_43(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_2(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15381,7 +15381,7 @@ class inv_nv6_nt68_prog_2(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_4(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15411,7 +15411,7 @@ class inv_nv6_nt68_prog_4(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_45(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15441,7 +15441,7 @@ class inv_nv6_nt68_prog_45(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_49(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15471,7 +15471,7 @@ class inv_nv6_nt68_prog_49(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_11(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15502,7 +15502,7 @@ class inv_nv6_nt68_prog_11(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_10(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15533,7 +15533,7 @@ class inv_nv6_nt68_prog_10(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_1(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15563,7 +15563,7 @@ class inv_nv6_nt68_prog_1(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_40(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15593,7 +15593,7 @@ class inv_nv6_nt68_prog_40(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_29(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15623,7 +15623,7 @@ class inv_nv6_nt68_prog_29(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_22(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15653,7 +15653,7 @@ class inv_nv6_nt68_prog_22(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_27(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15683,7 +15683,7 @@ class inv_nv6_nt68_prog_27(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_34(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15713,7 +15713,7 @@ class inv_nv6_nt68_prog_34(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_16(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15743,7 +15743,7 @@ class inv_nv6_nt68_prog_16(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_13(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15772,7 +15772,7 @@ class inv_nv6_nt68_prog_13(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_47(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15802,7 +15802,7 @@ class inv_nv6_nt68_prog_47(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_36(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15832,7 +15832,7 @@ class inv_nv6_nt68_prog_36(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_44(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15863,7 +15863,7 @@ class inv_nv6_nt68_prog_44(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_6(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15893,7 +15893,7 @@ class inv_nv6_nt68_prog_6(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_18(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15923,7 +15923,7 @@ class inv_nv6_nt68_prog_18(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_3(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15953,7 +15953,7 @@ class inv_nv6_nt68_prog_3(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_24(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -15983,7 +15983,7 @@ class inv_nv6_nt68_prog_24(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_12(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16014,7 +16014,7 @@ class inv_nv6_nt68_prog_12(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_25(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16045,7 +16045,7 @@ class inv_nv6_nt68_prog_25(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_21(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16075,7 +16075,7 @@ class inv_nv6_nt68_prog_21(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_26(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16106,7 +16106,7 @@ class inv_nv6_nt68_prog_26(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_39(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16137,7 +16137,7 @@ class inv_nv6_nt68_prog_39(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_19(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16167,7 +16167,7 @@ class inv_nv6_nt68_prog_19(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_38(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16198,7 +16198,7 @@ class inv_nv6_nt68_prog_38(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_9(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16228,7 +16228,7 @@ class inv_nv6_nt68_prog_9(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_32(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -16258,7 +16258,7 @@ class inv_nv6_nt68_prog_32(KnownEquation):
 @register_eq_class
 class inv_nv6_nt68_prog_5(KnownEquation):
     _eq_name = 'inv_nv6_nt68_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -17119,7 +17119,7 @@ class sincos_nv3_nt22_prog_5(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_46(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17133,7 +17133,7 @@ class inv_nv2_nt11_prog_46(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_0(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17147,7 +17147,7 @@ class inv_nv2_nt11_prog_0(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_35(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17161,7 +17161,7 @@ class inv_nv2_nt11_prog_35(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_8(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17175,7 +17175,7 @@ class inv_nv2_nt11_prog_8(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_42(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17189,7 +17189,7 @@ class inv_nv2_nt11_prog_42(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_33(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17203,7 +17203,7 @@ class inv_nv2_nt11_prog_33(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_20(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17217,7 +17217,7 @@ class inv_nv2_nt11_prog_20(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_14(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17231,7 +17231,7 @@ class inv_nv2_nt11_prog_14(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_31(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17245,7 +17245,7 @@ class inv_nv2_nt11_prog_31(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_48(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17259,7 +17259,7 @@ class inv_nv2_nt11_prog_48(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_41(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17273,7 +17273,7 @@ class inv_nv2_nt11_prog_41(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_7(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17287,7 +17287,7 @@ class inv_nv2_nt11_prog_7(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_37(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17301,7 +17301,7 @@ class inv_nv2_nt11_prog_37(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_15(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17315,7 +17315,7 @@ class inv_nv2_nt11_prog_15(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_23(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17329,7 +17329,7 @@ class inv_nv2_nt11_prog_23(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_30(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17343,7 +17343,7 @@ class inv_nv2_nt11_prog_30(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_28(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17357,7 +17357,7 @@ class inv_nv2_nt11_prog_28(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_17(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17371,7 +17371,7 @@ class inv_nv2_nt11_prog_17(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_43(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17385,7 +17385,7 @@ class inv_nv2_nt11_prog_43(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_2(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17399,7 +17399,7 @@ class inv_nv2_nt11_prog_2(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_4(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17413,7 +17413,7 @@ class inv_nv2_nt11_prog_4(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_45(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17427,7 +17427,7 @@ class inv_nv2_nt11_prog_45(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_49(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17441,7 +17441,7 @@ class inv_nv2_nt11_prog_49(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_11(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17455,7 +17455,7 @@ class inv_nv2_nt11_prog_11(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_10(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17469,7 +17469,7 @@ class inv_nv2_nt11_prog_10(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_1(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17483,7 +17483,7 @@ class inv_nv2_nt11_prog_1(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_40(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17497,7 +17497,7 @@ class inv_nv2_nt11_prog_40(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_29(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17511,7 +17511,7 @@ class inv_nv2_nt11_prog_29(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_22(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17525,7 +17525,7 @@ class inv_nv2_nt11_prog_22(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_27(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17539,7 +17539,7 @@ class inv_nv2_nt11_prog_27(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_34(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17553,7 +17553,7 @@ class inv_nv2_nt11_prog_34(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_16(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17567,7 +17567,7 @@ class inv_nv2_nt11_prog_16(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_13(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17581,7 +17581,7 @@ class inv_nv2_nt11_prog_13(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_47(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17595,7 +17595,7 @@ class inv_nv2_nt11_prog_47(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_36(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17609,7 +17609,7 @@ class inv_nv2_nt11_prog_36(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_44(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17623,7 +17623,7 @@ class inv_nv2_nt11_prog_44(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_6(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17637,7 +17637,7 @@ class inv_nv2_nt11_prog_6(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_18(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17651,7 +17651,7 @@ class inv_nv2_nt11_prog_18(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_3(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17665,7 +17665,7 @@ class inv_nv2_nt11_prog_3(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_24(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17679,7 +17679,7 @@ class inv_nv2_nt11_prog_24(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_12(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17693,7 +17693,7 @@ class inv_nv2_nt11_prog_12(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_25(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17707,7 +17707,7 @@ class inv_nv2_nt11_prog_25(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_21(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17721,7 +17721,7 @@ class inv_nv2_nt11_prog_21(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_26(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17735,7 +17735,7 @@ class inv_nv2_nt11_prog_26(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_39(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17749,7 +17749,7 @@ class inv_nv2_nt11_prog_39(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_19(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17763,7 +17763,7 @@ class inv_nv2_nt11_prog_19(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_38(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17777,7 +17777,7 @@ class inv_nv2_nt11_prog_38(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_9(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17791,7 +17791,7 @@ class inv_nv2_nt11_prog_9(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_32(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17805,7 +17805,7 @@ class inv_nv2_nt11_prog_32(KnownEquation):
 @register_eq_class
 class inv_nv2_nt11_prog_5(KnownEquation):
     _eq_name = 'inv_nv2_nt11_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -17819,7 +17819,7 @@ class inv_nv2_nt11_prog_5(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_46(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -17843,7 +17843,7 @@ class sincosinv_nv4_nt46_prog_46(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_0(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -17869,7 +17869,7 @@ class sincosinv_nv4_nt46_prog_0(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_35(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -17894,7 +17894,7 @@ class sincosinv_nv4_nt46_prog_35(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_8(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -17919,7 +17919,7 @@ class sincosinv_nv4_nt46_prog_8(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_42(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -17945,7 +17945,7 @@ class sincosinv_nv4_nt46_prog_42(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_33(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -17971,7 +17971,7 @@ class sincosinv_nv4_nt46_prog_33(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_20(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -17997,7 +17997,7 @@ class sincosinv_nv4_nt46_prog_20(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_14(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18023,7 +18023,7 @@ class sincosinv_nv4_nt46_prog_14(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_31(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18048,7 +18048,7 @@ class sincosinv_nv4_nt46_prog_31(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_48(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18074,7 +18074,7 @@ class sincosinv_nv4_nt46_prog_48(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_41(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18099,7 +18099,7 @@ class sincosinv_nv4_nt46_prog_41(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_7(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18125,7 +18125,7 @@ class sincosinv_nv4_nt46_prog_7(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_37(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18151,7 +18151,7 @@ class sincosinv_nv4_nt46_prog_37(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_15(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18176,7 +18176,7 @@ class sincosinv_nv4_nt46_prog_15(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_23(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18202,7 +18202,7 @@ class sincosinv_nv4_nt46_prog_23(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_30(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18228,7 +18228,7 @@ class sincosinv_nv4_nt46_prog_30(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_28(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18253,7 +18253,7 @@ class sincosinv_nv4_nt46_prog_28(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_17(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18279,7 +18279,7 @@ class sincosinv_nv4_nt46_prog_17(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_43(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18305,7 +18305,7 @@ class sincosinv_nv4_nt46_prog_43(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_2(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18331,7 +18331,7 @@ class sincosinv_nv4_nt46_prog_2(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_4(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18356,7 +18356,7 @@ class sincosinv_nv4_nt46_prog_4(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_45(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18382,7 +18382,7 @@ class sincosinv_nv4_nt46_prog_45(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_49(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18408,7 +18408,7 @@ class sincosinv_nv4_nt46_prog_49(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_11(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18434,7 +18434,7 @@ class sincosinv_nv4_nt46_prog_11(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_10(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18459,7 +18459,7 @@ class sincosinv_nv4_nt46_prog_10(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_1(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18485,7 +18485,7 @@ class sincosinv_nv4_nt46_prog_1(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_40(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18511,7 +18511,7 @@ class sincosinv_nv4_nt46_prog_40(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_29(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18536,7 +18536,7 @@ class sincosinv_nv4_nt46_prog_29(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_22(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18562,7 +18562,7 @@ class sincosinv_nv4_nt46_prog_22(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_27(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18588,7 +18588,7 @@ class sincosinv_nv4_nt46_prog_27(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_34(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18614,7 +18614,7 @@ class sincosinv_nv4_nt46_prog_34(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_16(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18640,7 +18640,7 @@ class sincosinv_nv4_nt46_prog_16(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_13(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18665,7 +18665,7 @@ class sincosinv_nv4_nt46_prog_13(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_47(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18691,7 +18691,7 @@ class sincosinv_nv4_nt46_prog_47(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_36(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18717,7 +18717,7 @@ class sincosinv_nv4_nt46_prog_36(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_44(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18743,7 +18743,7 @@ class sincosinv_nv4_nt46_prog_44(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_6(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18769,7 +18769,7 @@ class sincosinv_nv4_nt46_prog_6(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_18(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18795,7 +18795,7 @@ class sincosinv_nv4_nt46_prog_18(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_3(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18820,7 +18820,7 @@ class sincosinv_nv4_nt46_prog_3(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_24(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18846,7 +18846,7 @@ class sincosinv_nv4_nt46_prog_24(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_12(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18872,7 +18872,7 @@ class sincosinv_nv4_nt46_prog_12(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_25(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18898,7 +18898,7 @@ class sincosinv_nv4_nt46_prog_25(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_21(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18924,7 +18924,7 @@ class sincosinv_nv4_nt46_prog_21(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_26(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18948,7 +18948,7 @@ class sincosinv_nv4_nt46_prog_26(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_39(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -18974,7 +18974,7 @@ class sincosinv_nv4_nt46_prog_39(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_19(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19000,7 +19000,7 @@ class sincosinv_nv4_nt46_prog_19(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_38(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19026,7 +19026,7 @@ class sincosinv_nv4_nt46_prog_38(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_9(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19051,7 +19051,7 @@ class sincosinv_nv4_nt46_prog_9(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_32(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19077,7 +19077,7 @@ class sincosinv_nv4_nt46_prog_32(KnownEquation):
 @register_eq_class
 class sincosinv_nv4_nt46_prog_5(KnownEquation):
     _eq_name = 'sincosinv_nv4_nt46_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19103,7 +19103,7 @@ class sincosinv_nv4_nt46_prog_5(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_46(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19119,7 +19119,7 @@ class sincosinv_nv3_nt22_prog_46(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_0(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19135,7 +19135,7 @@ class sincosinv_nv3_nt22_prog_0(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_35(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19151,7 +19151,7 @@ class sincosinv_nv3_nt22_prog_35(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_8(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19167,7 +19167,7 @@ class sincosinv_nv3_nt22_prog_8(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_42(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19183,7 +19183,7 @@ class sincosinv_nv3_nt22_prog_42(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_33(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19199,7 +19199,7 @@ class sincosinv_nv3_nt22_prog_33(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_20(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19215,7 +19215,7 @@ class sincosinv_nv3_nt22_prog_20(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_14(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19231,7 +19231,7 @@ class sincosinv_nv3_nt22_prog_14(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_31(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19247,7 +19247,7 @@ class sincosinv_nv3_nt22_prog_31(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_48(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19263,7 +19263,7 @@ class sincosinv_nv3_nt22_prog_48(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_41(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19279,7 +19279,7 @@ class sincosinv_nv3_nt22_prog_41(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_7(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19295,7 +19295,7 @@ class sincosinv_nv3_nt22_prog_7(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_37(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19311,7 +19311,7 @@ class sincosinv_nv3_nt22_prog_37(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_15(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19327,7 +19327,7 @@ class sincosinv_nv3_nt22_prog_15(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_23(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19343,7 +19343,7 @@ class sincosinv_nv3_nt22_prog_23(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_30(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19359,7 +19359,7 @@ class sincosinv_nv3_nt22_prog_30(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_28(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19377,7 +19377,7 @@ class sincosinv_nv3_nt22_prog_28(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_17(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19393,7 +19393,7 @@ class sincosinv_nv3_nt22_prog_17(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_43(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19410,7 +19410,7 @@ class sincosinv_nv3_nt22_prog_43(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_2(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19426,7 +19426,7 @@ class sincosinv_nv3_nt22_prog_2(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_4(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19442,7 +19442,7 @@ class sincosinv_nv3_nt22_prog_4(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_45(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19459,7 +19459,7 @@ class sincosinv_nv3_nt22_prog_45(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_49(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19477,7 +19477,7 @@ class sincosinv_nv3_nt22_prog_49(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_11(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19493,7 +19493,7 @@ class sincosinv_nv3_nt22_prog_11(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_10(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19509,7 +19509,7 @@ class sincosinv_nv3_nt22_prog_10(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_1(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19525,7 +19525,7 @@ class sincosinv_nv3_nt22_prog_1(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_40(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19541,7 +19541,7 @@ class sincosinv_nv3_nt22_prog_40(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_29(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19559,7 +19559,7 @@ class sincosinv_nv3_nt22_prog_29(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_22(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19575,7 +19575,7 @@ class sincosinv_nv3_nt22_prog_22(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_27(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19591,7 +19591,7 @@ class sincosinv_nv3_nt22_prog_27(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_34(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19608,7 +19608,7 @@ class sincosinv_nv3_nt22_prog_34(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_16(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19626,7 +19626,7 @@ class sincosinv_nv3_nt22_prog_16(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_13(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19642,7 +19642,7 @@ class sincosinv_nv3_nt22_prog_13(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_47(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19658,7 +19658,7 @@ class sincosinv_nv3_nt22_prog_47(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_36(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19674,7 +19674,7 @@ class sincosinv_nv3_nt22_prog_36(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_44(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19690,7 +19690,7 @@ class sincosinv_nv3_nt22_prog_44(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_6(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19707,7 +19707,7 @@ class sincosinv_nv3_nt22_prog_6(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_18(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19723,7 +19723,7 @@ class sincosinv_nv3_nt22_prog_18(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_3(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19739,7 +19739,7 @@ class sincosinv_nv3_nt22_prog_3(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_24(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19755,7 +19755,7 @@ class sincosinv_nv3_nt22_prog_24(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_12(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19771,7 +19771,7 @@ class sincosinv_nv3_nt22_prog_12(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_25(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19788,7 +19788,7 @@ class sincosinv_nv3_nt22_prog_25(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_21(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19804,7 +19804,7 @@ class sincosinv_nv3_nt22_prog_21(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_26(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19820,7 +19820,7 @@ class sincosinv_nv3_nt22_prog_26(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_39(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19838,7 +19838,7 @@ class sincosinv_nv3_nt22_prog_39(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_19(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19854,7 +19854,7 @@ class sincosinv_nv3_nt22_prog_19(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_38(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19870,7 +19870,7 @@ class sincosinv_nv3_nt22_prog_38(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_9(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19886,7 +19886,7 @@ class sincosinv_nv3_nt22_prog_9(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_32(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19902,7 +19902,7 @@ class sincosinv_nv3_nt22_prog_32(KnownEquation):
 @register_eq_class
 class sincosinv_nv3_nt22_prog_5(KnownEquation):
     _eq_name = 'sincosinv_nv3_nt22_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=3)
@@ -19918,7 +19918,7 @@ class sincosinv_nv3_nt22_prog_5(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_46(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19943,7 +19943,7 @@ class inv_nv4_nt46_prog_46(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_0(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19968,7 +19968,7 @@ class inv_nv4_nt46_prog_0(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_35(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -19992,7 +19992,7 @@ class inv_nv4_nt46_prog_35(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_8(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20016,7 +20016,7 @@ class inv_nv4_nt46_prog_8(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_42(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20041,7 +20041,7 @@ class inv_nv4_nt46_prog_42(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_33(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20066,7 +20066,7 @@ class inv_nv4_nt46_prog_33(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_20(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20090,7 +20090,7 @@ class inv_nv4_nt46_prog_20(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_14(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20115,7 +20115,7 @@ class inv_nv4_nt46_prog_14(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_31(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20139,7 +20139,7 @@ class inv_nv4_nt46_prog_31(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_48(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20163,7 +20163,7 @@ class inv_nv4_nt46_prog_48(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_41(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20188,7 +20188,7 @@ class inv_nv4_nt46_prog_41(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_7(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20213,7 +20213,7 @@ class inv_nv4_nt46_prog_7(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_37(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20237,7 +20237,7 @@ class inv_nv4_nt46_prog_37(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_15(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20262,7 +20262,7 @@ class inv_nv4_nt46_prog_15(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_23(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20287,7 +20287,7 @@ class inv_nv4_nt46_prog_23(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_30(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20312,7 +20312,7 @@ class inv_nv4_nt46_prog_30(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_28(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20337,7 +20337,7 @@ class inv_nv4_nt46_prog_28(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_17(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20362,7 +20362,7 @@ class inv_nv4_nt46_prog_17(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_43(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20387,7 +20387,7 @@ class inv_nv4_nt46_prog_43(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_2(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20412,7 +20412,7 @@ class inv_nv4_nt46_prog_2(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_4(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20437,7 +20437,7 @@ class inv_nv4_nt46_prog_4(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_45(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20462,7 +20462,7 @@ class inv_nv4_nt46_prog_45(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_49(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20486,7 +20486,7 @@ class inv_nv4_nt46_prog_49(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_11(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20510,7 +20510,7 @@ class inv_nv4_nt46_prog_11(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_10(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20535,7 +20535,7 @@ class inv_nv4_nt46_prog_10(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_1(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20560,7 +20560,7 @@ class inv_nv4_nt46_prog_1(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_40(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20585,7 +20585,7 @@ class inv_nv4_nt46_prog_40(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_29(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20610,7 +20610,7 @@ class inv_nv4_nt46_prog_29(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_22(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20634,7 +20634,7 @@ class inv_nv4_nt46_prog_22(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_27(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20658,7 +20658,7 @@ class inv_nv4_nt46_prog_27(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_34(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20683,7 +20683,7 @@ class inv_nv4_nt46_prog_34(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_16(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20708,7 +20708,7 @@ class inv_nv4_nt46_prog_16(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_13(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20733,7 +20733,7 @@ class inv_nv4_nt46_prog_13(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_47(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20758,7 +20758,7 @@ class inv_nv4_nt46_prog_47(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_36(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20782,7 +20782,7 @@ class inv_nv4_nt46_prog_36(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_44(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20806,7 +20806,7 @@ class inv_nv4_nt46_prog_44(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_6(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20830,7 +20830,7 @@ class inv_nv4_nt46_prog_6(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_18(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20854,7 +20854,7 @@ class inv_nv4_nt46_prog_18(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_3(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20879,7 +20879,7 @@ class inv_nv4_nt46_prog_3(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_24(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20903,7 +20903,7 @@ class inv_nv4_nt46_prog_24(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_12(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20928,7 +20928,7 @@ class inv_nv4_nt46_prog_12(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_25(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20953,7 +20953,7 @@ class inv_nv4_nt46_prog_25(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_21(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -20978,7 +20978,7 @@ class inv_nv4_nt46_prog_21(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_26(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -21003,7 +21003,7 @@ class inv_nv4_nt46_prog_26(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_39(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -21027,7 +21027,7 @@ class inv_nv4_nt46_prog_39(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_19(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -21051,7 +21051,7 @@ class inv_nv4_nt46_prog_19(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_38(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -21075,7 +21075,7 @@ class inv_nv4_nt46_prog_38(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_9(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -21099,7 +21099,7 @@ class inv_nv4_nt46_prog_9(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_32(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -21124,7 +21124,7 @@ class inv_nv4_nt46_prog_32(KnownEquation):
 @register_eq_class
 class inv_nv4_nt46_prog_5(KnownEquation):
     _eq_name = 'inv_nv4_nt46_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=4)
@@ -21149,7 +21149,7 @@ class inv_nv4_nt46_prog_5(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_46(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21180,7 +21180,7 @@ class sincosinv_nv6_nt68_prog_46(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_0(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21211,7 +21211,7 @@ class sincosinv_nv6_nt68_prog_0(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_35(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21242,7 +21242,7 @@ class sincosinv_nv6_nt68_prog_35(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_8(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21274,7 +21274,7 @@ class sincosinv_nv6_nt68_prog_8(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_42(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21305,7 +21305,7 @@ class sincosinv_nv6_nt68_prog_42(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_33(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21336,7 +21336,7 @@ class sincosinv_nv6_nt68_prog_33(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_20(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21366,7 +21366,7 @@ class sincosinv_nv6_nt68_prog_20(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_14(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21397,7 +21397,7 @@ class sincosinv_nv6_nt68_prog_14(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_31(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21428,7 +21428,7 @@ class sincosinv_nv6_nt68_prog_31(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_48(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21459,7 +21459,7 @@ class sincosinv_nv6_nt68_prog_48(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_41(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21491,7 +21491,7 @@ class sincosinv_nv6_nt68_prog_41(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_7(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21522,7 +21522,7 @@ class sincosinv_nv6_nt68_prog_7(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_37(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21553,7 +21553,7 @@ class sincosinv_nv6_nt68_prog_37(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_15(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21582,7 +21582,7 @@ class sincosinv_nv6_nt68_prog_15(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_23(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21613,7 +21613,7 @@ class sincosinv_nv6_nt68_prog_23(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_30(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21643,7 +21643,7 @@ class sincosinv_nv6_nt68_prog_30(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_28(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21673,7 +21673,7 @@ class sincosinv_nv6_nt68_prog_28(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_17(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21704,7 +21704,7 @@ class sincosinv_nv6_nt68_prog_17(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_43(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21735,7 +21735,7 @@ class sincosinv_nv6_nt68_prog_43(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_2(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21766,7 +21766,7 @@ class sincosinv_nv6_nt68_prog_2(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_4(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21797,7 +21797,7 @@ class sincosinv_nv6_nt68_prog_4(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_45(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21829,7 +21829,7 @@ class sincosinv_nv6_nt68_prog_45(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_49(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21859,7 +21859,7 @@ class sincosinv_nv6_nt68_prog_49(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_11(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21890,7 +21890,7 @@ class sincosinv_nv6_nt68_prog_11(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_10(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21922,7 +21922,7 @@ class sincosinv_nv6_nt68_prog_10(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_1(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21951,7 +21951,7 @@ class sincosinv_nv6_nt68_prog_1(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_40(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -21982,7 +21982,7 @@ class sincosinv_nv6_nt68_prog_40(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_29(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22013,7 +22013,7 @@ class sincosinv_nv6_nt68_prog_29(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_22(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22044,7 +22044,7 @@ class sincosinv_nv6_nt68_prog_22(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_27(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22076,7 +22076,7 @@ class sincosinv_nv6_nt68_prog_27(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_34(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22106,7 +22106,7 @@ class sincosinv_nv6_nt68_prog_34(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_16(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22137,7 +22137,7 @@ class sincosinv_nv6_nt68_prog_16(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_13(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22169,7 +22169,7 @@ class sincosinv_nv6_nt68_prog_13(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_47(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22201,7 +22201,7 @@ class sincosinv_nv6_nt68_prog_47(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_36(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22232,7 +22232,7 @@ class sincosinv_nv6_nt68_prog_36(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_44(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22263,7 +22263,7 @@ class sincosinv_nv6_nt68_prog_44(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_6(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22292,7 +22292,7 @@ class sincosinv_nv6_nt68_prog_6(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_18(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22324,7 +22324,7 @@ class sincosinv_nv6_nt68_prog_18(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_3(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22356,7 +22356,7 @@ class sincosinv_nv6_nt68_prog_3(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_24(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22387,7 +22387,7 @@ class sincosinv_nv6_nt68_prog_24(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_12(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22419,7 +22419,7 @@ class sincosinv_nv6_nt68_prog_12(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_25(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22449,7 +22449,7 @@ class sincosinv_nv6_nt68_prog_25(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_21(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22480,7 +22480,7 @@ class sincosinv_nv6_nt68_prog_21(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_26(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22511,7 +22511,7 @@ class sincosinv_nv6_nt68_prog_26(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_39(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22543,7 +22543,7 @@ class sincosinv_nv6_nt68_prog_39(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_19(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22574,7 +22574,7 @@ class sincosinv_nv6_nt68_prog_19(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_38(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22605,7 +22605,7 @@ class sincosinv_nv6_nt68_prog_38(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_9(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22636,7 +22636,7 @@ class sincosinv_nv6_nt68_prog_9(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_32(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22667,7 +22667,7 @@ class sincosinv_nv6_nt68_prog_32(KnownEquation):
 @register_eq_class
 class sincosinv_nv6_nt68_prog_5(KnownEquation):
     _eq_name = 'sincosinv_nv6_nt68_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22699,7 +22699,7 @@ class sincosinv_nv6_nt68_prog_5(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_46(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22732,7 +22732,7 @@ class inv_nv6_nt610_prog_46(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_0(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22765,7 +22765,7 @@ class inv_nv6_nt610_prog_0(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_35(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22798,7 +22798,7 @@ class inv_nv6_nt610_prog_35(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_8(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22830,7 +22830,7 @@ class inv_nv6_nt610_prog_8(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_42(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22863,7 +22863,7 @@ class inv_nv6_nt610_prog_42(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_33(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22897,7 +22897,7 @@ class inv_nv6_nt610_prog_33(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_20(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22930,7 +22930,7 @@ class inv_nv6_nt610_prog_20(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_14(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22963,7 +22963,7 @@ class inv_nv6_nt610_prog_14(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_31(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -22996,7 +22996,7 @@ class inv_nv6_nt610_prog_31(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_48(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23029,7 +23029,7 @@ class inv_nv6_nt610_prog_48(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_41(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23062,7 +23062,7 @@ class inv_nv6_nt610_prog_41(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_7(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23095,7 +23095,7 @@ class inv_nv6_nt610_prog_7(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_37(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23128,7 +23128,7 @@ class inv_nv6_nt610_prog_37(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_15(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23162,7 +23162,7 @@ class inv_nv6_nt610_prog_15(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_23(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23197,7 +23197,7 @@ class inv_nv6_nt610_prog_23(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_30(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23230,7 +23230,7 @@ class inv_nv6_nt610_prog_30(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_28(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23264,7 +23264,7 @@ class inv_nv6_nt610_prog_28(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_17(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23297,7 +23297,7 @@ class inv_nv6_nt610_prog_17(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_43(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23330,7 +23330,7 @@ class inv_nv6_nt610_prog_43(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_2(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23364,7 +23364,7 @@ class inv_nv6_nt610_prog_2(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_4(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23398,7 +23398,7 @@ class inv_nv6_nt610_prog_4(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_45(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23430,7 +23430,7 @@ class inv_nv6_nt610_prog_45(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_49(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23463,7 +23463,7 @@ class inv_nv6_nt610_prog_49(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_11(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23496,7 +23496,7 @@ class inv_nv6_nt610_prog_11(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_10(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23530,7 +23530,7 @@ class inv_nv6_nt610_prog_10(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_1(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23563,7 +23563,7 @@ class inv_nv6_nt610_prog_1(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_40(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23597,7 +23597,7 @@ class inv_nv6_nt610_prog_40(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_29(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23629,7 +23629,7 @@ class inv_nv6_nt610_prog_29(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_22(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23663,7 +23663,7 @@ class inv_nv6_nt610_prog_22(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_27(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23697,7 +23697,7 @@ class inv_nv6_nt610_prog_27(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_34(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23731,7 +23731,7 @@ class inv_nv6_nt610_prog_34(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_16(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23763,7 +23763,7 @@ class inv_nv6_nt610_prog_16(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_13(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23795,7 +23795,7 @@ class inv_nv6_nt610_prog_13(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_47(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23828,7 +23828,7 @@ class inv_nv6_nt610_prog_47(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_36(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23861,7 +23861,7 @@ class inv_nv6_nt610_prog_36(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_44(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23895,7 +23895,7 @@ class inv_nv6_nt610_prog_44(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_6(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23928,7 +23928,7 @@ class inv_nv6_nt610_prog_6(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_18(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23960,7 +23960,7 @@ class inv_nv6_nt610_prog_18(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_3(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -23994,7 +23994,7 @@ class inv_nv6_nt610_prog_3(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_24(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24029,7 +24029,7 @@ class inv_nv6_nt610_prog_24(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_12(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24064,7 +24064,7 @@ class inv_nv6_nt610_prog_12(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_25(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24098,7 +24098,7 @@ class inv_nv6_nt610_prog_25(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_21(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24131,7 +24131,7 @@ class inv_nv6_nt610_prog_21(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_26(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24163,7 +24163,7 @@ class inv_nv6_nt610_prog_26(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_39(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24195,7 +24195,7 @@ class inv_nv6_nt610_prog_39(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_19(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24227,7 +24227,7 @@ class inv_nv6_nt610_prog_19(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_38(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24260,7 +24260,7 @@ class inv_nv6_nt610_prog_38(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_9(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24293,7 +24293,7 @@ class inv_nv6_nt610_prog_9(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_32(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24327,7 +24327,7 @@ class inv_nv6_nt610_prog_32(KnownEquation):
 @register_eq_class
 class inv_nv6_nt610_prog_5(KnownEquation):
     _eq_name = 'inv_nv6_nt610_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=6)
@@ -24361,7 +24361,7 @@ class inv_nv6_nt610_prog_5(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_46(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24375,7 +24375,7 @@ class sincosinv_nv2_nt11_prog_46(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_0(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24389,7 +24389,7 @@ class sincosinv_nv2_nt11_prog_0(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_35(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24403,7 +24403,7 @@ class sincosinv_nv2_nt11_prog_35(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_8(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24417,7 +24417,7 @@ class sincosinv_nv2_nt11_prog_8(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_42(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24431,7 +24431,7 @@ class sincosinv_nv2_nt11_prog_42(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_33(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24445,7 +24445,7 @@ class sincosinv_nv2_nt11_prog_33(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_20(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24459,7 +24459,7 @@ class sincosinv_nv2_nt11_prog_20(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_14(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24473,7 +24473,7 @@ class sincosinv_nv2_nt11_prog_14(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_31(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24487,7 +24487,7 @@ class sincosinv_nv2_nt11_prog_31(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_48(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24501,7 +24501,7 @@ class sincosinv_nv2_nt11_prog_48(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_41(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24515,7 +24515,7 @@ class sincosinv_nv2_nt11_prog_41(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_7(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24529,7 +24529,7 @@ class sincosinv_nv2_nt11_prog_7(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_37(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24543,7 +24543,7 @@ class sincosinv_nv2_nt11_prog_37(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_15(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24557,7 +24557,7 @@ class sincosinv_nv2_nt11_prog_15(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_23(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24571,7 +24571,7 @@ class sincosinv_nv2_nt11_prog_23(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_30(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24585,7 +24585,7 @@ class sincosinv_nv2_nt11_prog_30(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_28(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24599,7 +24599,7 @@ class sincosinv_nv2_nt11_prog_28(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_17(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24613,7 +24613,7 @@ class sincosinv_nv2_nt11_prog_17(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_43(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24627,7 +24627,7 @@ class sincosinv_nv2_nt11_prog_43(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_2(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24641,7 +24641,7 @@ class sincosinv_nv2_nt11_prog_2(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_4(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24655,7 +24655,7 @@ class sincosinv_nv2_nt11_prog_4(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_45(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24669,7 +24669,7 @@ class sincosinv_nv2_nt11_prog_45(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_49(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24683,7 +24683,7 @@ class sincosinv_nv2_nt11_prog_49(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_11(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24697,7 +24697,7 @@ class sincosinv_nv2_nt11_prog_11(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_10(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24711,7 +24711,7 @@ class sincosinv_nv2_nt11_prog_10(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_1(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24725,7 +24725,7 @@ class sincosinv_nv2_nt11_prog_1(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_40(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24739,7 +24739,7 @@ class sincosinv_nv2_nt11_prog_40(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_29(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24753,7 +24753,7 @@ class sincosinv_nv2_nt11_prog_29(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_22(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24767,7 +24767,7 @@ class sincosinv_nv2_nt11_prog_22(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_27(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24781,7 +24781,7 @@ class sincosinv_nv2_nt11_prog_27(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_34(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24795,7 +24795,7 @@ class sincosinv_nv2_nt11_prog_34(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_16(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24809,7 +24809,7 @@ class sincosinv_nv2_nt11_prog_16(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_13(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24823,7 +24823,7 @@ class sincosinv_nv2_nt11_prog_13(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_47(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24837,7 +24837,7 @@ class sincosinv_nv2_nt11_prog_47(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_36(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24851,7 +24851,7 @@ class sincosinv_nv2_nt11_prog_36(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_44(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24865,7 +24865,7 @@ class sincosinv_nv2_nt11_prog_44(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_6(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24879,7 +24879,7 @@ class sincosinv_nv2_nt11_prog_6(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_18(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24893,7 +24893,7 @@ class sincosinv_nv2_nt11_prog_18(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_3(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24907,7 +24907,7 @@ class sincosinv_nv2_nt11_prog_3(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_24(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24921,7 +24921,7 @@ class sincosinv_nv2_nt11_prog_24(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_12(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24935,7 +24935,7 @@ class sincosinv_nv2_nt11_prog_12(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_25(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24949,7 +24949,7 @@ class sincosinv_nv2_nt11_prog_25(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_21(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24963,7 +24963,7 @@ class sincosinv_nv2_nt11_prog_21(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_26(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24977,7 +24977,7 @@ class sincosinv_nv2_nt11_prog_26(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_39(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -24991,7 +24991,7 @@ class sincosinv_nv2_nt11_prog_39(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_19(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -25005,7 +25005,7 @@ class sincosinv_nv2_nt11_prog_19(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_38(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -25019,7 +25019,7 @@ class sincosinv_nv2_nt11_prog_38(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_9(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -25033,7 +25033,7 @@ class sincosinv_nv2_nt11_prog_9(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_32(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -25047,7 +25047,7 @@ class sincosinv_nv2_nt11_prog_32(KnownEquation):
 @register_eq_class
 class sincosinv_nv2_nt11_prog_5(KnownEquation):
     _eq_name = 'sincosinv_nv2_nt11_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
@@ -25061,7 +25061,7 @@ class sincosinv_nv2_nt11_prog_5(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_46(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_46'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25085,7 +25085,7 @@ class inv_nv5_nt55_prog_46(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_0(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_0'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25109,7 +25109,7 @@ class inv_nv5_nt55_prog_0(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_35(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_35'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25134,7 +25134,7 @@ class inv_nv5_nt55_prog_35(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_8(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25158,7 +25158,7 @@ class inv_nv5_nt55_prog_8(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_42(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25183,7 +25183,7 @@ class inv_nv5_nt55_prog_42(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_33(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_33'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25207,7 +25207,7 @@ class inv_nv5_nt55_prog_33(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_20(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_20'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25232,7 +25232,7 @@ class inv_nv5_nt55_prog_20(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_14(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25256,7 +25256,7 @@ class inv_nv5_nt55_prog_14(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_31(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_31'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25280,7 +25280,7 @@ class inv_nv5_nt55_prog_31(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_48(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_48'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25304,7 +25304,7 @@ class inv_nv5_nt55_prog_48(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_41(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_41'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25328,7 +25328,7 @@ class inv_nv5_nt55_prog_41(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_7(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25352,7 +25352,7 @@ class inv_nv5_nt55_prog_7(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_37(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_37'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25376,7 +25376,7 @@ class inv_nv5_nt55_prog_37(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_15(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_15'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25401,7 +25401,7 @@ class inv_nv5_nt55_prog_15(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_23(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_23'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25425,7 +25425,7 @@ class inv_nv5_nt55_prog_23(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_30(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_30'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25450,7 +25450,7 @@ class inv_nv5_nt55_prog_30(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_28(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_28'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25474,7 +25474,7 @@ class inv_nv5_nt55_prog_28(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_17(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25498,7 +25498,7 @@ class inv_nv5_nt55_prog_17(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_43(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_43'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25523,7 +25523,7 @@ class inv_nv5_nt55_prog_43(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_2(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25547,7 +25547,7 @@ class inv_nv5_nt55_prog_2(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_4(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25571,7 +25571,7 @@ class inv_nv5_nt55_prog_4(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_45(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_45'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25595,7 +25595,7 @@ class inv_nv5_nt55_prog_45(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_49(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_49'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25619,7 +25619,7 @@ class inv_nv5_nt55_prog_49(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_11(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25643,7 +25643,7 @@ class inv_nv5_nt55_prog_11(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_10(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_10'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25667,7 +25667,7 @@ class inv_nv5_nt55_prog_10(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_1(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_1'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25692,7 +25692,7 @@ class inv_nv5_nt55_prog_1(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_40(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_40'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25716,7 +25716,7 @@ class inv_nv5_nt55_prog_40(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_29(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_29'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25740,7 +25740,7 @@ class inv_nv5_nt55_prog_29(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_22(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_22'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25764,7 +25764,7 @@ class inv_nv5_nt55_prog_22(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_27(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_27'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25788,7 +25788,7 @@ class inv_nv5_nt55_prog_27(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_34(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_34'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25811,7 +25811,7 @@ class inv_nv5_nt55_prog_34(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_16(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_16'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25835,7 +25835,7 @@ class inv_nv5_nt55_prog_16(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_13(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25860,7 +25860,7 @@ class inv_nv5_nt55_prog_13(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_47(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_47'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25884,7 +25884,7 @@ class inv_nv5_nt55_prog_47(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_36(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_36'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25908,7 +25908,7 @@ class inv_nv5_nt55_prog_36(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_44(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_44'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25932,7 +25932,7 @@ class inv_nv5_nt55_prog_44(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_6(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_6'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25956,7 +25956,7 @@ class inv_nv5_nt55_prog_6(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_18(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -25980,7 +25980,7 @@ class inv_nv5_nt55_prog_18(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_3(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26004,7 +26004,7 @@ class inv_nv5_nt55_prog_3(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_24(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_24'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26028,7 +26028,7 @@ class inv_nv5_nt55_prog_24(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_12(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26053,7 +26053,7 @@ class inv_nv5_nt55_prog_12(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_25(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_25'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26077,7 +26077,7 @@ class inv_nv5_nt55_prog_25(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_21(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26101,7 +26101,7 @@ class inv_nv5_nt55_prog_21(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_26(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_26'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26125,7 +26125,7 @@ class inv_nv5_nt55_prog_26(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_39(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_39'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26148,7 +26148,7 @@ class inv_nv5_nt55_prog_39(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_19(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26172,7 +26172,7 @@ class inv_nv5_nt55_prog_19(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_38(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_38'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26196,7 +26196,7 @@ class inv_nv5_nt55_prog_38(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_9(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_9'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26220,7 +26220,7 @@ class inv_nv5_nt55_prog_9(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_32(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_32'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -26244,7 +26244,7 @@ class inv_nv5_nt55_prog_32(KnownEquation):
 @register_eq_class
 class inv_nv5_nt55_prog_5(KnownEquation):
     _eq_name = 'inv_nv5_nt55_prog_5'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
+    _function_set = ['add', 'sub', 'mul', 'inv', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
