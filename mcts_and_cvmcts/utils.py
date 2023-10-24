@@ -1,4 +1,4 @@
-from sympy import simplify
+from sympy import simplify, expand
 from sympy.parsing.sympy_parser import parse_expr
 
 
@@ -8,7 +8,7 @@ def pretty_print_expr(eq) -> str:
     '''
     if type(eq) == str:
         eq = parse_expr(eq)
-    return str(simplify(eq))
+    return str(expand(simplify(eq)))
 
 
 def create_geometric_generations(n_generations, nvar, ratio=4):

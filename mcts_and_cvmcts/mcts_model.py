@@ -42,7 +42,7 @@ class MCTS(object):
         self.QN = defaultdict(lambda: np.zeros(2))
         self.scale = 0
         self.eta = eta
-        self.control_variable=False
+        self.control_variable = False
 
     def valid_production_rules(self, Node):
         """
@@ -87,6 +87,7 @@ class MCTS(object):
             y_true = self.task.evaluate()
 
             state = state.replace(';', ',')
+
             reward, eq, _, _ = self.program.optimize(production_rules_to_expr(state.split(',')),
                                                      len(state.split(',')),
                                                      self.task.X,
@@ -429,7 +430,7 @@ def get_state(pr):
     state_dict = {
         'reward': pr[1],
         'pretty-eq': pretty_print_expr(pr[2]),
-        'expr': pr[2],
+        # 'expr': pr[2],
         'rules': pr[0],
     }
     return state_dict

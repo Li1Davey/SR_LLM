@@ -44,7 +44,7 @@ class Program(object):
     def get_vf(self):
         return self.vf
 
-    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=100, verbose=False):
+    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=1000, verbose=False):
         """
         Calculate reward score for a complete parse tree
         If placeholder C is in the equation, also execute estimation for C
@@ -62,6 +62,7 @@ class Program(object):
         eq: discovered equations with estimated numerical values.
         """
         # print('The equation is:', eq, '\t simplified:', simplify_eq(parse_expr(eq)))
+
         if 'A' in eq or 'B' in eq:  # not a valid equation
             return 0, eq, 0, 0
         # count number of constants in equation
@@ -89,7 +90,7 @@ class Program(object):
                 return np.linalg.norm(y_pred - y_true, 2)
 
             # do more than one experiment,
-            x0 = np.random.rand(len(c_lst)) * 10
+            x0 = np.random.rand(len(c_lst))
             # optimize the constants in the expression
             if self.optimizer == 'Nelder-Mead':
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
@@ -139,7 +140,7 @@ class Program(object):
             eq = eq.replace('--', '+')
             eq = eq.replace('-+', '-')
             eq = eq.replace('++', '+')
-            print('optimized eq:', eq, '\t simplified:', pretty_print_expr(parse_expr(eq)))
+            print('simplified:', pretty_print_expr(parse_expr(eq)), 'loss:', t_optimized_obj)
             y_pred = execute(eq, data_X.T, input_var_Xs)
 
         r = float(eta ** tree_size / (1.0 + np.linalg.norm(y_pred - y_true, 2) ** 2 / y_true.shape[0]))

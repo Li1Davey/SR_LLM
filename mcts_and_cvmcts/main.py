@@ -13,7 +13,7 @@ from progam import Program
 
 def run_mcts(
         production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_simulations=200,
-        max_len=100, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
+        max_len=50, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=5, norm_threshold=1e-10
 ):
     """
@@ -94,6 +94,7 @@ def run_mcts(
     end_time = time.time() - start_time
     print("MCTS time:", np.round(np.mean(end_time), 3), 'seconds')
 
+
 def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -112,8 +113,9 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     print("The production rules are:", production_rules)
     run_mcts(production_rules=production_rules, num_episodes=num_episodes)
 
+
 def run_cv_mcts(
-        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], mcts_iterations=1000,
+        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'],num_simulations=200,
         max_len=50, eta=0.9999, max_module_init=30, num_aug=10, exp_rate=1 / np.sqrt(2),
 ):
     """
@@ -151,7 +153,6 @@ def run_cv_mcts(
     for round_idx in range(len(num_iterations)):
         print("update set of free variable and grammars")
         MCTS.program.set_vf(round_idx)
-        # MCTS.program.set_vf(round_idx + 1)
         allowed_inputs = MCTS.program.get_vf()
         MCTS.task.set_allowed_inputs(allowed_inputs)
         if round_idx < len(num_iterations) - 1:
@@ -175,12 +176,10 @@ def run_cv_mcts(
                           exploration_rate=exploration_rate,
                           eta=eta)
 
-        _, current_solution, population = mcts_model.MCTS_run(mcts_iterations,
-                                                              num_simulations=50,  # num_iterations[round_idx],
+        _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
+                                                              num_simulations=num_simulations,  # num_iterations[round_idx],
                                                               verbose=True)
-        #
-        # end_time = time.time() - start_time
-        #
+
         if not hof:
             hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
         else:
@@ -219,9 +218,6 @@ def run_cv_mcts(
     return all_eqs, all_times
 
 
-
-
-
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -237,8 +233,8 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
 
-    num_iterations = 10000
-    num_iterations = create_uniform_generations(num_iterations, nvar + 1)
+    num_episodes = 5000
+    num_iterations = create_uniform_generations(num_episodes, nvar + 1)
 
     all_eqs, all_times = run_cv_mcts(operators_set, opt_num_expr, num_iterations)
 
