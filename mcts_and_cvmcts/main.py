@@ -2,7 +2,7 @@ import numpy as np
 import time
 import argparse
 from mcts_model import MCTS
-from production_rules import get_production_rules, get_ith_var_rules
+from production_rules import get_production_rules, get_ith_var_rules, get_sincos_vars_rules
 from utils import pretty_print_expr, create_uniform_generations
 import random
 from scibench.symbolic_data_generator import DataX
@@ -137,8 +137,6 @@ def run_cv_mcts(
     production_rules = get_production_rules(0, operators_set)
     print("The production rules are:", production_rules)
     grammars = production_rules
-    all_times = []
-    all_eqs = []
 
     # number of module max size increase after each transplantation
     module_grow_step = (max_len - max_module_init) / np.sum(num_iterations)
@@ -158,6 +156,8 @@ def run_cv_mcts(
         MCTS.task.set_allowed_inputs(allowed_inputs)
         if round_idx < len(num_iterations) - 1:
             grammars += get_ith_var_rules(round_idx)
+            if 'sin' in production_rules:
+                grammars += get_sincos_vars_rules(round_idx, non_terminal_node='A')
 
         print("grammar:", grammars)
         print("aug grammar:", aug_grammars)

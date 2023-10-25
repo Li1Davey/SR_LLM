@@ -306,7 +306,6 @@ class MCTS(object):
         """
 
         nA = len(self.grammars)
-        # search history
         states = []
 
         # The policy we're following:
