@@ -1,3 +1,8 @@
+from sympy import Symbol, Float, Integer, Rational
+import sympy
+import numpy as np
+
+
 def production_rules_to_expr(list_of_production_rules):
     """
     Convert a list of production rules to the exact symbolic equation.
@@ -11,6 +16,25 @@ def production_rules_to_expr(list_of_production_rules):
                 break
     output = ''.join(seq)
     return output
+
+
+def to_binary_expr_tree(expr):
+    if isinstance(expr, Symbol):
+        return str(expr)
+    elif isinstance(expr, Float) or isinstance(expr, Integer) or isinstance(expr, Rational):
+        return expr
+    else:
+        op = expr.func
+        args = expr.args
+
+        if len(args) <= 2:
+            return [op.__name__] + [to_binary_expr_tree(arg) for arg in args]
+        else:
+            left = to_binary_expr_tree(args[0])
+            right = to_binary_expr_tree(op(*args[1:]))
+            return [op.__name__, left, right]
+
+
 
 
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
@@ -63,3 +87,9 @@ def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     return [f'{non_terminal_node}->X{xi}', ]
+
+
+if __name__ == '__main__':
+    X0=Symbol('X0')
+    expr=2.1/X0 #3.5*X0+4.0+
+    preorder_traversal_expr = to_binary_expr_tree(expr)

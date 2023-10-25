@@ -15,9 +15,8 @@ class MCTS(object):
     task = None  # Task
     program = None
     # constants
-    const_optimizer = None  # Function to optimize constants
     opt_num_expr = 1  # number of experiments done for optimization
-    expr_obj_thres = 1e-2
+    expr_obj_thres = 1e-6
     expr_consts_thres = 1e-3
 
     noise_std = 0.0
@@ -42,7 +41,6 @@ class MCTS(object):
         self.QN = defaultdict(lambda: np.zeros(2))
         self.scale = 0
         self.eta = eta
-        self.control_variable = False
 
     def valid_production_rules(self, Node):
         """
@@ -50,14 +48,11 @@ class MCTS(object):
         """
         return [self.grammars.index(x) for x in self.grammars if x.startswith(Node)]
 
-    def get_non_terminal_nodes(self, prod, prod_idx) -> list:
+    def get_non_terminal_nodes(self, prod) -> list:
         """
         Get all the non-terminal nodes from right-hand side of a production rule grammar
         """
-        if prod_idx >= len(self.base_grammars):
-            return []
-        else:
-            return [i for i in prod[3:] if i in self.non_terminal_nodes]
+        return [i for i in prod[3:] if i in self.non_terminal_nodes]
 
     def get_unvisited_children(self, state, node) -> list:
         """
@@ -72,21 +67,18 @@ class MCTS(object):
         action_idx: index of grammar starts from the current Non-terminal Node
         tree:       the current tree
         ntn:        all remaining non-terminal nodes
-        
-        
+
         This defines one step of Parse Tree traversal
         return tree (next state), remaining non-terminal nodes, reward, and if it is done
         """
         action = self.grammars[action_idx]
         state = state + ',' + action
-        ntn = self.get_non_terminal_nodes(action, action_idx) + ntn
+        ntn = self.get_non_terminal_nodes(action) + ntn
 
         if not ntn:
             self.task.rand_draw_data_with_X_fixed()
-
+            # print(self.task.X[:4,:])
             y_true = self.task.evaluate()
-
-            state = state.replace(';', ',')
 
             reward, eq, _, _ = self.program.optimize(production_rules_to_expr(state.split(',')),
                                                      len(state.split(',')),
@@ -106,21 +98,17 @@ class MCTS(object):
         list_of_grammars
         opt_num_expr
         """
-        freezed_grams = []
-        is_freezed = False
+        freezed_exprs = []
         aug_nt_nodes = []
         for one_grams, one_reward, expr in list_of_grammars:
-            self.optimized_constants = []
-            self.optimized_obj = []
-            empty_grammars = []
-            one_aug_nodes = []
-            state = 'f->A,' + one_grams
+            optimized_constants = []
+            optimized_obj = []
+            state = one_grams
             state = state.split(',')
             expr_template = production_rules_to_expr(state)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
                 self.task.rand_draw_data_with_X_fixed()
-                print(self.task.X[:5, :])
                 y_true = self.task.evaluate()
                 _, eq, opt_consts, opt_obj = self.program.optimize(expr_template,
                                                                    len(state),
@@ -129,44 +117,44 @@ class MCTS(object):
                                                                    self.input_var_Xs,
                                                                    eta=self.eta,
                                                                    max_opt_iter=5000)
-                self.optimized_constants.append(opt_consts)
-                self.optimized_obj.append(opt_obj)
-                print(eq)
-            self.optimized_constants = np.asarray(self.optimized_constants)
-            self.optimized_obj = np.asarray(self.optimized_obj)
-            print(self.optimized_constants)
-            print(self.optimized_obj)
+                optimized_constants.append(opt_consts)
+                optimized_obj.append(opt_obj)
+                # print(eq)
+            optimized_constants = np.asarray(optimized_constants)
+            optimized_obj = np.asarray(optimized_obj)
+            print(optimized_constants)
+            print(optimized_obj)
             num_changing_consts = one_grams.count('C')
             is_summary_constants = np.zeros(num_changing_consts)
-            # convert the
-            one_grams = one_grams.replace('B', 'A')
-            if np.max(self.optimized_obj) <= self.expr_obj_thres:
+            if np.max(optimized_obj) <= self.expr_obj_thres:
                 for ci in range(num_changing_consts):
-                    print(np.std(self.optimized_constants[:, ci]), ci, self.expr_consts_thres)
-                    if np.std(self.optimized_constants[:, ci]) <= self.expr_consts_thres:
-                        # print(self.optimized_constants, ci, self.expr_consts_thres)
+                    print(np.std(optimized_constants[:, ci]), end="\t")
+                    if np.std(optimized_constants[:, ci]) <= self.expr_consts_thres:
+                        # print(optimized_constants, ci, self.expr_consts_thres)
                         print(f'c{ci} is a standlone constant')
                     else:
                         print(f'c{ci} is a summary constant')
                         is_summary_constants[ci] = 1
-                cidx = -1
-                for one_rule in one_grams.split(','):
-                    if one_rule == 'A->C':
-                        cidx += 1
-                        if is_summary_constants[cidx] == 1:
-                            # B stands for a sub-expression. We want to replace the summary constant with a sub-expression in the next round.
-                            empty_grammars.append('A->B')
-                            one_aug_nodes.append('B')
-                            is_freezed = True
-                        else:
-                            empty_grammars.append(one_rule)
+                cidx = 0
+                new_expr_template = 'B->'
+                for ti in expr_template:
+                    if ti == 'C' and is_summary_constants[cidx] == 1:
+                        new_expr_template += '(A)'
                     else:
-                        empty_grammars.append(one_rule)
+                        new_expr_template += ti
+
+                freezed_exprs.append(new_expr_template)
+                aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
             else:
-                empty_grammars = one_grams.split(',')
-            freezed_grams.append(';'.join(empty_grammars))
-            aug_nt_nodes.append(one_aug_nodes)
-        return is_freezed, freezed_grams, aug_nt_nodes
+                new_expr_template = 'B->'
+                for ti in expr_template:
+                    if ti == 'C':
+                        new_expr_template += '(A)'
+                    else:
+                        new_expr_template += ti
+                freezed_exprs.append(new_expr_template)
+                aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+        return freezed_exprs, aug_nt_nodes
 
     def rollout(self, num_play, state_initial, ntn_initial):
         """
@@ -301,7 +289,7 @@ class MCTS(object):
         If we pass by a concise solution with high score, we store it as an
         single action for future use.
         """
-        module = state[5:]
+        module = state  # [5:]
         if state.count(',') <= self.max_module:
             if not self.hall_of_fame:
                 self.hall_of_fame = [(module, reward, eq)]
@@ -312,7 +300,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_episodes, num_simulations=50, verbose=False, print_freq=5):
+    def MCTS_run(self, num_episodes, num_simulations=50, verbose=False, print_freq=10, is_first_round=False):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -327,16 +315,19 @@ class MCTS(object):
         uniform_random_policy = self.get_uniform_random_policy()
 
         reward_his = []
-        best_solution = ('nothing', 0)
+        best_solution = ('C', 0)
 
         for t in range(1, num_episodes + 1):
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
-                self.print_hofs(verbose=True)
+                self.print_hofs(10, verbose=True)
                 sys.stdout.flush()
-
-            state = 'f->A'
-            ntn = ['A']
+            if is_first_round:
+                state = 'f->B'
+                ntn = ['B']
+            else:
+                state = 'f->A'
+                ntn = ['A']
             unvisited_children = self.get_unvisited_children(state, ntn[0])
 
             ########################################################
@@ -348,9 +339,7 @@ class MCTS(object):
                 print("following UCB_policy...")
                 prob = ucb_policy(state, ntn[0])
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
-                if self.control_variable and self.grammars[action] in self.aug_grammars:
-                    ntn.extend(self.aug_nt_nodes[self.aug_grammars.index(self.grammars[action])])
-                    print("new ntn is:", ntn)
+                print('state:', state, '\t action:', self.grammars[action])
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 if state not in states:
                     states.append(state)
@@ -382,10 +371,8 @@ class MCTS(object):
                 print("follow uniform_random_policy:", unvisited_children)
                 prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children, p=prob / np.sum(prob))
-                if self.control_variable and self.grammars[action] in self.aug_grammars:
-                    ntn.extend(self.aug_nt_nodes[self.aug_grammars.index(self.grammars[action])])
-                    print("new ntn is:", ntn)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                print('state:', state, '\t action:', self.grammars[action])
                 if not done:
                     # 3. SIMULATION STEP in MCTS.
                     print("simulation step")
@@ -403,12 +390,11 @@ class MCTS(object):
 
         return reward_his, best_solution, self.hall_of_fame
 
-    def print_hofs(self, verbose=False):
-        self.task.rand_draw_X_fixed()
+    def print_hofs(self, size, verbose=False):
         self.task.rand_draw_data_with_X_fixed()
         print("PRINT HOF")
         print("=" * 20)
-        for pr in self.hall_of_fame:
+        for pr in self.hall_of_fame[-size:]:
             if verbose:
                 print('        ' + str(get_state(pr)), end="\n")
                 self.print_reward_function_all_metrics(pr[2])

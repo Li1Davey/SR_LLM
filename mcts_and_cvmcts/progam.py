@@ -26,7 +26,7 @@ class Program(object):
         # Can be empty if we are unpickling
         # if tokens is not None:
         #
-        self.vf = np.zeros(n_vars)
+        self.vf = np.zeros(n_vars, dtype=int)
 
         self.n_vars = n_vars
         self.optimizer = optimizer
@@ -44,7 +44,7 @@ class Program(object):
     def get_vf(self):
         return self.vf
 
-    def optimize(self, eq, tree_size, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=1000, verbose=False):
+    def optimize(self, eq, tree_size:int, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=1000, verbose=False):
         """
         Calculate reward score for a complete parse tree
         If placeholder C is in the equation, also execute estimation for C
@@ -53,7 +53,7 @@ class Program(object):
         Parameters
         ----------
         eq : Str object. the discovered equation (with placeholders for coefficients).
-        tree_size : Int object. number of production rules in the complete parse tree.
+        tree_size: number of production rules in the complete parse tree.
         (data_X, y_true) : 2-d numpy array.
 
         Returns
@@ -61,6 +61,7 @@ class Program(object):
         score: discovered equations.
         eq: discovered equations with estimated numerical values.
         """
+        # eq='(C*X2+C)*X0+(0.4379/X1)/X0+(C+C/X2)'
         # print('The equation is:', eq, '\t simplified:', simplify_eq(parse_expr(eq)))
 
         if 'A' in eq or 'B' in eq:  # not a valid equation
@@ -87,13 +88,14 @@ class Program(object):
                 eq_est = eq_est.replace('++', '+')
                 y_pred = execute(eq_est, data_X.T, input_var_Xs)
 
-                return np.linalg.norm(y_pred - y_true, 2)
+                return np.mean((y_pred - y_true) ** 2)
 
             # do more than one experiment,
             x0 = np.random.rand(len(c_lst))
             # optimize the constants in the expression
             if self.optimizer == 'Nelder-Mead':
                 opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
+
             elif self.optimizer == 'BFGS':
                 opt_result = minimize(f, x0, method='BFGS', options={'maxiter': max_opt_iter})
             elif self.optimizer == 'CG':
@@ -143,7 +145,7 @@ class Program(object):
             print('simplified:', pretty_print_expr(parse_expr(eq)), 'loss:', t_optimized_obj)
             y_pred = execute(eq, data_X.T, input_var_Xs)
 
-        r = float(eta ** tree_size / (1.0 + np.linalg.norm(y_pred - y_true, 2) ** 2 / y_true.shape[0]))
+        r = float(eta ** tree_size / (1.0 + np.mean((y_pred - y_true) ** 2) ** 2 / y_true.shape[0]))
 
         return r, eq, t_optimized_constants, t_optimized_obj
 

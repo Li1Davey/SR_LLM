@@ -13,7 +13,7 @@ from progam import Program
 
 def run_mcts(
         production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_simulations=200,
-        max_len=50, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
+        max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=5, norm_threshold=1e-10
 ):
     """
@@ -88,9 +88,9 @@ def run_mcts(
 
         if current_solution[1] > best_solution[1]:
             best_solution = current_solution
-        # print(best_solution)
+
         max_module += module_grow_step
-        exploration_rate *= 5
+        exploration_rate *= 1.2
     end_time = time.time() - start_time
     print("MCTS time:", np.round(np.mean(end_time), 3), 'seconds')
 
@@ -115,8 +115,8 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 
 
 def run_cv_mcts(
-        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'],num_simulations=200,
-        max_len=50, eta=0.9999, max_module_init=30, num_aug=10, exp_rate=1 / np.sqrt(2),
+        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_simulations=20,
+        max_len=20, eta=0.999, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
 ):
     """
     Executes the main training loop of Symbolic Physics Learner.
@@ -151,21 +151,16 @@ def run_cv_mcts(
 
     start_time = time.time()
     for round_idx in range(len(num_iterations)):
+        print('++++++++++++ ROUND {}  ++++++++++++'.format(round_idx))
         print("update set of free variable and grammars")
         MCTS.program.set_vf(round_idx)
         allowed_inputs = MCTS.program.get_vf()
         MCTS.task.set_allowed_inputs(allowed_inputs)
         if round_idx < len(num_iterations) - 1:
             grammars += get_ith_var_rules(round_idx)
-        print('++++++++++++ ROUND {}  ++++++++++++'.format(round_idx))
-        # debug begin
-        # nt_nodes.append('B')
-        # grammars.extend(get_production_rules(0, operators_set, non_terminal_node='B'))
-        # grammars.extend(get_ith_var_rules(round_idx + 1, non_terminal_node='B'))
-        # aug_grammars.append('A->A+A;A->A+A;A->A*A;A->B;A->X0;A->A/A;A->B;A->X0;A->C')
-        # print(tree_to_eq('f->A,A->A+A,A->A+A,A->A*A,A->C,A->X0,A->A/A,A->C,A->X0,A->C'.split(',')))
 
-        # debug ends
+        print("grammar:", grammars)
+        print("aug grammar:", aug_grammars)
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           non_terminal_nodes=nt_nodes,
@@ -177,45 +172,26 @@ def run_cv_mcts(
                           eta=eta)
 
         _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
-                                                              num_simulations=num_simulations,  # num_iterations[round_idx],
-                                                              verbose=True)
+                                                                  num_simulations=num_simulations,  # num_iterations[round_idx],
+                                                                  verbose=True)
+
 
         if not hof:
             hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
         else:
             hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
-        # aug_grammars = list(set([x[0] for x in hof[:num_aug]]))
-        # aug_grams_debug = [
-        #     ('A->A+A,A->A+A,A->A*A,A->B,A->X0,A->A/A,A->B,A->X0,A->C,B->C,B->B/B,B->C,B->X1', 0.9920393649645961, '-0.12545874191252*X0+0.4378999964344581/X1/X0+14.740017243123066')]
-        freezed, aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(hof,
-                                                                          opt_num_expr)  # mcts_model.freeze_equations(hof[:num_aug], opt_num_expr)
-        print('++++++++++++ ROUND {} AUG Grammar ++++++++++++'.format(round_idx, ))
-        for gi in aug_grammars:
-            print(gi)
-        print('-' * 20)
-        if freezed == True:
-            nt_nodes.append('B')
-            nt_nodes = list(set(nt_nodes)).sort()
-            grammars.extend(get_production_rules(0, operators_set, non_terminal_node='B'))
-            grammars.extend(get_ith_var_rules(round_idx + 1, non_terminal_node='B'))
-            grammars = list(set(grammars)).sort()
-            print("new grammars:", grammars)
+        aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(hof[-num_aug:], opt_num_expr)
 
-        print('Hall of Fame:')
-        for i in range(min(10, len(hof))):
-            print(hof[i][-2], hof[i][-1], hof[i][0])
+        grammars = [gi for gi in grammars if str(round_idx) not in gi]
 
-        # print(best_solution)
-        max_module += module_grow_step
-        exploration_rate *= 5
+        max_module += int(module_grow_step)
+        exploration_rate *= 1.2
 
         print()
 
     print('final hof')
     for hi in hof:
         print(hi[-2], hi[-1], hi[0])
-
-    return all_eqs, all_times
 
 
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
@@ -235,10 +211,10 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
 
     num_episodes = 5000
     num_iterations = create_uniform_generations(num_episodes, nvar + 1)
-
-    all_eqs, all_times = run_cv_mcts(operators_set, opt_num_expr, num_iterations)
-
-    print('average discovery time is', np.round(np.mean(all_times), 3), 'seconds')
+    start = time.time()
+    run_cv_mcts(operators_set, opt_num_expr, num_iterations)
+    end = time.time() - start
+    print('average discovery time is', np.round(end / 60, 3), 'mins')
 
 
 if __name__ == '__main__':
@@ -264,6 +240,7 @@ if __name__ == '__main__':
     seed = int(time.perf_counter() * 10000) % 1000007
     np.random.seed(seed)
     print('np.random seed=', seed)
+    print(args)
     if args.cv_mcts:
         cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
     else:
