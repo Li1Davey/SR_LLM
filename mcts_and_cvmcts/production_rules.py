@@ -47,7 +47,7 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
                   f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
                   f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}']
     div_rules = [f'{non_terminal_node}->({non_terminal_node})/({non_terminal_node})']
-    inv_rules = [f'{non_terminal_node}->1/({non_terminal_node})']
+    # inv_rules = [f'{non_terminal_node}->1/({non_terminal_node})']
     exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
     log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
     sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
@@ -55,7 +55,7 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
 
     rules = base_rules + get_vars_rules(nvars) + const_rules
     if 'inv' in operators_set:
-        rules += inv_rules
+        rules += get_inv_rules(nvars)
     if 'div' in operators_set:
         rules += div_rules
     if 'sin' in operators_set or 'cos' in operators_set:
@@ -69,10 +69,8 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     return rules
 
 
-def remove_consts_rules_in_eq(k, non_terminal_node='A'):
-    # remove k-th A->C rules in the expression
-    return None
-
+def get_inv_rules(nvars: int, non_terminal_node='A') -> list:
+    return [f'{non_terminal_node}->1/X{xi}' for xi in range(nvars) ]
 
 def get_vars_rules(nvars: int, non_terminal_node='A') -> list:
     return [f'{non_terminal_node}->X{i}' for i in range(nvars)]
@@ -88,6 +86,9 @@ def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     return [f'{non_terminal_node}->X{xi}', ]
 
+
+def get_ith_inv_rules(xi: int, non_terminal_node='A') -> list:
+    return [f'{non_terminal_node}->1/X{xi}', ]
 
 if __name__ == '__main__':
     X0=Symbol('X0')
