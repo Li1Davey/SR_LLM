@@ -115,7 +115,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 
 
 def run_cv_mcts(
-        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_simulations=20,
+        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_simulations=50,
         max_len=20, eta=0.999, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
 ):
     """
