@@ -2,7 +2,7 @@ import numpy as np
 import time
 import argparse
 from mcts_model import MCTS
-from production_rules import get_production_rules, get_ith_var_rules, get_sincos_vars_rules
+from production_rules import *
 from utils import pretty_print_expr, create_uniform_generations
 import random
 from scibench.symbolic_data_generator import DataX
@@ -157,7 +157,9 @@ def run_cv_mcts(
         if round_idx < len(num_iterations) - 1:
             grammars += get_ith_var_rules(round_idx)
             if 'sin' in operators_set:
-                grammars += get_sincos_vars_rules(round_idx, non_terminal_node='A')
+                grammars += get_ith_sincos_rules(round_idx, non_terminal_node='A')
+            if 'inv' in operators_set:
+                grammars += get_ith_inv_rules(round_idx, non_terminal_node='A')
 
         print("grammar:", grammars)
         print("aug grammar:", aug_grammars)

@@ -82,7 +82,11 @@ def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
     """
     return [f'{non_terminal_node}->sin(X{i})' for i in range(nvars)] + [f'{non_terminal_node}->cos(X{i})' for i in range(nvars)]
 
-
+def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
+    """
+    return [A->sin(Xi), A->cos(Xi)]
+    """
+    return [f'{non_terminal_node}->sin(X{i})', f'{non_terminal_node}->cos(X{i})']
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     return [f'{non_terminal_node}->X{xi}', ]
 
