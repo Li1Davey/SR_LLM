@@ -335,7 +335,7 @@ class MCTS(object):
 
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
-                print("following UCB_policy...")
+                print("UCB_policy...")
                 prob = ucb_policy(state, ntn[0])
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
                 print('state:', state, '\t action:', self.grammars[action])
@@ -350,7 +350,7 @@ class MCTS(object):
 
                     if state.count(',') >= self.max_len:
                         unvisited_children = []
-                        print("BACK-PROPAGATION STEP")
+                        # print("BACK-PROPAGATION STEP")
                         self.back_propagate(state, action, 0)
                         reward_his.append(best_solution[1])
                         break
@@ -360,21 +360,21 @@ class MCTS(object):
                         self.update_hall_of_fame(next_state, reward, eq)
                         self.update_QN_scale(reward)
                         best_solution = (eq, reward)
-                    print("BACK-PROPAGATION STEP")
+                    # print("BACK-PROPAGATION STEP")
                     self.back_propagate(state, action, reward)
                     reward_his.append(best_solution[1])
                     break
 
             # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
             if unvisited_children:
-                print("follow uniform_random_policy:", unvisited_children)
+                print("uniform_random_policy:", unvisited_children)
                 prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children, p=prob / np.sum(prob))
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 print('state:', state, '\t action:', self.grammars[action])
                 if not done:
                     # 3. SIMULATION STEP in MCTS.
-                    print("simulation step")
+                    print("simulation")
                     reward, eq = self.rollout(num_simulations, next_state, ntn_next)
                     if state not in states:
                         states.append(state)
@@ -383,7 +383,7 @@ class MCTS(object):
                     self.update_QN_scale(reward)
                     best_solution = (eq, reward)
                 # 4. BACK-PROPAGATION STEP in MCTS.
-                print("BACK-PROPAGATION STEP")
+                # print("BACK-PROPAGATION STEP")
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
 

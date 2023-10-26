@@ -156,7 +156,7 @@ def run_cv_mcts(
         MCTS.task.set_allowed_inputs(allowed_inputs)
         if round_idx < len(num_iterations) - 1:
             grammars += get_ith_var_rules(round_idx)
-            if 'sin' in production_rules:
+            if 'sin' in operators_set:
                 grammars += get_sincos_vars_rules(round_idx, non_terminal_node='A')
 
         print("grammar:", grammars)
