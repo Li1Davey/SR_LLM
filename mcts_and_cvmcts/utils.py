@@ -4,9 +4,6 @@ from sympy import simplify, expand, Symbol
 from sympy.parsing.sympy_parser import parse_expr
 
 
-# from py_expression_eval import Parser
-
-
 def pretty_print_expr(eq) -> str:
     '''
     ask sympy simplify to pretty print the expression.
@@ -36,14 +33,6 @@ def create_geometric_generations(n_generations, nvar, ratio=4):
     return gens
 
 
-def flatten(S):
-    if S == []:
-        return S
-    if isinstance(S[0], list):
-        return flatten(S[0]) + flatten(S[1:])
-    return S[:1] + flatten(S[1:])
-
-
 def create_uniform_generations(n_generations, nvar):
     gens = [0] * nvar
     each_gen = n_generations // nvar
@@ -60,7 +49,8 @@ def expression_to_template(expr) -> str:
     all_floats = expr.atoms(Float)
     for fi in all_floats:
         expr = expr.replace(fi, C)
-    print(str(expr))
+    # print(str(expr))
+    return str(expr)
 
 
 

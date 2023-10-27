@@ -2,7 +2,7 @@ import sys
 import numpy as np
 from collections import defaultdict
 from sympy import Symbol
-
+from sympy.parsing.sympy_parser import parse_expr
 from production_rules import production_rules_to_expr
 from progam import execute
 from utils import pretty_print_expr, expression_to_template
@@ -86,20 +86,15 @@ class MCTS(object):
             return state, ntn, 0, False, None
 
     def freeze_equations(self, list_of_grammars, opt_num_expr):
-        """
-        decide summary constants and stand alone constants.
-        Parameters
-        ----------
-        list_of_grammars
-        opt_num_expr
-        """
+        # decide summary constants and stand alone constants.
+        print("---------Freeze Equation----------")
         freezed_exprs = []
         aug_nt_nodes = []
         for state, one_reward, expr in list_of_grammars:
             optimized_constants = []
             optimized_obj = []
-            expr_template = expression_to_template(expr,  self.nvars)  # pretty_print_expr(production_rules_to_expr(state.split(',')))
-            expr_template=pretty_print_expr(expr_template)
+            expr_template = expression_to_template(parse_expr(expr))
+            expr_template = pretty_print_expr(expr_template)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
                 self.task.rand_draw_data_with_X_fixed()
@@ -289,7 +284,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_episodes, num_simulations=50, verbose=False, print_freq=10, is_first_round=False, reward_threhold=10):
+    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=10, is_first_round=False, reward_threhold=10):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -311,6 +306,8 @@ class MCTS(object):
                 print(self.QN.keys())
                 self.print_hofs(10, verbose=True)
                 sys.stdout.flush()
+                if reward_his[-1] > reward_threhold:
+                    break
             if not is_first_round:
                 state = 'f->B'
                 ntn = ['B']
@@ -326,7 +323,6 @@ class MCTS(object):
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
                 print("UCB_policy...")
-
                 prob = ucb_policy(state, ntn[0])
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
                 print('state:', state, '\t action:', self.grammars[action])
@@ -364,7 +360,7 @@ class MCTS(object):
                 print('state:', state, '\t action:', self.grammars[action])
                 if not done:
                     # 3. SIMULATION STEP in MCTS.
-                    reward, eq = self.rollout(num_simulations, next_state, ntn_next)
+                    reward, eq = self.rollout(num_rollouts, next_state, ntn_next)
                     if state not in states:
                         states.append(state)
 
@@ -375,8 +371,7 @@ class MCTS(object):
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
-            if reward_his[-1] > reward_threhold:
-                break
+
 
         return reward_his, best_solution, self.hall_of_fame
 

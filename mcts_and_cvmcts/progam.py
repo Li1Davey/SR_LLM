@@ -29,7 +29,7 @@ class Program(object):
 
         self.optimized_constants = []
         self.optimized_obj = []
-        self.cache={}
+        self.cache = {}
 
     def set_vf(self, xi: int):
         """set of free variables"""
@@ -41,7 +41,7 @@ class Program(object):
     def get_vf(self):
         return self.vf
 
-    def optimize(self, eq, tree_size:int, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=1000, verbose=False):
+    def optimize(self, eq, tree_size: int, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=1000, verbose=False):
         """
         Calculate reward score for a complete parse tree
         If placeholder C is in the equation, also execute estimation for C
@@ -140,8 +140,8 @@ class Program(object):
             print('simplified:', pretty_print_expr(parse_expr(eq)), 'loss:', t_optimized_obj)
             y_pred = execute(eq, data_X.T, input_var_Xs)
 
-        r =  eta** tree_size* float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
-        return r,  pretty_print_expr(parse_expr(eq)), t_optimized_constants, t_optimized_obj
+        r = eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
+        return r, pretty_print_expr(parse_expr(eq)), t_optimized_constants, t_optimized_obj
 
 
 def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
@@ -169,5 +169,18 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
     except KeyError as e:
         # print(e, expr)
         y_hat = np.ones(data_X.shape[-1]) * np.infty
+
+    return y_hat
+
+
+def execute_eval(expr_str: str, data_X: np.ndarray, input_var_Xs, simulated_steps: int, dt: float):
+    """
+    evaluate the output of expression with the given input.
+    consts: list of constants.
+    """
+    try:
+        y_hat =  eval(expr_str)
+    except TypeError as e:
+        print(e)
 
     return y_hat
