@@ -65,11 +65,13 @@ def run_mcts(
                           aug_grammars_allowed=num_aug,
                           exploration_rate=exploration_rate,
                           eta=eta)
+
         _, current_solution, good_modules = mcts_model.MCTS_run(num_episodes,
                                                                 num_simulations=num_simulations,
                                                                 verbose=True)
 
         mcts_model.print_hofs(verbose=True)
+
         if not best_modules:
             best_modules = good_modules
         else:
@@ -172,23 +174,41 @@ def run_cv_mcts(
                           aug_grammars_allowed=num_aug,
                           exploration_rate=exploration_rate,
                           eta=eta)
-
-        _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
-                                                                  num_simulations=num_simulations,  # num_iterations[round_idx],
-                                                                  verbose=True)
-
+        if round_idx > 0:
+            _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
+                                                                  num_simulations=num_simulations,
+                                                                  verbose=True,
+                                                                  is_first_round=(round_idx == 0))
+        # print(population)
+        # population = [('f->A,A->A*A,A->(A+A),A->A*A,A->(A-A),A->C/X0,A->C,A->(A-A),A->C,A->C,A->X0,A->C', 23.068720403699434,
+        #                '0.13182824082373745*X0 + 1.0361801332340463 + 1.0894294816835092/X0'),
+        #               ('f->A,A->(A+A),A->(A-A),A->X0,A->C/X0,A->(A+A),A->C/X0,A->A*A,A->(A-A),A->C/X0,A->C,A->X0', 23.012303752122193,'0.1318282408230154*X0 + 1.0361801332380072 + 1.089429481683362/X0'),
+        #               ('f->A,A->(A-A),A->C,A->A*A,A->C,A->C/X0', 1.1824042762518967, '1.469232984198712 + 1.015123418778804/X0'),
+        #               ('f->A,A->(A-A),A->A*A,A->A*A,A->C/X0,A->X0,A->C/X0,A->C', 1.176704116234089, '1.4551262508707083 + 1.0182987718137123/X0'),
+        #               ('f->A,A->(A+A),A->C/X0,A->(A+A),A->C,A->C/X0', 1.1565100897012819, '1.4794190843607773 + 1.014890896862655/X0')]
+        population = [('f->A,A->A*A,A->(A+A),A->(A-A),A->(A+A),A->C,A->X0,A->C/X0,A->C,A->C', 23.770283344182964,
+                       '0.13247115856386393*X0 + 1.0353458050684574 + 0.52883943403551033/X0'), (
+                      'f->A,A->(A-A),A->C/X0,A->A*A,A->A*A,A->(A+A),A->X0,A->C/X0,A->C,A->X0', 2.25220289314079,
+                      '0.013885738714123847*X0**2 + 1.2333814588334896 + 0.49909885502731205/X0'), (
+                      'f->A,A->(A-A),A->C,A->A*A,A->(A+A),A->C/X0,A->C,A->C/X0', 1.3118113123272561,
+                      '1.636882612543767 + 0.26041838235648463/X0 + 0.02419913628584759/X0**2'),
+                      ('f->A,A->(A+A),A->C/X0,A->C', 1.1757189568189004, '1.4714298036142792 + 0.4539021108943125/X0'),
+                      ('f->A,A->(A+A),A->C,A->C/X0', 1.1710592015563708, '1.475556602631371 + 0.45314785700379323/X0')]
 
         if not hof:
             hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
         else:
             hof = sorted(list(set(population)), key=lambda x: x[1], reverse=True)
-        aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(hof[-num_aug:], opt_num_expr)
-
+        print("hof")
+        print(hof)
+        aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(hof, opt_num_expr)
+        print("aug grammars")
+        print(aug_grammars)
         grammars = [gi for gi in grammars if str(round_idx) not in gi]
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-
+        exit()
         print()
 
     print('final hof')
@@ -202,7 +222,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     nvar = data_query_oracle.get_nvars()
     operators_set = data_query_oracle.get_operators_set()
 
-    regress_batchsize = 256
+    regress_batchsize = 1024
     opt_num_expr = 5
     allowed_input_tokens = np.ones(nvar, dtype=np.int32)
     MCTS.task = RegressTask(regress_batchsize,

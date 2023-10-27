@@ -5,7 +5,7 @@ from sympy import Symbol
 
 from production_rules import production_rules_to_expr
 from progam import execute
-from utils import pretty_print_expr
+from utils import pretty_print_expr, expression_to_template
 
 
 class MCTS(object):
@@ -43,21 +43,15 @@ class MCTS(object):
         self.eta = eta
 
     def valid_production_rules(self, Node):
-        """
-        Get index of all possible production rules starting with a given node
-        """
+        # Get index of all possible production rules starting with a given node
         return [self.grammars.index(x) for x in self.grammars if x.startswith(Node)]
 
     def get_non_terminal_nodes(self, prod) -> list:
-        """
-        Get all the non-terminal nodes from right-hand side of a production rule grammar
-        """
+        # Get all the non-terminal nodes from right-hand side of a production rule grammar
         return [i for i in prod[3:] if i in self.non_terminal_nodes]
 
     def get_unvisited_children(self, state, node) -> list:
-        """
-        Pick an action to to visit the index of all unvisited child.
-        """
+        #  Pick an action to to visit the index of all unvisited child.
         valid_actions = self.valid_production_rules(node)
         return [act for act in valid_actions if self.QN[state + ',' + self.grammars[act]][1] == 0]
 
@@ -77,15 +71,16 @@ class MCTS(object):
 
         if not ntn:
             self.task.rand_draw_data_with_X_fixed()
-            # print(self.task.X[:4,:])
             y_true = self.task.evaluate()
-
-            reward, eq, _, _ = self.program.optimize(production_rules_to_expr(state.split(',')),
+            expr_template = production_rules_to_expr(state.split(','))
+            reward, eq, _, _ = self.program.optimize(expr_template,
                                                      len(state.split(',')),
                                                      self.task.X,
                                                      y_true,
                                                      self.input_var_Xs,
-                                                     eta=self.eta)
+                                                     eta=self.eta,
+                                                     max_opt_iter=500)
+
             return state, ntn, reward, True, eq
         else:
             return state, ntn, 0, False, None
@@ -100,31 +95,31 @@ class MCTS(object):
         """
         freezed_exprs = []
         aug_nt_nodes = []
-        for one_grams, one_reward, expr in list_of_grammars:
+        for state, one_reward, expr in list_of_grammars:
             optimized_constants = []
             optimized_obj = []
-            state = one_grams
-            state = state.split(',')
-            expr_template = production_rules_to_expr(state)
+            expr_template = expression_to_template(expr,  self.nvars)  # pretty_print_expr(production_rules_to_expr(state.split(',')))
+            expr_template=pretty_print_expr(expr_template)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
                 self.task.rand_draw_data_with_X_fixed()
                 y_true = self.task.evaluate()
                 _, eq, opt_consts, opt_obj = self.program.optimize(expr_template,
-                                                                   len(state),
+                                                                   len(state.split(',')),
                                                                    self.task.X,
                                                                    y_true,
                                                                    self.input_var_Xs,
                                                                    eta=self.eta,
-                                                                   max_opt_iter=5000)
+                                                                   max_opt_iter=1000)
+                ##
                 optimized_constants.append(opt_consts)
                 optimized_obj.append(opt_obj)
                 # print(eq)
             optimized_constants = np.asarray(optimized_constants)
             optimized_obj = np.asarray(optimized_obj)
-            print(optimized_constants)
+            # print(optimized_constants)
             print(optimized_obj)
-            num_changing_consts = one_grams.count('C')
+            num_changing_consts = expr_template.count('C')
             is_summary_constants = np.zeros(num_changing_consts)
             if np.max(optimized_obj) <= self.expr_obj_thres:
                 for ci in range(num_changing_consts):
@@ -142,18 +137,10 @@ class MCTS(object):
                         new_expr_template += '(A)'
                     else:
                         new_expr_template += ti
+                if new_expr_template not in freezed_exprs:
+                    freezed_exprs.append(new_expr_template)
+                    aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
 
-                freezed_exprs.append(new_expr_template)
-                aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
-            else:
-                new_expr_template = 'B->'
-                for ti in expr_template:
-                    if ti == 'C':
-                        new_expr_template += '(A)'
-                    else:
-                        new_expr_template += ti
-                freezed_exprs.append(new_expr_template)
-                aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
         return freezed_exprs, aug_nt_nodes
 
     def rollout(self, num_play, state_initial, ntn_initial):
@@ -165,7 +152,9 @@ class MCTS(object):
         next_state = None
         eq = ''
         best_r = 0
-        for n in range(num_play):
+        idx = 0
+        while idx < num_play:
+            # for _ in range(num_play):
             done = False
             state = state_initial
             ntn = ntn_initial
@@ -182,6 +171,7 @@ class MCTS(object):
                     break
 
             if done:
+                idx += 1
                 if reward > best_r:
                     # save the current expression into hall-of-fame
                     self.update_hall_of_fame(next_state, reward, eq)
@@ -249,23 +239,22 @@ class MCTS(object):
             # collect ucb scores for all valid actions
             policy_valid = []
 
-            sum_ucb = sum(self.UCBs[state][valid_action])
-
-            for a in valid_action:
-                policy_mcts = self.UCBs[state][a] / sum_ucb
-                policy_valid.append(policy_mcts)
-
+            sum_ucb = sum([np.exp(self.UCBs[state][a]) for a in valid_action])
             # if all ucb scores identical, return uniform policy
             if len(set(policy_valid)) == 1:
                 A = np.zeros(nA)
                 A[valid_action] = float(1 / len(valid_action))
                 return A
 
-            # return action with largest ucb score
             A = np.zeros(nA, dtype=float)
-            best_action = valid_action[np.argmax(policy_valid)]
-            A[best_action] += 0.8
-            A[valid_action] += float(0.2 / len(valid_action))
+
+            for a in valid_action:
+                A[a] = np.exp(self.UCBs[state][a]) / sum_ucb
+                # policy_valid.append(policy_mcts)
+
+            # best_action = valid_action[np.argmax(policy_valid)]
+            # A[best_action] += 0.8
+            # A[valid_action] += float(0.2 / len(valid_action))
             return A
 
         return policy_fn
@@ -289,7 +278,7 @@ class MCTS(object):
         If we pass by a concise solution with high score, we store it as an
         single action for future use.
         """
-        module = state  # [5:]
+        module = state
         if state.count(',') <= self.max_module:
             if not self.hall_of_fame:
                 self.hall_of_fame = [(module, reward, eq)]
@@ -300,7 +289,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_episodes, num_simulations=50, verbose=False, print_freq=10, is_first_round=False):
+    def MCTS_run(self, num_episodes, num_simulations=50, verbose=False, print_freq=10, is_first_round=False, reward_threhold=10):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -319,9 +308,10 @@ class MCTS(object):
         for t in range(1, num_episodes + 1):
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
+                print(self.QN.keys())
                 self.print_hofs(10, verbose=True)
                 sys.stdout.flush()
-            if is_first_round:
+            if not is_first_round:
                 state = 'f->B'
                 ntn = ['B']
             else:
@@ -336,6 +326,7 @@ class MCTS(object):
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
                 print("UCB_policy...")
+
                 prob = ucb_policy(state, ntn[0])
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
                 print('state:', state, '\t action:', self.grammars[action])
@@ -350,7 +341,6 @@ class MCTS(object):
 
                     if state.count(',') >= self.max_len:
                         unvisited_children = []
-                        # print("BACK-PROPAGATION STEP")
                         self.back_propagate(state, action, 0)
                         reward_his.append(best_solution[1])
                         break
@@ -366,15 +356,14 @@ class MCTS(object):
                     break
 
             # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
-            if unvisited_children:
+            while unvisited_children:
                 print("uniform_random_policy:", unvisited_children)
                 prob = uniform_random_policy(unvisited_children)
-                action = np.random.choice(unvisited_children, p=prob / np.sum(prob))
+                action = np.random.choice(unvisited_children)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 print('state:', state, '\t action:', self.grammars[action])
                 if not done:
                     # 3. SIMULATION STEP in MCTS.
-                    print("simulation")
                     reward, eq = self.rollout(num_simulations, next_state, ntn_next)
                     if state not in states:
                         states.append(state)
@@ -383,9 +372,11 @@ class MCTS(object):
                     self.update_QN_scale(reward)
                     best_solution = (eq, reward)
                 # 4. BACK-PROPAGATION STEP in MCTS.
-                # print("BACK-PROPAGATION STEP")
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
+                unvisited_children.remove(action)
+            if reward_his[-1] > reward_threhold:
+                break
 
         return reward_his, best_solution, self.hall_of_fame
 

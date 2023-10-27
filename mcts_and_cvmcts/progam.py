@@ -14,7 +14,7 @@ from utils import pretty_print_expr
 
 class Program(object):
     # Static variables
-    expr_obj_thres = 1e-2  # expression objective threshold
+    expr_obj_thres = 1e-6  # expression objective threshold
     expr_consts_thres = 1e-3
 
     def __init__(self, n_vars, optimizer="BFGS"):
@@ -22,10 +22,6 @@ class Program(object):
         opt_num_expr:  # number of experiments done for optimization
         vf: indicator vector for free variables. vf[i]=1 for xi is a free variable
         """
-
-        # Can be empty if we are unpickling
-        # if tokens is not None:
-        #
         self.vf = np.zeros(n_vars, dtype=int)
 
         self.n_vars = n_vars
@@ -33,6 +29,7 @@ class Program(object):
 
         self.optimized_constants = []
         self.optimized_obj = []
+        self.cache={}
 
     def set_vf(self, xi: int):
         """set of free variables"""
@@ -130,8 +127,6 @@ class Program(object):
             c_lst = t_optimized_constants.tolist()
             t_optimized_obj = opt_result['fun']
 
-            # self.optimized_constants.append(t_optimized_constants)
-            # self.optimized_obj.append(t_optimized_obj)
             if verbose:
                 print(opt_result)
             eq_est = eq
@@ -145,9 +140,8 @@ class Program(object):
             print('simplified:', pretty_print_expr(parse_expr(eq)), 'loss:', t_optimized_obj)
             y_pred = execute(eq, data_X.T, input_var_Xs)
 
-        r = float(eta ** tree_size / (1.0 + np.mean((y_pred - y_true) ** 2) ** 2 / y_true.shape[0]))
-
-        return r, eq, t_optimized_constants, t_optimized_obj
+        r =  eta** tree_size* float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
+        return r,  pretty_print_expr(parse_expr(eq)), t_optimized_constants, t_optimized_obj
 
 
 def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):

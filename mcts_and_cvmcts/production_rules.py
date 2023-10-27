@@ -35,8 +35,6 @@ def to_binary_expr_tree(expr):
             return [op.__name__, left, right]
 
 
-
-
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
     nvars: number of input variables.
@@ -70,7 +68,8 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
 
 
 def get_inv_rules(nvars: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->1/X{xi}' for xi in range(nvars) ]
+    return [f'{non_terminal_node}->1/X{xi}' for xi in range(nvars)]
+
 
 def get_vars_rules(nvars: int, non_terminal_node='A') -> list:
     return [f'{non_terminal_node}->X{i}' for i in range(nvars)]
@@ -82,19 +81,23 @@ def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
     """
     return [f'{non_terminal_node}->sin(X{i})' for i in range(nvars)] + [f'{non_terminal_node}->cos(X{i})' for i in range(nvars)]
 
+
 def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
     """
     return [A->sin(Xi), A->cos(Xi)]
     """
     return [f'{non_terminal_node}->sin(X{i})', f'{non_terminal_node}->cos(X{i})']
+
+
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     return [f'{non_terminal_node}->X{xi}', ]
 
 
 def get_ith_inv_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->1/X{xi}', ]
+    return [f'{non_terminal_node}->C/X{xi}', ]
+
 
 if __name__ == '__main__':
-    X0=Symbol('X0')
-    expr=2.1/X0 #3.5*X0+4.0+
+    X0 = Symbol('X0')
+    expr = 2.1 / X0  # 3.5*X0+4.0+
     preorder_traversal_expr = to_binary_expr_tree(expr)

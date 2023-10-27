@@ -12,7 +12,7 @@ class RegressTask(object):
             batchsize: batch size
             allowed_input: 1 if the input variable is free. 0 if the input variable is controlled.
             dataX: generate the input data.
-            """
+        """
         self.batchsize = batchsize
         self.allowed_input = allowed_input
         self.n_input = allowed_input.size
