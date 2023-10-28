@@ -160,6 +160,7 @@ def run_cv_mcts(
 
         print("grammar:", grammars)
         print("aug grammar:", aug_grammars)
+
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           non_terminal_nodes=nt_nodes,
@@ -173,7 +174,9 @@ def run_cv_mcts(
                                                               num_rollouts=num_rollouts,
                                                               verbose=True,
                                                               is_first_round=(round_idx == 0))
+
         print(population)
+
         aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(population, opt_num_expr)
         print("aug grammars")
         print(aug_grammars)
@@ -205,7 +208,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
 
-    num_episodes = 1000
+    num_episodes = 500
     num_iterations = create_uniform_generations(num_episodes, nvar + 1)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)

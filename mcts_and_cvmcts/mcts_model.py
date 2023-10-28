@@ -90,11 +90,11 @@ class MCTS(object):
         print("---------Freeze Equation----------")
         freezed_exprs = []
         aug_nt_nodes = []
-        for state, one_reward, expr in list_of_grammars:
+        for state, _, expr in list_of_grammars:
             optimized_constants = []
             optimized_obj = []
             expr_template = expression_to_template(parse_expr(expr))
-            expr_template = pretty_print_expr(expr_template)
+            # expr_template = pretty_print_expr(expr_template)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
                 self.task.rand_draw_data_with_X_fixed()
@@ -130,6 +130,10 @@ class MCTS(object):
                 for ti in expr_template:
                     if ti == 'C' and is_summary_constants[cidx] == 1:
                         new_expr_template += '(A)'
+                        cidx+=1
+                    elif ti =="C" and is_summary_constants[cidx]==0:
+                        new_expr_template += '{:.6f}'.format(np.mean(optimized_constants[:, cidx]))
+                        cidx+=1
                     else:
                         new_expr_template += ti
                 if new_expr_template not in freezed_exprs:
