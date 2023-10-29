@@ -132,7 +132,7 @@ class Program(object):
             eq_est = eq
 
             for i in range(len(c_lst)):
-                eq_est = eq_est.replace('c' + str(i), str(c_lst[i]), 1)
+                eq_est = eq_est.replace('c' + str(i), '{:.6f}'.format(np.mean(c_lst[i])), 1)
             eq = eq_est.replace('+-', '-')
             eq = eq.replace('--', '+')
             eq = eq.replace('-+', '-')

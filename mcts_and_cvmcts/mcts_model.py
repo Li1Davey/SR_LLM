@@ -109,10 +109,8 @@ class MCTS(object):
                 ##
                 optimized_constants.append(opt_consts)
                 optimized_obj.append(opt_obj)
-                # print(eq)
             optimized_constants = np.asarray(optimized_constants)
             optimized_obj = np.asarray(optimized_obj)
-            # print(optimized_constants)
             print(optimized_obj)
             num_changing_consts = expr_template.count('C')
             is_summary_constants = np.zeros(num_changing_consts)
@@ -129,9 +127,11 @@ class MCTS(object):
                 new_expr_template = 'B->'
                 for ti in expr_template:
                     if ti == 'C' and is_summary_constants[cidx] == 1:
+                        # summary constant
                         new_expr_template += '(A)'
                         cidx+=1
                     elif ti =="C" and is_summary_constants[cidx]==0:
+                        # standalone constant
                         new_expr_template += '{:.6f}'.format(np.mean(optimized_constants[:, cidx]))
                         cidx+=1
                     else:
@@ -307,9 +307,10 @@ class MCTS(object):
         for t in range(1, num_episodes + 1):
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
-                print(self.QN.keys())
+                print("QN:",self.QN.keys())
                 self.print_hofs(10, verbose=True)
                 sys.stdout.flush()
+                print(reward_his, reward_threhold)
                 if reward_his[-1] > reward_threhold:
                     break
             if not is_first_round:
@@ -319,10 +320,6 @@ class MCTS(object):
                 state = 'f->A'
                 ntn = ['A']
             unvisited_children = self.get_unvisited_children(state, ntn[0])
-
-            ########################################################
-            # check scenario: if parent node fully expanded or not #
-            ########################################################
 
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
@@ -363,7 +360,6 @@ class MCTS(object):
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 print('state:', state, '\t action:', self.grammars[action])
                 if not done:
-                    # 3. SIMULATION STEP in MCTS.
                     reward, eq = self.rollout(num_rollouts, next_state, ntn_next)
                     if state not in states:
                         states.append(state)
@@ -381,8 +377,11 @@ class MCTS(object):
 
     def print_hofs(self, size, verbose=False):
         self.task.rand_draw_data_with_X_fixed()
-        print("PRINT HOF")
+        print(f"PRINT HOF (free variables={self.program.vf})")
         print("=" * 20)
+        if size<0:
+            size = len(self.hall_of_fame)
+        size = min(len(self.hall_of_fame), size)
         for pr in self.hall_of_fame[-size:]:
             if verbose:
                 print('        ' + str(get_state(pr)), end="\n")

@@ -14,7 +14,7 @@ from progam import Program
 def run_mcts(
         production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_rollouts=200,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
-        num_transplant=1, norm_threshold=1e-10
+        num_transplant=5, norm_threshold=1e-10
 ):
     """
     production_rules: rules to generate expressions
@@ -27,12 +27,6 @@ def run_mcts(
     num_aug : number of trees for module transplantation.
     exp_rate: initial exploration rate.
     norm_threshold: numerical error tolerance for norm calculation, a very small value.
-        
-    Returns
-    -------
-    all_eqs: List<Str>. discovered equations.
-    success_rate: Float. success rate of all runs performed.
-    all_times: List<Float>. runtimes for successful runs.
     """
 
     # define production rules and non-terminal nodes.
@@ -120,14 +114,9 @@ def run_cv_mcts(
     num_run: number of iterations.
     max_len: maximum allowed length (number of production rules ) of discovered equations.
     eta: penalty factor for rewarding.
-    max_module_init : Int object.
-        initial maximum length for module transplantation candidates.
+    max_module_init: initial maximum length for module transplantation candidates.
     num_aug : number of trees for module transplantation.
     exp_rate: initial exploration rate.
-
-    all_eqs: List<Str>. discovered equations.
-    success_rate: Float. success rate of all runs performed.
-    all_times: List<Float>. runtimes for successful runs.
     """
 
     # define production rules and non-terminal nodes.
@@ -170,15 +159,16 @@ def run_cv_mcts(
                           aug_grammars_allowed=num_aug,
                           exploration_rate=exploration_rate,
                           eta=eta)
+        iter_time=time.time()
         _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
                                                               num_rollouts=num_rollouts,
                                                               verbose=True,
                                                               is_first_round=(round_idx == 0))
-
+        print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time)/60))
         print(population)
 
         aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(population, opt_num_expr)
-        print("aug grammars")
+        print("AUG grammars")
         print(aug_grammars)
 
         grammars = [gi for gi in grammars if str(round_idx) not in gi]
@@ -186,11 +176,8 @@ def run_cv_mcts(
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
 
-        print()
-
-    print('final hof')
-    for hi in hof:
-        print(hi[-2], hi[-1], hi[0])
+        # mcts_model.print_hofs(-1,verbose=True)
+    mcts_model.print_hofs(-1,verbose=True)
 
 
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
@@ -209,7 +196,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     MCTS.program = Program(nvar, optimizer)
 
     num_episodes = 500
-    num_iterations = create_uniform_generations(num_episodes, nvar + 1)
+    num_iterations = create_uniform_generations(num_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
     end = time.time() - start
