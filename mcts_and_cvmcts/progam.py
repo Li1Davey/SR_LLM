@@ -36,7 +36,7 @@ class Program(object):
 
         if 0 <= xi < len(self.vf):
             self.vf[xi] = 1
-            print('xi is:', xi, 'new vf is:', self.vf)
+            print('xi is:', xi, ', new vf is:', self.vf)
 
     def get_vf(self):
         return self.vf

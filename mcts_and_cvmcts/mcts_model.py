@@ -305,6 +305,7 @@ class MCTS(object):
         best_solution = ('C', 0)
 
         for t in range(1, num_episodes + 1):
+            print("\tITER {}/{}...".format(t, num_episodes))
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
                 print("QN:",self.QN.keys())
@@ -323,8 +324,8 @@ class MCTS(object):
 
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
-                print("UCB_policy...")
                 prob = ucb_policy(state, ntn[0])
+                print("UCB_policy... prob=", prob)
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
                 print('state:', state, '\t action:', self.grammars[action])
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
@@ -355,7 +356,7 @@ class MCTS(object):
             # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
             while unvisited_children:
                 print("uniform_random_policy:", unvisited_children)
-                prob = uniform_random_policy(unvisited_children)
+                # prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 print('state:', state, '\t action:', self.grammars[action])

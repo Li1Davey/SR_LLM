@@ -136,11 +136,9 @@ def run_cv_mcts(
     start_time = time.time()
     for round_idx in range(len(num_iterations)):
         print('++++++++++++ ROUND {}  ++++++++++++'.format(round_idx))
-        print("update set of free variable and grammars")
         MCTS.program.set_vf(round_idx)
-        allowed_inputs = MCTS.program.get_vf()
-        MCTS.task.set_allowed_inputs(allowed_inputs)
-        if round_idx < len(num_iterations) - 1:
+        MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
+        if round_idx < len(num_iterations):
             grammars += get_ith_var_rules(round_idx)
             if 'sin' in operators_set:
                 grammars += get_ith_sincos_rules(round_idx, non_terminal_node='A')
@@ -149,7 +147,6 @@ def run_cv_mcts(
 
         print("grammar:", grammars)
         print("aug grammar:", aug_grammars)
-
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           non_terminal_nodes=nt_nodes,
@@ -159,12 +156,12 @@ def run_cv_mcts(
                           aug_grammars_allowed=num_aug,
                           exploration_rate=exploration_rate,
                           eta=eta)
-        iter_time=time.time()
+        iter_time = time.time()
         _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
-                                                              num_rollouts=num_rollouts,
+                                                              num_rollouts=10,  # num_rollouts,
                                                               verbose=True,
                                                               is_first_round=(round_idx == 0))
-        print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time)/60))
+        print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
         print(population)
 
         aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(population, opt_num_expr)
@@ -176,8 +173,7 @@ def run_cv_mcts(
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
 
-        # mcts_model.print_hofs(-1,verbose=True)
-    mcts_model.print_hofs(-1,verbose=True)
+    mcts_model.print_hofs(-1, verbose=True)
 
 
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):

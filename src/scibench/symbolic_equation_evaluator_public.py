@@ -235,7 +235,7 @@ def decrypt_equation(eq_file, key_filename=None):
     one_equation = json.loads(decrypted)
     preorder_traversal = eval(one_equation['eq_expression'])
     preorder_traversal = [tt[0] for tt in preorder_traversal]
-    print(preorder_traversal)
+    # print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
         list_of_tokens = list_of_tokens + [sciToken(np.power, "pow", arity=2, complexity=1)]

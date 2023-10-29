@@ -15,6 +15,7 @@ import os
 from sklearn.cluster import KMeans  # for clustering in ensemble definition
 from scipy.optimize import minimize  # for uncertainty maximization
 from sympy import symbols
+from function import *
 
 warnings.filterwarnings('ignore', '.*invalid value.*')
 warnings.filterwarnings('ignore', '.*overflow.*')
@@ -23,89 +24,6 @@ warnings.filterwarnings('ignore', '.*is constant.*')
 warnings.filterwarnings('ignore', '.*nearly constant.*')
 warnings.filterwarnings('ignore', '.*Polyfit may be.*')
 warnings.filterwarnings('ignore', '.*Number of.*')
-
-
-def protectDiv(a, b):
-    if (type(b) == int or type(b) == float or type(b) == np.float64) and b == 0:
-        return a / math.nan
-    if (type(b) == np.ndarray) and (0 in b):
-        return a / np.where(b == 0, math.nan, b)
-    return a / b
-
-
-def add(a, b):
-    return a + b
-
-
-def sub(a, b):
-    return a - b
-
-
-def mult(a, b):
-    return a * b
-
-
-def exp(a):
-    return np.exp(a)
-
-
-# def sine(a,b):
-#     return np.sin(a)
-def power(a, b):
-    return a ** b
-
-
-def sqrt(a):
-    return np.sqrt(a)
-
-
-def sqrd(a):
-    return a ** 2
-
-
-def inv(a):
-    return np.array(a).astype(float) ** (-1)
-
-
-def sin(a):
-    return np.sin(a)
-
-
-def cos(a):
-    return np.cos(a)
-
-
-def tan(a):
-    return np.tan(a)
-
-
-def arccos(a):
-    return np.arccos(a)
-
-
-def arcsin(a):
-    return np.arcsin(a)
-
-
-def arctan(a):
-    return np.arctan(a)
-
-
-def tanh(a):
-    return np.tanh(a)
-
-
-def log(a):
-    return np.log(a)
-
-
-def defaultOps():
-    return [protectDiv, add, sub, mult, exp, sqrd, sqrt, inv, "pop", "pop", "pop", "pop", "pop", "pop"]
-
-
-def allOps():
-    return [protectDiv, add, sub, mult, exp, sqrd, sqrt, inv, cos, sin, tan, arccos, arcsin, arctan, tanh, log, "pop", "pop", "pop", "pop",
-            "pop", "pop", "pop", "pop", "pop", "pop"]
 
 
 def randomInt(a=-3, b=3):
@@ -916,74 +834,3 @@ def activeLearning(func, dims, ranges, rangesP, eqNum=1, version=1,
         return -1
 
 
-def plotModels(models):
-    tMods = copy.deepcopy(models)
-    [modelToListForm(mod) for mod in tMods]
-    paretoModels = paretoTournament(tMods)
-    for i in paretoModels:
-        tMods.remove(i)
-    [modelRestoreForm(mod) for mod in paretoModels]
-    [modelRestoreForm(mod) for mod in tMods]
-
-    pAccuracies = [mod[2][0] for mod in paretoModels]
-    pComplexities = [mod[2][1] for mod in paretoModels]
-
-    accuracies = [mod[2][0] for mod in tMods] + pAccuracies
-    complexities = [mod[2][1] for mod in tMods] + pComplexities
-    colors = ['blue' for i in range(len(tMods))] + ['red' for i in range(len(pAccuracies))]
-
-    fig, ax = plt.subplots()
-
-    sc = plt.scatter(complexities, accuracies, color=colors)
-    plt.xlabel("Complexity")
-    plt.ylabel("1-R**2")
-    names = [str(printGPModel(mod)) for mod in tMods] + [str(printGPModel(mod)) for mod in paretoModels]
-
-    label = ax.annotate("", xy=(0, 0), xytext=(np.min(complexities), np.mean([np.max(accuracies), np.min(accuracies)])),
-                        bbox=dict(boxstyle="round", fc="w"),
-                        arrowprops=dict(arrowstyle="->"))
-    label.set_visible(False)
-
-    def update_labels(ind):
-
-        pos = sc.get_offsets()[ind["ind"][0]]
-        label.xy = pos
-        text = "{}".format(" ".join([names[n] for n in [ind["ind"][0]]]))
-        label.set_text(text)
-        label.get_bbox_patch().set_facecolor('grey')
-        label.get_bbox_patch().set_alpha(0.9)
-
-    def hover(event):
-        vis = label.get_visible()
-        if event.inaxes == ax:
-            cont, ind = sc.contains(event)
-            if cont:
-                update_labels(ind)
-                label.set_visible(True)
-                fig.canvas.draw_idle()
-            else:
-                if vis:
-                    label.set_visible(False)
-                    fig.canvas.draw_idle()
-
-    fig.canvas.mpl_connect("motion_notify_event", hover)
-
-    plt.show()
-
-
-def plotModelResponseComparison(model, inputData, response, sort=False):
-    plt.scatter(range(len(response)), response, label="True Response")
-    plt.scatter(range(len(response)), evaluateGPModel(model, inputData), label="Model Prediction")
-    plt.legend()
-    plt.xlabel("Data Index")
-    plt.ylabel("Response Value")
-    plt.show()
-
-
-def plotPredictionResponseCorrelation(model, inputData, response):
-    plt.scatter(response, evaluateGPModel(model, inputData), label="Model")
-    plt.plot(response, response, label="Perfect Correlation", color='green')
-    plt.xlabel("True Response")
-    plt.ylabel("Predicted Response")
-    plt.legend()
-    plt.show()
