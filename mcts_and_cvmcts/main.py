@@ -158,7 +158,7 @@ def run_cv_mcts(
                           eta=eta)
         iter_time = time.time()
         _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
-                                                              num_rollouts=10,  # num_rollouts,
+                                                              num_rollouts=num_rollouts,
                                                               verbose=True,
                                                               is_first_round=(round_idx == 0))
         print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))

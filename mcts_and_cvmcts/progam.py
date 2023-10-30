@@ -78,7 +78,7 @@ class Program(object):
             def f(consts: list):
                 eq_est = eq
                 for i in range(len(consts)):
-                    eq_est = eq_est.replace('c' + str(i), str(consts[i]), 1)
+                    eq_est = eq_est.replace('c' + str(i), '{:.6f}'.format(consts[i]), 1)
                 eq_est = eq_est.replace('+-', '-')
                 eq_est = eq_est.replace('--', '+')
                 eq_est = eq_est.replace('-+', '-')

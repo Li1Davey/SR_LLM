@@ -94,7 +94,7 @@ class MCTS(object):
             optimized_constants = []
             optimized_obj = []
             expr_template = expression_to_template(parse_expr(expr))
-            # expr_template = pretty_print_expr(expr_template)
+            print('expr template is"', expr_template)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
                 self.task.rand_draw_data_with_X_fixed()
@@ -132,7 +132,7 @@ class MCTS(object):
                         cidx+=1
                     elif ti =="C" and is_summary_constants[cidx]==0:
                         # standalone constant
-                        new_expr_template += '{:.6f}'.format(np.mean(optimized_constants[:, cidx]))
+                        new_expr_template += '{:.4f}'.format(np.mean(optimized_constants[:, cidx]))
                         cidx+=1
                     else:
                         new_expr_template += ti
@@ -309,10 +309,11 @@ class MCTS(object):
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
                 print("QN:",self.QN.keys())
-                self.print_hofs(10, verbose=True)
+                self.print_hofs(-1, verbose=True)
                 sys.stdout.flush()
-                print(reward_his, reward_threhold)
-                if reward_his[-1] > reward_threhold:
+                print([x[1] for x in self.hall_of_fame], reward_threhold)
+                best_reward=max([x[1] for x in self.hall_of_fame])
+                if best_reward > reward_threhold:
                     break
             if not is_first_round:
                 state = 'f->B'
@@ -355,7 +356,7 @@ class MCTS(object):
 
             # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
             while unvisited_children:
-                print("uniform_random_policy:", unvisited_children)
+                print("uniform_random_policy... ", unvisited_children)
                 # prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
