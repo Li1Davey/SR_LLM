@@ -41,7 +41,7 @@ class Program(object):
     def get_vf(self):
         return self.vf
 
-    def optimize(self, eq, tree_size: int, data_X, y_true, input_var_Xs, eta=0.999, max_opt_iter=1000, verbose=False):
+    def optimize(self, eq, tree_size: int, data_X, y_true, input_var_Xs, eta=0.9999, max_opt_iter=1000, verbose=False):
         """
         Calculate reward score for a complete parse tree
         If placeholder C is in the equation, also execute estimation for C
@@ -58,18 +58,16 @@ class Program(object):
         score: discovered equations.
         eq: discovered equations with estimated numerical values.
         """
-        # eq='(C*X2+C)*X0+(0.4379/X1)/X0+(C+C/X2)'
-        # print('The equation is:', eq, '\t simplified:', simplify_eq(parse_expr(eq)))
 
         if 'A' in eq or 'B' in eq:  # not a valid equation
-            return 0, eq, 0, 0
+            return -np.inf, eq, 0, 0
         # count number of constants in equation
         num_changing_consts = eq.count('C')
         t_optimized_constants, t_optimized_obj = 0, 0
         if num_changing_consts == 0:  # zero constant
             y_pred = execute(eq, data_X.T, input_var_Xs)
         elif num_changing_consts >= 10:  # discourage over complicated numerical estimations
-            return 0, eq, t_optimized_constants, t_optimized_obj
+            return -np.inf, eq, t_optimized_constants, t_optimized_obj
         else:
             c_lst = ['c' + str(i) for i in range(num_changing_consts)]
             for c in c_lst:
@@ -78,7 +76,7 @@ class Program(object):
             def f(consts: list):
                 eq_est = eq
                 for i in range(len(consts)):
-                    eq_est = eq_est.replace('c' + str(i), '{:.6f}'.format(consts[i]), 1)
+                    eq_est = eq_est.replace('c' + str(i), str(consts[i]), 1)
                 eq_est = eq_est.replace('+-', '-')
                 eq_est = eq_est.replace('--', '+')
                 eq_est = eq_est.replace('-+', '-')
@@ -132,16 +130,23 @@ class Program(object):
             eq_est = eq
 
             for i in range(len(c_lst)):
-                eq_est = eq_est.replace('c' + str(i), '{:.6f}'.format(np.mean(c_lst[i])), 1)
-            eq = eq_est.replace('+-', '-')
-            eq = eq.replace('--', '+')
-            eq = eq.replace('-+', '-')
-            eq = eq.replace('++', '+')
-            print('simplified:', pretty_print_expr(parse_expr(eq)), 'loss:', t_optimized_obj)
-            y_pred = execute(eq, data_X.T, input_var_Xs)
+                est_c = np.mean(c_lst[i])
+                if abs(est_c) < 1e-5:
+                    est_c = 0
+                eq_est = eq_est.replace('c' + str(i), str(est_c), 1)
+            eq_est = eq_est.replace('+-', '-')
+            eq_est = eq_est.replace('--', '+')
+            eq_est = eq_est.replace('-+', '-')
+            eq_est = eq_est.replace('++', '+')
+
+            y_pred = execute(eq_est, data_X.T, input_var_Xs)
+            eq = pretty_print_expr(parse_expr(eq_est))
+            print('simplified:', eq, '\t loss:', np.mean((y_pred - y_true) ** 2), '\t reward',
+                  eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2))))
 
         r = eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
-        return r, pretty_print_expr(parse_expr(eq)), t_optimized_constants, t_optimized_obj
+
+        return r, eq, t_optimized_constants, t_optimized_obj
 
 
 def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
@@ -179,7 +184,7 @@ def execute_eval(expr_str: str, data_X: np.ndarray, input_var_Xs, simulated_step
     consts: list of constants.
     """
     try:
-        y_hat =  eval(expr_str)
+        y_hat = eval(expr_str)
     except TypeError as e:
         print(e)
 

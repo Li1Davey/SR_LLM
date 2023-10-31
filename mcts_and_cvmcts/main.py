@@ -3,7 +3,7 @@ import time
 import argparse
 from mcts_model import MCTS
 from production_rules import *
-from utils import pretty_print_expr, create_uniform_generations
+from utils import pretty_print_expr, create_geometric_generations, create_reward_threshold
 import random
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
@@ -46,6 +46,7 @@ def run_mcts(
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
         print(aug_grammars)
+        max_opt_iter = 500
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           non_terminal_nodes=non_terminal_nodes,
@@ -54,6 +55,7 @@ def run_mcts(
                           max_module=max_module,
                           aug_grammars_allowed=num_aug,
                           exploration_rate=exploration_rate,
+                          max_opt_iter=max_opt_iter,
                           eta=eta)
 
         _, current_solution, good_modules = mcts_model.MCTS_run(num_episodes,
@@ -129,11 +131,14 @@ def run_cv_mcts(
 
     exploration_rate = exp_rate
     max_module = max_module_init
+    stand_alone_constants = []
     hof = []
     aug_nt_nodes = []
     aug_grammars = []
 
     start_time = time.time()
+
+    reward_thresh = create_reward_threshold(10, len(num_iterations))
     for round_idx in range(len(num_iterations)):
         print('++++++++++++ ROUND {}  ++++++++++++'.format(round_idx))
         MCTS.program.set_vf(round_idx)
@@ -147,31 +152,38 @@ def run_cv_mcts(
 
         print("grammar:", grammars)
         print("aug grammar:", aug_grammars)
-        mcts_model = MCTS(base_grammars=grammars,
-                          aug_grammars=aug_grammars,
-                          non_terminal_nodes=nt_nodes,
-                          aug_nt_nodes=aug_nt_nodes,
-                          max_len=max_len,
-                          max_module=max_module,
-                          aug_grammars_allowed=num_aug,
-                          exploration_rate=exploration_rate,
-                          eta=eta)
-        iter_time = time.time()
-        _, current_solution, population = mcts_model.MCTS_run(num_iterations[round_idx],
-                                                              num_rollouts=num_rollouts,
-                                                              verbose=True,
-                                                              is_first_round=(round_idx == 0))
-        print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
-        print(population)
 
-        aug_grammars, aug_nt_nodes = mcts_model.freeze_equations(population, opt_num_expr)
-        print("AUG grammars")
-        print(aug_grammars)
+        if round_idx >= 0:
+            print("grammars:", grammars)
+            print("aug grammars:", aug_grammars)
+            mcts_model = MCTS(base_grammars=grammars,
+                              aug_grammars=aug_grammars,
+                              non_terminal_nodes=nt_nodes,
+                              aug_nt_nodes=aug_nt_nodes,
+                              max_len=max_len,
+                              max_module=max_module,
+                              aug_grammars_allowed=num_aug,
+                              exploration_rate=exploration_rate,
+                              eta=eta,
+                              max_opt_iter=500)
+            iter_time = time.time()
+            _, population = mcts_model.MCTS_run(num_iterations[round_idx],
+                                                                  num_rollouts=num_rollouts,
+                                                                  reward_threhold=reward_thresh[round_idx],
+                                                                  verbose=True,
+                                                                  is_first_round=(round_idx == 0))
+            print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
+            print(population)
 
-        grammars = [gi for gi in grammars if str(round_idx) not in gi]
+            aug_grammars, aug_nt_nodes, stand_alone_constants = mcts_model.freeze_equations(population, opt_num_expr, stand_alone_constants)
+            print("AUG grammars")
+            print(aug_grammars)
+
+            grammars = [gi for gi in grammars if str(round_idx) not in gi]
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
+        num_rollouts = min(10, int(num_rollouts / 2))
 
     mcts_model.print_hofs(-1, verbose=True)
 
@@ -192,7 +204,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     MCTS.program = Program(nvar, optimizer)
 
     num_episodes = 500
-    num_iterations = create_uniform_generations(num_episodes, nvar)
+    num_iterations = create_geometric_generations(num_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
     end = time.time() - start

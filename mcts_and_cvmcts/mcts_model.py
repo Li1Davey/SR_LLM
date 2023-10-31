@@ -22,7 +22,7 @@ class MCTS(object):
     noise_std = 0.0
 
     def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
-                 exploration_rate=1 / np.sqrt(2), eta=0.999):
+                 exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500):
         # for generating input data and evaluate the output.
         # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
@@ -41,6 +41,7 @@ class MCTS(object):
         self.QN = defaultdict(lambda: np.zeros(2))
         self.scale = 0
         self.eta = eta
+        self.max_opt_iter = max_opt_iter
 
     def valid_production_rules(self, Node):
         # Get index of all possible production rules starting with a given node
@@ -79,21 +80,22 @@ class MCTS(object):
                                                      y_true,
                                                      self.input_var_Xs,
                                                      eta=self.eta,
-                                                     max_opt_iter=500)
+                                                     max_opt_iter=self.max_opt_iter)
 
             return state, ntn, reward, True, eq
         else:
             return state, ntn, 0, False, None
 
-    def freeze_equations(self, list_of_grammars, opt_num_expr):
+    def freeze_equations(self, list_of_grammars, opt_num_expr, stand_alone_constants):
         # decide summary constants and stand alone constants.
         print("---------Freeze Equation----------")
         freezed_exprs = []
         aug_nt_nodes = []
+        new_stand_alone_constants = stand_alone_constants
         for state, _, expr in list_of_grammars:
             optimized_constants = []
             optimized_obj = []
-            expr_template = expression_to_template(parse_expr(expr))
+            expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
             print('expr template is"', expr_template)
             for _ in range(opt_num_expr):
                 self.task.rand_draw_X_fixed()
@@ -119,7 +121,7 @@ class MCTS(object):
                     print(np.std(optimized_constants[:, ci]), end="\t")
                     if np.std(optimized_constants[:, ci]) <= self.expr_consts_thres:
                         # print(optimized_constants, ci, self.expr_consts_thres)
-                        print(f'c{ci} is a standlone constant')
+                        print(f'c{ci} is a stand-alone constant')
                     else:
                         print(f'c{ci} is a summary constant')
                         is_summary_constants[ci] = 1
@@ -129,31 +131,63 @@ class MCTS(object):
                     if ti == 'C' and is_summary_constants[cidx] == 1:
                         # summary constant
                         new_expr_template += '(A)'
-                        cidx+=1
-                    elif ti =="C" and is_summary_constants[cidx]==0:
+                        cidx += 1
+                    elif ti == "C" and is_summary_constants[cidx] == 0:
                         # standalone constant
-                        new_expr_template += '{:.4f}'.format(np.mean(optimized_constants[:, cidx]))
-                        cidx+=1
+                        est_c = np.mean(optimized_constants[:, cidx])
+                        if est_c < 1e-5:
+                            est_c = 0.0
+                        new_expr_template += str(est_c)
+                        if min([abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
+                            new_stand_alone_constants.append(est_c)
+                        cidx += 1
                     else:
                         new_expr_template += ti
-                if new_expr_template not in freezed_exprs:
+                if new_expr_template not in freezed_exprs and len(freezed_exprs) <= 2:
                     freezed_exprs.append(new_expr_template)
                     aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
 
-        return freezed_exprs, aug_nt_nodes
+        if len(freezed_exprs) == 0:
+            print("No available expression is found....trying to add the current best guessed...")
+            state, _, expr = list_of_grammars[-1]
+            expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
+            cidx = 0
+            new_expr_template = 'B->'
+            for ti in expr_template:
+                if ti == 'C':
+                    # summary constant
+                    new_expr_template += '(A)'
+                    cidx += 1
+                else:
+                    new_expr_template += ti
+            freezed_exprs.append(new_expr_template)
+            aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+
+        # diversify the number of A
+        new_freezed_exprs = []
+        new_aug_nt_nodes = []
+        for expri, ntnodei in zip(freezed_exprs, aug_nt_nodes):
+            if expri.count('(A)') >= 3:
+                for i, ti in enumerate(expri):
+                    if ti == 'A':
+                        new_freezed_exprs.append(expri[:i] + 'C' + expri[i + 1:])
+                        new_aug_nt_nodes.append(['A',] * (expri.count('(A)') - 1))
+            else:
+                new_freezed_exprs.append(expri)
+                new_aug_nt_nodes.append(ntnodei)
+        return new_freezed_exprs, new_aug_nt_nodes, new_stand_alone_constants
 
     def rollout(self, num_play, state_initial, ntn_initial):
         """
         Perform `num_play` simulation, get the maximum reward
         """
         best_eq = ''
-        reward = 0
+        reward = -100
         next_state = None
         eq = ''
-        best_r = 0
+        best_r = -100
         idx = 0
         while idx < num_play:
-            # for _ in range(num_play):
             done = False
             state = state_initial
             ntn = ntn_initial
@@ -165,8 +199,7 @@ class MCTS(object):
                 state = next_state
                 ntn = ntn_next
 
-                if state.count(',') >= self.max_len:
-                    # tree depth shall be less than max_len
+                if state.count(',') >= self.max_len:  # tree depth shall be less than max_len
                     break
 
             if done:
@@ -191,9 +224,7 @@ class MCTS(object):
         return Q_child / N_child + self.exploration_rate * np.sqrt(np.log(N_parent) / N_child)
 
     def update_QN_scale(self, new_scale):
-        """
-        Update the Q values self.scaled by the new best reward.
-        """
+        # Update the Q and the N values self.scaled by the new best reward.
         if self.scale != 0:
             for s in self.QN:
                 self.QN[s][0] *= (self.scale / new_scale)
@@ -248,12 +279,12 @@ class MCTS(object):
             A = np.zeros(nA, dtype=float)
 
             for a in valid_action:
-                A[a] = np.exp(self.UCBs[state][a]) / sum_ucb
-                # policy_valid.append(policy_mcts)
+                policy_mcts = np.exp(self.UCBs[state][a]) / sum_ucb
+                policy_valid.append(policy_mcts)
 
-            # best_action = valid_action[np.argmax(policy_valid)]
-            # A[best_action] += 0.8
-            # A[valid_action] += float(0.2 / len(valid_action))
+            best_action = valid_action[np.argmax(policy_valid)]
+            A[best_action] += 0.8
+            A[valid_action] += float(0.2 / len(valid_action))
             return A
 
         return policy_fn
@@ -288,7 +319,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=10, is_first_round=False, reward_threhold=10):
+    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -299,20 +330,18 @@ class MCTS(object):
         # The policy we're following:
         # ucb_policy for fully expanded node and uniform_random_policy for not fully expanded node
         ucb_policy = self.get_ucb_policy(nA)
-        uniform_random_policy = self.get_uniform_random_policy()
-
         reward_his = []
-        best_solution = ('C', 0)
+        best_solution = ('C', -100)
 
         for t in range(1, num_episodes + 1):
             print("\tITER {}/{}...".format(t, num_episodes))
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
-                print("QN:",self.QN.keys())
+                print("QN (tail 10):", list(self.QN.keys())[:-10])
                 self.print_hofs(-1, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)
-                best_reward=max([x[1] for x in self.hall_of_fame])
+                best_reward = max([x[1] for x in self.hall_of_fame])
                 if best_reward > reward_threhold:
                     break
             if not is_first_round:
@@ -347,7 +376,8 @@ class MCTS(object):
                     unvisited_children = []
                     if reward > best_solution[1]:
                         self.update_hall_of_fame(next_state, reward, eq)
-                        self.update_QN_scale(reward)
+                        if reward > 0:
+                            self.update_QN_scale(reward)
                         best_solution = (eq, reward)
                     # print("BACK-PROPAGATION STEP")
                     self.back_propagate(state, action, reward)
@@ -367,21 +397,22 @@ class MCTS(object):
                         states.append(state)
 
                 if reward > best_solution[1]:
-                    self.update_QN_scale(reward)
+                    self.update_hall_of_fame(next_state, reward, eq)
+                    if reward > 0:
+                        self.update_QN_scale(reward)
                     best_solution = (eq, reward)
                 # 4. BACK-PROPAGATION STEP in MCTS.
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
 
-
-        return reward_his, best_solution, self.hall_of_fame
+        return reward_his, self.hall_of_fame
 
     def print_hofs(self, size, verbose=False):
         self.task.rand_draw_data_with_X_fixed()
         print(f"PRINT HOF (free variables={self.program.vf})")
         print("=" * 20)
-        if size<0:
+        if size < 0:
             size = len(self.hall_of_fame)
         size = min(len(self.hall_of_fame), size)
         for pr in self.hall_of_fame[-size:]:

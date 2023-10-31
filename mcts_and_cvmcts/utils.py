@@ -13,24 +13,25 @@ def pretty_print_expr(eq) -> str:
     return str(expand(simplify(eq)))
 
 
-def create_geometric_generations(n_generations, nvar, ratio=4):
+def create_geometric_generations(n_generations, nvar, ratio=1.2):
     gens = [0] * nvar
     round = 0
-    while n_generations > nvar:
-        if round > 10:
-            break
-        round += 1
-        for it in range(nvar - 1, 0, -1):
-            temp = n_generations // ratio
-            gens[it] += temp
-            n_generations -= temp
+    total_ratios=sum([ratio**it for it in range(nvar)])
+    for it in range(nvar ):
+
+        gens[it] += int(n_generations * ratio**it/ total_ratios)
+
     # gens[0] = n_generations
     for it in range(0, nvar):
-        if gens[it] < 5:
-            gens[it] = 5
-    gens = gens[::-1]
+        if gens[it] < 20:
+            gens[it] = 20
+    gens = gens
     print('generation #:', gens, 'sum=', sum(gens))
     return gens
+
+
+def create_reward_threshold(highest_threhold, nvar, ratio=0.95):
+    return [highest_threhold * ratio ** i for i in range(nvar)]
 
 
 def create_uniform_generations(n_generations, nvar):
@@ -44,13 +45,11 @@ def create_uniform_generations(n_generations, nvar):
     return gens
 
 
-def expression_to_template(expr) -> str:
+def expression_to_template(expr, stand_alone_constants) -> str:
     C = Symbol('C')
-    all_floats = expr.atoms(Float)
+    all_floats = list(expr.atoms(Float))
     for fi in all_floats:
+        if len(stand_alone_constants) >= 1 and min([abs(fi - ci) for ci in stand_alone_constants]) < 1e-5:
+            continue
         expr = expr.replace(fi, C)
-    # print(str(expr))
     return str(expr)
-
-
-
