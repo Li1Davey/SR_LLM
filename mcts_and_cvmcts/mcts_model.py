@@ -92,60 +92,66 @@ class MCTS(object):
         freezed_exprs = []
         aug_nt_nodes = []
         new_stand_alone_constants = stand_alone_constants
-        for state, _, expr in list_of_grammars:
-            optimized_constants = []
-            optimized_obj = []
-            expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
-            print('expr template is"', expr_template)
-            for _ in range(opt_num_expr):
-                self.task.rand_draw_X_fixed()
-                self.task.rand_draw_data_with_X_fixed()
-                y_true = self.task.evaluate()
-                _, eq, opt_consts, opt_obj = self.program.optimize(expr_template,
-                                                                   len(state.split(',')),
-                                                                   self.task.X,
-                                                                   y_true,
-                                                                   self.input_var_Xs,
-                                                                   eta=self.eta,
-                                                                   max_opt_iter=1000)
-                ##
-                optimized_constants.append(opt_consts)
-                optimized_obj.append(opt_obj)
-            optimized_constants = np.asarray(optimized_constants)
-            optimized_obj = np.asarray(optimized_obj)
-            print(optimized_obj)
-            num_changing_consts = expr_template.count('C')
-            is_summary_constants = np.zeros(num_changing_consts)
-            if np.max(optimized_obj) <= self.expr_obj_thres:
-                for ci in range(num_changing_consts):
-                    print(np.std(optimized_constants[:, ci]), end="\t")
-                    if np.std(optimized_constants[:, ci]) <= self.expr_consts_thres:
-                        # print(optimized_constants, ci, self.expr_consts_thres)
-                        print(f'c{ci} is a stand-alone constant')
-                    else:
-                        print(f'c{ci} is a summary constant')
-                        is_summary_constants[ci] = 1
-                cidx = 0
-                new_expr_template = 'B->'
-                for ti in expr_template:
-                    if ti == 'C' and is_summary_constants[cidx] == 1:
-                        # summary constant
-                        new_expr_template += '(A)'
-                        cidx += 1
-                    elif ti == "C" and is_summary_constants[cidx] == 0:
-                        # standalone constant
-                        est_c = np.mean(optimized_constants[:, cidx])
-                        if est_c < 1e-5:
-                            est_c = 0.0
-                        new_expr_template += str(est_c)
-                        if min([abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
-                            new_stand_alone_constants.append(est_c)
-                        cidx += 1
-                    else:
-                        new_expr_template += ti
-                if new_expr_template not in freezed_exprs and len(freezed_exprs) <= 2:
-                    freezed_exprs.append(new_expr_template)
-                    aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+        # only use the best
+        state, _, expr = list_of_grammars[-1]
+        optimized_constants = []
+        optimized_obj = []
+        expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
+        print('expr template is"', expr_template)
+        for _ in range(opt_num_expr):
+            self.task.rand_draw_X_fixed()
+            self.task.rand_draw_data_with_X_fixed()
+            y_true = self.task.evaluate()
+            _, eq, opt_consts, opt_obj = self.program.optimize(expr_template,
+                                                               len(state.split(',')),
+                                                               self.task.X,
+                                                               y_true,
+                                                               self.input_var_Xs,
+                                                               eta=self.eta,
+                                                               max_opt_iter=1000)
+            ##
+            optimized_constants.append(opt_consts)
+            optimized_obj.append(opt_obj)
+        optimized_constants = np.asarray(optimized_constants)
+        optimized_obj = np.asarray(optimized_obj)
+        print(optimized_obj)
+        num_changing_consts = expr_template.count('C')
+        is_summary_constants = np.zeros(num_changing_consts)
+        if np.max(optimized_obj) <= self.expr_obj_thres:
+            for ci in range(num_changing_consts):
+                print("std", np.std(optimized_constants[:, ci]), end="\t")
+                if abs(np.mean(optimized_constants[:, ci])) < 1e-5:
+                    print(f'c{ci} is a noisy minial constant')
+                    is_summary_constants[ci] = 2
+                elif np.std(optimized_constants[:, ci]) <= self.expr_consts_thres:
+                    print(f'c{ci} {np.mean(optimized_constants[:, ci])} is a stand-alone constant')
+                else:
+                    print(f'c{ci}  is a summary constant')
+                    is_summary_constants[ci] = 1
+            cidx = 0
+            new_expr_template = 'B->'
+            for ti in expr_template:
+                if ti == 'C' and is_summary_constants[cidx] == 1:
+                    # summary constant
+                    new_expr_template += '(A)'
+                    cidx += 1
+                elif ti == "C" and is_summary_constants[cidx] == 0:
+                    # standalone constant
+                    est_c = np.mean(optimized_constants[:, cidx])
+                    if abs(est_c) < 1e-5:
+                        est_c = 0.0
+                    new_expr_template += str(est_c)
+                    if len(new_stand_alone_constants) == 0 or min([abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
+                        new_stand_alone_constants.append(est_c)
+                    cidx += 1
+                elif ti == 'C' and is_summary_constants[cidx] == 2:
+                    new_expr_template += '0.0'
+                    cidx += 1
+                else:
+                    new_expr_template += ti
+            if new_expr_template not in freezed_exprs and len(freezed_exprs) <= 2:
+                freezed_exprs.append(new_expr_template)
+                aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
 
         if len(freezed_exprs) == 0:
             print("No available expression is found....trying to add the current best guessed...")
@@ -171,7 +177,7 @@ class MCTS(object):
                 for i, ti in enumerate(expri):
                     if ti == 'A':
                         new_freezed_exprs.append(expri[:i] + 'C' + expri[i + 1:])
-                        new_aug_nt_nodes.append(['A',] * (expri.count('(A)') - 1))
+                        new_aug_nt_nodes.append(['A', ] * (expri.count('(A)') - 1))
             else:
                 new_freezed_exprs.append(expri)
                 new_aug_nt_nodes.append(ntnodei)
@@ -337,7 +343,7 @@ class MCTS(object):
             print("\tITER {}/{}...".format(t, num_episodes))
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
-                print("QN (tail 10):", list(self.QN.keys())[:-10])
+                print("QN (tail 10):", list(self.QN.keys())[-10:])
                 self.print_hofs(-1, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)

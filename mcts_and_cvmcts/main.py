@@ -168,10 +168,10 @@ def run_cv_mcts(
                               max_opt_iter=500)
             iter_time = time.time()
             _, population = mcts_model.MCTS_run(num_iterations[round_idx],
-                                                                  num_rollouts=num_rollouts,
-                                                                  reward_threhold=reward_thresh[round_idx],
-                                                                  verbose=True,
-                                                                  is_first_round=(round_idx == 0))
+                                                num_rollouts=num_rollouts,
+                                                reward_threhold=reward_thresh[round_idx],
+                                                verbose=True,
+                                                is_first_round=(round_idx == 0))
             print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
             print(population)
 
@@ -183,7 +183,7 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-        num_rollouts = min(10, int(num_rollouts / 2))
+        # num_rollouts = min(10, int(num_rollouts / 2))
 
     mcts_model.print_hofs(-1, verbose=True)
 
