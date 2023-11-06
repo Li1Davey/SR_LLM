@@ -64,9 +64,9 @@ def gen_program_one_term(term, decr, decr_list):
     preorder = ['const']
     for var, de in zip(term, decr):
         if de == 0:
-            preorder = ['mul'] + preorder + ['X_' + str(var)]
+            preorder = ['mul'] + preorder + ['X' + str(var)]
         else:
-            preorder = ['mul'] + preorder + [decr_list[de-1], 'X_' + str(var)]
+            preorder = ['mul'] + preorder + [decr_list[de-1], 'X' + str(var)]
     return preorder
 
 
@@ -139,9 +139,9 @@ def main(param):
                 'const_loc': const_loc,
                 'consts': consts}
 
-        oup = open(param.folder + '/prog_' + str(i) + '.data', 'wb')
-        pickle.dump(prog, oup)
-        oup.close()
+        # oup = open(param.folder + '/prog_' + str(i) + '.data', 'wb')
+        # pickle.dump(prog, oup)
+        # oup.close()
 
 
 if __name__ == '__main__':
@@ -152,8 +152,8 @@ if __name__ == '__main__':
     basepath = "/scratch/bell/yexiang/xyx_dso/data"
     basepath= "/home/jiangnan/PycharmProjects/xyx_dso/data"
     
-    param.n_vars = 10
-    param.n_terms = [10, 20]
+    param.n_vars = 1
+    param.n_terms = [4, 1]
     param.decor = ['sin', 'cos'] #['inv'] #
     param.folder = basepath + '/sincos_nv{}_nt{}{}'.format(param.n_vars, param.n_terms[0], param.n_terms[1])
     main(param)

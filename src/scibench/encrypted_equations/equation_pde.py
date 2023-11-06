@@ -44,12 +44,12 @@ class Lorenz_dx(KnownEquation):
                                 LogUniformSampling(1e-2, 10.0, only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
         self.x = [Symbol(f'X{i}') for i in range(3)]
-        self.y_dims = [(1,)]
+
 
         dx = [(2, "mul"), (self.sigma, 'const'), (2, "sub"), (str(self.x[1]), "var"), (str(self.x[0]), "var")]
 
-        self.preorder_traversal = [dx]
-        self.sympy_eq = [self.sigma * (self.x[1] - self.x[0])]
+        self.preorder_traversal = dx
+        self.sympy_eq = self.sigma * (self.x[1] - self.x[0])
 
 
 @register_eq_class
@@ -73,13 +73,13 @@ class Lorenz_dy(KnownEquation):
                                 LogUniformSampling(1e-2, 10.0, only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
         self.x = [Symbol(f'X{i}') for i in range(3)]
-        self.y_dims = [(1,)]
+
 
         dy = [(2, "sub"), (2, "mul"), (str(self.x[0]), 'var'), (2, "sub"), (self.rho, "var"), (str(self.x[2]), "var"),
               (str(self.x[1]), "var")]
 
-        self.preorder_traversal = [dy]
-        self.sympy_eq = [self.x[0] * (self.x[0] - self.rho - self.x[2])]
+        self.preorder_traversal = dy
+        self.sympy_eq = self.x[0] * (self.x[0] - self.rho - self.x[2])
 
 
 @register_eq_class
@@ -103,13 +103,13 @@ class Lorenz_dz(KnownEquation):
                                 LogUniformSampling(1e-2, 10.0, only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
         self.x = [Symbol(f'X{i}') for i in range(3)]
-        self.y_dims = [(1,)]
+        # self.y_dims = [(1,)]
 
         dz = [(2, "sub"), (2, "mul"), (str(self.x[0]), 'var'), (str(self.x[1]), "var"), (2, "mul"), (self.beta, "const"),
               (str(self.x[2]), "var")]
 
-        self.preorder_traversal = [dz]
-        self.sympy_eq = [self.x[0] * self.x[1] - self.beta * self.x[2]]
+        self.preorder_traversal = dz
+        self.sympy_eq = self.x[0] * self.x[1] - self.beta * self.x[2]
 
 
 @register_eq_class

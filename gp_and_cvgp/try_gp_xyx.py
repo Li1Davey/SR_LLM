@@ -33,7 +33,7 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     regress_batchsize = 256
     opt_num_expr = 5
 
-    expr_obj_thres = data_query_oracle.expr_obj_thres
+    expr_obj_thres = 1e-6  # data_query_oracle.expr_obj_thres
     expr_consts_thres = config[metric_name]['expr_consts_thres']
 
     # gp parameters
@@ -41,13 +41,13 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
     mutpb = 0.8
     maxdepth = 2
     tour_size = 3
-    hof_size = 50 #0
+    hof_size = 50  # 0
 
     population_size = 100
     n_generations = 20
 
     # get all the functions and variables ready
-    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
+    all_tokens = create_tokens(nvar, data_query_oracle.operators_set, protected=True)
     protected_library = Library(all_tokens)
 
     protected_library.print_library()
@@ -109,7 +109,7 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     n_generations = 80  # 00
 
     # get all the functions and variables ready
-    all_tokens = create_tokens(nvar, data_query_oracle.function_set, protected=True)
+    all_tokens = create_tokens(nvar, data_query_oracle.operators_set, protected=True)
     protected_library = Library(all_tokens)
 
     protected_library.print_library()
@@ -156,9 +156,9 @@ if __name__ == '__main__':
     parser.add_argument("--equation_name", help="the filename of the true program.")
     parser.add_argument("--metric_name", type=str, help="The name of the metric for loss.")
     parser.add_argument("--noise_type", type=str, help="The name of the noises.")
-    parser.add_argument("--expr_obj_thres", type=float, help="Threshold")
+    parser.add_argument("--expr_obj_thres", type=float, default=1e-6, help="Threshold")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
-    parser.add_argument("--expand_gp", action="store_true", help="whether run normal gp (expand_gp=False) or expand_gp.")
+    parser.add_argument("--cvgp", action="store_true", help="whether run normal gp (expand_gp=False) or expand_gp.")
 
     args = parser.parse_args()
 
@@ -170,7 +170,7 @@ if __name__ == '__main__':
     np.random.seed(seed)
     print('np.random seed=', seed)
 
-    if args.expand_gp:
+    if args.cvgp:
         run_expanding_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
     else:
         run_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)

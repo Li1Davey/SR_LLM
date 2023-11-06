@@ -311,9 +311,9 @@ class Program(object):
             }
         else:
             state_dict = {
+                'r': float(self.r) if have_r else 'No r',
                 'tokens': self.tokens.tolist(),  # string rep comes out different if we cast to array, so we can get cache misses.
                 'allow_change_tokens': self.allow_change_tokens.tolist(),
-                'r': float(self.r) if have_r else 'No r'
             }
 
         return state_dict
@@ -458,8 +458,8 @@ class Program(object):
         assert self.expr_objs.shape[0] == self.opt_num_expr
         assert len(self.expr_objs.shape) == 1
 
-        print('expr_objs=', self.expr_objs.tolist())
-        print('expr_consts=', self.expr_consts.tolist())
+        # print('expr_objs=', self.expr_objs.tolist())
+        # print('expr_consts=', self.expr_consts.tolist())
 
         # Set the optimized constants
         # set the value of optimized constants with the last optimized constants

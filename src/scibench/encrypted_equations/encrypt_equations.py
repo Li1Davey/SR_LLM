@@ -129,10 +129,7 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
         else:
             expr_obj_thres = 0.01
         name_map[one_equation._eq_name] = eqname
-        if hasattr(one_equation, 'y_dims'):
-            y_dims = str(one_equation.y_dims)
-        else:
-            y_dims = str("[(1,),]")
+
         equation = {"eq_name": one_equation._eq_name,
                     "num_vars": one_equation.num_vars,
                     "dim": one_equation.dim,
@@ -141,7 +138,6 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
                     "eq_expression": str(one_equation.preorder_traversal),
                     "simulated_exec": one_equation.simulated_exec,
                     "expr": str(one_equation.sympy_eq),
-                    'y_dims': y_dims,
                     "expr_obj_thres": expr_obj_thres}
 
         user_encode_data = json.dumps(equation).encode('utf-8')
