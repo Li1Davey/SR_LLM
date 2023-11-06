@@ -129,6 +129,10 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
         else:
             expr_obj_thres = 0.01
         name_map[one_equation._eq_name] = eqname
+        if hasattr(one_equation, 'y_dims'):
+            y_dims = str(one_equation.y_dims)
+        else:
+            y_dims = str("[(1,),]")
         equation = {"eq_name": one_equation._eq_name,
                     "num_vars": one_equation.num_vars,
                     "dim": one_equation.dim,
@@ -137,8 +141,9 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
                     "eq_expression": str(one_equation.preorder_traversal),
                     "simulated_exec": one_equation.simulated_exec,
                     "expr": str(one_equation.sympy_eq),
+                    'y_dims': y_dims,
                     "expr_obj_thres": expr_obj_thres}
-        # print(equation)
+
         user_encode_data = json.dumps(equation).encode('utf-8')
         # print(user_encode_data)
         # exit()
@@ -164,30 +169,30 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
 
 if __name__ == '__main__':
     # X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7, X_8, X_9, X_10, X_11, X_12 =symbols('X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7,X_8,X_9,X_10,X_11,X_12')
-    from equations_feynman import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
-    from equations_others import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
+    # from equations_feynman import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
+    # from equations_others import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
 
     from equation_pde import *
 
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_pde')
-    from equations_feynman_extra import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman_extra')
-    from equations_trigometric_extra import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
-
-    # from equations_debug_cvgp import *
+    # from equations_feynman_extra import *
     #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman_extra')
+    # from equations_trigometric_extra import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
+    #
+    # # from equations_debug_cvgp import *
     # #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_debug_cvgp')
+    # # #
+    # # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_debug_cvgp')
+    # #
+    # from equations_trigometric import *
     #
-    from equations_trigometric import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
 
 #

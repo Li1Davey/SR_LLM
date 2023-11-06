@@ -140,7 +140,7 @@ class Equation_evaluator(object):
 
         if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             loss_val = self.metric(y_true, y_pred, np.var(y_true))
-        elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        elif self.metric_name in ['neg_mse', 'neg_rmse', 'inv_mse']:
             loss_val = self.metric(y_true, y_pred)
         else:
             raise NotImplementedError(self.metric_name, "is not implemented....")
@@ -157,7 +157,7 @@ class Equation_evaluator(object):
             metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred, np.var(y_true))
             loss_val_dict[metric_name] = loss_val
-        for metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        for metric_name in ['neg_mse', 'neg_rmse', 'inv_mse']:
             metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred)
             loss_val_dict[metric_name] = loss_val
@@ -234,7 +234,11 @@ def decrypt_equation(eq_file, key_filename=None):
             decrypted = enc_file.readline()
     one_equation = json.loads(decrypted)
     preorder_traversal = eval(one_equation['eq_expression'])
-    preorder_traversal = [tt[0] for tt in preorder_traversal]
+    y_dim = len(eval(one_equation['y_dims']))
+    pp = []
+    for i in range(y_dim):
+        pp.extend([tt[0] for tt in preorder_traversal[i]])
+    preorder_traversal = pp
     # print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
@@ -863,6 +867,7 @@ def python_execute(traversal, X):
 
     assert False, "Function should never get here!"
     return None
+
 
 def cython_execute(traversal, X):
     """

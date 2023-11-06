@@ -150,13 +150,9 @@ def run_cv_mcts(
             if 'inv' in operators_set:
                 grammars += get_ith_inv_rules(round_idx, non_terminal_node='A')
 
-        print("grammar:", grammars)
-        print("aug grammar:", aug_grammars)
-
-        if round_idx >= 0:
-            print("grammars:", grammars)
-            print("aug grammars:", aug_grammars)
-            mcts_model = MCTS(base_grammars=grammars,
+        print("grammars:", grammars)
+        print("aug grammars:", aug_grammars)
+        mcts_model = MCTS(base_grammars=grammars,
                               aug_grammars=aug_grammars,
                               non_terminal_nodes=nt_nodes,
                               aug_nt_nodes=aug_nt_nodes,
@@ -166,15 +162,15 @@ def run_cv_mcts(
                               exploration_rate=exploration_rate,
                               eta=eta,
                               max_opt_iter=500)
-            iter_time = time.time()
-            _, population = mcts_model.MCTS_run(num_iterations[round_idx],
+        iter_time = time.time()
+        _, population = mcts_model.MCTS_run(num_iterations[round_idx],
                                                 num_rollouts=num_rollouts,
                                                 reward_threhold=reward_thresh[round_idx],
                                                 verbose=True,
                                                 is_first_round=(round_idx == 0))
-            print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
-            print(population)
-
+        print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
+        print(population)
+        if round_idx < len(num_iterations):
             aug_grammars, aug_nt_nodes, stand_alone_constants = mcts_model.freeze_equations(population, opt_num_expr, stand_alone_constants)
             print("AUG grammars")
             print(aug_grammars)
@@ -183,7 +179,6 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-        # num_rollouts = min(10, int(num_rollouts / 2))
 
     mcts_model.print_hofs(-1, verbose=True)
 

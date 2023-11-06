@@ -6,7 +6,7 @@ from base import KnownEquation, LogUniformSampling, IntegerUniformSampling, Unif
 
 device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
 import os
-from sympy import MatrixSymbol, Matrix
+from sympy import MatrixSymbol, Matrix, Symbol
 from diff_ops import LaplacianOp, DifferentialOp
 
 EQUATION_CLASS_DICT = OrderedDict()
@@ -24,6 +24,95 @@ def get_eq_obj(key, **kwargs):
 
 
 @register_eq_class
+class Lorenz_dx(KnownEquation):
+    _eq_name = 'Lorenz_dx'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+    expr_consts_thres = None
+    simulated_exec = True
+
+    def __init__(self):
+        self.sigma = 10  # np.random.randn(1)[0]  # .to(device)
+        self.beta = 8 / 3  # np.random.randn(1)[0]  # .to(device)
+        self.rho = 28  # np.random.randn(1)[0]  # .to(device)
+        self.dim = [1, 1, 1]
+
+        self.dt = 1e-2
+
+        vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
+                                LogUniformSampling(1e-2, 10.0, only_positive=True),
+                                LogUniformSampling(1e-2, 10.0, only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        self.x = [Symbol(f'X{i}') for i in range(3)]
+        self.y_dims = [(1,)]
+
+        dx = [(2, "mul"), (self.sigma, 'const'), (2, "sub"), (str(self.x[1]), "var"), (str(self.x[0]), "var")]
+
+        self.preorder_traversal = [dx]
+        self.sympy_eq = [self.sigma * (self.x[1] - self.x[0])]
+
+
+@register_eq_class
+class Lorenz_dy(KnownEquation):
+    _eq_name = 'Lorenz_dy'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+    expr_consts_thres = None
+    simulated_exec = True
+
+    def __init__(self):
+        self.sigma = 10  # np.random.randn(1)[0]  # .to(device)
+        self.beta = 8 / 3  # np.random.randn(1)[0]  # .to(device)
+        self.rho = 28  # np.random.randn(1)[0]  # .to(device)
+        self.dim = [1, 1, 1]
+
+        self.dt = 1e-2
+
+        vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
+                                LogUniformSampling(1e-2, 10.0, only_positive=True),
+                                LogUniformSampling(1e-2, 10.0, only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        self.x = [Symbol(f'X{i}') for i in range(3)]
+        self.y_dims = [(1,)]
+
+        dy = [(2, "sub"), (2, "mul"), (str(self.x[0]), 'var'), (2, "sub"), (self.rho, "var"), (str(self.x[2]), "var"),
+              (str(self.x[1]), "var")]
+
+        self.preorder_traversal = [dy]
+        self.sympy_eq = [self.x[0] * (self.x[0] - self.rho - self.x[2])]
+
+
+@register_eq_class
+class Lorenz_dz(KnownEquation):
+    _eq_name = 'Lorenz_dz'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+    expr_consts_thres = None
+    simulated_exec = True
+
+    def __init__(self):
+        self.sigma = 10  # np.random.randn(1)[0]  # .to(device)
+        self.beta = 8 / 3  # np.random.randn(1)[0]  # .to(device)
+        self.rho = 28  # np.random.randn(1)[0]  # .to(device)
+        self.dim = [1, 1, 1]
+
+        self.dt = 1e-2
+
+        vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
+                                LogUniformSampling(1e-2, 10.0, only_positive=True),
+                                LogUniformSampling(1e-2, 10.0, only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        self.x = [Symbol(f'X{i}') for i in range(3)]
+        self.y_dims = [(1,)]
+
+        dz = [(2, "sub"), (2, "mul"), (str(self.x[0]), 'var'), (str(self.x[1]), "var"), (2, "mul"), (self.beta, "const"),
+              (str(self.x[2]), "var")]
+
+        self.preorder_traversal = [dz]
+        self.sympy_eq = [self.x[0] * self.x[1] - self.beta * self.x[2]]
+
+
+@register_eq_class
 class SpinodalDecomp64x64(KnownEquation):
     _eq_name = 'Spinodal_Decomposition_64x64'
     _function_set = ['add', 'sub', 'mul', 'div', 'clamp', 'laplacian', 'const']
@@ -34,9 +123,9 @@ class SpinodalDecomp64x64(KnownEquation):
     def __init__(self):
         # super(SpinodalDecomp, self).__init__()
         # c is the input matrix; A, M, kappa is the constants in the expressions
-        self.A = 1#np.random.randn(1)[0]  # .to(device)
-        self.M = 1#np.random.randn(1)[0]  # .to(device)
-        self.kappa = 0.5#np.random.randn(1)[0]  # .to(device)
+        self.A = 1  # np.random.randn(1)[0]  # .to(device)
+        self.M = 1  # np.random.randn(1)[0]  # .to(device)
+        self.kappa = 0.5  # np.random.randn(1)[0]  # .to(device)
 
         self.lap = LaplacianOp()
         self.diff = DifferentialOp()
@@ -107,8 +196,8 @@ class GrainGrowth64x64(KnownEquation):
     simulated_exec = True
 
     def __init__(self):
-        self.A = 1 #np.random.randn(1)[0]
-        self.M = 1 #np.random.randn(1)[0]
+        self.A = 1  # np.random.randn(1)[0]
+        self.M = 1  # np.random.randn(1)[0]
         # self.kappa = np.random.randn(1)[0]  # .to(device)
 
         self.lap = LaplacianOp()
@@ -128,13 +217,12 @@ class GrainGrowth64x64(KnownEquation):
         super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
         etas = self.x
 
-        self.L =  torch.tensor([5.0])#nn.Parameter(torch.randn(1) * 5 + 0.1, requires_grad=True)
-        self.kappa = torch.tensor(0.1   )#nn.Parameter(torch.randn(1) * 5 + 0.1, requires_grad=True)
+        self.L = torch.tensor([5.0])  # nn.Parameter(torch.randn(1) * 5 + 0.1, requires_grad=True)
+        self.kappa = torch.tensor(0.1)  # nn.Parameter(torch.randn(1) * 5 + 0.1, requires_grad=True)
 
         self.lap = LaplacianOp()
 
         # self.dtime = dt
-
 
         self.sympy_eq = "EMPTY"
 
