@@ -234,11 +234,8 @@ def decrypt_equation(eq_file, key_filename=None):
             decrypted = enc_file.readline()
     one_equation = json.loads(decrypted)
     preorder_traversal = eval(one_equation['eq_expression'])
-    y_dim = len(eval(one_equation['y_dims']))
-    pp = []
-    for i in range(y_dim):
-        pp.extend([tt[0] for tt in preorder_traversal[i]])
-    preorder_traversal = pp
+
+    preorder_traversal = [tt[0] for tt in preorder_traversal]
     # print(preorder_traversal)
     list_of_tokens = create_tokens(one_equation['num_vars'], one_equation['function_set'], protected=True)
     if 'pow' in preorder_traversal:
@@ -887,6 +884,8 @@ def cython_execute(traversal, X):
     result : float
         The result of executing the traversal.
     """
-    if len(traversal) > 1:
+    if len(traversal) >= 1:
         is_input_var = array.array('i', [t.input_var is not None for t in traversal])
         return cyfunc.execute(X, len(traversal), traversal, is_input_var)
+    else:
+        return None

@@ -343,7 +343,7 @@ class MCTS(object):
             print("\tITER {}/{}...".format(t, num_episodes))
             if t % print_freq == 0 and verbose:
                 print("\tIteration {}/{}...".format(t, num_episodes))
-                print("QN (tail 10):", list(self.QN.keys())[-10:])
+                print("QN (tail):", list(self.QN.keys())[-1])
                 self.print_hofs(-1, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)

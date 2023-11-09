@@ -58,11 +58,12 @@ def run_mcts(
                           max_opt_iter=max_opt_iter,
                           eta=eta)
 
-        _, current_solution, good_modules = mcts_model.MCTS_run(num_episodes,
-                                                                num_rollouts=num_rollouts,
-                                                                verbose=True)
+        _, good_modules = mcts_model.MCTS_run(num_episodes,
+                                              num_rollouts=num_rollouts,
+                                              verbose=True,
+                                              is_first_round=True)
 
-        mcts_model.print_hofs(verbose=True)
+        mcts_model.print_hofs(-1, verbose=True)
 
         if not best_modules:
             best_modules = good_modules
@@ -77,11 +78,6 @@ def run_mcts(
         if best_modules[0][1] >= 1 - norm_threshold:
             print("find the ground-truth expression, whole program terminates...")
             break
-
-        reward_his.append(best_solution[1])
-
-        if current_solution[1] > best_solution[1]:
-            best_solution = current_solution
 
         max_module += module_grow_step
         exploration_rate *= 1.2
@@ -102,7 +98,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
                             dataXgen,
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
-
+    operators_set.remove('const')
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
     run_mcts(production_rules=production_rules, num_episodes=num_episodes)
@@ -153,21 +149,21 @@ def run_cv_mcts(
         print("grammars:", grammars)
         print("aug grammars:", aug_grammars)
         mcts_model = MCTS(base_grammars=grammars,
-                              aug_grammars=aug_grammars,
-                              non_terminal_nodes=nt_nodes,
-                              aug_nt_nodes=aug_nt_nodes,
-                              max_len=max_len,
-                              max_module=max_module,
-                              aug_grammars_allowed=num_aug,
-                              exploration_rate=exploration_rate,
-                              eta=eta,
-                              max_opt_iter=500)
+                          aug_grammars=aug_grammars,
+                          non_terminal_nodes=nt_nodes,
+                          aug_nt_nodes=aug_nt_nodes,
+                          max_len=max_len,
+                          max_module=max_module,
+                          aug_grammars_allowed=num_aug,
+                          exploration_rate=exploration_rate,
+                          eta=eta,
+                          max_opt_iter=500)
         iter_time = time.time()
         _, population = mcts_model.MCTS_run(num_iterations[round_idx],
-                                                num_rollouts=num_rollouts,
-                                                reward_threhold=reward_thresh[round_idx],
-                                                verbose=True,
-                                                is_first_round=(round_idx == 0))
+                                            num_rollouts=num_rollouts,
+                                            reward_threhold=reward_thresh[round_idx],
+                                            verbose=True,
+                                            is_first_round=(round_idx == 0))
         print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
         print(population)
         if round_idx < len(num_iterations):

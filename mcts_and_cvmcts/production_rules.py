@@ -51,7 +51,9 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
     const_rules = [f'{non_terminal_node}->C']
 
-    rules = base_rules + get_vars_rules(nvars) + const_rules
+    rules = base_rules + get_vars_rules(nvars)  # + const_rules
+    if 'const' in operators_set:
+        rules += const_rules
     if 'inv' in operators_set:
         rules += get_inv_rules(nvars)
     if 'div' in operators_set:
@@ -68,9 +70,9 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
 
 
 def get_inv_rules(nvars: int, non_terminal_node='A') -> list:
-    rules=[]
+    rules = []
     for i in range(nvars):
-        rules+=get_ith_inv_rules(i, non_terminal_node)
+        rules += get_ith_inv_rules(i, non_terminal_node)
     return rules
 
 
@@ -82,9 +84,9 @@ def get_vars_rules(nvars: int, non_terminal_node='A') -> list:
 
 
 def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
-    rules=[]
+    rules = []
     for i in range(nvars):
-        rules+=get_ith_sincos_rules(i, non_terminal_node)
+        rules += get_ith_sincos_rules(i, non_terminal_node)
     return rules
 
 

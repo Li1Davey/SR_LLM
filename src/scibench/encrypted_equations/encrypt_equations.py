@@ -65,7 +65,7 @@ def to_binary_expr_tree(expr):
     if isinstance(expr, Symbol):
         return str(expr)
     elif isinstance(expr, Float) or isinstance(expr, Integer) or isinstance(expr, Rational):
-        return expr
+        return [expr]
     elif expr == sympy.pi:
         return np.pi
     elif expr == sympy.EulerGamma:
@@ -172,9 +172,9 @@ if __name__ == '__main__':
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
 
-    from equation_pde import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_pde')
+    # from equation_pde import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_pde')
     # from equations_feynman_extra import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman_extra')
@@ -190,5 +190,7 @@ if __name__ == '__main__':
     # from equations_trigometric import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
+    from equation_spin_glass import *
 
-#
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_spin_glass')
+

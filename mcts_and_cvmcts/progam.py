@@ -66,7 +66,7 @@ class Program(object):
         t_optimized_constants, t_optimized_obj = 0, 0
         if num_changing_consts == 0:  # zero constant
             y_pred = execute(eq, data_X.T, input_var_Xs)
-        elif num_changing_consts >= 10:  # discourage over complicated numerical estimations
+        elif num_changing_consts >= 20:  # discourage over complicated numerical estimations
             return -np.inf, eq, t_optimized_constants, t_optimized_obj
         else:
             c_lst = ['c' + str(i) for i in range(num_changing_consts)]

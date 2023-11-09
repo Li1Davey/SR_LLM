@@ -29,27 +29,20 @@ class Lorenz_dx(KnownEquation):
     _function_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
     expr_consts_thres = None
-    simulated_exec = True
 
     def __init__(self):
-        self.sigma = 10  # np.random.randn(1)[0]  # .to(device)
-        self.beta = 8 / 3  # np.random.randn(1)[0]  # .to(device)
-        self.rho = 28  # np.random.randn(1)[0]  # .to(device)
+        self.sigma = 10
+        self.beta = 8 / 3
+        self.rho = 28
         self.dim = [1, 1, 1]
-
-        self.dt = 1e-2
 
         vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
-        self.x = [Symbol(f'X{i}') for i in range(3)]
+        x = self.x
 
-
-        dx = [(2, "mul"), (self.sigma, 'const'), (2, "sub"), (str(self.x[1]), "var"), (str(self.x[0]), "var")]
-
-        self.preorder_traversal = dx
-        self.sympy_eq = self.sigma * (self.x[1] - self.x[0])
+        self.sympy_eq = self.sigma * (x[1] - x[0])
 
 
 @register_eq_class
@@ -57,29 +50,20 @@ class Lorenz_dy(KnownEquation):
     _eq_name = 'Lorenz_dy'
     _function_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
-    expr_consts_thres = None
-    simulated_exec = True
 
     def __init__(self):
-        self.sigma = 10  # np.random.randn(1)[0]  # .to(device)
-        self.beta = 8 / 3  # np.random.randn(1)[0]  # .to(device)
-        self.rho = 28  # np.random.randn(1)[0]  # .to(device)
+        self.sigma = 10
+        self.beta = 8 / 3
+        self.rho = 28
         self.dim = [1, 1, 1]
-
-        self.dt = 1e-2
 
         vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
-        self.x = [Symbol(f'X{i}') for i in range(3)]
+        x = self.x
 
-
-        dy = [(2, "sub"), (2, "mul"), (str(self.x[0]), 'var'), (2, "sub"), (self.rho, "var"), (str(self.x[2]), "var"),
-              (str(self.x[1]), "var")]
-
-        self.preorder_traversal = dy
-        self.sympy_eq = self.x[0] * (self.x[0] - self.rho - self.x[2])
+        self.sympy_eq = x[0] * (x[0] - self.rho - x[2])
 
 
 @register_eq_class
@@ -88,28 +72,336 @@ class Lorenz_dz(KnownEquation):
     _function_set = ['add', 'sub', 'mul', 'div', 'const']
     expr_obj_thres = 1e-6
     expr_consts_thres = None
-    simulated_exec = True
 
     def __init__(self):
-        self.sigma = 10  # np.random.randn(1)[0]  # .to(device)
-        self.beta = 8 / 3  # np.random.randn(1)[0]  # .to(device)
-        self.rho = 28  # np.random.randn(1)[0]  # .to(device)
+        self.sigma = 10
+        self.beta = 8 / 3
+        self.rho = 28
         self.dim = [1, 1, 1]
-
-        self.dt = 1e-2
 
         vars_range_and_types = [LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True),
                                 LogUniformSampling(1e-2, 10.0, only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
-        self.x = [Symbol(f'X{i}') for i in range(3)]
-        # self.y_dims = [(1,)]
+        x = self.x
+        self.sympy_eq = x[0] * x[1] - self.beta * x[2]
 
-        dz = [(2, "sub"), (2, "mul"), (str(self.x[0]), 'var'), (str(self.x[1]), "var"), (2, "mul"), (self.beta, "const"),
-              (str(self.x[2]), "var")]
 
-        self.preorder_traversal = dz
-        self.sympy_eq = self.x[0] * self.x[1] - self.beta * self.x[2]
+@register_eq_class
+class Glycolytic_oscillator_ds1(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds1'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.k = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = self.J0 - (self.k1 * x[0] * s[5]) / (1 + (self.x[5] / self.K1) ** self.q)
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds1(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds1'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.k = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = self.J0 - (self.k1 * x[0] * s[5]) / (1 + (self.x[5] / self.K1) ** self.q)
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds1(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds1'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.k = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = self.J0 - (self.k1 * x[0] * self.x[5]) / (1 + (self.x[5] / self.K1) ** self.q)
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds2(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds2'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.k = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = 2 * (self.k1 * x[0] * self.x[5]) / (1 + (self.x[5] / self.K1) ** self.q) - self.k2 * self.x[1] * (self.N - self.x[4]) - \
+                        self.k6 * self.x[1] * self.x[4]
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds3(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds3'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.k = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = self.k2 * self.x[1] * (self.N - self.x[4]) - self.k3 * self.x[2] * (self.A - self.x[5])
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds4(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds4'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.kappa = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = self.k3 * self.x[2] * (self.A - self.x[5]) - self.k4 * self.x[3] * self.x[4] - self.kappa * (self.x[3] - self.x[6])
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds5(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds5'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.k = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = self.k2 * self.x[1] * (self.N - self.x[4]) - self.k4 * self.x[3] * self.x[4] - self.k6 * self.x[1] * self.x[4]
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds6(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds6'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.kappa = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = -2 * (self.k1 * x[0] * self.x[5]) / (1 + (self.x[5] / self.K1) ** self.q) - 2 * self.k3 * self.x[2] * (
+                self.A - self.x[5]) - self.k5 * self.x[5]
+
+
+@register_eq_class
+class Glycolytic_oscillator_ds7(KnownEquation):
+    _eq_name = 'Glycolytic_oscillator_ds7'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+
+    def __init__(self):
+        self.J0 = 2.5
+        self.k1 = 100
+        self.k2 = 6
+        self.k3 = 16
+        self.k4 = 100
+        self.k5 = 1.28
+        self.k6 = 12
+        self.K = 1.8
+        self.kappa = 13
+        self.q = 4
+        self.K1 = 0.52
+        self.phi = 0.1
+        self.N = 1
+        self.A = 4
+
+        vars_range_and_types = [LogUniformSampling(0.15, 1.6, only_positive=True),
+                                LogUniformSampling(0.19, 2.16, only_positive=True),
+                                LogUniformSampling(0.04, 0.20, only_positive=True),
+                                LogUniformSampling(0.10, 0.35, only_positive=True),
+                                LogUniformSampling(0.08, 0.30, only_positive=True),
+                                LogUniformSampling(0.14, 2.67, only_positive=True),
+                                LogUniformSampling(0.05, 0.10, only_positive=True)]
+        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        x = self.x
+
+        self.sympy_eq = self.phi * self.kappa * (self.x[3] - self.x[6]) - self.K * self.x[6]
 
 
 @register_eq_class
@@ -123,9 +415,9 @@ class SpinodalDecomp64x64(KnownEquation):
     def __init__(self):
         # super(SpinodalDecomp, self).__init__()
         # c is the input matrix; A, M, kappa is the constants in the expressions
-        self.A = 1  # np.random.randn(1)[0]  # .to(device)
-        self.M = 1  # np.random.randn(1)[0]  # .to(device)
-        self.kappa = 0.5  # np.random.randn(1)[0]  # .to(device)
+        self.A = 1
+        self.M = 1
+        self.kappa = 0.5
 
         self.lap = LaplacianOp()
         self.diff = DifferentialOp()
