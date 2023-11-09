@@ -128,11 +128,9 @@ def run_cv_mcts(
     exploration_rate = exp_rate
     max_module = max_module_init
     stand_alone_constants = []
-    hof = []
+
     aug_nt_nodes = []
     aug_grammars = []
-
-    start_time = time.time()
 
     reward_thresh = create_reward_threshold(10, len(num_iterations))
     for round_idx in range(len(num_iterations)):
@@ -175,7 +173,10 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-
+    for round_idx in range(len(num_iterations)):
+        MCTS.program.set_vf(round_idx)
+        MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
+    print("final hof")
     mcts_model.print_hofs(-1, verbose=True)
 
 
