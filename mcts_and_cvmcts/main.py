@@ -3,7 +3,7 @@ import time
 import argparse
 from mcts_model import MCTS
 from production_rules import *
-from utils import pretty_print_expr, create_geometric_generations, create_reward_threshold
+from utils import create_uniform_generations, create_geometric_generations, create_reward_threshold
 import random
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
@@ -195,8 +195,8 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
 
-    num_episodes = 500
-    num_iterations = create_geometric_generations(num_episodes, nvar)
+    num_per_episodes = 50
+    num_iterations = create_uniform_generations(num_per_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
     end = time.time() - start
