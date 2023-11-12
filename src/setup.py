@@ -2,6 +2,9 @@ from setuptools import setup
 import numpy as np
 from Cython.Build import cythonize
 
+from setuptools import dist
+
+dist.Distribution().fetch_build_eggs(['Cython', 'numpy'])
 
 from distutils.core import setup
 import os
@@ -10,6 +13,7 @@ required = [
     "cython",
     "numpy",
     "sympy",
+    "scipy",
     "click",
     "cryptography",
     "torch"
@@ -25,3 +29,5 @@ setup(name='scibench',
       include_dirs=[np.get_include()],
       install_requires=required
       )
+
+
