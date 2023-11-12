@@ -167,6 +167,8 @@ def run_cv_mcts(
         print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
         tracker.create_snapshot()
         tracker.stats.print_summary()
+        mcts_model.UCBs={}
+        mcts_model.QN = {}
         print(population)
         if round_idx < len(num_iterations):
             aug_grammars, aug_nt_nodes, stand_alone_constants = mcts_model.freeze_equations(population, opt_num_expr, stand_alone_constants)
