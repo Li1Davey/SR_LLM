@@ -1,4 +1,4 @@
-import numpy as np
+from pympler import classtracker, asizeof
 import time
 import argparse
 from mcts_model import MCTS
@@ -31,7 +31,6 @@ def run_mcts(
 
     # define production rules and non-terminal nodes.
     grammars = production_rules
-    best_solution = ('nothing', 0)
 
     # number of module max size increase after each transplantation
     module_grow_step = (max_len - max_module_init) / num_transplant
@@ -39,7 +38,6 @@ def run_mcts(
     exploration_rate = exp_rate
     max_module = max_module_init
     best_modules = []
-    reward_his = []
     aug_grammars = []
 
     start_time = time.time()
@@ -64,6 +62,7 @@ def run_mcts(
                                               is_first_round=True)
 
         mcts_model.print_hofs(-1, verbose=True)
+
 
         if not best_modules:
             best_modules = good_modules
@@ -146,6 +145,8 @@ def run_cv_mcts(
 
         print("grammars:", grammars)
         print("aug grammars:", aug_grammars)
+        tracker = classtracker.ClassTracker()
+
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           non_terminal_nodes=nt_nodes,
@@ -157,12 +158,17 @@ def run_cv_mcts(
                           eta=eta,
                           max_opt_iter=500)
         iter_time = time.time()
+        tracker.track_object(mcts_model)
         _, population = mcts_model.MCTS_run(num_iterations[round_idx],
                                             num_rollouts=num_rollouts,
                                             reward_threhold=reward_thresh[round_idx],
                                             verbose=True,
                                             is_first_round=(round_idx == 0))
         print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
+        tracker.create_snapshot()
+        tracker.stats.print_summary()
+        mcts_model.UCBs={}
+        mcts_model.QN = {}
         print(population)
         if round_idx < len(num_iterations):
             aug_grammars, aug_nt_nodes, stand_alone_constants = mcts_model.freeze_equations(population, opt_num_expr, stand_alone_constants)
