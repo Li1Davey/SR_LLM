@@ -228,6 +228,8 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
     print(args)
     if args.cv_mcts:
+        # run control variable experiment based Monte Carlo Tree Search
         cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
     else:
+        # run Monte Carlo Tree Search
         mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
