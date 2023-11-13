@@ -37,11 +37,11 @@ do
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="mcts-${type}${nv}${nt}"
+#SBATCH --job-name="CT${type}${nv}${nt}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.cv_mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=48:00:00
-#SBATCH --mem=2048MB
+#SBATCH --mem=10240MB
 
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
