@@ -7,7 +7,7 @@ nv=$1
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_others
-opt=Nelder-Mead
+opt=BFGS
 
 noise_type=normal
 noise_scale=0.0

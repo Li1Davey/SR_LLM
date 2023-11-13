@@ -192,7 +192,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     nvar = data_query_oracle.get_nvars()
     operators_set = data_query_oracle.get_operators_set()
 
-    regress_batchsize = 512
+    regress_batchsize = 256
     opt_num_expr = 5
     allowed_input_tokens = np.ones(nvar, dtype=np.int32)
     MCTS.task = RegressTask(regress_batchsize,
@@ -201,7 +201,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
 
-    num_per_episodes = 40
+    num_per_episodes = 30
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
