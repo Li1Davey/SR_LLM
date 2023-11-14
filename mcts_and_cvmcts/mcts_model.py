@@ -178,7 +178,7 @@ class MCTS(object):
             while ti < 2:
                 mask=np.random.randint(2, size=countA)
                 countAi=0
-                expri_new=expri
+                expri_new=""
                 for i in range(len(expri)):
                     if expri[i] == 'A' and mask[countAi]==0:
                         expri_new+='C'
