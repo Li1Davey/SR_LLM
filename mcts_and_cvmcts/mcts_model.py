@@ -179,7 +179,6 @@ class MCTS(object):
                 mask=np.random.randint(2, size=countA)
                 countAi=0
                 expri_new=expri
-                new_aug_nt_nodes.append(['A', ] * (np.sum(mask)))
                 for i in range(len(expri)):
                     if expri[i] == 'A' and mask[countAi]==0:
                         expri_new+='C'
