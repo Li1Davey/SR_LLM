@@ -4,15 +4,13 @@ set -x
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 py310=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
-#basepath=/home/jiangnan/PycharmProjects/scibench
-#py3=/home/jiangnan/miniconda3/bin/python
 type=$1
 nv=$2
 nt=$3
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_trigometric
-opt=Nelder-Mead
+opt=BFGS
 
 noise_type=normal
 noise_scale=0.0
@@ -40,8 +38,8 @@ do
 #SBATCH --job-name="mcts-${type}${nv}${nt}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.mcts.out
 #SBATCH --constraint=A
-#SBATCH --time=48:00:00
-#SBATCH --mem=2048MB
+#SBATCH --time=10:00:00
+#SBATCH --mem=10240MB
 
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt\

@@ -41,14 +41,14 @@ class Trainer():
         sess : tf.Session
             TensorFlow Session object.
         
-        policy : dso.policy.Policy
+        policy : cvdso.policy.Policy
             Parametrized probability distribution over discrete objects.
             Used to generate programs and compute loglikelihoods.
 
-        policy_optimizer : dso.policy_optimizer.policy_optimizer
+        policy_optimizer : cvdso.policy_optimizer.policy_optimizer
             policy_optimizer object used to optimize the policy.
 
-        logger : dso.train_stats.StatsLogger
+        logger : cvdso.train_stats.StatsLogger
             Logger to save results with
 
         pool : multiprocessing.Pool or None

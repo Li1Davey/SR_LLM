@@ -35,7 +35,7 @@ def make_queue(policy=None, priority=False, capacity=np.inf, seed=0):
 
     Parameters
     ----------
-    policy : dso.policy.Policy
+    policy : cvdso.policy.Policy
         Reference to the Policy, used to compute probabilities of items in
         the Queue.
 

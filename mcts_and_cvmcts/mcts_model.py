@@ -23,7 +23,6 @@ class MCTS(object):
 
     def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500):
-        # for generating input data and evaluate the output.
         # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
@@ -172,15 +171,30 @@ class MCTS(object):
         # diversify the number of A
         new_freezed_exprs = []
         new_aug_nt_nodes = []
-        for expri, ntnodei in zip(freezed_exprs, aug_nt_nodes):
-            if expri.count('(A)') >= 3:
-                for i, ti in enumerate(expri):
-                    if ti == 'A':
-                        new_freezed_exprs.append(expri[:i] + 'C' + expri[i + 1:])
-                        new_aug_nt_nodes.append(['A', ] * (expri.count('(A)') - 1))
-            else:
-                new_freezed_exprs.append(expri)
-                new_aug_nt_nodes.append(ntnodei)
+        expri, ntnodei=freezed_exprs[0], aug_nt_nodes[0]
+        if expri.count('(A)') >= 3:
+            countA=expri.count('(A)')
+            ti=0
+            while ti < 2:
+                mask=np.random.randint(2, size=countA)
+                countAi=0
+                expri_new=expri
+                new_aug_nt_nodes.append(['A', ] * (np.sum(mask)))
+                for i in range(len(expri)):
+                    if expri[i] == 'A' and mask[countAi]==1:
+                        expri_new+='C'
+                    else:
+                        expri_new+=expri[i]
+                    countAi+=(expri[i] == 'A')
+                if expri_new not in new_freezed_exprs:
+                    new_freezed_exprs.append(expri_new)
+                    new_aug_nt_nodes.append(['A', ] * (np.sum(mask)))
+                ti+=1
+
+        else:
+            new_freezed_exprs.append(expri)
+            new_aug_nt_nodes.append(ntnodei)
+        # only generate at most 3 template for the next round, otherwise it will be too time counsuming
         return new_freezed_exprs, new_aug_nt_nodes, new_stand_alone_constants
 
     def rollout(self, num_play, state_initial, ntn_initial):
@@ -341,9 +355,9 @@ class MCTS(object):
 
         for t in range(1, num_episodes + 1):
             print("\tITER {}/{}...".format(t, num_episodes))
-            if t % print_freq == 0 and verbose:
+            if t % print_freq == 0 and verbose and len(self.hall_of_fame)>=1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
-                print("QN (tail):", list(self.QN.keys())[-1])
+                print("#QN:", len(self.QN.keys()))
                 self.print_hofs(-1, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)

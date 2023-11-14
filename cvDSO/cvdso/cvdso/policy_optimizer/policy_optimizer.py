@@ -66,7 +66,7 @@ class PolicyOptimizer(ABC):
         sess : tf.Session
             TensorFlow Session object.
 
-        policy : dso.policy.Policy
+        policy : cvdso.policy.Policy
             Parametrized probability distribution over discrete objects
 
         debug : int

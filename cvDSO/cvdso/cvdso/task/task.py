@@ -36,7 +36,7 @@ class Task(ABC):
 
         Parameters
         ----------
-        program : dso.program.Program
+        program : cvdso.program.Program
 
             The Program to compute reward of.
 
@@ -59,7 +59,7 @@ class Task(ABC):
 
         Parameters
         ----------
-        program : dso.program.Program
+        program : cvdso.program.Program
 
             The Program to evaluate.
 

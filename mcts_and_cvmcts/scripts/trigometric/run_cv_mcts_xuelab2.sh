@@ -11,7 +11,7 @@ nt=$3
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_trigometric
-opt=BFGS
+opt=L-BFGS-B
 
 noise_type=normal
 noise_scale=0.0

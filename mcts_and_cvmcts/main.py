@@ -12,9 +12,9 @@ from progam import Program
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_rollouts=200,
-        max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
-        num_transplant=5, norm_threshold=1e-10
+    production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_rollouts=200,
+    max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
+    num_transplant=5, norm_threshold=1e-10
 ):
     """
     production_rules: rules to generate expressions
@@ -104,8 +104,8 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 
 
 def run_cv_mcts(
-        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=50,
-        max_len=20, eta=0.999, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
+    operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=50,
+    max_len=30, eta=0.999, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
 ):
     """
     num_run: number of iterations.
@@ -145,6 +145,7 @@ def run_cv_mcts(
 
         print("grammars:", grammars)
         print("aug grammars:", aug_grammars)
+        print("num_rollouts:", num_rollouts)
         tracker = classtracker.ClassTracker()
 
         mcts_model = MCTS(base_grammars=grammars,
@@ -159,18 +160,21 @@ def run_cv_mcts(
                           max_opt_iter=500)
         iter_time = time.time()
         tracker.track_object(mcts_model)
+        print_freq = 1
         _, population = mcts_model.MCTS_run(num_iterations[round_idx],
                                             num_rollouts=num_rollouts,
                                             reward_threhold=reward_thresh[round_idx],
                                             verbose=True,
-                                            is_first_round=(round_idx == 0))
-        print("Time usage of round {} is {} mins".format(round_idx, (time.time() - iter_time) / 60))
+                                            is_first_round=(round_idx == 0),
+                                            print_freq=print_freq)
+        print("Time usage of round {} is {} mins".format(round_idx, np.round((time.time() - iter_time) / 60, 3)))
         tracker.create_snapshot()
         tracker.stats.print_summary()
-        mcts_model.UCBs={}
+        mcts_model.UCBs = {}
         mcts_model.QN = {}
         print(population)
-        if round_idx < len(num_iterations):
+        if round_idx < len(num_iterations) - 1:
+            # the last round does not need freeze
             aug_grammars, aug_nt_nodes, stand_alone_constants = mcts_model.freeze_equations(population, opt_num_expr, stand_alone_constants)
             print("AUG grammars")
             print(aug_grammars)
@@ -179,6 +183,7 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
+        num_rollouts=max(15, int(num_rollouts*0.9))
     for round_idx in range(len(num_iterations)):
         MCTS.program.set_vf(round_idx)
         MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
@@ -214,7 +219,7 @@ if __name__ == '__main__':
     parser.add_argument("--equation_name", help="the filename of the true program.")
     parser.add_argument('--optimizer',
                         nargs='?',
-                        choices=['BFGS', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
+                        choices=['BFGS', 'L-BFGS-B', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--num_episodes", type=int, default=5000, help="the number of episode for MCTS.")

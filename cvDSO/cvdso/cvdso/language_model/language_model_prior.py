@@ -16,7 +16,7 @@ class LanguageModelPrior(object):
 
     Parameters
     ----------
-    dso_library: dso.library.Library
+    dso_library: cvdso.library.Library
         Library used in main DSO model
 
     model_path: str
