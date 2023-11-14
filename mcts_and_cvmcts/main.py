@@ -183,7 +183,7 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-        num_rollouts=max(15, int(num_rollouts*0.9))
+        num_rollouts=max(10, int(num_rollouts*0.8))
     for round_idx in range(len(num_iterations)):
         MCTS.program.set_vf(round_idx)
         MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
