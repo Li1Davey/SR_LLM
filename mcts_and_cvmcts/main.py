@@ -145,6 +145,7 @@ def run_cv_mcts(
 
         print("grammars:", grammars)
         print("aug grammars:", aug_grammars)
+        print("aug ntn nodes:", aug_nt_nodes)
         print("num_rollouts:", num_rollouts)
         tracker = classtracker.ClassTracker()
 
