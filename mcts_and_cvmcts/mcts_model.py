@@ -171,29 +171,30 @@ class MCTS(object):
         # diversify the number of A
         new_freezed_exprs = []
         new_aug_nt_nodes = []
-        expri, ntnodei=freezed_exprs[0], aug_nt_nodes[0]
+        expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
         if expri.count('(A)') >= 3:
-            countA=expri.count('(A)')
-            ti=0
-            while ti < 2:
-                mask=np.random.randint(2, size=countA)
-                countAi=0
-                expri_new=""
+            countA = expri.count('(A)')
+            while len(new_freezed_exprs) <= 2:
+                mask = np.random.randint(2, size=countA)
+                while np.sum(mask) == 0 or np.sum(mask) == countA:
+                    mask = np.random.randint(2, size=countA)
+                countAi = 0
+                expri_new = ""
                 for i in range(len(expri)):
-                    if expri[i] == 'A' and mask[countAi]==0:
-                        expri_new+='C'
+                    if expri[i] == 'A' and mask[countAi] == 0:
+                        expri_new += 'C'
                     else:
-                        expri_new+=expri[i]
-                    countAi+=(expri[i] == 'A')
+                        expri_new += expri[i]
+                    countAi += (expri[i] == 'A')
                 if expri_new not in new_freezed_exprs:
                     new_freezed_exprs.append(expri_new)
                     new_aug_nt_nodes.append(['A', ] * (np.sum(mask)))
-                ti+=1
+                ti += 1
 
         else:
             new_freezed_exprs.append(expri)
             new_aug_nt_nodes.append(ntnodei)
-        # only generate at most 3 template for the next round, otherwise it will be too time counsuming
+        # only generate at most 2 templates for the next round, otherwise it will be too time consuming
         return new_freezed_exprs, new_aug_nt_nodes, new_stand_alone_constants
 
     def rollout(self, num_play, state_initial, ntn_initial):
@@ -354,7 +355,7 @@ class MCTS(object):
 
         for t in range(1, num_episodes + 1):
             print("\tITER {}/{}...".format(t, num_episodes))
-            if t % print_freq == 0 and verbose and len(self.hall_of_fame)>=1:
+            if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
                 print("#QN:", len(self.QN.keys()))
                 self.print_hofs(-1, verbose=True)
