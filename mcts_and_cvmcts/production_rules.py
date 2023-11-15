@@ -49,6 +49,10 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
     log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
     sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
+    n2_rules = [f'{non_terminal_node}->({non_terminal_node})**2']
+    n3_rules = [f'{non_terminal_node}->({non_terminal_node})**3']
+    n4_rules = [f'{non_terminal_node}->({non_terminal_node})**4']
+    n5_rules = [f'{non_terminal_node}->({non_terminal_node})**5']
     const_rules = [f'{non_terminal_node}->C']
 
     rules = base_rules + get_vars_rules(nvars)  # + const_rules
@@ -66,6 +70,14 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
         rules += exp_rules
     if 'log' in operators_set:
         rules += log_rules
+    if 'n2' in operators_set:
+        rules += n2_rules
+    if 'n3' in operators_set:
+        rules += n3_rules
+    if 'n4' in operators_set:
+        rules += n4_rules
+    if 'n5' in operators_set:
+        rules += n5_rules
     return rules
 
 

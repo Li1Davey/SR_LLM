@@ -430,6 +430,96 @@ class MCTS(object):
 
         return reward_his, self.hall_of_fame
 
+    def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
+        """
+        Monte Carlo Tree Search algorithm
+        """
+
+        nA = len(self.grammars)
+        states = []
+
+        # The policy we're following:
+        # ucb_policy for fully expanded node and uniform_random_policy for not fully expanded node
+        ucb_policy = self.get_ucb_policy(nA)
+        reward_his = []
+        best_solution = ('C', -100)
+
+        for t in range(1, num_episodes + 1):
+            print("\tITER {}/{}...".format(t, num_episodes))
+            if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
+                print("\tIteration {}/{}...".format(t, num_episodes))
+                print("#QN:", len(self.QN.keys()))
+                self.print_hofs(-1, verbose=True)
+                sys.stdout.flush()
+                print([x[1] for x in self.hall_of_fame], reward_threhold)
+
+            if not is_first_round:
+                state = 'f->B'
+                ntn = ['B']
+            else:
+                state = 'f->A'
+                ntn = ['A']
+            unvisited_children = self.get_unvisited_children(state, ntn[0])
+
+            # scenario 1: if current parent node fully expanded, follow ucb_policy
+            while not unvisited_children:
+                prob = ucb_policy(state, ntn[0])
+                print("UCB_policy... prob=", prob)
+                action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
+                print('state:', state, '\t action:', self.grammars[action])
+                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                if state not in states:
+                    states.append(state)
+
+                if not done:
+                    state = next_state
+                    ntn = ntn_next
+                    unvisited_children = self.get_unvisited_children(state, ntn[0])
+
+                    if state.count(',') >= self.max_len:
+                        unvisited_children = []
+                        self.back_propagate(state, action, 0)
+                        reward_his.append(best_solution[1])
+                        break
+                else:
+                    unvisited_children = []
+                    if reward > best_solution[1]:
+                        self.update_hall_of_fame(next_state, reward, eq)
+                        if reward > 0:
+                            self.update_QN_scale(reward)
+                        best_solution = (eq, reward)
+                    # print("BACK-PROPAGATION STEP")
+                    self.back_propagate(state, action, reward)
+                    reward_his.append(best_solution[1])
+                    break
+
+            # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
+            if len(unvisited_children)!=0:
+                print("uniform_random_policy... ", unvisited_children)
+                # prob = uniform_random_policy(unvisited_children)
+                action = np.random.choice(unvisited_children)
+                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                print('state:', state, '\t action:', self.grammars[action])
+                if not done:
+                    reward, eq = self.rollout(num_rollouts, next_state, ntn_next)
+                    if state not in states:
+                        states.append(state)
+                if reward > best_solution[1]:
+                    self.update_hall_of_fame(next_state, reward, eq)
+                    if reward > 0:
+                        self.update_QN_scale(reward)
+                    best_solution = (eq, reward)
+                # 4. BACK-PROPAGATION STEP in MCTS.
+                self.back_propagate(state, action, reward)
+                reward_his.append(best_solution[1])
+                unvisited_children.remove(action)
+                if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                    break
+            if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                break
+
+        return reward_his, self.hall_of_fame
+
     def print_hofs(self, size, verbose=False):
         self.task.rand_draw_data_with_X_fixed()
         print(f"PRINT HOF (free variables={self.program.vf})")

@@ -12,7 +12,7 @@ from progam import Program
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_rollouts=200,
+        production_rules, non_terminal_nodes=['A'], num_episodes=500, num_rollouts=10,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=5, norm_threshold=1e-10
 ):
@@ -44,7 +44,7 @@ def run_mcts(
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
         print(aug_grammars)
-        max_opt_iter = 500
+        max_opt_iter = 200
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           non_terminal_nodes=non_terminal_nodes,
@@ -56,10 +56,11 @@ def run_mcts(
                           max_opt_iter=max_opt_iter,
                           eta=eta)
 
-        _, good_modules = mcts_model.MCTS_run(num_episodes,
-                                              num_rollouts=num_rollouts,
-                                              verbose=True,
-                                              is_first_round=True)
+        _, good_modules = mcts_model.MCTS_run_orig(num_episodes,
+                                                   num_rollouts=num_rollouts,
+                                                   verbose=True,
+                                                   is_first_round=True,
+                                                   print_freq=5)
 
         mcts_model.print_hofs(-1, verbose=True)
 
