@@ -1,4 +1,6 @@
 """Class for symbolic expression object or program."""
+import copy
+
 import numpy as np
 
 np.set_printoptions(precision=4, linewidth=np.inf)
@@ -22,7 +24,7 @@ class Program(object):
         opt_num_expr:  # number of experiments done for optimization
         vf: indicator vector for free variables. vf[i]=1 for xi is a free variable
         """
-        self.vf = [n_vars,]*n_vars
+        self.vf = [0, ] * n_vars
 
         self.n_vars = n_vars
         self.optimizer = optimizer
@@ -58,7 +60,7 @@ class Program(object):
         score: discovered equations.
         eq: discovered equations with estimated numerical values.
         """
-
+        eq = simplify_template(eq)
         if 'A' in eq or 'B' in eq:  # not a valid equation
             return -np.inf, eq, 0, 0
         # count number of constants in equation
@@ -141,8 +143,8 @@ class Program(object):
 
             y_pred = execute(eq_est, data_X.T, input_var_Xs)
             eq = pretty_print_expr(parse_expr(eq_est))
-            print('simplified:', eq, '\t loss:', np.mean((y_pred - y_true) ** 2), '\t reward',
-                  eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2))))
+            print( '\t reward',
+                  eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2))),'\t loss:', np.mean((y_pred - y_true) ** 2), 'simp:', eq)
 
         r = eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
 
@@ -189,3 +191,17 @@ def execute_eval(expr_str: str, data_X: np.ndarray, input_var_Xs, simulated_step
         print(e)
 
     return y_hat
+
+
+def simplify_template(eq):
+    orig = eq
+    for i in range(10):
+        eq = eq.replace('(C+C)', 'C')
+        eq = eq.replace('(C)', 'C')
+        eq = eq.replace('sin(C)', 'C')
+        eq = eq.replace('cos(C)', 'C')
+        eq = eq.replace('(1/C)', 'C')
+        eq = eq.replace('(C-C)', 'C')
+        eq = eq.replace('C*C', 'C')
+        eq = eq.replace('(C/C)', 'C')
+    return eq

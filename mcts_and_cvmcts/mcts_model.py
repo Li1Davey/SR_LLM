@@ -1,6 +1,5 @@
 import sys
 import numpy as np
-from copy import copy
 from collections import defaultdict
 from sympy import Symbol
 from sympy.parsing.sympy_parser import parse_expr
@@ -22,8 +21,7 @@ class MCTS(object):
 
     noise_std = 0.0
 
-    def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module,
-                 aug_grammars_allowed,
+    def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500):
         # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
@@ -61,6 +59,7 @@ class MCTS(object):
         """
         state:      all production rules
         action_idx: index of grammar starts from the current Non-terminal Node
+        tree:       the current tree
         ntn:        all remaining non-terminal nodes
 
         This defines one step of Parse Tree traversal
@@ -115,17 +114,6 @@ class MCTS(object):
         optimized_constants = np.asarray(optimized_constants)
         optimized_obj = np.asarray(optimized_obj)
         print(optimized_obj)
-        # --------
-        # reduce the number of As in the template
-        # --------
-        old_vf = copy(self.program.vf)
-        self.program.vf = [int(abs(1 - xi)) for xi in old_vf]
-        for i in range(len(self.program.vf)):
-            if self.program.vf[i] ==1:
-                self.program.vf[i]=0
-                break
-        print("NEW vf is:",self.program.vf)
-
         num_changing_consts = expr_template.count('C')
         is_summary_constants = np.zeros(num_changing_consts)
         if np.max(optimized_obj) <= self.expr_obj_thres:
@@ -152,8 +140,7 @@ class MCTS(object):
                     if abs(est_c) < 1e-5:
                         est_c = 0.0
                     new_expr_template += str(est_c)
-                    if len(new_stand_alone_constants) == 0 or min(
-                            [abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
+                    if len(new_stand_alone_constants) == 0 or min([abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
                         new_stand_alone_constants.append(est_c)
                     cidx += 1
                 elif ti == 'C' and is_summary_constants[cidx] == 2:
@@ -161,11 +148,11 @@ class MCTS(object):
                     cidx += 1
                 else:
                     new_expr_template += ti
-            if new_expr_template not in freezed_exprs and len(freezed_exprs) <= 2:
-                freezed_exprs.append(new_expr_template)
-                aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
-
-        if len(freezed_exprs) == 0:
+            freezed_exprs.append(new_expr_template)
+            aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+            expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
+            countA = expri.count('(A)')
+        else:
             print("No available expression is found....trying to add the current best guessed...")
             state, _, expr = list_of_grammars[-1]
             expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
@@ -180,14 +167,16 @@ class MCTS(object):
                     new_expr_template += ti
             freezed_exprs.append(new_expr_template)
             aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+            expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
+            countA = expri.count('(A)')
 
         # diversify the number of A
-        new_freezed_exprs = []
-        new_aug_nt_nodes = []
-        expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
-        if expri.count('(A)') >= 3:
-            countA = expri.count('(A)')
-            while len(new_freezed_exprs) <= 2:
+        new_freezed_exprs = [expri,]
+        new_aug_nt_nodes = [['A', ] *countA,]
+
+        if countA >= 3:
+            ti = 0
+            while ti < 2:
                 mask = np.random.randint(2, size=countA)
                 while np.sum(mask) == 0 or np.sum(mask) == countA:
                     mask = np.random.randint(2, size=countA)
@@ -202,12 +191,11 @@ class MCTS(object):
                 if expri_new not in new_freezed_exprs:
                     new_freezed_exprs.append(expri_new)
                     new_aug_nt_nodes.append(['A', ] * (np.sum(mask)))
-                ti += 1
-
+                    ti += 1
         else:
             new_freezed_exprs.append(expri)
             new_aug_nt_nodes.append(ntnodei)
-        # only generate at most 2 templates for the next round, otherwise it will be too time consuming
+        # only generate at most 3 template for the next round, otherwise it will be too time counsuming
         return new_freezed_exprs, new_aug_nt_nodes, new_stand_alone_constants
 
     def rollout(self, num_play, state_initial, ntn_initial):
@@ -352,8 +340,7 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False,
-                 reward_threhold=10):
+    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -375,9 +362,7 @@ class MCTS(object):
                 self.print_hofs(-1, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)
-                best_reward = max([x[1] for x in self.hall_of_fame])
-                if best_reward > reward_threhold:
-                    break
+
             if not is_first_round:
                 state = 'f->B'
                 ntn = ['B']
@@ -429,7 +414,6 @@ class MCTS(object):
                     reward, eq = self.rollout(num_rollouts, next_state, ntn_next)
                     if state not in states:
                         states.append(state)
-
                 if reward > best_solution[1]:
                     self.update_hall_of_fame(next_state, reward, eq)
                     if reward > 0:
@@ -439,6 +423,10 @@ class MCTS(object):
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
+                if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                    break
+            if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                break
 
         return reward_his, self.hall_of_fame
 

@@ -12,9 +12,9 @@ from progam import Program
 
 
 def run_mcts(
-    production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_rollouts=200,
-    max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
-    num_transplant=5, norm_threshold=1e-10
+        production_rules, non_terminal_nodes=['A'], num_episodes=5000, num_rollouts=200,
+        max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
+        num_transplant=5, norm_threshold=1e-10
 ):
     """
     production_rules: rules to generate expressions
@@ -63,7 +63,6 @@ def run_mcts(
 
         mcts_model.print_hofs(-1, verbose=True)
 
-
         if not best_modules:
             best_modules = good_modules
         else:
@@ -104,8 +103,8 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 
 
 def run_cv_mcts(
-    operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=50,
-    max_len=30, eta=0.999, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
+        operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=40,
+        max_len=30, eta=0.999, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
 ):
     """
     num_run: number of iterations.
@@ -158,7 +157,7 @@ def run_cv_mcts(
                           aug_grammars_allowed=num_aug,
                           exploration_rate=exploration_rate,
                           eta=eta,
-                          max_opt_iter=500)
+                          max_opt_iter=200)
         iter_time = time.time()
         tracker.track_object(mcts_model)
         print_freq = 1
@@ -184,7 +183,7 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-        num_rollouts=max(10, int(num_rollouts*0.8))
+        num_rollouts = max(5, int(num_rollouts * 0.5))
     for round_idx in range(len(num_iterations)):
         MCTS.program.set_vf(round_idx)
         MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
@@ -207,7 +206,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
 
-    num_per_episodes = 30
+    num_per_episodes = 20
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)

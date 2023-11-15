@@ -110,7 +110,7 @@ class Equation_evaluator(object):
         y_true = self.evaluate(X)
         if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
             loss_val = self.metric(y_true, y_pred, np.var(y_true))
-        elif self.metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        elif self.metric_name in ['neg_mse', 'neg_rmse', 'inv_mse']:
             loss_val = self.metric(y_true, y_pred)
         return loss_val
 
@@ -125,7 +125,7 @@ class Equation_evaluator(object):
             metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred, np.var(y_true))
             loss_val_dict[metric_name] = loss_val
-        for metric_name in ['neg_mse', 'neg_rmse', 'neglog_mse', 'inv_mse']:
+        for metric_name in ['neg_mse', 'neg_rmse', 'inv_mse']:
             metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred)
             loss_val_dict[metric_name] = loss_val
@@ -199,8 +199,6 @@ def make_regression_metric(metric_name):
         "neg_nmse": lambda y, y_hat, var_y: -np.mean((y - y_hat) ** 2) / var_y,
         # Negative normalized root mean squared error
         "neg_nrmse": lambda y, y_hat, var_y: -np.sqrt(np.mean((y - y_hat) ** 2) / var_y),
-        # (Protected) negative log mean squared error
-        "neglog_mse": lambda y, y_hat: -np.log(1 + np.mean((y - y_hat) ** 2)),
         # (Protected) inverse mean squared error
         "inv_mse": lambda y, y_hat: 1 / (1 + np.mean((y - y_hat) ** 2)),
         # (Protected) inverse normalized mean squared error
