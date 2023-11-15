@@ -1,5 +1,6 @@
 import sys
 import numpy as np
+from copy import copy
 from collections import defaultdict
 from sympy import Symbol
 from sympy.parsing.sympy_parser import parse_expr
@@ -21,7 +22,8 @@ class MCTS(object):
 
     noise_std = 0.0
 
-    def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
+    def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module,
+                 aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500):
         # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
@@ -59,7 +61,6 @@ class MCTS(object):
         """
         state:      all production rules
         action_idx: index of grammar starts from the current Non-terminal Node
-        tree:       the current tree
         ntn:        all remaining non-terminal nodes
 
         This defines one step of Parse Tree traversal
@@ -114,6 +115,17 @@ class MCTS(object):
         optimized_constants = np.asarray(optimized_constants)
         optimized_obj = np.asarray(optimized_obj)
         print(optimized_obj)
+        # --------
+        # reduce the number of As in the template
+        # --------
+        old_vf = copy(self.program.vf)
+        self.program.vf = [int(abs(1 - xi)) for xi in old_vf]
+        for i in range(len(self.program.vf)):
+            if self.program.vf[i] ==1:
+                self.program.vf[i]=0
+                break
+        print("NEW vf is:",self.program.vf)
+
         num_changing_consts = expr_template.count('C')
         is_summary_constants = np.zeros(num_changing_consts)
         if np.max(optimized_obj) <= self.expr_obj_thres:
@@ -140,7 +152,8 @@ class MCTS(object):
                     if abs(est_c) < 1e-5:
                         est_c = 0.0
                     new_expr_template += str(est_c)
-                    if len(new_stand_alone_constants) == 0 or min([abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
+                    if len(new_stand_alone_constants) == 0 or min(
+                            [abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
                         new_stand_alone_constants.append(est_c)
                     cidx += 1
                 elif ti == 'C' and is_summary_constants[cidx] == 2:
@@ -339,7 +352,8 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
+    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False,
+                 reward_threhold=10):
         """
         Monte Carlo Tree Search algorithm
         """

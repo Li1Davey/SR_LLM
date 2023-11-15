@@ -22,7 +22,7 @@ class Program(object):
         opt_num_expr:  # number of experiments done for optimization
         vf: indicator vector for free variables. vf[i]=1 for xi is a free variable
         """
-        self.vf = np.zeros(n_vars, dtype=int)
+        self.vf = [n_vars,]*n_vars
 
         self.n_vars = n_vars
         self.optimizer = optimizer
