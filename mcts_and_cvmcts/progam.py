@@ -2,7 +2,8 @@
 import copy
 
 import numpy as np
-
+import warnings
+warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.set_printoptions(precision=4, linewidth=np.inf)
 
 from sympy.parsing.sympy_parser import parse_expr
@@ -18,6 +19,7 @@ class Program(object):
     # Static variables
     expr_obj_thres = 1e-6  # expression objective threshold
     expr_consts_thres = 1e-3
+    evalaute_loss = None
 
     def __init__(self, n_vars, optimizer="BFGS"):
         """
@@ -84,8 +86,8 @@ class Program(object):
                 eq_est = eq_est.replace('-+', '-')
                 eq_est = eq_est.replace('++', '+')
                 y_pred = execute(eq_est, data_X.T, input_var_Xs)
-
-                return np.mean((y_pred - y_true) ** 2)
+                var_ytrue = np.var(y_true)
+                return -self.evalaute_loss(y_pred, y_true, var_ytrue)
 
             # do more than one experiment,
             x0 = np.random.rand(len(c_lst))
@@ -142,9 +144,14 @@ class Program(object):
             eq_est = eq_est.replace('++', '+')
 
             y_pred = execute(eq_est, data_X.T, input_var_Xs)
+            var_ytrue = np.var(y_true)
+
             eq = pretty_print_expr(parse_expr(eq_est))
-            print( '\t reward',
-                  eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2))),'\t loss:', np.mean((y_pred - y_true) ** 2), 'simp:', eq)
+
+            print('\t reward',
+                  eta ** tree_size * float(-np.log10(1e-60 - self.evalaute_loss(y_pred, y_true, var_ytrue))), '\t loss:',
+                  -self.evalaute_loss(y_pred, y_true, var_ytrue),
+                  'simp:', eq)
 
         r = eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
 
@@ -197,7 +204,7 @@ def simplify_template(eq):
     orig = eq
     for i in range(10):
         eq = eq.replace('(C+C)', 'C')
-        eq = eq.replace('(C)', 'C')
+        eq = eq.replace('sqrt(C)', 'C')
         eq = eq.replace('sin(C)', 'C')
         eq = eq.replace('cos(C)', 'C')
         eq = eq.replace('(1/C)', 'C')

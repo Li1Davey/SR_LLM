@@ -114,6 +114,16 @@ class Equation_evaluator(object):
             loss_val = self.metric(y_true, y_pred)
         return loss_val
 
+    def compute_metric(self, y_pred, y_true, var_y_true):
+        """
+        Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_pred
+        """
+        if self.metric_name in ['neg_nmse', 'neg_nrmse', 'inv_nrmse', 'inv_nmse']:
+            loss_val = self.metric(y_true, y_pred, var_y_true)
+        elif self.metric_name in ['neg_mse', 'neg_rmse', 'inv_mse']:
+            loss_val = self.metric(y_true, y_pred)
+        return loss_val
+
     def _evaluate_all_losses(self, X, y_pred):
         """
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_hat.

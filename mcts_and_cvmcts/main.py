@@ -97,6 +97,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
                             dataXgen,
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
+    MCTS.program.evalaute_loss = data_query_oracle.compute_metric
     operators_set.remove('const')
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
@@ -142,6 +143,14 @@ def run_cv_mcts(
                 grammars += get_ith_sincos_rules(round_idx, non_terminal_node='A')
             if 'inv' in operators_set:
                 grammars += get_ith_inv_rules(round_idx, non_terminal_node='A')
+            if 'n2' in operators_set:
+                grammars += get_ith_n2_rules(round_idx)
+            if 'n3' in operators_set:
+                grammars += get_ith_n3_rules(round_idx)
+            if 'n4' in operators_set:
+                grammars += get_ith_n4_rules(round_idx)
+            if 'n5' in operators_set:
+                grammars += get_ith_n5_rules(round_idx)
 
         print("grammars:", grammars)
         print("aug grammars:", aug_grammars)
@@ -206,7 +215,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             dataXgen,
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
-
+    MCTS.program.evalaute_loss = data_query_oracle.compute_metric
     num_per_episodes = 20
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     start = time.time()

@@ -2628,15 +2628,14 @@ class FeynmanBonus1(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            IntegerUniformSampling(1.0, 1.0e1, only_positive=True), IntegerUniformSampling(1.0, 1.0e1, only_positive=True),
-            LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True),
+            LogUniformSampling(1.0, 1.0e1, only_positive=True), LogUniformSampling(1.0, 1.0e1, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
         super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
         x = self.x
-        self.sympy_eq = (x[0] * x[1] * FINE_STRUCTURE_CONSTANT * DIRAC_CONSTANT * SPEED_OF_LIGHT
-                         / (4 * x[2] * sympy.sin(x[3] / 2) ** 2)) ** 2
+        self.sympy_eq = (x[0] * x[1]/ (4 * x[2] * sympy.sin(x[3] / 2) ** 2)) ** 2
 
 
 @register_eq_class

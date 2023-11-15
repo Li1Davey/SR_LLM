@@ -34,7 +34,7 @@ for eq_name in FeynmanICh12Eq11.in FeynmanIICh2Eq42.in FeynmanIICh6Eq15a.in Feyn
 
 hostname
 
-$py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt
+$py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
 						--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
          				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.mcts.out
 

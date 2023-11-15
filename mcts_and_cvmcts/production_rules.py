@@ -49,10 +49,6 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
     log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
     sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
-    n2_rules = [f'{non_terminal_node}->({non_terminal_node})**2']
-    n3_rules = [f'{non_terminal_node}->({non_terminal_node})**3']
-    n4_rules = [f'{non_terminal_node}->({non_terminal_node})**4']
-    n5_rules = [f'{non_terminal_node}->({non_terminal_node})**5']
     const_rules = [f'{non_terminal_node}->C']
 
     rules = base_rules + get_vars_rules(nvars)  # + const_rules
@@ -71,13 +67,13 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     if 'log' in operators_set:
         rules += log_rules
     if 'n2' in operators_set:
-        rules += n2_rules
+        rules += get_n2_rules(nvars)
     if 'n3' in operators_set:
-        rules += n3_rules
+        rules += get_n3_rules(nvars)
     if 'n4' in operators_set:
-        rules += n4_rules
+        rules += get_n4_rules(nvars)
     if 'n5' in operators_set:
-        rules += n5_rules
+        rules += get_n5_rules(nvars)
     return rules
 
 
@@ -94,7 +90,31 @@ def get_vars_rules(nvars: int, non_terminal_node='A') -> list:
         rules += get_ith_var_rules(i, non_terminal_node)
     return rules
 
+def get_n2_rules(nvars: int, non_terminal_node='A') -> list:
+    rules = []
+    for i in range(nvars):
+        rules += get_ith_n2_rules(i, non_terminal_node)
+    return rules
 
+
+
+def get_n3_rules(nvars: int, non_terminal_node='A') -> list:
+    rules = []
+    for i in range(nvars):
+        rules += get_ith_n3_rules(i, non_terminal_node)
+    return rules
+
+def get_n4_rules(nvars: int, non_terminal_node='A') -> list:
+    rules = []
+    for i in range(nvars):
+        rules += get_ith_n5_rules(i, non_terminal_node)
+    return rules
+
+def get_n5_rules(nvars: int, non_terminal_node='A') -> list:
+    rules = []
+    for i in range(nvars):
+        rules += get_ith_n5_rules(i, non_terminal_node)
+    return rules
 def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
     rules = []
     for i in range(nvars):
@@ -111,7 +131,21 @@ def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     # [A-> C*Xi]
     return [f'{non_terminal_node}->C*X{xi}', ]
 
+def get_ith_n2_rules(xi: int, non_terminal_node='A') -> list:
+    # [A-> C*Xi]
+    return [f'{non_terminal_node}->X{xi}**2', ]
 
+def get_ith_n3_rules(xi: int, non_terminal_node='A') -> list:
+    # [A-> C*Xi]
+    return [f'{non_terminal_node}->X{xi}**3', ]
+
+def get_ith_n4_rules(xi: int, non_terminal_node='A') -> list:
+    # [A-> C*Xi]
+    return [f'{non_terminal_node}->X{xi}**4', ]
+
+def get_ith_n5_rules(xi: int, non_terminal_node='A') -> list:
+    # [A-> C*Xi]
+    return [f'{non_terminal_node}->X{xi}**5', ]
 def get_ith_inv_rules(xi: int, non_terminal_node='A') -> list:
     # [A-> C/Xi]
     return [f'{non_terminal_node}->C/X{xi}']

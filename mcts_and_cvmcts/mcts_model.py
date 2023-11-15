@@ -522,7 +522,7 @@ class MCTS(object):
 
     def print_hofs(self, size, verbose=False):
         self.task.rand_draw_data_with_X_fixed()
-        print(f"PRINT HOF (free variables={self.program.vf})")
+        print(f"PRINT HOF (free variables={self.task.fixed_column})")
         print("=" * 20)
         if size < 0:
             size = len(self.hall_of_fame)
