@@ -104,7 +104,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
-    operators_set.remove('const')
+
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
     run_mcts(production_rules=production_rules, num_episodes=num_episodes)
