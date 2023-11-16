@@ -31,7 +31,7 @@ for noise_scale in 0.1 0.02 0.04 0.08 0.12 0.14; do
 		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="mcts-${type}${nv}${nt}"
+#SBATCH --job-name="TS-No${type}${nv}${nt}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
