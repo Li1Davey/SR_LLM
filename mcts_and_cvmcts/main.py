@@ -45,6 +45,8 @@ def run_mcts(
         print("transplanation step=", i_itr)
         print(aug_grammars)
         max_opt_iter = 200
+        tracker = classtracker.ClassTracker()
+
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
                           non_terminal_nodes=non_terminal_nodes,
@@ -55,14 +57,18 @@ def run_mcts(
                           exploration_rate=exploration_rate,
                           max_opt_iter=max_opt_iter,
                           eta=eta)
-
+        tracker.track_object(mcts_model)
+        start=time.time()
         _, good_modules = mcts_model.MCTS_run_orig(num_episodes,
                                                    num_rollouts=num_rollouts,
                                                    verbose=True,
                                                    is_first_round=True,
                                                    print_freq=5)
-
+        print("Time usage of iter {} is {} mins".format(i_itr, np.round((time.time() - start) / 60, 3)))
+        tracker.create_snapshot()
+        tracker.stats.print_summary()
         mcts_model.print_hofs(-1, verbose=True)
+
 
         if not best_modules:
             best_modules = good_modules
