@@ -58,7 +58,7 @@ def run_mcts(
                           max_opt_iter=max_opt_iter,
                           eta=eta)
         tracker.track_object(mcts_model)
-        start=time.time()
+        start = time.time()
         _, good_modules = mcts_model.MCTS_run_orig(num_episodes,
                                                    num_rollouts=num_rollouts,
                                                    verbose=True,
@@ -68,7 +68,6 @@ def run_mcts(
         tracker.create_snapshot()
         tracker.stats.print_summary()
         mcts_model.print_hofs(-1, verbose=True)
-
 
         if not best_modules:
             best_modules = good_modules
@@ -87,6 +86,8 @@ def run_mcts(
         max_module += module_grow_step
         exploration_rate *= 1.2
     end_time = time.time() - start_time
+    print("final hof")
+    mcts_model.print_hofs(-2, verbose=True)
     print("MCTS time:", np.round(np.mean(end_time), 3), 'seconds')
 
 

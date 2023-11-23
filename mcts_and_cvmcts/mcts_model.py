@@ -360,7 +360,7 @@ class MCTS(object):
             if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
                 print("#QN:", len(self.QN.keys()))
-                self.print_hofs(-1, verbose=True)
+                self.print_hofs(-2, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)
 
@@ -522,10 +522,11 @@ class MCTS(object):
         return reward_his, self.hall_of_fame
 
     def print_hofs(self, size, verbose=False):
-        old_vf = copy.copy(self.program.get_vf())
-        self.program.vf = [1, ] * self.nvars
-        self.task.set_allowed_inputs(self.program.get_vf())
-        print("new vf for HOF ranking", self.program.get_vf(), self.task.fixed_column)
+        if size==-1:
+            old_vf = copy.copy(self.program.get_vf())
+            self.program.vf = [1, ] * self.nvars
+            self.task.set_allowed_inputs(self.program.get_vf())
+            print("new vf for HOF ranking", self.program.get_vf(), self.task.fixed_column)
         self.task.rand_draw_data_with_X_fixed()
         print(f"PRINT HOF (free variables={self.task.fixed_column})")
         print("=" * 20)
@@ -539,9 +540,10 @@ class MCTS(object):
             else:
                 print('        ' + str(get_state(pr)), end="\n")
         print("=" * 20)
-        self.program.vf = old_vf
-        self.task.set_allowed_inputs(old_vf)
-        print("reset old vf", self.program.get_vf(), self.task.fixed_column)
+        if size==-1:
+            self.program.vf = old_vf
+            self.task.set_allowed_inputs(old_vf)
+            print("reset old vf", self.program.get_vf(), self.task.fixed_column)
 
     def print_reward_function_all_metrics(self, expr_str):
         """used for print the error for all metrics between the predicted program `p` and true program."""
