@@ -200,7 +200,7 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-        num_rollouts = max(5, int(num_rollouts * 0.5))
+        num_rollouts = max(15, int(num_rollouts * 0.5))
     # for round_idx in range(len(num_iterations)):
     #     MCTS.program.set_vf(round_idx)
     #     MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
@@ -223,7 +223,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
-    num_per_episodes = 20
+    num_per_episodes = 15
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)

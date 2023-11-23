@@ -521,8 +521,8 @@ class MCTS(object):
 
         return reward_his, self.hall_of_fame
 
-    def print_hofs(self, size, verbose=False):
-        if size==-1:
+    def print_hofs(self, flag, verbose=False):
+        if flag == -1:
             old_vf = copy.copy(self.program.get_vf())
             self.program.vf = [1, ] * self.nvars
             self.task.set_allowed_inputs(self.program.get_vf())
@@ -530,17 +530,14 @@ class MCTS(object):
         self.task.rand_draw_data_with_X_fixed()
         print(f"PRINT HOF (free variables={self.task.fixed_column})")
         print("=" * 20)
-        if size < 0:
-            size = len(self.hall_of_fame)
-        size = min(len(self.hall_of_fame), size)
-        for pr in self.hall_of_fame[-size:]:
+        for pr in self.hall_of_fame[-len(self.hall_of_fame):]:
             if verbose:
                 print('        ' + str(get_state(pr)), end="\n")
                 self.print_reward_function_all_metrics(pr[2])
             else:
                 print('        ' + str(get_state(pr)), end="\n")
         print("=" * 20)
-        if size==-1:
+        if flag == -1:
             self.program.vf = old_vf
             self.task.set_allowed_inputs(old_vf)
             print("reset old vf", self.program.get_vf(), self.task.fixed_column)
