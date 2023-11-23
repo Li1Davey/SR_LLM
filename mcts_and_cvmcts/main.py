@@ -12,7 +12,7 @@ from progam import Program
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=500, num_rollouts=10,
+        production_rules, non_terminal_nodes=['A'], num_episodes=500, num_rollouts=50,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=5, norm_threshold=1e-10
 ):
@@ -44,7 +44,7 @@ def run_mcts(
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
         print(aug_grammars)
-        max_opt_iter = 200
+        max_opt_iter = 500
         tracker = classtracker.ClassTracker()
 
         mcts_model = MCTS(base_grammars=grammars,
@@ -238,7 +238,7 @@ if __name__ == '__main__':
                         choices=['BFGS', 'L-BFGS-B', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
-    parser.add_argument("--num_episodes", type=int, default=500, help="the number of episode for MCTS.")
+    parser.add_argument("--num_episodes", type=int, default=5000, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
     parser.add_argument("--cv_mcts", action="store_true",
