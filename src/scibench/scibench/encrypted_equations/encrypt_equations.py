@@ -165,9 +165,9 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
 
 if __name__ == '__main__':
     X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7, X_8, X_9, X_10, X_11, X_12 =symbols('X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7,X_8,X_9,X_10,X_11,X_12')
-    from equations_feynman import *
-
-    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
+    # from equations_feynman import *
+    #
+    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
     # from equations_others import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
@@ -190,7 +190,7 @@ if __name__ == '__main__':
     # from equations_trigometric import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data', folder_prefix='equations_trigometric')
-    # from equation_spin_glass import *
-    #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_spin_glass')
+    from equation_spin_glass import *
+
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_spin_glass')
 

@@ -58,11 +58,11 @@ class DeepSymbolicOptimizer(object):
 
     def generate_and_set_Xy_pairs(self):
         self.n_samples, self.batch_size = self.config_training['n_samples'], self.config_training['batch_size']
-        X_train = self.dataX.randn(sample_size=self.n_samples)
+        X_train = self.dataX.randn(sample_size=self.n_samples).T
         y_train = self.data_query_oracle.evaluate(X_train)
-        X_test = self.dataX.randn(sample_size=self.batch_size)
+        X_test = self.dataX.randn(sample_size=self.batch_size).T
         y_test = self.data_query_oracle.evaluate(X_test)
-        y_test_noiseless = self.data_query_oracle.evaluate_noiseless(X_test)
+        y_test_noiseless = y_test
         # print("_".join(['regression', self.data_query_oracle._get_eq_name().split('/')[-1], self.data_query_oracle.noise_type,
         #                       str(self.data_query_oracle.noise_scale)])
         self.config_task['dataset'] = {
@@ -159,6 +159,7 @@ class DeepSymbolicOptimizer(object):
 
         # Shift the seed based on task name
         # This ensures a specified seed doesn't have similarities across different task names
+        print("Program.task.name",Program.task.name)
         task_name = Program.task.name
         shifted_seed = seed + zlib.adler32(task_name.encode("utf-8"))
 

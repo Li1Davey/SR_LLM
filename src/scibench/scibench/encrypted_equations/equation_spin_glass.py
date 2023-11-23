@@ -72,3 +72,86 @@ class spin_glass_N4_M2_3(KnownEquation):
                                 IntegerUniformSampling(4, 5, only_positive=True)]
         super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
         self.sympy_eq = Float(-0.075)
+
+
+@register_eq_class
+class spin_glass_N5_M2_1(KnownEquation):
+    _eq_name = 'spin_glass_N5_M2_1'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-8
+    expr_consts_thres = None
+
+    def __init__(self):
+        self.dim = [1, 1, 1]
+
+        vars_range_and_types = [IntegerUniformSampling(12, 13, only_positive=True),
+                                IntegerUniformSampling(3, 4, only_positive=True),
+                                IntegerUniformSampling(4, 5, only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        self.sympy_eq = Float(0.10952381)
+
+
+@register_eq_class
+class spin_glass_N5_M2_2(KnownEquation):
+    _eq_name = 'spin_glass_N5_M2_2'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+    expr_consts_thres = None
+
+    def __init__(self):
+        self.dim = [1, 1, 1]
+
+        vars_range_and_types = [IntegerUniformSampling(12, 13, only_positive=True),
+                                IntegerUniformSampling(3, 4, only_positive=True),
+                                IntegerUniformSampling(4, 5, only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        self.sympy_eq = Float(-0.0047619)
+
+@register_eq_class
+class spin_glass_N5_M2_3(KnownEquation):
+    _eq_name = 'spin_glass_N5_M2_3'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+    expr_consts_thres = None
+
+    def __init__(self):
+        self.dim = [1, 1, 1]
+
+        vars_range_and_types = [IntegerUniformSampling(12, 13, only_positive=True),
+                                IntegerUniformSampling(3, 4, only_positive=True),
+                                IntegerUniformSampling(4, 5, only_positive=True)]
+        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        self.sympy_eq = Float(-0.01904762)
+
+
+@register_eq_class
+class spin_glass_N6_M2_1(KnownEquation):
+    _eq_name = 'spin_glass_N6_M2_1'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+    expr_consts_thres = None
+
+    def __init__(self):
+        self.dim = [1, 1]
+
+        vars_range_and_types = [IntegerUniformSampling(16, 17, only_positive=True),
+                                IntegerUniformSampling(4, 5, only_positive=True)]
+        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        self.sympy_eq = Float(0.0787037)
+
+
+
+@register_eq_class
+class spin_glass_N6_M2_2(KnownEquation):
+    _eq_name = 'spin_glass_N6_M2_2'
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
+    expr_obj_thres = 1e-6
+    expr_consts_thres = None
+
+    def __init__(self):
+        self.dim = [1, 1]
+
+        vars_range_and_types = [IntegerUniformSampling(16, 17, only_positive=True),
+                                IntegerUniformSampling(4, 5, only_positive=True)]
+        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        self.sympy_eq = Float(-0.00462963)

@@ -14,9 +14,8 @@ from dso.logeval import LogEval
 from dso.config import load_config
 from dso.utils import safe_update_summary
 
-from dso.symbolic_data_generator import *
-from dso.symbolic_equation_evaluator_public import Equation_evaluator
-
+from scibench.symbolic_data_generator import *
+from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 
 def train_dso(config, dataX, data_query_oracle, config_filename):
     """Trains DSO and returns dict of reward, expression, and traversal"""
@@ -84,7 +83,7 @@ def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     print("OLD function set:", config['task']['function_set'])
-    config['task']['function_set'] = data_query_oracle.function_set
+    config['task']['function_set'] = data_query_oracle.operators_set
     print("New function set:", config['task']['function_set'])
 
     # Overwrite named benchmark (for tasks that support them)

@@ -1,3 +1,4 @@
+import copy
 import sys
 import numpy as np
 from collections import defaultdict
@@ -171,8 +172,8 @@ class MCTS(object):
             countA = expri.count('(A)')
 
         # diversify the number of A
-        new_freezed_exprs = [expri,]
-        new_aug_nt_nodes = [['A', ] *countA,]
+        new_freezed_exprs = [expri, ]
+        new_aug_nt_nodes = [['A', ] * countA, ]
 
         if countA >= 3:
             ti = 0
@@ -494,7 +495,7 @@ class MCTS(object):
                     break
 
             # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
-            if len(unvisited_children)!=0:
+            if len(unvisited_children) != 0:
                 print("uniform_random_policy... ", unvisited_children)
                 # prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children)
@@ -521,6 +522,10 @@ class MCTS(object):
         return reward_his, self.hall_of_fame
 
     def print_hofs(self, size, verbose=False):
+        old_vf = copy.copy(self.program.get_vf())
+        self.program.vf = [1, ] * self.nvars
+        self.task.set_allowed_inputs(self.program.get_vf())
+        print("new vf for HOF ranking", self.program.get_vf(), self.task.fixed_column)
         self.task.rand_draw_data_with_X_fixed()
         print(f"PRINT HOF (free variables={self.task.fixed_column})")
         print("=" * 20)
@@ -534,6 +539,9 @@ class MCTS(object):
             else:
                 print('        ' + str(get_state(pr)), end="\n")
         print("=" * 20)
+        self.program.vf = old_vf
+        self.task.set_allowed_inputs(old_vf)
+        print("reset old vf", self.program.get_vf(), self.task.fixed_column)
 
     def print_reward_function_all_metrics(self, expr_str):
         """used for print the error for all metrics between the predicted program `p` and true program."""
@@ -549,7 +557,6 @@ def get_state(pr):
     state_dict = {
         'reward': pr[1],
         'pretty-eq': pretty_print_expr(pr[2]),
-        # 'expr': pr[2],
         'rules': pr[0],
     }
     return state_dict

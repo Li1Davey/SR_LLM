@@ -199,10 +199,10 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-        num_rollouts = max(10, int(num_rollouts * 0.5))
-    for round_idx in range(len(num_iterations)):
-        MCTS.program.set_vf(round_idx)
-        MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
+        num_rollouts = max(5, int(num_rollouts * 0.5))
+    # for round_idx in range(len(num_iterations)):
+    #     MCTS.program.set_vf(round_idx)
+    #     MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
     print("final hof")
     mcts_model.print_hofs(-1, verbose=True)
 

@@ -10,7 +10,7 @@ from sympy.parsing.sympy_parser import parse_expr
 from sympy import lambdify
 
 from scipy.optimize import minimize
-from scipy.optimize import basinhopping, direct, shgo, dual_annealing
+from scipy.optimize import basinhopping, shgo, dual_annealing
 
 from utils import pretty_print_expr
 
@@ -119,11 +119,11 @@ class Program(object):
                 up = [5] * num_changing_consts
                 bounds = list(zip(lw, up))
                 opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
-            elif self.optimizer == "direct":
-                lw = [-10] * num_changing_consts
-                up = [10] * num_changing_consts
-                bounds = list(zip(lw, up))
-                opt_result = direct(f, bounds, maxiter=max_opt_iter)
+            # elif self.optimizer == "direct":
+            #     lw = [-10] * num_changing_consts
+            #     up = [10] * num_changing_consts
+            #     bounds = list(zip(lw, up))
+            #     opt_result = direct(f, bounds, maxiter=max_opt_iter)
 
             t_optimized_constants = opt_result['x']
             c_lst = t_optimized_constants.tolist()
