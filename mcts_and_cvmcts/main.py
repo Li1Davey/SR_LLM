@@ -14,7 +14,7 @@ from progam import Program
 def run_mcts(
         production_rules, non_terminal_nodes=['A'], num_episodes=500, num_rollouts=50,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
-        num_transplant=5, norm_threshold=1e-10
+        num_transplant=1, norm_threshold=1e-10
 ):
     """
     production_rules: rules to generate expressions
