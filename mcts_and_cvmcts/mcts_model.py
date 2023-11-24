@@ -360,7 +360,7 @@ class MCTS(object):
             if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
                 print("#QN:", len(self.QN.keys()))
-                self.print_hofs(-2, verbose=True)
+                self.print_hofs(-1, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)
 
@@ -450,7 +450,7 @@ class MCTS(object):
             if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
                 print("#QN:", len(self.QN.keys()))
-                self.print_hofs(-1, verbose=True)
+                self.print_hofs(-2, verbose=True)
                 sys.stdout.flush()
                 print([x[1] for x in self.hall_of_fame], reward_threhold)
 

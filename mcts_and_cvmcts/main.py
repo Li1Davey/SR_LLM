@@ -12,7 +12,7 @@ from progam import Program
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=500, num_rollouts=50,
+        production_rules, non_terminal_nodes=['A'], num_episodes=500, num_rollouts=100,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=1, norm_threshold=1e-10
 ):
@@ -67,7 +67,7 @@ def run_mcts(
         print("Time usage of iter {} is {} mins".format(i_itr, np.round((time.time() - start) / 60, 3)))
         tracker.create_snapshot()
         tracker.stats.print_summary()
-        mcts_model.print_hofs(-1, verbose=True)
+        mcts_model.print_hofs(-2, verbose=True)
 
         if not best_modules:
             best_modules = good_modules
@@ -88,7 +88,7 @@ def run_mcts(
     end_time = time.time() - start_time
     print("final hof")
     mcts_model.print_hofs(-2, verbose=True)
-    print("MCTS time:", np.round(np.mean(end_time), 3), 'seconds')
+    print("MCTS time is {} mins".format(np.round(end_time / 60, 3)))
 
 
 def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
