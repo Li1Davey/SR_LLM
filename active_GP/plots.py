@@ -3,19 +3,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import math
 import copy
+from StackGP import model_to_list_form, pareto_tournament, model_restore_form, print_gp_model, evaluate_gp_model
 
 
-def plotModels(models):
+def plot_models(models):
     tMods = copy.deepcopy(models)
-    [modelToListForm(mod) for mod in tMods]
-    paretoModels = paretoTournament(tMods)
-    for i in paretoModels:
+    [model_to_list_form(mod) for mod in tMods]
+    pareto_models = pareto_tournament(tMods)
+    for i in pareto_models:
         tMods.remove(i)
-    [modelRestoreForm(mod) for mod in paretoModels]
-    [modelRestoreForm(mod) for mod in tMods]
+    [model_restore_form(mod) for mod in pareto_models]
+    [model_restore_form(mod) for mod in tMods]
 
-    pAccuracies = [mod[2][0] for mod in paretoModels]
-    pComplexities = [mod[2][1] for mod in paretoModels]
+    pAccuracies = [mod[2][0] for mod in pareto_models]
+    pComplexities = [mod[2][1] for mod in pareto_models]
 
     accuracies = [mod[2][0] for mod in tMods] + pAccuracies
     complexities = [mod[2][1] for mod in tMods] + pComplexities
@@ -26,9 +27,10 @@ def plotModels(models):
     sc = plt.scatter(complexities, accuracies, color=colors)
     plt.xlabel("Complexity")
     plt.ylabel("1-R**2")
-    names = [str(printGPModel(mod)) for mod in tMods] + [str(printGPModel(mod)) for mod in paretoModels]
+    names = [str(print_gp_model(mod)) for mod in tMods] + [str(print_gp_model(mod)) for mod in pareto_models]
 
-    label = ax.annotate("", xy=(0, 0), xytext=(np.min(complexities), np.mean([np.max(accuracies), np.min(accuracies)])),
+    label = ax.annotate("", xy=(0, 0),
+                        xytext=(np.min(complexities), np.mean([np.max(accuracies), np.min(accuracies)])),
                         bbox=dict(boxstyle="round", fc="w"),
                         arrowprops=dict(arrowstyle="->"))
     label.set_visible(False)
@@ -60,17 +62,17 @@ def plotModels(models):
     plt.show()
 
 
-def plotModelResponseComparison(model, inputData, response, sort=False):
+def plot_model_response_comparison(model, inputData, response):
     plt.scatter(range(len(response)), response, label="True Response")
-    plt.scatter(range(len(response)), evaluateGPModel(model, inputData), label="Model Prediction")
+    plt.scatter(range(len(response)), evaluate_gp_model(model, inputData), label="Model Prediction")
     plt.legend()
     plt.xlabel("Data Index")
     plt.ylabel("Response Value")
     plt.show()
 
 
-def plotPredictionResponseCorrelation(model, inputData, response):
-    plt.scatter(response, evaluateGPModel(model, inputData), label="Model")
+def plot_prediction_response_correlation(model, inputData, response):
+    plt.scatter(response, evaluate_gp_model(model, inputData), label="Model")
     plt.plot(response, response, label="Perfect Correlation", color='green')
     plt.xlabel("True Response")
     plt.ylabel("Predicted Response")

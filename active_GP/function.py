@@ -1,5 +1,6 @@
 import numpy as np
 import math
+import random
 
 
 def protectDiv(a, b):
@@ -26,7 +27,6 @@ def exp(a):
     return np.exp(a)
 
 
-
 def power(a, b):
     return a ** b
 
@@ -35,7 +35,7 @@ def sqrt(a):
     return np.sqrt(a)
 
 
-def sqrd(a):
+def n2(a):
     return a ** 2
 
 
@@ -75,10 +75,22 @@ def log(a):
     return np.log(a)
 
 
-def defaultOps():
-    return [protectDiv, add, sub, mult, exp, sqrd, sqrt, inv, "pop", "pop", "pop", "pop", "pop", "pop"]
+def default_ops():
+    return [protectDiv, add, sub, mult, exp, n2, sqrt, inv, "pop", "pop", "pop", "pop", "pop", "pop"]
 
 
-def allOps():
-    return [protectDiv, add, sub, mult, exp, sqrd, sqrt, inv, cos, sin, tan, arccos, arcsin, arctan, tanh, log, "pop", "pop", "pop", "pop",
+def random_int(a=-3, b=3):
+    return random.randint(a, b)
+
+
+def random_real(a=20, b=-10):
+    return random.random() * a - b
+
+
+def default_const():
+    return [np.pi, np.e, random_int, random_real]
+
+
+def all_ops():
+    return [protectDiv, add, sub, mult, exp, n2, sqrt, inv, cos, sin, tan, arccos, arcsin, arctan, tanh, log, "pop", "pop", "pop", "pop",
             "pop", "pop", "pop", "pop", "pop", "pop"]
