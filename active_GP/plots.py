@@ -1,19 +1,19 @@
-import random
+
 import matplotlib.pyplot as plt
 import numpy as np
-import math
-import copy
-from StackGP import model_to_list_form, pareto_tournament, model_restore_form, print_gp_model, evaluate_gp_model
 
+import copy
+from StackGP import pareto_tournament, print_gp_model, evaluate_gp_model
+import utils
 
 def plot_models(models):
     tMods = copy.deepcopy(models)
-    [model_to_list_form(mod) for mod in tMods]
+    [utils.model_to_list_form(mod) for mod in tMods]
     pareto_models = pareto_tournament(tMods)
     for i in pareto_models:
         tMods.remove(i)
-    [model_restore_form(mod) for mod in pareto_models]
-    [model_restore_form(mod) for mod in tMods]
+    [utils.model_restore_form(mod) for mod in pareto_models]
+    [utils.model_restore_form(mod) for mod in tMods]
 
     pAccuracies = [mod[2][0] for mod in pareto_models]
     pComplexities = [mod[2][1] for mod in pareto_models]

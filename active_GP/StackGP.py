@@ -5,13 +5,13 @@ import time
 from sympy import symbols
 from function import *
 import utils
-from regressionTask import set_model_quality, evaluate_gp_model
+from regression_task import set_model_quality, evaluate_gp_model, ev_mod_helper
 
 
 def initialize_gp_models(
         variables,
         ops=default_ops(),
-        const=utils.default_const(),
+        const=default_const(),
         numberOfModels=100,
         maxLength=10):
     """returns a set of randomly generated models"""
@@ -24,10 +24,10 @@ def initialize_gp_models(
 def generate_random_model(variables, ops, const, maxLength):
     """takes as input the variables, operators, constants, and max program length and returns a random program"""
     prog = utils.build_empty_model()  # Generate an empty model with correct structure
-    varChoices = [utils.variable_select(i) for i in range(variables)] + const  # All variable and constants choices
+    var_choices = [utils.variable_select(i) for i in range(variables)] + const  # All variable and constants choices
     prog[0] = np.array(np.random.choice(ops, random.randint(1, maxLength)), dtype=object)  # Choose random operators
-    countVars = utils.model_arity(prog)  # Count how many variables/constants are needed
-    prog[1] = np.random.choice(varChoices, countVars)  # Choose random variables/constants
+    count_vars = utils.model_arity(prog)  # Count how many variables/constants are needed
+    prog[1] = np.random.choice(var_choices, count_vars)  # Choose random variables/constants
     prog[1] = [i() if (callable(i) and i.__name__ != '<lambda>') else i for i in prog[1]]  # If function then evaluate
     return prog
 
@@ -112,34 +112,34 @@ def mutate(model, variables, ops=default_ops(), const=default_const(), maxLength
     var_choices = [utils.variable_select(i) for i in range(variables)] + const
 
     if mutation_type == 0:
-        opChoice = random.randint(0, len(new_model[0]) - 1)
+        op_choice = random.randint(0, len(new_model[0]) - 1)
         if len(new_model[0]) > 0:
-            new_model[0][opChoice] = np.random.choice([i for i in ops])
+            new_model[0][op_choice] = np.random.choice([i for i in ops])
 
     elif mutation_type == 1:
-        varChoice = np.random.choice(var_choices)
-        if callable(varChoice) and varChoice.__name__ != '<lambda>':
-            varChoice = varChoice()
-        new_model[1][random.randint(0, len(new_model[1]) - 1)] = varChoice
+        var_choice = np.random.choice(var_choices)
+        if callable(var_choice) and var_choice.__name__ != '<lambda>':
+            var_choice = var_choice()
+        new_model[1][random.randint(0, len(new_model[1]) - 1)] = var_choice
 
     elif mutation_type == 2:
-        opChoice = np.random.choice(ops)
-        new_model[0] = [opChoice] + new_model[0]
+        op_choice = np.random.choice(ops)
+        new_model[0] = [op_choice] + new_model[0]
         while utils.model_arity(new_model) > len(new_model[1]):
-            varChoice = np.random.choice(var_choices)
-            if callable(varChoice) and varChoice.__name__ != '<lambda>':
-                varChoice = varChoice()
-            new_model[1] = [varChoice] + new_model[1]
+            var_choice = np.random.choice(var_choices)
+            if callable(var_choice) and var_choice.__name__ != '<lambda>':
+                var_choice = var_choice()
+            new_model[1] = [var_choice] + new_model[1]
 
     elif mutation_type == 3:
         if len(new_model[0]) > 1:
-            opChoice = random.randint(1, len(new_model[0]) - 1)
-            new_model[0] = new_model[0][-opChoice:]
+            op_choice = random.randint(1, len(new_model[0]) - 1)
+            new_model[0] = new_model[0][-op_choice:]
             new_model[1] = new_model[1][-utils.list_arity(new_model[0]):]
 
     elif mutation_type == 4:
-        opChoice = np.random.choice([i for i in ops])
-        new_model[0].append(opChoice)
+        op_choice = np.random.choice([i for i in ops])
+        new_model[0].append(op_choice)
 
     elif mutation_type == 5:
         new_model = recombination2pt(new_model, generate_random_model(variables, ops, const, maxLength))[0]
@@ -152,7 +152,7 @@ def mutate(model, variables, ops=default_ops(), const=default_const(), maxLength
 
     elif mutation_type == 7:  # nudge numeric constant
         pos = utils.get_numeric_indices(new_model[1])
-        if (len(pos) > 0):  # If there are numeric constants
+        if len(pos) > 0:  # If there are numeric constants
             pos = random.choice(pos)
             new_model[1][pos] = new_model[1][pos] + np.random.normal(-1, 1)
 
@@ -277,7 +277,7 @@ def align_gp_model(model, data, response):
         # print("Alignment failed for: ", model, " with prediction: ", prediction, "and reference data: ", response)
         return model
     newModel = trim_model(model)
-    newModel[0] = np.array(newModel[0].tolist() + [mult, add], dtype=object)
+    newModel[0] = np.array(newModel[0].tolist() + [mul, add], dtype=object)
     newModel[1] = newModel[1] + align.tolist()
     set_model_quality(newModel, data, response)
     return newModel
@@ -289,11 +289,11 @@ def evolve(inputData, responseData, generations=100, ops=default_ops(), const=de
     fullInput, fullResponse = copy.deepcopy(inputData), copy.deepcopy(responseData)
     inData = copy.deepcopy(fullInput)
     resData = copy.deepcopy(fullResponse)
-    variableCount = utils.var_count(inData)
-    models = initialize_gp_models(variableCount, ops, const, popSize)
+    variable_count = utils.var_count(inData)
+    models = initialize_gp_models(variable_count, ops, const, popSize)
     models = models + initialPop
     startTime = time.perf_counter()
-    bestFits = []
+    best_fits = []
     for i in range(generations):
         if capTime and time.perf_counter() - startTime > timeLimit:
             break
@@ -301,40 +301,40 @@ def evolve(inputData, responseData, generations=100, ops=default_ops(), const=de
             set_model_quality(mods, inData, resData)
 
         if tracking:
-            bestFits.append(min([mods[2][0] for mods in pareto_tournament(models)]))
+            best_fits.append(min([mods[2][0] for mods in pareto_tournament(models)]))
 
             # pareto_models=paretoTournament(models)
         pareto_models = select_models(models, elitismRate / 100 * popSize)
         if extinction and i % extinctionRate:
-            models = initialize_gp_models(variableCount, ops, const, popSize)
+            models = initialize_gp_models(variable_count, ops, const, popSize)
             for mods in models:
                 set_model_quality(mods, inData, resData)
 
         models = tournament_model_selection(models, popSize, tourneySize)
 
-        crossoverPairs = random.sample(models, round(crossoverRate / 100 * popSize))
-        toMutate = random.sample(models, round(mutationRate / 100 * popSize))
+        crossover_pairs = random.sample(models, round(crossoverRate / 100 * popSize))
+        to_mutate = random.sample(models, round(mutationRate / 100 * popSize))
 
-        childModels = pareto_models
+        child_models = pareto_models
 
-        for j in range(round(len(crossoverPairs) / 2) - 1):
-            childModels = childModels + recombination2pt(crossoverPairs[j], crossoverPairs[j + round(len(crossoverPairs) / 2)])
+        for j in range(round(len(crossover_pairs) / 2) - 1):
+            child_models = child_models + recombination2pt(crossover_pairs[j], crossover_pairs[j + round(len(crossover_pairs) / 2)])
 
-        for j in toMutate:
-            childModels = childModels + [mutate(j, variableCount, ops, const)]
+        for j in to_mutate:
+            child_models = child_models + [mutate(j, variable_count, ops, const)]
 
-        childModels = childModels + initialize_gp_models(variableCount, ops, const, round(spawnRate / 100 * popSize))
+        child_models = child_models + initialize_gp_models(variable_count, ops, const, round(spawnRate / 100 * popSize))
 
-        childModels = delete_duplicate_models(childModels)
+        child_models = delete_duplicate_models(child_models)
 
-        for mods in childModels:
+        for mods in child_models:
             set_model_quality(mods, inData, resData)
-        childModels = remove_indeterminate_models(childModels)
+        child_models = remove_indeterminate_models(child_models)
 
-        if len(childModels) < popSize:
-            childModels = childModels + initialize_gp_models(variableCount, ops, const, popSize - len(childModels))
+        if len(child_models) < popSize:
+            child_models = child_models + initialize_gp_models(variable_count, ops, const, popSize - len(child_models))
 
-        models = copy.deepcopy(childModels)
+        models = copy.deepcopy(child_models)
 
     for mods in models:
         set_model_quality(mods, fullInput, fullResponse)
@@ -346,9 +346,9 @@ def evolve(inputData, responseData, generations=100, ops=default_ops(), const=de
         models = [align_gp_model(mods, fullInput, fullResponse) for mods in models]
 
     if tracking:
-        bestFits.append(min([mods[2][0] for mods in pareto_tournament(models)]))
+        best_fits.append(min([mods[2][0] for mods in pareto_tournament(models)]))
         plt.figure()
-        plt.plot(bestFits)
+        plt.plot(best_fits)
         plt.title("Fitness over Time")
         plt.xlabel("Generations")
         plt.ylabel("Fitness")
@@ -379,5 +379,5 @@ def print_gp_model(mod, inputData=symbols(["x" + str(i) for i in range(100)])): 
     model[0] = utils.replace_func(model[0], arctan, atan)
     model[0] = utils.replace_func(model[0], tanh, tanh1)
     model[0] = utils.replace_func(model[0], log, log2)
-    response = utils.ev_mod_helper(model[1], model[0], [], np.array(inputData))[2][0]
+    response = ev_mod_helper(model[1], model[0], [], np.array(inputData))[2][0]
     return response

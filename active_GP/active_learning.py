@@ -5,7 +5,7 @@ import numpy as np
 
 from StackGP import evolve, select_models, align_gp_model
 from utils import extend_data
-from regressionTask import evaluate_gp_model, fitness
+from regression_task import evaluate_gp_model, fitness
 from function import all_ops
 
 from sklearn.cluster import KMeans  # for clustering in ensemble definition
@@ -39,8 +39,8 @@ def sub_sample_space(space):
     return tuple(newSpace)
 
 
-def active_learning(func, dims, ranges, rangesP, eqNum=1, version=1,
-                    iterations=100):  # func should be a lamda function of form lambda data: f(data[0],data[1],...)
+def active_learning(func, dims, ranges, rangesP, eqNum=1, version=1, iterations=100):
+    # func should be a lamda function of form lambda data: f(data[0],data[1],...)
     try:
         with open(os.path.join(str(eqNum), str(version)) + ".txt", 'rb') as f:
             return -1
@@ -71,19 +71,10 @@ def active_learning(func, dims, ranges, rangesP, eqNum=1, version=1,
         if i > iterations - 1:
             break
         i += 1
-        models1 = evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=all_ops(),
+        models = [evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=all_ops(),
                          timeLimit=120,
                          capTime=True, align=False, elitismRate=10)
-        models2 = evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=all_ops(),
-                         timeLimit=120,
-                         capTime=True, align=False, elitismRate=10)
-        models3 = evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=all_ops(),
-                         timeLimit=120,
-                         capTime=True, align=False, elitismRate=10)
-        models4 = evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=all_ops(),
-                         timeLimit=120,
-                         capTime=True, align=False, elitismRate=10)
-        models = models1 + models2 + models3 + models4
+                  for _ in range(4)]
         models = select_models(models, 20)
         alignedModels = [align_gp_model(mods, inputData, response) for mods in models]
         ensemble = ensemble_select(alignedModels, inputData, response)
@@ -108,9 +99,9 @@ def active_learning(func, dims, ranges, rangesP, eqNum=1, version=1,
             file.write(str(errors))
             file.close()
             return 3 + i
-            found = True
-            ptsNeeded.append(3 + i)
-            break
+            # found = True
+            # ptsNeeded.append(3 + i)
+            # break
         active_learning_checkpoint(eqNum, version, i, inputData, response, testInput, testResponse, errors, models, minerr)
     if found == False:
         # print("Points needed in round",j,": NA (model not found)")
@@ -125,40 +116,40 @@ def active_learning(func, dims, ranges, rangesP, eqNum=1, version=1,
         return -1
 
 
-def ensemble_select(models, inputData, responseData, numberOfClusters=10):  # Generates a model ensemble using input data partitions
+def ensemble_select(models, inputData, responseData, number_of_clusters=10):  # Generates a model ensemble using input data partitions
     data = np.transpose(inputData)
-    if len(data) < numberOfClusters:
-        numberOfClusters = len(data)
-    clusters = KMeans(n_clusters=numberOfClusters).fit_predict(data)
-    if numberOfClusters > len(set(clusters)):
-        numberOfClusters = len(set(clusters))
-        clusters = KMeans(n_clusters=numberOfClusters).fit_predict(data)
+    if len(data) < number_of_clusters:
+        number_of_clusters = len(data)
+    clusters = KMeans(n_clusters=number_of_clusters).fit_predict(data)
+    if number_of_clusters > len(set(clusters)):
+        number_of_clusters = len(set(clusters))
+        clusters = KMeans(n_clusters=number_of_clusters).fit_predict(data)
     dataParts = []
-    partsResponse = []
-    for i in range(numberOfClusters):
+    parts_response = []
+    for i in range(number_of_clusters):
         dataParts.append([])
-        partsResponse.append([])
+        parts_response.append([])
 
     for i in range(len(clusters)):
         dataParts[clusters[i]].append(data[i])
-        partsResponse[clusters[i]].append(responseData[i])
+        parts_response[clusters[i]].append(responseData[i])
 
-    modelResiduals = []
+    model_residuals = []
 
     for i in range(len(models)):
-        modelResiduals.append([])
+        model_residuals.append([])
     for i in range(len(models)):
-        for j in range(numberOfClusters):
-            modelResiduals[i].append(fitness(models[i], np.transpose(dataParts[j]), partsResponse[j]))
+        for j in range(number_of_clusters):
+            model_residuals[i].append(fitness(models[i], np.transpose(dataParts[j]), parts_response[j]))
 
     best = []
-    for i in range(numberOfClusters):
-        ordering = np.argsort(modelResiduals[i])
+    for i in range(number_of_clusters):
+        ordering = np.argsort(model_residuals[i])
         j = 0
         while ordering[j] in best:
             j += 1
         best.append(ordering[j])
-    ensemble = [models[best[i]] for i in range(numberOfClusters)]
+    ensemble = [models[best[i]] for i in range(number_of_clusters)]
 
     return ensemble
 
@@ -198,7 +189,7 @@ def create_uncertainty_func(ensemble):
 def maximize_uncertainty(ensemble, varCount, bounds=[]):  # Used to select a new point of maximum uncertainty
     func = create_uncertainty_func(ensemble)
     x0 = [np.mean(bounds[i]) for i in range(varCount)]
-    if bounds == []:
+    if not bounds:
         pt = minimize(func, x0).x
     else:
         pt = minimize(func, x0, bounds=bounds).x

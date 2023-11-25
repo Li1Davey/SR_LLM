@@ -19,7 +19,7 @@ def sub(a, b):
     return a - b
 
 
-def mult(a, b):
+def mul(a, b):
     return a * b
 
 
@@ -76,8 +76,10 @@ def log(a):
 
 
 def default_ops():
-    return [protectDiv, add, sub, mult, exp, n2, sqrt, inv, "pop", "pop", "pop", "pop", "pop", "pop"]
+    return [protectDiv, add, sub, mul, exp, n2, sqrt, inv, "pop", "pop", "pop", "pop", "pop", "pop"]
 
+def construct_ops(operator_set):
+    return [protectDiv, add, sub, mul, exp, n2, sqrt, inv, "pop", "pop", "pop", "pop", "pop", "pop"]
 
 def random_int(a=-3, b=3):
     return random.randint(a, b)
@@ -92,5 +94,5 @@ def default_const():
 
 
 def all_ops():
-    return [protectDiv, add, sub, mult, exp, n2, sqrt, inv, cos, sin, tan, arccos, arcsin, arctan, tanh, log, "pop", "pop", "pop", "pop",
+    return [protectDiv, add, sub, mul, exp, n2, sqrt, inv, cos, sin, tan, arccos, arcsin, arctan, tanh, log, "pop", "pop", "pop", "pop",
             "pop", "pop", "pop", "pop", "pop", "pop"]
