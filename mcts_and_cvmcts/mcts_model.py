@@ -424,9 +424,9 @@ class MCTS(object):
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
-                if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                     break
-            if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+            if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                 break
 
         return reward_his, self.hall_of_fame
@@ -514,9 +514,9 @@ class MCTS(object):
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
-                if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                     break
-            if max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+            if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                 break
 
         return reward_his, self.hall_of_fame
