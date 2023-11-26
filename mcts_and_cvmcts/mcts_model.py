@@ -5,7 +5,7 @@ from collections import defaultdict
 from sympy import Symbol
 from sympy.parsing.sympy_parser import parse_expr
 from production_rules import production_rules_to_expr
-from progam import execute
+from program import execute
 from utils import pretty_print_expr, expression_to_template
 
 

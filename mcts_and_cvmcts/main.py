@@ -8,7 +8,7 @@ import random
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
-from progam import Program
+from program import Program
 
 
 def run_mcts(
