@@ -32,7 +32,7 @@ do
 #!/bin/bash -l
 
 #SBATCH --job-name="McTsVr$eq_name"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.mcts.out
+#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
 #SBATCH --mem=10240MB
@@ -41,7 +41,7 @@ hostname
 
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
 						--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
-         				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.mcts.out
+         				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt${opt}.mcts.out
 
 EOT
 
