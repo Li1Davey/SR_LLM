@@ -29,6 +29,16 @@ def check_if_exists(file_path):
     return file_path is not None and os.path.exists(file_path)
 
 
+
+def is_float(s):
+    """Determine whether the input variable can be cast to float."""
+    try:
+        float(s)
+        return True
+    except ValueError:
+        return False
+
+
 def get_file_path_list(dir_path, is_recursive=False, is_sorted=False):
     file_list = list()
     for file in os.listdir(dir_path):
