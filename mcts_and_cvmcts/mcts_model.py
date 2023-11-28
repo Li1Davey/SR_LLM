@@ -424,10 +424,15 @@ class MCTS(object):
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
-                if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                     break
-            if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+            if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                 break
+
+        print("#QN:", len(self.QN.keys()))
+        self.print_hofs(-1, verbose=True)
+        sys.stdout.flush()
+        print([x[1] for x in self.hall_of_fame], reward_threhold)
 
         return reward_his, self.hall_of_fame
 
@@ -514,9 +519,9 @@ class MCTS(object):
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
-                if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                     break
-            if len(self.hall_of_fame)>1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+            if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
                 break
 
         return reward_his, self.hall_of_fame
@@ -546,6 +551,7 @@ class MCTS(object):
         """used for print the error for all metrics between the predicted program `p` and true program."""
         y_hat = execute(expr_str, self.task.X.T, self.input_var_Xs)
         dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.X, y_hat)
+        dict_of_result['tree_edit_distance'] = self.task.data_query_oracle.compute_normalized_tree_edit_distance(expr_str)
         print('-' * 30)
         for mertic_name in dict_of_result:
             print(f"{mertic_name} {dict_of_result[mertic_name]}")

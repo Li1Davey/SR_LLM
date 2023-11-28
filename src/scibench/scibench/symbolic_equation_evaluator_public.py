@@ -6,7 +6,7 @@ from sympy import Symbol
 from sympy import parse_expr
 
 import time
-from scibench.metrics import make_regression_metric
+from scibench.metrics import make_regression_metric, tree_edit_distance
 from scibench.tokens import *
 from scibench.program import *
 
@@ -120,6 +120,9 @@ class Equation_evaluator(object):
             loss_val = self.metric(y_true, y_pred)
         return loss_val
 
+    def compute_normalized_tree_edit_distance(self, pred_eq):
+        return tree_edit_distance(pred_eq, self.expr)
+
     def _evaluate_all_losses(self, X, y_pred):
         """
         Compute the y_true based on the input X. And then evaluate the metric value between y_true and y_hat.
@@ -135,6 +138,7 @@ class Equation_evaluator(object):
             metric = make_regression_metric(metric_name)
             loss_val = metric(y_true, y_pred)
             loss_val_dict[metric_name] = loss_val
+
         return loss_val_dict
 
     def _evaluate_simulate_loss(self, X, y_pred, simulate_steps):

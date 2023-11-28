@@ -1,10 +1,12 @@
 from pympler import classtracker, asizeof
 import time
 import argparse
+from memory_profiler import profile
 from mcts_model import MCTS
 from production_rules import *
 from utils import create_uniform_generations, create_geometric_generations, create_reward_threshold
 import random
+
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
@@ -40,11 +42,10 @@ def run_mcts(
     best_modules = []
     aug_grammars = []
 
-    start_time = time.time()
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
         print(aug_grammars)
-        max_opt_iter = 500
+        max_opt_iter = 200
         tracker = classtracker.ClassTracker()
 
         mcts_model = MCTS(base_grammars=grammars,
@@ -79,18 +80,17 @@ def run_mcts(
         for gi in aug_grammars:
             print(gi)
 
-        if best_modules[0][1] >= 1 - norm_threshold:
-            print("find the ground-truth expression, whole program terminates...")
-            break
+        # if best_modules[0][1] >= 1 - norm_threshold:
+        #     print("find the ground-truth expression, whole program terminates...")
+        #     break
 
         max_module += module_grow_step
         exploration_rate *= 1.2
-    end_time = time.time() - start_time
     print("final hof")
     mcts_model.print_hofs(-2, verbose=True)
-    print("MCTS time is {} mins".format(np.round(end_time / 60, 3)))
 
 
+@profile
 def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -108,8 +108,10 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
+    start = time.time()
     run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-
+    end_time = time.time() - start
+    print("MCTS time is {} mins".format(np.round(end_time / 60, 3)))
 
 def run_cv_mcts(
         operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=40,
@@ -201,13 +203,10 @@ def run_cv_mcts(
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
         num_rollouts = max(15, int(num_rollouts * 0.5))
-    # for round_idx in range(len(num_iterations)):
-    #     MCTS.program.set_vf(round_idx)
-    #     MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
     print("final hof")
     mcts_model.print_hofs(-1, verbose=True)
 
-
+@profile
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -227,8 +226,8 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
-    end = time.time() - start
-    print('average discovery time is', np.round(end / 60, 3), 'mins')
+    end_time = time.time() - start
+    print("CV-MCTS time is {} mins".format(np.round(end_time / 60, 3)))
 
 
 if __name__ == '__main__':
