@@ -12,10 +12,6 @@ from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
 from program import Program
 
-import signal
-
-def handle_timeout(signum, frame):
-    raise TimeoutError
 
 def run_mcts(
         production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=40,
@@ -48,7 +44,7 @@ def run_mcts(
 
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
-        print(aug_grammars)
+        print("aug_grammars:", aug_grammars)
         max_opt_iter = 200
         tracker = classtracker.ClassTracker()
 
@@ -69,7 +65,7 @@ def run_mcts(
                                                    verbose=True,
                                                    is_first_round=True,
                                                    print_freq=5)
-        print("Time usage of iter {} is {} mins".format(i_itr, np.round((time.time() - start) / 60, 3)))
+        # print("Time usage of iter {} is {} mins".format(i_itr, np.round((time.time() - start) / 60, 3)))
         tracker.create_snapshot()
         tracker.stats.print_summary()
         mcts_model.print_hofs(-2, verbose=True)
@@ -95,7 +91,7 @@ def run_mcts(
 
 
 @profile
-def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer, max_time):
+def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -113,19 +109,11 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
 
-    signal.signal(signal.SIGALRM, handle_timeout)
-    signal.alarm(int(max_time*3600))  # 5 seconds
-
-    try:
-        start = time.time()
-        run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-        end_time = time.time() - start
-    except TimeoutError:
-        print("It took too long to finish the job")
-    finally:
-        signal.alarm(0)
-
+    start = time.time()
+    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+    end_time = time.time() - start
     print("MCTS time is {} hr".format(np.round(end_time / 3600, 4)))
+
 
 def run_cv_mcts(
         operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=40,
@@ -220,6 +208,7 @@ def run_cv_mcts(
     print("final hof")
     mcts_model.print_hofs(-1, verbose=True)
 
+
 @profile
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
@@ -255,7 +244,6 @@ if __name__ == '__main__':
     parser.add_argument("--num_episodes", type=int, default=5000, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
-    parser.add_argument("--max_time", type=int, default=12, help="maximum time for training hours")
     parser.add_argument("--cv_mcts", action="store_true",
                         help="whether run normal mcts (cv_mcts=False) or control variable mcts (cv_mcts=True).")
 
@@ -275,4 +263,4 @@ if __name__ == '__main__':
         cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
     else:
         # run Monte Carlo Tree Search
-        mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.max_time)
+        mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
