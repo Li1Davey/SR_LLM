@@ -14,7 +14,7 @@ from program import Program
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=500, num_rollouts=100,
+        production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=40,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=1, norm_threshold=1e-10
 ):
@@ -111,7 +111,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     start = time.time()
     run_mcts(production_rules=production_rules, num_episodes=num_episodes)
     end_time = time.time() - start
-    print("MCTS time is {} mins".format(np.round(end_time / 60, 3)))
+    print("MCTS time is {} hr".format(np.round(end_time / 3600, 4)))
 
 def run_cv_mcts(
         operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=40,
@@ -186,7 +186,7 @@ def run_cv_mcts(
                                             verbose=True,
                                             is_first_round=(round_idx == 0),
                                             print_freq=print_freq)
-        print("Time usage of round {} is {} mins".format(round_idx, np.round((time.time() - iter_time) / 60, 3)))
+        print("Time usage of round {} is {} mins".format(round_idx, np.round((time.time() - iter_time) / 60, 4)))
         tracker.create_snapshot()
         tracker.stats.print_summary()
         mcts_model.UCBs = {}
@@ -227,7 +227,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
     end_time = time.time() - start
-    print("CV-MCTS time is {} mins".format(np.round(end_time / 60, 3)))
+    print("CV-MCTS time is {} hr".format(np.round(end_time / 3600, 3)))
 
 
 if __name__ == '__main__':
@@ -241,6 +241,7 @@ if __name__ == '__main__':
     parser.add_argument("--num_episodes", type=int, default=5000, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
+    parser.add_argument("--max_time", type=int, default=10, help="maximum time for training hours")
     parser.add_argument("--cv_mcts", action="store_true",
                         help="whether run normal mcts (cv_mcts=False) or control variable mcts (cv_mcts=True).")
 
