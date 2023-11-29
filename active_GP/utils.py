@@ -50,7 +50,6 @@ def get_arity(func):  # Returns the arity of a function: used for model evaluati
     return len(inspect.signature(func).parameters)
 
 
-
 def model_arity(model):
     """ returns the total arity of a model"""
     return 1 + sum([get_arity(i) - 1 for i in model[0]])

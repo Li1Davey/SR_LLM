@@ -17,9 +17,9 @@ def test(func, dimensions, ranges, numberOfPoints=100, numberOfTestsPoints=200):
     errors = []
     models = []
     minerr = 1
-    models1 = sgp.evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=sgp.allOps(),
+    models1 = sgp.evolve(inputData, response, initialPop=models, generations=1000, tracking=False, pop_size=300, ops=sgp.allOps(),
                          timeLimit=120, capTime=True, align=False, elitismRate=10)
-    models2 = sgp.evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=sgp.allOps(),
+    models2 = sgp.evolve(inputData, response, initialPop=models, generations=1000, tracking=False, pop_size=300, ops=sgp.allOps(),
                          timeLimit=120, capTime=True, align=False, elitismRate=10)
     models = models1 + models2
     models = sgp.selectModels(models, 20)
@@ -42,7 +42,7 @@ def speedTest(func, dimensions, ranges, numberOfPoints=100, numberOfTestsPoints=
     testResponse = func(testInput)
     # Record start time
     start = time.time()
-    models = sgp.evolve(inputData, response, generations=1000, popSize=300, ops=sgp.allOps(), capTime=False, align=True, elitismRate=10)
+    models = sgp.evolve(inputData, response, generations=1000, pop_size=300, ops=sgp.allOps(), capTime=False, align=True, elitismRate=10)
     # Record end time
     end = time.time()
     # Return time taken

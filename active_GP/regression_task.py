@@ -43,7 +43,8 @@ def ev_mod_helper(varStack, opStack, tempStack, data):
 
 def evaluate_gp_model(model, inputData):
     """numerically evaluates a model using the data stored in inputData"""
-    response = ev_mod_helper(model[1], model[0], [], np.array(inputData).astype(float))[2][0]
+    ret = ev_mod_helper(model[1], model[0], [], np.array(inputData).astype(float))
+    response = ret[2][0]
     if not type(response) == np.ndarray and utils.input_len(inputData) > 1:
         response = np.array([response for i in range(utils.input_len(inputData))])
     return response
@@ -77,9 +78,10 @@ def stack_gp_model_complexity(model, *args):
     return len(model[0]) + len(model[1]) - model[0].tolist().count("pop")
 
 
-def set_model_quality(model, inputData, response, modelEvaluationMetrics=[fitness, stack_gp_model_complexity]):
+def set_model_quality(model, inputData, response):
     """ is an inplace operator that sets a models quality"""
-    model[2] = [i(model, inputData, response) for i in modelEvaluationMetrics]
+    model_evaluation_metrics = [fitness, stack_gp_model_complexity]
+    model[2] = [i(model, inputData, response) for i in model_evaluation_metrics]
 
 
 class RegressTask(object):

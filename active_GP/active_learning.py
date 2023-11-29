@@ -71,7 +71,7 @@ def active_learning(func, dims, ranges, rangesP, eqNum=1, version=1, iterations=
         if i > iterations - 1:
             break
         i += 1
-        models = [evolve(inputData, response, initialPop=models, generations=1000, tracking=False, popSize=300, ops=all_ops(),
+        models = [evolve(inputData, response, initialPop=models, generations=1000, tracking=False, pop_size=300, ops=all_ops(),
                          timeLimit=120,
                          capTime=True, align=False, elitismRate=10)
                   for _ in range(4)]

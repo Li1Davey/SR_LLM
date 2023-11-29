@@ -12,20 +12,23 @@ def initialize_gp_models(
         variables,
         ops=default_ops(),
         const=default_const(),
-        numberOfModels=100,
+        number_of_models=100,
         maxLength=10):
     """returns a set of randomly generated models"""
 
-    models = [generate_random_model(variables, ops, const, maxLength) for i in range(numberOfModels)]
+    models = [generate_random_model(variables, ops, const, maxLength) for i in range(number_of_models)]
 
     return models
 
 
 def generate_random_model(variables, ops, const, maxLength):
     """takes as input the variables, operators, constants, and max program length and returns a random program"""
-    prog = utils.build_empty_model()  # Generate an empty model with correct structure
-    var_choices = [utils.variable_select(i) for i in range(variables)] + const  # All variable and constants choices
-    prog[0] = np.array(np.random.choice(ops, random.randint(1, maxLength)), dtype=object)  # Choose random operators
+    # Generate an empty model with correct structure
+    prog = utils.build_empty_model()
+    # All variable and constants choices
+    var_choices = [utils.variable_select(i) for i in range(variables)] + const
+    # Choose random operators
+    prog[0] = np.array(np.random.choice(ops, random.randint(1, maxLength)), dtype=object)
     count_vars = utils.model_arity(prog)  # Count how many variables/constants are needed
     prog[1] = np.random.choice(var_choices, count_vars)  # Choose random variables/constants
     prog[1] = [i() if (callable(i) and i.__name__ != '<lambda>') else i for i in prog[1]]  # If function then evaluate
@@ -283,37 +286,35 @@ def align_gp_model(model, data, response):
     return newModel
 
 
-def evolve(inputData, responseData, generations=100, ops=default_ops(), const=default_const(),  mutationRate=79,
-           crossoverRate=11, spawnRate=10, extinction=False, extinctionRate=10, elitismRate=50, popSize=300, align=True,
+def evolve(inputData, responseData, generations=100, ops=default_ops(), const=default_const(), mutationRate=79,
+           crossover_rate=11, spawnRate=10, extinction=False, extinctionRate=10, elitismRate=50, pop_size=300, align=True,
            initialPop=[], timeLimit=300, capTime=False, tourneySize=5, tracking=False):
-    fullInput, fullResponse = copy.deepcopy(inputData), copy.deepcopy(responseData)
-    inData = copy.deepcopy(fullInput)
-    resData = copy.deepcopy(fullResponse)
+    full_input, full_response = copy.deepcopy(inputData), copy.deepcopy(responseData)
+    inData = copy.deepcopy(full_input)
+    resData = copy.deepcopy(full_response)
     variable_count = utils.var_count(inData)
-    models = initialize_gp_models(variable_count, ops, const, popSize)
+    models = initialize_gp_models(variable_count, ops, const, pop_size)
     models = models + initialPop
-    startTime = time.perf_counter()
+    start_time = time.perf_counter()
     best_fits = []
     for i in range(generations):
-        if capTime and time.perf_counter() - startTime > timeLimit:
+        if capTime and time.perf_counter() - start_time > timeLimit:
             break
         for mods in models:
             set_model_quality(mods, inData, resData)
 
         if tracking:
             best_fits.append(min([mods[2][0] for mods in pareto_tournament(models)]))
-
-            # pareto_models=paretoTournament(models)
-        pareto_models = select_models(models, elitismRate / 100 * popSize)
+        pareto_models = select_models(models, elitismRate / 100 * pop_size)
         if extinction and i % extinctionRate:
-            models = initialize_gp_models(variable_count, ops, const, popSize)
+            models = initialize_gp_models(variable_count, ops, const, pop_size)
             for mods in models:
                 set_model_quality(mods, inData, resData)
 
-        models = tournament_model_selection(models, popSize, tourneySize)
+        models = tournament_model_selection(models, pop_size, tourneySize)
 
-        crossover_pairs = random.sample(models, round(crossoverRate / 100 * popSize))
-        to_mutate = random.sample(models, round(mutationRate / 100 * popSize))
+        crossover_pairs = random.sample(models, round(crossover_rate / 100 * pop_size))
+        to_mutate = random.sample(models, round(mutationRate / 100 * pop_size))
 
         child_models = pareto_models
 
@@ -323,7 +324,7 @@ def evolve(inputData, responseData, generations=100, ops=default_ops(), const=de
         for j in to_mutate:
             child_models = child_models + [mutate(j, variable_count, ops, const)]
 
-        child_models = child_models + initialize_gp_models(variable_count, ops, const, round(spawnRate / 100 * popSize))
+        child_models = child_models + initialize_gp_models(variable_count, ops, const, round(spawnRate / 100 * pop_size))
 
         child_models = delete_duplicate_models(child_models)
 
@@ -331,19 +332,19 @@ def evolve(inputData, responseData, generations=100, ops=default_ops(), const=de
             set_model_quality(mods, inData, resData)
         child_models = remove_indeterminate_models(child_models)
 
-        if len(child_models) < popSize:
-            child_models = child_models + initialize_gp_models(variable_count, ops, const, popSize - len(child_models))
+        if len(child_models) < pop_size:
+            child_models = child_models + initialize_gp_models(variable_count, ops, const, pop_size - len(child_models))
 
         models = copy.deepcopy(child_models)
 
     for mods in models:
-        set_model_quality(mods, fullInput, fullResponse)
+        set_model_quality(mods, full_input, full_response)
     models = [trim_model(mod) for mod in models]
     models = delete_duplicate_models(models)
     models = remove_indeterminate_models(models)
     models = utils.sort_models(models)
     if align:
-        models = [align_gp_model(mods, fullInput, fullResponse) for mods in models]
+        models = [align_gp_model(mods, full_input, full_response) for mods in models]
 
     if tracking:
         best_fits.append(min([mods[2][0] for mods in pareto_tournament(models)]))

@@ -10,10 +10,11 @@ from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regression_task import RegressTask
 from function import construct_ops
 
+
 # Define demo function to generate data
 
 
-def run_active_GP(
+def run_stack_GP(
         equation_name, num_generations, metric_name, noise_type, noise_scale
 ):
     """
@@ -22,7 +23,7 @@ def run_active_GP(
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
     operators_set = data_query_oracle.get_operators_set()
-    ops=construct_ops(operators_set)
+    ops = construct_ops(operators_set)
     regress_batchsize = 256
     allowed_input_tokens = np.ones(nvar, dtype=np.int32)
     task = RegressTask(regress_batchsize,
@@ -30,10 +31,11 @@ def run_active_GP(
                        dataXgen,
                        data_query_oracle)
 
-
     inputData = np.array([range(10), np.random.randint(1, 10, 10)])
+
     def demoFunc(x, y):
         return x ** 2 / y
+
     response = demoFunc(inputData[0], inputData[1])
 
     # Generate models
@@ -44,8 +46,6 @@ def run_active_GP(
     print(sgp.print_gp_model(models[0]))
 
     print("actGP time is {} mins".format(np.round(end_time / 60, 3)))
-
-
 
 
 if __name__ == '__main__':
@@ -67,4 +67,4 @@ if __name__ == '__main__':
     np.random.seed(seed)
     print('np.random seed=', seed)
     print(args)
-    run_active_GP(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
+    run_stack_GP(args.equation_name, args.num_generations, args.metric_name, args.noise_type, args.noise_scale)

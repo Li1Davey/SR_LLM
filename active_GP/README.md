@@ -6,5 +6,7 @@ https://github.com/hoolagans/StackGP
 The StackGP.py file contains the Python function library for StackGP. It also contains the functions used for active learning. 
 
 
+The current implemetation does not support fitting open constants in the candidate expressions.
+
 
 
