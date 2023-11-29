@@ -571,7 +571,7 @@ class Program(object):
 
         # Check if cython_execute can be imported; if not, fall back to python_execute
         try:
-            from dso import cyfunc
+            from cvdso import cyfunc
             from execute import cython_execute
             execute_function = cython_execute
             Program.have_cython = True

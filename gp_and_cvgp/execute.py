@@ -1,7 +1,4 @@
-try:
-    from dso import cyfunc
-except ImportError:
-    cyfunc = None
+from scibench import cyfunc
 import array
 
 def python_execute(traversal, X):

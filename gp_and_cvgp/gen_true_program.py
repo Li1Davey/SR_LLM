@@ -27,13 +27,13 @@ def is_duplicate(term, term_list):
 
 
 def sample_one_decr(decr_arity):
-    t = random.random() 
+    t = random.random()
     if t < 0.5:
         return 0  # no decr
     else:
-        t = (t - 0.5) * 20. / (10./decr_arity)
-        return int(t)+1
-        #return 0  # no decr
+        t = (t - 0.5) * 20. / (10. / decr_arity)
+        return int(t) + 1
+        # return 0  # no decr
 
 
 def gen_terms(n_vars, vc, n_term, decr_arity, int_coef=False):
@@ -66,7 +66,7 @@ def gen_program_one_term(term, decr, decr_list):
         if de == 0:
             preorder = ['mul'] + preorder + ['X' + str(var)]
         else:
-            preorder = ['mul'] + preorder + [decr_list[de-1], 'X' + str(var)]
+            preorder = ['mul'] + preorder + [decr_list[de - 1], 'X' + str(var)]
     return preorder
 
 
@@ -146,15 +146,15 @@ def main(param):
 
 if __name__ == '__main__':
     param = Param()
-    param.int_coef=False
+    param.int_coef = False
 
-    #basepath = "/depot/yexiang/apps/jiang631/data/xyx_dso"
+    # basepath = "/depot/yexiang/apps/jiang631/data/xyx_dso"
     basepath = "/scratch/bell/yexiang/xyx_dso/data"
-    basepath= "/home/jiangnan/PycharmProjects/xyx_dso/data"
-    
+    basepath = "/home/jiangnan/PycharmProjects/xyx_dso/data"
+
     param.n_vars = 1
     param.n_terms = [4, 1]
-    param.decor = ['sin', 'cos'] #['inv'] #
+    param.decor = ['sin', 'cos']  # ['inv'] #
     param.folder = basepath + '/sincos_nv{}_nt{}{}'.format(param.n_vars, param.n_terms[0], param.n_terms[1])
     main(param)
     param.decor = ['inv']

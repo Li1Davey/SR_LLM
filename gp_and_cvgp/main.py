@@ -6,7 +6,7 @@ from const import ScipyMinimize
 from scibench.symbolic_data_generator import *
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from functions import create_tokens
-import gp_xyx
+import gp_and_cvgp
 
 import numpy as np
 import random
@@ -25,7 +25,7 @@ config = {
 }
 
 
-def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
+def run_CVGP(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -72,25 +72,25 @@ def run_expanding_gp(equation_name, metric_name, noise_type, noise_scale):
                                               data_query_oracle)
 
     # set gp helper
-    gp_helper = gp_xyx.GPHelper()
+    gp_helper = gp_and_cvgp.GPHelper()
     gp_helper.library = protected_library
 
     # set GP
-    gp_xyx.ExpandingGeneticProgram.library = protected_library
-    gp_xyx.ExpandingGeneticProgram.gp_helper = gp_helper
-    egp = gp_xyx.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
+    gp_and_cvgp.ExpandingGeneticProgram.library = protected_library
+    gp_and_cvgp.ExpandingGeneticProgram.gp_helper = gp_helper
+    cvgp = gp_and_cvgp.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
                                          tour_size, hof_size, n_generations, nvar)
 
     # run GP
-    egp.run()
+    cvgp.run()
 
     # print
     print('final hof=')
-    egp.print_hof()
-    print('egp.timer_log=', egp.timer_log)
+    cvgp.print_hof()
+    print('CVGP time {} mins'.format(np.sum(cvgp.timer_log)/60))
 
 
-def run_gp(equation_name, metric_name, noise_type, noise_scale):
+def run_GP(equation_name, metric_name, noise_type, noise_scale):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     temp = data_query_oracle.get_vars_range_and_types()
     dataXgen = DataX(temp)
@@ -134,13 +134,13 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
                                               data_query_oracle)
 
     # set gp helper
-    gp_helper = gp_xyx.GPHelper()
+    gp_helper = gp_and_cvgp.GPHelper()
     gp_helper.library = protected_library
 
     # set GP
-    gp_xyx.GeneticProgram.library = protected_library
-    gp_xyx.GeneticProgram.gp_helper = gp_helper
-    gp = gp_xyx.GeneticProgram(cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations)
+    gp_and_cvgp.GeneticProgram.library = protected_library
+    gp_and_cvgp.GeneticProgram.gp_helper = gp_helper
+    gp = gp_and_cvgp.GeneticProgram(cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations)
 
     # run GP
     gp.run()
@@ -148,7 +148,7 @@ def run_gp(equation_name, metric_name, noise_type, noise_scale):
     # print
     print('final hof=')
     gp.print_hof()
-    print('gp.timer_log=', gp.timer_log)
+    print('GP time {} mins'.format(np.sum(gp.timer_log)/60))
 
 
 if __name__ == '__main__':
@@ -171,6 +171,6 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
 
     if args.cvgp:
-        run_expanding_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
+        run_CVGP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
     else:
-        run_gp(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
+        run_GP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
