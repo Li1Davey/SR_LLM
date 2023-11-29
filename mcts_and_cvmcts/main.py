@@ -1,7 +1,7 @@
 from pympler import classtracker, asizeof
 import time
 import argparse
-from memory_profiler import profile
+# from memory_profiler import profile
 from mcts_model import MCTS
 from production_rules import *
 from utils import create_uniform_generations, create_geometric_generations, create_reward_threshold
@@ -90,7 +90,7 @@ def run_mcts(
     mcts_model.print_hofs(-2, verbose=True)
 
 
-@profile
+
 def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -112,7 +112,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     start = time.time()
     run_mcts(production_rules=production_rules, num_episodes=num_episodes)
     end_time = time.time() - start
-    print("MCTS time is {} hr".format(np.round(end_time / 3600, 4)))
+    print("MCTS {} mins".format(np.round(end_time / 60, 3)))
 
 
 def run_cv_mcts(
@@ -209,7 +209,7 @@ def run_cv_mcts(
     mcts_model.print_hofs(-1, verbose=True)
 
 
-@profile
+
 def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
@@ -230,7 +230,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
     end_time = time.time() - start
-    print("CV-MCTS time is {} hr".format(np.round(end_time / 3600, 3)))
+    print("CV-MCTS {} mins".format(np.round(end_time / 60, 3)))
 
 
 if __name__ == '__main__':
@@ -241,7 +241,7 @@ if __name__ == '__main__':
                         choices=['BFGS', 'L-BFGS-B', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
-    parser.add_argument("--num_episodes", type=int, default=5000, help="the number of episode for MCTS.")
+    parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
     parser.add_argument("--cv_mcts", action="store_true",
