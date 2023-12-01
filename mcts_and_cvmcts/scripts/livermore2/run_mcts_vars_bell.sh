@@ -12,25 +12,22 @@ opt=L-BFGS-B
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_nmse
-for prog in {1..25};
-do
-    eq_name=${type}_Vars${nv}_$prog.in
-    echo "submit $eq_name"
-        dump_dir=$basepath/result/${type}_Vars${nv}/$(date +%F)
-    if [ ! -d "$dump_dir" ]
-    then
-        echo "create dir: $dump_dir"
-        mkdir -p $dump_dir
-        fi
-        log_dir=$basepath/log/$(date +%F)
-        if [ ! -d "$log_dir" ]
-        then
-        echo "create dir: $log_dir"
-        mkdir -p $log_dir
-        fi
-    sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
+for prog in {1..25}; do
+	eq_name=${type}_Vars${nv}_$prog.in
+	echo "submit $eq_name"
+	dump_dir=$basepath/result/${type}_Vars${nv}/$(date +%F)
+	if [ ! -d "$dump_dir" ]; then
+		echo "create dir: $dump_dir"
+		mkdir -p $dump_dir
+	fi
+	log_dir=$basepath/log/$(date +%F)
+	if [ ! -d "$log_dir" ]; then
+		echo "create dir: $log_dir"
+		mkdir -p $log_dir
+	fi
+	echo $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt${opt}.mcts.out
+	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
-
 #SBATCH --job-name="VSR-Var${nv}${prog}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.mcts.out
 #SBATCH --constraint=A
