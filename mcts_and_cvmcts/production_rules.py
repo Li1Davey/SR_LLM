@@ -59,7 +59,7 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     if 'div' in operators_set:
         rules += div_rules
     if 'sin' in operators_set or 'cos' in operators_set:
-        rules += get_sincos_vars_rules(nvars)
+        rules += get_sincos_vars_rules()
     if 'sqrt' in operators_set:
         rules += sqrt_rules
     if 'exp' in operators_set:
@@ -119,16 +119,13 @@ def get_n5_rules(nvars: int, non_terminal_node='A') -> list:
     return rules
 
 
-def get_sincos_vars_rules(nvars: int, non_terminal_node='A') -> list:
-    rules = []
-    for i in range(nvars):
-        rules += get_ith_sincos_rules(i, non_terminal_node)
-    return rules
+def get_sincos_vars_rules( non_terminal_node='A') -> list:
+    return [f'{non_terminal_node}->sin(A)', f'{non_terminal_node}->cos(A)']
 
 
-def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
-    # [A->C*sin(Xi), A->C*cos(Xi)]
-    return [f'{non_terminal_node}->C*sin(X{i})', f'{non_terminal_node}->C*cos(X{i})']
+# def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
+#     # [A->C*sin(Xi), A->C*cos(Xi)]
+#     return [f'{non_terminal_node}->C*sin(X{i})', f'{non_terminal_node}->C*cos(X{i})']
 
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
@@ -142,17 +139,14 @@ def get_ith_n2_rules(xi: int, non_terminal_node='A') -> list:
 
 
 def get_ith_n3_rules(xi: int, non_terminal_node='A') -> list:
-    # [A-> C*Xi]
     return [f'{non_terminal_node}->X{xi}**3', ]
 
 
 def get_ith_n4_rules(xi: int, non_terminal_node='A') -> list:
-    # [A-> C*Xi]
     return [f'{non_terminal_node}->X{xi}**4', ]
 
 
 def get_ith_n5_rules(xi: int, non_terminal_node='A') -> list:
-    # [A-> C*Xi]
     return [f'{non_terminal_node}->X{xi}**5', ]
 
 

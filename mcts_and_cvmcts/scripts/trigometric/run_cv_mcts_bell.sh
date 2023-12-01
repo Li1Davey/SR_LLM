@@ -37,7 +37,7 @@ do
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=2 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="CT${type}${nv}${nt}"
+#SBATCH --job-name="VSR${type}${nv}${nt}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.cv_mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=23:59:00
