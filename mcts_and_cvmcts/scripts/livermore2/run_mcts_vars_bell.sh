@@ -11,7 +11,7 @@ opt=L-BFGS-B
 
 noise_type=normal
 noise_scale=0.0
-metric_name=neg_mse
+metric_name=neg_nmse
 for prog in {1..25};
 do
     eq_name=${type}_Vars${nv}_$prog.in
@@ -31,7 +31,7 @@ do
     sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="McTsVr${nv}_${prog}"
+#SBATCH --job-name="VSR-Var${nv}${prog}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00

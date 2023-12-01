@@ -81,10 +81,10 @@ class Program(object):
                 eq_est = eq
                 for i in range(len(consts)):
                     eq_est = eq_est.replace('c' + str(i), str(consts[i]), 1)
-                eq_est = eq_est.replace('+-', '-')
-                eq_est = eq_est.replace('--', '+')
-                eq_est = eq_est.replace('-+', '-')
-                eq_est = eq_est.replace('++', '+')
+                eq_est = eq_est.replace('+ -', '-')
+                eq_est = eq_est.replace('- -', '+')
+                eq_est = eq_est.replace('- +', '-')
+                eq_est = eq_est.replace('+ +', '+')
                 y_pred = execute(eq_est, data_X.T, input_var_Xs)
                 var_ytrue = np.var(y_true)
                 return -self.evalaute_loss(y_pred, y_true, var_ytrue)
@@ -138,10 +138,10 @@ class Program(object):
                 if abs(est_c) < 1e-5:
                     est_c = 0
                 eq_est = eq_est.replace('c' + str(i), str(est_c), 1)
-            eq_est = eq_est.replace('+-', '-')
-            eq_est = eq_est.replace('--', '+')
-            eq_est = eq_est.replace('-+', '-')
-            eq_est = eq_est.replace('++', '+')
+            eq_est = eq_est.replace('+ -', '-')
+            eq_est = eq_est.replace('- -', '+')
+            eq_est = eq_est.replace('- +', '-')
+            eq_est = eq_est.replace('+ +', '+')
 
             y_pred = execute(eq_est, data_X.T, input_var_Xs)
             var_ytrue = np.var(y_true)
