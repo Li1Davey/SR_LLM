@@ -5,7 +5,7 @@ type=Livermore2
 nv=$1
 
 thispath=$basepath/mcts_and_cvmcts
-data_path=$basepath/data/unencrypted/equations_others
+data_path=$basepath/data/unencrypted/equations_livermore2
 py310=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 opt=L-BFGS-B
 
