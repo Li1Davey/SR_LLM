@@ -172,6 +172,10 @@ if __name__ == '__main__':
 
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
 
+    from equations_livermore2 import *
+
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_livermore2')
+
     # from equation_pde import *
     #
     # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_pde')
