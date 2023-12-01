@@ -167,7 +167,6 @@ def run_cv_mcts(
         print("aug grammars:", aug_grammars)
         print("aug ntn nodes:", aug_nt_nodes)
         print("num_rollouts:", num_rollouts)
-        tracker = classtracker.ClassTracker()
 
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
@@ -180,7 +179,6 @@ def run_cv_mcts(
                           eta=eta,
                           max_opt_iter=200)
         iter_time = time.time()
-        tracker.track_object(mcts_model)
         print_freq = 1
         _, population = mcts_model.MCTS_run(num_iterations[round_idx],
                                             num_rollouts=num_rollouts,
@@ -189,8 +187,7 @@ def run_cv_mcts(
                                             is_first_round=(round_idx == 0),
                                             print_freq=print_freq)
         print("Time usage of round {} is {} mins".format(round_idx, np.round((time.time() - iter_time) / 60, 4)))
-        tracker.create_snapshot()
-        tracker.stats.print_summary()
+
         mcts_model.UCBs = {}
         mcts_model.QN = {}
         print(population)
