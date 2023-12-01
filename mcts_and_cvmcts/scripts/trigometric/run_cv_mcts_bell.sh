@@ -34,7 +34,7 @@ do
     	mkdir -p $log_dir
 	fi
 	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.out"
-	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
+	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=2 <<EOT
 #!/bin/bash -l
 
 #SBATCH --job-name="CT${type}${nv}${nt}"
