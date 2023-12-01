@@ -199,7 +199,7 @@ def run_cv_mcts(
 
         max_module += int(module_grow_step)
         exploration_rate *= 1.2
-        num_rollouts = max(15, int(num_rollouts * 0.5))
+        num_rollouts = max(15, int(num_rollouts * 0.8))
     print("final hof")
     mcts_model.print_hofs(-1, verbose=True)
 
@@ -220,7 +220,7 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
-    num_per_episodes = 15
+    num_per_episodes = 30
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     start = time.time()
     run_cv_mcts(operators_set, opt_num_expr, num_iterations)
