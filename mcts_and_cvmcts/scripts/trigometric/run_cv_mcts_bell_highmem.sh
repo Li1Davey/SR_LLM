@@ -34,14 +34,16 @@ do
     	mkdir -p $log_dir
 	fi
 	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.out"
-	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
-#!/bin/bash -l
-
+	sbatch -A highmem --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
+#!/bin/bash
+#SBATCH -A highmem
+#SBATCH -t 23:59:00
+#SBATCH -N 1
+#SBATCH -n 1
 #SBATCH --job-name="CT${type}${nv}${nt}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.cv_mcts.out
 #SBATCH --constraint=A
-#SBATCH --time=23:59:00
-#SBATCH --mem=10240MB
+#SBATCH --mem=16000MB
 
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
