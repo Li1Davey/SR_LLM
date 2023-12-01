@@ -35,7 +35,7 @@ class Livermore2_Vars2_2(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] * x[1] * (x[0] * sympy.sqrt(x[1] * (6.28 * x[0] * x[1] + x[0] + 7.41 * x[1] ** 3 - 1.4)) + x[0])
+        self.sympy_eq = x[0] * x[1] * x[0] * sympy.sqrt(x[1]) * (6.28 * x[0] * x[1] + x[0] + 7.41 * x[1] ** 3 - 1.4 + x[0])
 
 
 @register_eq_class
