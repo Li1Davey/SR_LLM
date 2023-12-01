@@ -1,7 +1,7 @@
 from pympler import classtracker, asizeof
 import time
 import argparse
-# from memory_profiler import profile
+
 from mcts_model import MCTS
 from production_rules import *
 from utils import create_uniform_generations, create_geometric_generations, create_reward_threshold
@@ -90,8 +90,7 @@ def run_mcts(
     mcts_model.print_hofs(-2, verbose=True)
 
 
-
-def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer):
+def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -108,10 +107,16 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
-
-    start = time.time()
-    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
-    end_time = time.time() - start
+    if track_memory:
+        import memray
+        with memray.Tracker(memray_output_bin):
+            start = time.time()
+            run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+            end_time = time.time() - start
+    else:
+        start = time.time()
+        run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+        end_time = time.time() - start
     print("MCTS {} mins".format(np.round(end_time / 60, 3)))
 
 
@@ -204,8 +209,7 @@ def run_cv_mcts(
     mcts_model.print_hofs(-1, verbose=True)
 
 
-
-def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
+def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -222,9 +226,17 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer):
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
     num_per_episodes = 30
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
-    start = time.time()
-    run_cv_mcts(operators_set, opt_num_expr, num_iterations)
-    end_time = time.time() - start
+    if track_memory:
+        import memray
+        with memray.Tracker(memray_output_bin):
+            start = time.time()
+            run_cv_mcts(operators_set, opt_num_expr, num_iterations)
+            end_time = time.time() - start
+    else:
+        start = time.time()
+        run_cv_mcts(operators_set, opt_num_expr, num_iterations)
+        end_time = time.time() - start
+
     print("CV-MCTS {} mins".format(np.round(end_time / 60, 3)))
 
 
@@ -237,8 +249,11 @@ if __name__ == '__main__':
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
+    parser.add_argument("--memray_output_bin", type=str, help="memory profile")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
+    parser.add_argument("--track_memory", action="store_true",
+                        help="whether run memery track evaluation.")
     parser.add_argument("--cv_mcts", action="store_true",
                         help="whether run normal mcts (cv_mcts=False) or control variable mcts (cv_mcts=True).")
 
@@ -255,7 +270,8 @@ if __name__ == '__main__':
 
     if args.cv_mcts:
         # run control variable experiment based Monte Carlo Tree Search
-        cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
+        cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.memray_output_bin, args.track_memory)
     else:
         # run Monte Carlo Tree Search
-        mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer)
+        mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
+             args.memray_output_bin, args.track_memory)

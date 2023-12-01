@@ -1,10 +1,10 @@
-import torch
 from typing import List
 
 from fractions import Fraction
 import numpy as np
 
 from scibench.file_util import is_float
+
 
 class sciToken(object):
     """
@@ -84,60 +84,6 @@ class HardCodedConstant(sciToken):
 
     def function(self):
         return self.value
-
-
-def LaplacianOp(inputs: np.ndarray, dx=1.0, dy=1.0):
-    '''
-    :param inputs: [batch, iH, iW], torch.float
-    :return: laplacian of inputs
-    '''
-    inputs = torch.from_numpy(inputs).to(torch.double)
-    conv_kernel = torch.tensor([[[[0, 1, 0], [1, -4, 1], [0, 1, 0]]]], dtype=torch.double)
-    unsqueezed = False
-    if inputs.dim() == 2:
-        inputs = torch.unsqueeze(inputs, 0)
-        unsqueezed = True
-    inputs1 = torch.cat([inputs[:, -1:, :], inputs, inputs[:, :1, :]], dim=1)
-    inputs2 = torch.cat([inputs1[:, :, -1:], inputs1, inputs1[:, :, :1]], dim=2)
-    conv_inputs = torch.unsqueeze(inputs2, dim=1)
-    result = torch.nn.functional.conv2d(input=conv_inputs, weight=conv_kernel).squeeze(dim=1) / (dx * dy)
-    if unsqueezed:
-        result = torch.squeeze(result, 0)
-    return result.numpy()
-
-
-def DifferentialOp(inputs: np.ndarray, diffx=False, d=1.0):
-    '''
-    :param inputs: [batch, iH, iW], torch.float
-    :param diffx: if true, compute dc/dx; else, compute dc/dy
-    :return:
-    '''
-    conv_kernel = torch.tensor([[[[-1, 0, 1]]]], dtype=torch.double)
-    unsqueezed = False
-    if inputs.dim() == 2:
-        inputs = torch.unsqueeze(inputs, 0)
-        unsqueezed = True
-    if diffx:
-        inputs = torch.transpose(inputs, -1, -2)
-    inputs1 = torch.cat([inputs[:, :, -1:], inputs, inputs[:, :, :1]], dim=2)
-    conv_inputs = torch.unsqueeze(inputs1, dim=1)
-    result = torch.nn.functional.conv2d(input=conv_inputs, weight=conv_kernel).squeeze(dim=1) / (2 * d)
-    if diffx:
-        result = torch.transpose(result, -1, -2)
-    if unsqueezed:
-        result = torch.squeeze(result, 0)
-    return result
-
-
-def ClampOp(inputs: np.ndarray):
-    """
-    clip the input to [0, 1]
-    :param inputs:
-    :return:
-    """
-    inputs = torch.from_numpy(inputs).to(torch.double)
-    clamped = torch.clamp(inputs, min=0.0, max=1.0)
-    return clamped.numpy()
 
 
 class sciLibrary(object):
@@ -237,9 +183,9 @@ def harmonic(x1):
 # Annotate unprotected ops
 unprotected_ops = [
     # differential operators
-    sciToken(LaplacianOp, "laplacian", arity=1, complexity=4),
-    sciToken(DifferentialOp, "differential", arity=1, complexity=4),
-    sciToken(ClampOp, "clamp", arity=1, complexity=1),
+    # sciToken(LaplacianOp, "laplacian", arity=1, complexity=4),
+    # sciToken(DifferentialOp, "differential", arity=1, complexity=4),
+    # sciToken(ClampOp, "clamp", arity=1, complexity=1),
     # Binary operators
     sciToken(np.add, "add", arity=2, complexity=1),
     sciToken(np.subtract, "sub", arity=2, complexity=1),

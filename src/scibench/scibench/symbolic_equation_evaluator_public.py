@@ -12,7 +12,7 @@ from scibench.program import *
 
 EQUATION_EXTENSION = ".in"
 
-device = torch.device("cpu" if torch.cuda.is_available() else "cpu")
+
 
 
 class Equation_evaluator(object):

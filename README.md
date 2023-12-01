@@ -1,8 +1,8 @@
-# README: SciBench Datasets for Scientific Approach Inspired Symbolic Regression #
+# README: Vertical Symbolic Regression #
 
 ### Directory
 
-### Scibench related
+### Data Oracle
 
 - `data`: the generated dataset. Every file represent a ground-truth expression.
 - `scibench`: the dataoracle API.
