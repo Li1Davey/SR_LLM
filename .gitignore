@@ -8,6 +8,9 @@ data/encrypted/equations_others/*
 data/encrypted/equations_trigometric/*
 data/encrypted/equations_debug_cvgp/*
 
+*log
+*out
+
 # Node artifact files
 node_modules/
 dist/

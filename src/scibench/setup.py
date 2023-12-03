@@ -16,7 +16,6 @@ required = [
     "scipy",
     "click",
     "cryptography",
-    "torch"
 ]
 
 setup(name='scibench',

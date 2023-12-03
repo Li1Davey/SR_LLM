@@ -25,7 +25,7 @@ config = {
 }
 
 
-def run_CVGP(equation_name, metric_name, noise_type, noise_scale):
+def run_CVGP(equation_name, metric_name, noise_type, noise_scale, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -79,18 +79,27 @@ def run_CVGP(equation_name, metric_name, noise_type, noise_scale):
     gp_and_cvgp.ExpandingGeneticProgram.library = protected_library
     gp_and_cvgp.ExpandingGeneticProgram.gp_helper = gp_helper
     cvgp = gp_and_cvgp.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
-                                         tour_size, hof_size, n_generations, nvar)
+                                               tour_size, hof_size, n_generations, nvar)
 
     # run GP
-    cvgp.run()
+    if track_memory:
+        import memray
+        with memray.Tracker(memray_output_bin):
+            start = time.time()
+            cvgp.run()
+            end_time = time.time() - start
 
+    else:
+        start = time.time()
+        cvgp.run()
+        end_time = time.time() - start
     # print
     print('final hof=')
     cvgp.print_hof()
-    print('CVGP time {} mins'.format(np.sum(cvgp.timer_log)/60))
+    print("CVGP {} mins".format(np.round(end_time / 60, 3)))
 
 
-def run_GP(equation_name, metric_name, noise_type, noise_scale):
+def run_GP(equation_name, metric_name, noise_type, noise_scale, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     temp = data_query_oracle.get_vars_range_and_types()
     dataXgen = DataX(temp)
@@ -143,12 +152,21 @@ def run_GP(equation_name, metric_name, noise_type, noise_scale):
     gp = gp_and_cvgp.GeneticProgram(cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations)
 
     # run GP
-    gp.run()
+    if track_memory:
+        import memray
+        with memray.Tracker(memray_output_bin):
+            start = time.time()
+            gp.run()
+            end_time = time.time() - start
 
+    else:
+        start = time.time()
+        gp.run()
+        end_time = time.time() - start
     # print
     print('final hof=')
     gp.print_hof()
-    print('GP time {} mins'.format(np.sum(gp.timer_log)/60))
+    print("GP {} mins".format(np.round(end_time / 60, 3)))
 
 
 if __name__ == '__main__':
@@ -156,8 +174,15 @@ if __name__ == '__main__':
     parser.add_argument("--equation_name", help="the filename of the true program.")
     parser.add_argument("--metric_name", type=str, help="The name of the metric for loss.")
     parser.add_argument("--noise_type", type=str, help="The name of the noises.")
+    parser.add_argument('--optimizer',
+                        nargs='?',
+                        choices=['BFGS', 'L-BFGS-B', 'Nelder-Mead', 'CG', 'basinhopping', 'dual_annealing', 'shgo', 'direct'],
+                        help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--expr_obj_thres", type=float, default=1e-6, help="Threshold")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
+    parser.add_argument("--memray_output_bin", type=str, help="memory profile")
+    parser.add_argument("--track_memory", action="store_true",
+                        help="whether run memery track evaluation.")
     parser.add_argument("--cvgp", action="store_true", help="whether run normal gp (expand_gp=False) or expand_gp.")
 
     args = parser.parse_args()
@@ -171,6 +196,6 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
 
     if args.cvgp:
-        run_CVGP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
+        run_CVGP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.memray_output_bin, args.track_memory)
     else:
-        run_GP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale)
+        run_GP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.memray_output_bin, args.track_memory)

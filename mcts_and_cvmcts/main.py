@@ -249,9 +249,10 @@ if __name__ == '__main__':
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
-    parser.add_argument("--memray_output_bin", type=str, help="memory profile")
+
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
+    parser.add_argument("--memray_output_bin", type=str, help="memory profile")
     parser.add_argument("--track_memory", action="store_true",
                         help="whether run memery track evaluation.")
     parser.add_argument("--cv_mcts", action="store_true",
