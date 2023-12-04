@@ -1,7 +1,7 @@
 #!/usr/bin/zsh
 set -x
 
-basepath=/home/jiangnan/PycharmProjects/scibench
+basepath=/depot/yexiang/apps/jiang631/data/scibench
 py310=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 type=$1
 nv=$2
