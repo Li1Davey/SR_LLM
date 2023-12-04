@@ -39,7 +39,7 @@ for noise_scale in 0.1 0.02 0.04 0.08 0.12 0.14; do
 
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
---metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.out
+--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.out
 EOT
 	done
 done

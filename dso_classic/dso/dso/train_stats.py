@@ -272,15 +272,15 @@ class StatsLogger():
         # First of all, saves any pending buffer
         self.flush_buffers()
 
-        if self.save_all_epoch:
-            #Kept all_r numpy file for backwards compatibility.
-            with open(self.all_r_output_file, 'ab') as f:
-                all_r = np.array(self.all_r, dtype=np.float32)
-                np.save(f, all_r)
+        # if self.save_all_epoch:
+        #     #Kept all_r numpy file for backwards compatibility.
+        #     with open(self.all_r_output_file, 'ab') as f:
+        #         all_r = np.array(self.all_r, dtype=np.float32)
+        #         np.save(f, all_r)
 
-        if self.save_positional_entropy:
-            with open(self.positional_entropy_output_file, 'ab') as f:
-                np.save(f, positional_entropy)
+        # if self.save_positional_entropy:
+        #     with open(self.positional_entropy_output_file, 'ab') as f:
+        #         np.save(f, positional_entropy)
 
         if self.save_top_samples_per_batch > 0:
             df_topsamples = pd.DataFrame(top_samples_per_batch,

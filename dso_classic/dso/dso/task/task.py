@@ -6,6 +6,7 @@ import numpy as np
 from dso.program import Program
 from dso.utils import import_custom_source
 from dso.subroutines import parents_siblings
+from copy import copy
 
 
 class Task(ABC):
@@ -117,15 +118,14 @@ class HierarchicalTask(Task):
     (unselected) nodes.
     """
 
-    OBS_DIM = 4 # action, parent, sibling, dangling
+    OBS_DIM = 4  # action, parent, sibling, dangling
 
     def __init__(self):
         super(Task).__init__()
 
     def get_next_obs(self, actions, obs):
-
-        dangling = obs[:, 3] # Shape of obs: (?, 4)
-        action = actions[:, -1] # Current action
+        dangling = obs[:, 3]  # Shape of obs: (?, 4)
+        action = actions[:, -1]  # Current action
         lib = self.library
 
         # Compute parents and siblings
@@ -138,10 +138,10 @@ class HierarchicalTask(Task):
         # Update dangling with (arity - 1) for each element in action
         dangling += lib.arities[action] - 1
 
-        prior = self.prior(actions, parent, sibling, dangling) # (?, n_choices)
+        prior = self.prior(actions, parent, sibling, dangling)  # (?, n_choices)
 
         # Reset initial values when tree completes
-        if Program.n_objects > 1: # NOTE: do this to save computuational cost only when n_objects > 1
+        if Program.n_objects > 1:  # NOTE: do this to save computuational cost only when n_objects > 1
             finished = (dangling == 0)
             dangling[finished] = 1
             action[finished] = lib.EMPTY_ACTION
@@ -149,7 +149,7 @@ class HierarchicalTask(Task):
             sibling[finished] = lib.EMPTY_SIBLING
             prior[finished] = self.prior.initial_prior()
 
-        next_obs = np.stack([action, parent, sibling, dangling], axis=1) # (?, 4)
+        next_obs = np.stack([action, parent, sibling, dangling], axis=1)  # (?, 4)
         next_obs = next_obs.astype(np.float32)
         return next_obs, prior
 
@@ -206,9 +206,6 @@ def make_task(task_type, **config_task):
     if task_type == "regression":
         from dso.task.regression.regression import RegressionTask
         task_class = RegressionTask
-    elif task_type == "control":
-        from dso.task.control.control import ControlTask
-        task_class = ControlTask
     else:
         # Custom task import
         task_class = import_custom_source(task_type)
@@ -227,5 +224,12 @@ def set_task(config_task):
     protected = config_task["protected"] if "protected" in config_task else False
 
     Program.set_execute(protected)
-    task = make_task(**config_task)
+    temp_config_task = copy(config_task)
+    for key_name in ['batchsize', 'dataX', 'data_query_oracle']:
+        if key_name in temp_config_task:
+            del temp_config_task[key_name]
+
+    task = make_task(**temp_config_task)
     Program.set_task(task)
+    from dso.task.regression.regression import ScibenchRegressTask
+    Program.set_scibench_task(ScibenchRegressTask(config_task['batchsize'], config_task['dataX'], config_task['data_query_oracle']))

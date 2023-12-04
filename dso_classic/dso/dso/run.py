@@ -6,7 +6,8 @@ import time
 import multiprocessing
 from copy import deepcopy
 from datetime import datetime
-
+import random
+import numpy as np
 import click
 
 from dso import DeepSymbolicOptimizer
@@ -22,21 +23,16 @@ def train_dso(config, dataX, data_query_oracle, config_filename):
 
     print("\n== TRAINING SEED {} START ============".format(config["experiment"]["seed"]))
 
-    # For some reason, for the control task, the environment needs to be instantiated
-    # before creating the pool. Otherwise, gym.make() hangs during the pool initializer
-    if config["task"]["task_type"] == "control" and config["training"]["n_cores_batch"] > 1:
-        import gym
-        import dso.task.control  # Registers custom and third-party environments
-        gym.make(config["task"]["env"])
-
     # Train the model
     model = DeepSymbolicOptimizer(deepcopy(config), dataX, data_query_oracle, config_filename)
     start = time.time()
+    model.setup()
     result = model.train()
     result["t"] = time.time() - start
     result.pop("program")
 
     save_path = model.config_experiment["save_path"]
+    print(save_path)
     summary_path = os.path.join(save_path, "summary.csv")
 
     print("== TRAINING SEED {} END ==============".format(config["experiment"]["seed"]))
@@ -69,10 +65,9 @@ def print_summary(config, runs, messages):
 @click.option('--noise_scale', '--ns', default=0.0, type=float, help="")
 @click.option('--runs', '--r', default=1, type=int, help="Number of independent runs with different seeds")
 @click.option('--n_cores_task', '--n', default=1, help="Number of cores to spread out across tasks")
-@click.option('--seed', '--s', default=None, type=int,
-              help="Starting seed (overwrites seed in config), incremented for each independent run")
 @click.option('--benchmark', '--b', default=None, type=str, help="Name of benchmark")
-def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_task, seed, benchmark):
+@click.option('--logdir', '--l', default="log", type=str, help="logdir folder")
+def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_task, benchmark, logdir):
     """Runs DSO in parallel across multiple seeds using multiprocessing."""
 
     messages = []
@@ -82,7 +77,6 @@ def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_
     config = load_config(config_template)
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
-    print("OLD function set:", config['task']['function_set'])
     config['task']['function_set'] = data_query_oracle.operators_set
     print("New function set:", config['task']['function_set'])
 
@@ -92,20 +86,15 @@ def main(config_template, equation_name, noise_type, noise_scale, runs, n_cores_
         # For regression, --b overwrites config["task"]["dataset"]
         if task_type == "regression":
             config["task"]["dataset"] = benchmark
-        # For control, --b overwrites config["task"]["env"]
-        elif task_type == "control":
-            config["task"]["env"] = benchmark
-        else:
-            raise ValueError("--b is not supported for task {}.".format(task_type))
 
     # Overwrite config seed, if specified
-    if seed is not None:
-        if config["experiment"]["seed"] is not None:
-            messages.append(
-                "INFO: Replacing config seed {} with command-line seed {}.".format(
-                    config["experiment"]["seed"], seed))
-        config["experiment"]["seed"] = seed
-
+    seed = int(time.perf_counter() * 10000) % 1000007
+    random.seed(seed)
+    print('random seed=', seed)
+    seed = int(time.perf_counter() * 10000) % 1000007
+    np.random.seed(seed)
+    config["experiment"]["seed"] = seed
+    config["experiment"]["logdir"] = logdir
     # Save starting seed and run command
     config["experiment"]["starting_seed"] = config["experiment"]["seed"]
     config["experiment"]["cmd"] = " ".join(sys.argv)

@@ -502,7 +502,6 @@ def learn(sess, controller, pool, gp_controller, output_file,
     if verbose:
         print("-- RUNNING EPOCHS END ---------------\n")
         print("-- EVALUATION START ----------------")
-        #print("\n[{}] Evaluating the hall of fame...\n".format(get_duration(start_time)))
 
     controller.prior.report_constraint_counts()
 
@@ -514,7 +513,7 @@ def learn(sess, controller, pool, gp_controller, output_file,
         for i, item in enumerate(priority_queue.iter_in_order()):
             print("\nPriority queue entry {}:".format(i))
             p = Program.cache[item[0]]
-            p.print_stats()
+            p.print_stats(verbose=False)
 
     # Close the pool
     if pool is not None:
@@ -523,13 +522,13 @@ def learn(sess, controller, pool, gp_controller, output_file,
     # Return statistics of best Program
     p = p_final if p_final is not None else p_r_best
     result = {
-        "r" : p.r,
+        "r": p.r,
     }
     result.update(p.evaluate)
     result.update({
-        "expression" : repr(p.sympy_expr),
-        "traversal" : repr(p),
-        "program" : p
+        "expression": repr(p.sympy_expr),
+        "traversal": repr(p),
+        "program": p
         })
     result.update(results_add)
 
