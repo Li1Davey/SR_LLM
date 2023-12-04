@@ -22,7 +22,8 @@ required = [
     "progress",
     "tqdm",
     "commentjson",
-    "PyYAML"
+    "PyYAML",
+    "protobuf==3.19"
 ]
 
 
