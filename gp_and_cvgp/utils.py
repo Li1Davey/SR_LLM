@@ -15,6 +15,12 @@ def is_float(s):
         return False
 
 
+def print_prs(prs):
+    for pr in prs:
+        print('        ' + str(pr.__getstate__()), end="\t")
+        pr.print_expression()
+
+
 
 class cached_property(object):
     """

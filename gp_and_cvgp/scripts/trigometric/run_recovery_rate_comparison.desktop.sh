@@ -1,5 +1,5 @@
 #!/usr/bin/zsh
-
+set -x
 basepath=/home/jiangnan/PycharmProjects/scibench/
 py3=/home/jiangnan/miniconda3/bin/python
 
@@ -31,9 +31,9 @@ for prog in {0..9}; do
 	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cvgp \
 		--track_memory \
 		--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.bin \
-		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.cvgp.out
+		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.cvgp.out &
 	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
 		--track_memory \
 		--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.bin \
-		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.out &
+		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.out
 done

@@ -1,3 +1,5 @@
+import os.path
+
 from library import Library
 import argparse
 from program import Program
@@ -6,7 +8,9 @@ from const import ScipyMinimize
 from scibench.symbolic_data_generator import *
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from functions import create_tokens
-import gp_and_cvgp
+from cvgp import ExpandingGeneticProgram
+from gp import GeneticProgram
+from genetic_operations import GPHelper
 
 import numpy as np
 import random
@@ -25,7 +29,7 @@ config = {
 }
 
 
-def run_CVGP(equation_name, metric_name, noise_type, noise_scale, memray_output_bin, track_memory=False):
+def run_CVGP(equation_name, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -61,6 +65,7 @@ def run_CVGP(equation_name, metric_name, noise_type, noise_scale, memray_output_
     Program.set_execute(True)  # protected = True
 
     # set const_optimizer
+    Program.optimizer = optimizer
     Program.const_optimizer = ScipyMinimize()
     Program.noise_std = noise_scale
 
@@ -72,18 +77,20 @@ def run_CVGP(equation_name, metric_name, noise_type, noise_scale, memray_output_
                                               data_query_oracle)
 
     # set gp helper
-    gp_helper = gp_and_cvgp.GPHelper()
+    gp_helper = GPHelper()
     gp_helper.library = protected_library
 
     # set GP
-    gp_and_cvgp.ExpandingGeneticProgram.library = protected_library
-    gp_and_cvgp.ExpandingGeneticProgram.gp_helper = gp_helper
-    cvgp = gp_and_cvgp.ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
+    ExpandingGeneticProgram.library = protected_library
+    ExpandingGeneticProgram.gp_helper = gp_helper
+    cvgp = ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
                                                tour_size, hof_size, n_generations, nvar)
 
     # run GP
     if track_memory:
         import memray
+        if os.path.isfile(memray_output_bin):
+            os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
             start = time.time()
             cvgp.run()
@@ -99,7 +106,7 @@ def run_CVGP(equation_name, metric_name, noise_type, noise_scale, memray_output_
     print("CVGP {} mins".format(np.round(end_time / 60, 3)))
 
 
-def run_GP(equation_name, metric_name, noise_type, noise_scale, memray_output_bin, track_memory=False):
+def run_GP(equation_name, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     temp = data_query_oracle.get_vars_range_and_types()
     dataXgen = DataX(temp)
@@ -133,6 +140,7 @@ def run_GP(equation_name, metric_name, noise_type, noise_scale, memray_output_bi
     Program.set_execute(True)  # protected = True
 
     # set const_optimizer
+    Program.optimizer = optimizer
     Program.const_optimizer = ScipyMinimize()
     Program.noise_std = noise_scale
 
@@ -143,17 +151,19 @@ def run_GP(equation_name, metric_name, noise_type, noise_scale, memray_output_bi
                                               data_query_oracle)
 
     # set gp helper
-    gp_helper = gp_and_cvgp.GPHelper()
+    gp_helper = GPHelper()
     gp_helper.library = protected_library
 
     # set GP
-    gp_and_cvgp.GeneticProgram.library = protected_library
-    gp_and_cvgp.GeneticProgram.gp_helper = gp_helper
-    gp = gp_and_cvgp.GeneticProgram(cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations)
+    GeneticProgram.library = protected_library
+    GeneticProgram.gp_helper = gp_helper
+    gp = GeneticProgram(cxpb, mutpb, maxdepth, population_size, tour_size, hof_size, n_generations)
 
     # run GP
     if track_memory:
         import memray
+        if os.path.isfile(memray_output_bin):
+            os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
             start = time.time()
             gp.run()
@@ -196,6 +206,8 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
 
     if args.cvgp:
-        run_CVGP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.memray_output_bin, args.track_memory)
+        run_CVGP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.memray_output_bin,
+                 args.track_memory)
     else:
-        run_GP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.memray_output_bin, args.track_memory)
+        run_GP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.memray_output_bin,
+               args.track_memory)
