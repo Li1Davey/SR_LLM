@@ -2,7 +2,7 @@ from distutils.core import setup
 import os
 from setuptools import dist
 
-dist.Distribution().fetch_build_eggs(['Cython', 'numpy<=1.19'])
+dist.Distribution().fetch_build_eggs(['Cython', 'numpy'])
 
 import numpy
 from Cython.Build import cythonize
@@ -27,7 +27,7 @@ required = [
 
 
 setup(name='dso',
-      version='1.0_classic',
+      version='1.01',
       description='Deep symbolic optimization.',
       author='LLNL',
       packages=['dso'],
