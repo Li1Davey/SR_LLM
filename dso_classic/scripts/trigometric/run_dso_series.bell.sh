@@ -28,11 +28,12 @@ for prog in {0..9}; do
 		mkdir -p $log_dir
 	fi
 	for bsl in DSR PQT VPG GPMELD; do
-		echo $basepath/dso_classic/config/config_regression_${bsl}.json $datapath/$eq_name
+		echo $basepath/dso_classic/config/config_regression_${bsl}.json
+		echo $datapath/$eq_name
+		echo $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}
 		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=8 <<EOT
 #!/bin/bash -l
-
-#SBATCH --job-name="$bsl-${type}${nv}${nt}""
+#SBATCH --job-name="$bsl-${type}${nv}${nt}"
 #SBATCH --output=$log_dir/${eq_name}.noise_${noise_type}_${noise_scale}.${bsl}.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
