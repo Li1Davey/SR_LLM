@@ -2,6 +2,7 @@
 set -x
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
+scatch_basepath=/scratch/bell/jiang631/data/scibench
 py310=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 type=$1
 nv=$2
@@ -22,6 +23,11 @@ for prog in {0..9}; do
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
+	scratch_dir=$scatch_basepath/result/${type}_nv${nv}_nt${nt}/$(date +%F)
+	if [ ! -d "$scratch_dir" ]; then
+		echo "create dir: $scratch_dir"
+		mkdir -p $scratch_dir
+	fi
 	log_dir=$basepath/log/$(date +%F)
 	if [ ! -d "$log_dir" ]; then
 		echo "create dir: $log_dir"
@@ -40,8 +46,9 @@ for prog in {0..9}; do
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
 				--track_memory \
-				--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.bin \
+				--memray_output_bin $scratch_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.bin \
         		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.out
+memray stats $scratch_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.bin --json
 EOT
 
 sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
@@ -56,7 +63,8 @@ sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt  \
 				--track_memory \
-				--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.bin \
+				--memray_output_bin $scratch_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.bin \
         		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.out
+memray stats $scratch_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.mcts.bin --json
 EOT
 done
