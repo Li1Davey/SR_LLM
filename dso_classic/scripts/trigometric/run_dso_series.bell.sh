@@ -33,7 +33,7 @@ for prog in {0..9}; do
 		echo $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}
 		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=8 <<EOT
 #!/bin/bash -l
-#SBATCH --job-name="$bsl-${type}${nv}${nt}"
+#SBATCH --job-name="$bsl-${type}${nv}${nt}${prog}"
 #SBATCH --output=$log_dir/${eq_name}.noise_${noise_type}_${noise_scale}.${bsl}.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
