@@ -36,30 +36,28 @@ for prog in {0..9}; do
 
 hostname
 
-$py310 $thispath/try_gp_xyx.py --equation_name $data_path/$eq_name \
-			--track_memory \
-				--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.bin \
+$py310 $thispath/try_gp_xyx.py --equation_name $data_path/$eq_name  --optimizer $opt			--track_memory \
+				--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.gp.bin \
         		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
+        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt$opt.gp.out
 
 EOT
 
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="VSR-GP${type}${nv}${nt}_${prog}"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.cvgp.out
+#SBATCH --job-name="VSRGP${type}${nv}${nt}_${prog}"
+#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt$opt.cvgp.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
 #SBATCH --mem=4GB
 
 hostname
 
-$py310 $thispath/try_gp_xyx.py --equation_name $data_path/$eq_name --cvgp \
-		--track_memory \
-		--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.cvgp.bin \
+$py310 $thispath/try_gp_xyx.py --equation_name $data_path/$eq_name --cvgp --optimizer $opt		--track_memory \
+		--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cvgp.bin \
         --metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cvgp.out
+        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cvgp.out
 
 EOT
 
