@@ -6,7 +6,7 @@ from sympy import Symbol
 from sympy.parsing.sympy_parser import parse_expr
 from production_rules import production_rules_to_expr
 from program import execute
-from utils import pretty_print_expr, expression_to_template
+from utils import pretty_print_expr, expression_to_template, nth_repl
 
 
 class MCTS(object):
@@ -86,7 +86,7 @@ class MCTS(object):
         else:
             return state, ntn, 0, False, None
 
-    def freeze_equations(self, list_of_grammars, opt_num_expr, stand_alone_constants):
+    def freeze_equations(self, list_of_grammars, opt_num_expr, stand_alone_constants, next_free_variable):
         # decide summary constants and stand alone constants.
         print("---------Freeze Equation----------")
         freezed_exprs = []
@@ -128,11 +128,43 @@ class MCTS(object):
                 else:
                     print(f'c{ci}  is a summary constant')
                     is_summary_constants[ci] = 1
+            ####
+            # summary constant vs controlled variable
+            ####
+            for ci in range(num_changing_consts):
+                if is_summary_constants[ci] != 1:
+                    continue
+                print(expr_template)
+                new_expr_template = nth_repl(copy.copy(expr_template), 'C', str(optimized_constants[-1, ci]), ci + 1)
+                print(new_expr_template, ci, np.mean(optimized_constants[:, ci]))
+                # optimized_constants = []
+                optimized_cond_obj = []
+                print('expr template is"', new_expr_template)
+                for _ in range(opt_num_expr * 3):
+                    self.task.rand_draw_X_fixed_with_index(next_free_variable)
+                    y_true = self.task.evaluate()
+                    _, eq, opt_consts, opt_obj = self.program.optimize(new_expr_template,
+                                                                       len(state.split(',')),
+                                                                       self.task.X,
+                                                                       y_true,
+                                                                       self.input_var_Xs,
+                                                                       eta=self.eta,
+                                                                       max_opt_iter=1000)
+                    ##
+                    # optimized_constants.append(opt_consts)
+                    optimized_cond_obj.append(opt_obj)
+                if np.max(optimized_cond_obj) <= self.expr_obj_thres:
+                    print(f'summary constant c{ci} will still be a constant in the next round')
+                    is_summary_constants[ci] = 3
+                else:
+                    print(f'summary constant c{ci} will be a summary constant in the next round')
+
+            ####
             cidx = 0
             new_expr_template = 'B->'
             for ti in expr_template:
                 if ti == 'C' and is_summary_constants[cidx] == 1:
-                    # summary constant
+                    # real summary constant in the next round
                     new_expr_template += '(A)'
                     cidx += 1
                 elif ti == "C" and is_summary_constants[cidx] == 0:
@@ -145,32 +177,35 @@ class MCTS(object):
                         new_stand_alone_constants.append(est_c)
                     cidx += 1
                 elif ti == 'C' and is_summary_constants[cidx] == 2:
+                    # noise values
                     new_expr_template += '0.0'
                     cidx += 1
-                else:
-                    new_expr_template += ti
-            freezed_exprs.append(new_expr_template)
-            aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
-            expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
-            countA = expri.count('(A)')
-        else:
-            print("No available expression is found....trying to add the current best guessed...")
-            state, _, expr = list_of_grammars[-1]
-            expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
-            cidx = 0
-            new_expr_template = 'B->'
-            for ti in expr_template:
-                if ti == 'C':
-                    # summary constant
-                    new_expr_template += '(A)'
+                elif ti == 'C' and is_summary_constants[cidx] == 3:
+                    # is a summary constant but will still be constant in the next round
+                    new_expr_template += 'C'
                     cidx += 1
                 else:
                     new_expr_template += ti
             freezed_exprs.append(new_expr_template)
             aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
-            expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
-            countA = expri.count('(A)')
+            return freezed_exprs, aug_nt_nodes, new_stand_alone_constants
 
+        print("No available expression is found....trying to add the current best guessed...")
+        state, _, expr = list_of_grammars[-1]
+        expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
+        cidx = 0
+        new_expr_template = 'B->'
+        for ti in expr_template:
+            if ti == 'C':
+                # summary constant
+                new_expr_template += '(A)'
+                cidx += 1
+            else:
+                new_expr_template += ti
+        freezed_exprs.append(new_expr_template)
+        aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+        expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
+        countA = expri.count('(A)')
         # diversify the number of A
         new_freezed_exprs = [expri, ]
         new_aug_nt_nodes = [['A', ] * countA, ]

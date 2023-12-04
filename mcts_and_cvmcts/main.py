@@ -1,12 +1,12 @@
-from pympler import classtracker, asizeof
+from pympler import classtracker
 import time
 import argparse
 
 from mcts_model import MCTS
-from production_rules import *
+
 from utils import create_uniform_generations, create_geometric_generations, create_reward_threshold
 import random
-
+import numpy as np
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
@@ -80,17 +80,14 @@ def run_mcts(
         for gi in aug_grammars:
             print(gi)
 
-        # if best_modules[0][1] >= 1 - norm_threshold:
-        #     print("find the ground-truth expression, whole program terminates...")
-        #     break
-
         max_module += module_grow_step
         exploration_rate *= 1.2
     print("final hof")
     mcts_model.print_hofs(-2, verbose=True)
 
 
-def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
+def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer,
+         production_rules_mode, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -104,7 +101,10 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
-
+    if production_rules_mode == 'trigometric':
+        from production_rules_trigometric import get_var_i_production_rules, get_production_rules
+    elif production_rules_mode == 'livermore2':
+        from production_rules import get_var_i_production_rules, get_production_rules
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
     if track_memory:
@@ -123,6 +123,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 def run_cv_mcts(
         operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=40,
         max_len=30, eta=0.999, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
+        production_rules_mode='trigometric'
 ):
     """
     num_run: number of iterations.
@@ -134,6 +135,10 @@ def run_cv_mcts(
     """
 
     # define production rules and non-terminal nodes.
+    if production_rules_mode == 'trigometric':
+        from production_rules_trigometric import get_var_i_production_rules, get_production_rules
+    elif production_rules_mode == 'livermore2':
+        from production_rules import get_var_i_production_rules, get_production_rules
     production_rules = get_production_rules(0, operators_set)
     print("The production rules are:", production_rules)
     grammars = production_rules
@@ -154,18 +159,7 @@ def run_cv_mcts(
         MCTS.program.set_vf(round_idx)
         MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
         if round_idx < len(num_iterations):
-            grammars += get_ith_var_rules(round_idx)
-            if 'inv' in operators_set:
-                grammars += get_ith_inv_rules(round_idx, non_terminal_node='A')
-            if 'n2' in operators_set:
-                grammars += get_ith_n2_rules(round_idx)
-            if 'n3' in operators_set:
-                grammars += get_ith_n3_rules(round_idx)
-            if 'n4' in operators_set:
-                grammars += get_ith_n4_rules(round_idx)
-            if 'n5' in operators_set:
-                grammars += get_ith_n5_rules(round_idx)
-
+            grammars += get_var_i_production_rules(round_idx, operators_set)
         print("grammars:", grammars)
         print("aug grammars:", aug_grammars)
         print("aug ntn nodes:", aug_nt_nodes)
@@ -189,6 +183,7 @@ def run_cv_mcts(
                                             verbose=True,
                                             is_first_round=(round_idx == 0),
                                             print_freq=print_freq)
+
         print("Time usage of round {} is {} mins".format(round_idx, np.round((time.time() - iter_time) / 60, 4)))
 
         mcts_model.UCBs = {}
@@ -196,7 +191,10 @@ def run_cv_mcts(
         print(population)
         if round_idx < len(num_iterations) - 1:
             # the last round does not need freeze
-            aug_grammars, aug_nt_nodes, stand_alone_constants = mcts_model.freeze_equations(population, opt_num_expr, stand_alone_constants)
+            aug_grammars, aug_nt_nodes, stand_alone_constants = mcts_model.freeze_equations(population,
+                                                                                            opt_num_expr,
+                                                                                            stand_alone_constants,
+                                                                                            round_idx + 1)
             print("AUG grammars")
             print(aug_grammars)
 
@@ -209,7 +207,9 @@ def run_cv_mcts(
     mcts_model.print_hofs(-1, verbose=True)
 
 
-def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
+def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer,
+            production_rules_mode,
+            memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -230,11 +230,11 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer, memr
         import memray
         with memray.Tracker(memray_output_bin):
             start = time.time()
-            run_cv_mcts(operators_set, opt_num_expr, num_iterations)
+            run_cv_mcts(operators_set, opt_num_expr, num_iterations, production_rules_mode=production_rules_mode)
             end_time = time.time() - start
     else:
         start = time.time()
-        run_cv_mcts(operators_set, opt_num_expr, num_iterations)
+        run_cv_mcts(operators_set, opt_num_expr, num_iterations, production_rules_mode=production_rules_mode)
         end_time = time.time() - start
 
     print("CV-MCTS {} mins".format(np.round(end_time / 60, 3)))
@@ -253,6 +253,7 @@ if __name__ == '__main__':
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
     parser.add_argument("--memray_output_bin", type=str, help="memory profile")
+    parser.add_argument("--production_rule_mode", type=str, default='trigometric', help="production rules")
     parser.add_argument("--track_memory", action="store_true",
                         help="whether run memery track evaluation.")
     parser.add_argument("--cv_mcts", action="store_true",
@@ -271,8 +272,12 @@ if __name__ == '__main__':
 
     if args.cv_mcts:
         # run control variable experiment based Monte Carlo Tree Search
-        cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.memray_output_bin, args.track_memory)
+        cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
+                args.production_rule_mode,
+                args.memray_output_bin,
+                args.track_memory)
     else:
         # run Monte Carlo Tree Search
         mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
+             args.production_rule_mode,
              args.memray_output_bin, args.track_memory)

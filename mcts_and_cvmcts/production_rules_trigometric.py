@@ -59,7 +59,7 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     if 'div' in operators_set:
         rules += div_rules
     if 'sin' in operators_set or 'cos' in operators_set:
-        rules += get_sincos_vars_rules()
+        rules += get_sincos_vars_rules(nvars)
     if 'sqrt' in operators_set:
         rules += sqrt_rules
     if 'exp' in operators_set:
@@ -76,6 +76,22 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
         rules += get_n5_rules(nvars)
     return rules
 
+
+def get_var_i_production_rules(round_idx, operators_set):
+    grammars=get_ith_var_rules(round_idx)
+    if 'sin' in operators_set or 'cos' in operators_set:
+        grammars += get_ith_sincos_rules(round_idx, non_terminal_node='A')
+    if 'inv' in operators_set:
+        grammars += get_ith_inv_rules(round_idx, non_terminal_node='A')
+    if 'n2' in operators_set:
+        grammars += get_ith_n2_rules(round_idx)
+    if 'n3' in operators_set:
+        grammars += get_ith_n3_rules(round_idx)
+    if 'n4' in operators_set:
+        grammars += get_ith_n4_rules(round_idx)
+    if 'n5' in operators_set:
+        grammars += get_ith_n5_rules(round_idx)
+    return grammars
 
 def get_inv_rules(nvars: int, non_terminal_node='A') -> list:
     rules = []
@@ -119,32 +135,21 @@ def get_n5_rules(nvars: int, non_terminal_node='A') -> list:
     return rules
 
 
-def get_sincos_vars_rules(non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->sin(A)', f'{non_terminal_node}->cos(A)']
+def get_sincos_vars_rules(nvars:int, non_terminal_node='A') -> list:
+    rules = []
+    for i in range(nvars):
+        rules += get_ith_sincos_rules(i, non_terminal_node)
+    return rules
 
 
-# def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
-#     # [A->C*sin(Xi), A->C*cos(Xi)]
-#     return [f'{non_terminal_node}->C*sin(X{i})', f'{non_terminal_node}->C*cos(X{i})']
-
-def get_var_i_production_rules(round_idx, operators_set):
-    grammars = get_ith_var_rules(round_idx)
-    if 'inv' in operators_set:
-        grammars += get_ith_inv_rules(round_idx, non_terminal_node='A')
-    if 'n2' in operators_set:
-        grammars += get_ith_n2_rules(round_idx)
-    if 'n3' in operators_set:
-        grammars += get_ith_n3_rules(round_idx)
-    if 'n4' in operators_set:
-        grammars += get_ith_n4_rules(round_idx)
-    if 'n5' in operators_set:
-        grammars += get_ith_n5_rules(round_idx)
-    return grammars
+def get_ith_sincos_rules(i: int, non_terminal_node='A') -> list:
+    # [A->C*sin(Xi), A->C*cos(Xi)]
+    return [f'{non_terminal_node}->C*sin(X{i})', f'{non_terminal_node}->C*cos(X{i})']
 
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     # [A-> C*Xi]
-    return [f'{non_terminal_node}->X{xi}', ]
+    return [f'{non_terminal_node}->C*X{xi}', ]
 
 
 def get_ith_n2_rules(xi: int, non_terminal_node='A') -> list:

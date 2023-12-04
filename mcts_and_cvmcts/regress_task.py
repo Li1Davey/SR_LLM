@@ -36,6 +36,12 @@ class RegressTask(object):
     def rand_draw_X_fixed(self):
         self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
 
+    def rand_draw_X_fixed_with_index(self, xi):
+        X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
+        self.X_fixed[xi] = X_fixed[xi]
+        if len(self.fixed_column):
+            self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
+
     def rand_draw_data_with_X_fixed(self):
         self.X = self.dataX.randn(sample_size=self.batchsize).T
         if len(self.fixed_column):
