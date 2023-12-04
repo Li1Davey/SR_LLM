@@ -54,17 +54,19 @@ class DeepSymbolicOptimizer(object):
         self.data_query_oracle = data_query_oracle
         print(f'self.dataX {self.dataX}, self.data_query_oracle: {self.data_query_oracle}')
         print('generate dataset!')
+
         self.generate_and_set_Xy_pairs()
 
     def generate_and_set_Xy_pairs(self):
         self.n_samples, self.batch_size = self.config_training['n_samples'], self.config_training['batch_size']
+        self.config_task['batchsize'] = self.config_training['batch_size']
+        self.config_task['dataX'] = self.dataX
+        self.config_task['data_query_oracle'] = self.data_query_oracle
         X_train = self.dataX.randn(sample_size=self.n_samples).T
         y_train = self.data_query_oracle.evaluate(X_train)
         X_test = self.dataX.randn(sample_size=self.batch_size).T
         y_test = self.data_query_oracle.evaluate(X_test)
         y_test_noiseless = y_test
-        # print("_".join(['regression', self.data_query_oracle._get_eq_name().split('/')[-1], self.data_query_oracle.noise_type,
-        #                       str(self.data_query_oracle.noise_scale)])
         self.config_task['dataset'] = {
             'X_train': X_train,
             'y_train': y_train,
@@ -78,7 +80,6 @@ class DeepSymbolicOptimizer(object):
         }
 
     def setup(self):
-
         # Clear the cache and reset the compute graph
         Program.clear_cache()
         tf.reset_default_graph()
@@ -100,7 +101,7 @@ class DeepSymbolicOptimizer(object):
 
     def train(self):
         # Setup the model
-        self.setup()
+
 
         # Train the model
         result = {"seed": self.config_experiment["seed"]}  # Seed listed first
@@ -129,7 +130,7 @@ class DeepSymbolicOptimizer(object):
         if self.output_file is not None:
             path = os.path.join(self.config_experiment["save_path"],
                                 "config.json")
-            # With run.py, config.json may already exist. To avoid race
+            # With main.py, config.json may already exist. To avoid race
             # conditions, only record the starting seed. Use a backup seed
             # in case this worker's seed differs.
             backup_seed = self.config_experiment["seed"]
@@ -138,7 +139,9 @@ class DeepSymbolicOptimizer(object):
                     self.config_experiment["seed"] = self.config_experiment["starting_seed"]
                     del self.config_experiment["starting_seed"]
                 with open(path, 'w') as f:
-                    cp_config = copy.deepcopy(self.config)
+                    cp_config = copy.copy(self.config)
+                    cp_config['task']['dataX'] = 'dataX'
+                    cp_config['task']['data_query_oracle'] = 'data_query_oracle'
                     cp_config['task']['dataset'] = 'symbolic_equation_evaluator'
                     json.dump(cp_config, f, indent=3)
             self.config_experiment["seed"] = backup_seed
@@ -159,7 +162,7 @@ class DeepSymbolicOptimizer(object):
 
         # Shift the seed based on task name
         # This ensures a specified seed doesn't have similarities across different task names
-        print("Program.task.name",Program.task.name)
+        print("Program.task.name", Program.task.name)
         task_name = Program.task.name
         shifted_seed = seed + zlib.adler32(task_name.encode("utf-8"))
 
@@ -229,7 +232,7 @@ class DeepSymbolicOptimizer(object):
             print("WARNING: logdir not provided. Results will not be saved to file.")
             return None
 
-        # When using run.py, timestamp is already generated
+        # When using main.py, timestamp is already generated
         timestamp = self.config_experiment.get("timestamp")
         if timestamp is None:
             timestamp = datetime.now().strftime("%Y-%m-%d-%H%M%S")
@@ -237,9 +240,7 @@ class DeepSymbolicOptimizer(object):
 
         # Generate save path
         task_name = Program.task.name
-        save_path = os.path.join(
-            self.config_experiment["logdir"],
-            '_'.join([task_name, timestamp]))
+        save_path = self.config_experiment["logdir"]+"_log/"
         self.config_experiment["task_name"] = task_name
         self.config_experiment["save_path"] = save_path
         os.makedirs(save_path, exist_ok=True)

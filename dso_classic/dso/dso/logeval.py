@@ -188,10 +188,10 @@ class LogEval():
             "{} - {}".format(self.PLOT_HELPER[log_type]["name"], self.config["experiment"]["task_name"]),
             fontsize=14)
         plt.tight_layout()
-        if save_plots:
-            save_path = os.path.join(self.save_path, "dso_{}_plot_{}.png".format(self.config["experiment"]["task_name"], log_type))
-            print("  Saving {} plot to {}".format(self.PLOT_HELPER[log_type]["name"], save_path))
-            plt.savefig(save_path)
+        # if save_plots:
+        #     save_path = os.path.join(self.save_path, "dso_{}_plot_{}.png".format(self.config["experiment"]["task_name"], log_type))
+        #     print("  Saving {} plot to {}".format(self.PLOT_HELPER[log_type]["name"], save_path))
+        #     plt.savefig(save_path)
         if show_plots:
             plt.show()
         plt.close()

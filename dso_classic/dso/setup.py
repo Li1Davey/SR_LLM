@@ -10,14 +10,13 @@ from Cython.Build import cythonize
 required = [
     "pytest",
     "cython",
-    "numpy<=1.19",
-    "tensorflow==1.14",
-    "numba==0.53.1",
+    "numpy",
+    "tensorflow==1.15.4",
+    "numba",
     "sympy",
     "pandas",
     "scikit-learn",
     "click",
-    "deap",
     "pathos",
     "seaborn",
     "progress",
@@ -26,16 +25,6 @@ required = [
     "PyYAML"
 ]
 
-extras = {
-    "control": [
-        "mpi4py",
-        "gym[box2d]==0.15.4",
-        "pybullet",
-        "stable-baselines[mpi]==2.10.0"
-    ],
-    "regression": []
-}
-extras['all'] = list(set([item for group in extras.values() for item in group]))
 
 setup(name='dso',
       version='1.0_classic',
@@ -45,6 +34,5 @@ setup(name='dso',
       setup_requires=["numpy", "Cython"],
       ext_modules=cythonize([os.path.join('dso', 'cyfunc.pyx')]),
       include_dirs=[numpy.get_include()],
-      install_requires=required,
-      extras_require=extras
+      install_requires=required
       )

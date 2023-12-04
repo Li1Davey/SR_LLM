@@ -1,10 +1,50 @@
 import numpy as np
 import pandas as pd
+import scipy
 
 from dso.task import HierarchicalTask
 from dso.library import Library
 from dso.functions import create_tokens
-from dso.task.regression.dataset import BenchmarkDataset
+
+
+
+class ScibenchRegressTask(object):
+    """
+    used to handle input data 'X' for querying the data oracle.
+    also used to set the controlled variables in input data `X`
+    """
+
+    def __init__(self, batchsize, dataX, data_query_oracle):
+        """
+            batchsize: batch size
+            allowed_input: 1 if the input variable is free. 0 if the input variable is controlled.
+            dataX: generate the input data.
+        """
+        self.batchsize = batchsize
+        self.dataX = dataX
+        self.data_query_oracle = data_query_oracle
+
+    def rand_draw_X_non_fixed(self):
+        self.X = self.dataX.randn(sample_size=self.batchsize).T
+
+    def rand_draw_data_with_X_fixed(self):
+        self.X = self.dataX.randn(sample_size=self.batchsize).T
+
+    def evaluate(self):
+        return self.data_query_oracle.evaluate(self.X)
+
+    def reward_function(self, p):
+        y_hat = p.execute(self.X)
+        return self.data_query_oracle._evaluate_loss(self.X, y_hat)
+
+    def print_reward_function_all_metrics(self, p):
+        """used for print the error for all metrics between the predicted program `p` and true program."""
+        y_hat = p.execute(self.X)
+        dict_of_result = self.data_query_oracle._evaluate_all_losses(self.X, y_hat)
+        print('-' * 30)
+        for mertic_name in dict_of_result:
+            print(f"{mertic_name} {dict_of_result[mertic_name]}")
+        print('-' * 30)
 
 
 class RegressionTask(HierarchicalTask):
@@ -90,15 +130,6 @@ class RegressionTask(HierarchicalTask):
             self.y_test_noiseless = dataset['y_test_noiseless']
             self.name = dataset['name']
 
-            # For benchmarks, always use the benchmark function_set.
-            # Issue a warning if the user tried to supply a different one.
-            # if function_set is not None and function_set != benchmark.function_set:
-            #     print("WARNING: function_set provided when running benchmark "
-            #           "problem. The provided function_set will be ignored; the "
-            #           "benchmark function_set will be used instead.\nProvided "
-            #           "function_set:\n  {}\nBenchmark function_set:\n  {}."
-            #           .format(function_set, benchmark.function_set))
-            # function_set = benchmark.function_set
 
         # Case 3: Dataset filename
         elif isinstance(dataset, str) and dataset.endswith("csv"):

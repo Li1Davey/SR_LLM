@@ -13,6 +13,7 @@ opt=L-BFGS-B
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
+rules=trigometric
 for prog in {0..9}; do
 	eq_name=${type}_nv${nv}_nt${nt}_prog_${prog}.in
 	echo "submit $eq_name"
@@ -38,6 +39,7 @@ for prog in {0..9}; do
 
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
+				--production_rule_mode $rules\
         		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.out
 EOT
 done

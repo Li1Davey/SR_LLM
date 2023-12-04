@@ -1,6 +1,7 @@
 from pympler import classtracker
 import time
 import argparse
+import os
 
 from mcts_model import MCTS
 
@@ -109,6 +110,8 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     print("The production rules are:", production_rules)
     if track_memory:
         import memray
+        if os.path.isfile(memray_output_bin):
+            os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
             start = time.time()
             run_mcts(production_rules=production_rules, num_episodes=num_episodes)
@@ -228,6 +231,8 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer,
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     if track_memory:
         import memray
+        if os.path.isfile(memray_output_bin):
+            os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
             start = time.time()
             run_cv_mcts(operators_set, opt_num_expr, num_iterations, production_rules_mode=production_rules_mode)

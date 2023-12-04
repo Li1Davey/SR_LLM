@@ -3,6 +3,7 @@
 # Learn more about .gitignore:
 #     https://www.atlassian.com/git/tutorials/saving-changes/gitignore
 plots/*.pdf
+data/encrypted/*
 data/encrypted/equations_feynman/*
 data/encrypted/equations_others/*
 data/encrypted/equations_trigometric/*
@@ -10,6 +11,9 @@ data/encrypted/equations_debug_cvgp/*
 
 *log
 *out
+
+racing_cvgp/*
+cvDSO/*
 
 # Node artifact files
 node_modules/

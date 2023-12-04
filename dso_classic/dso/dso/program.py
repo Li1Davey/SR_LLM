@@ -213,6 +213,7 @@ class Program(object):
 
     # Static variables
     task = None             # Task
+    scibench_task = None     # Task for printing evaluation metrics
     library = None          # Library
     const_optimizer = None  # Function to optimize constants
     cache = {}
@@ -412,6 +413,10 @@ class Program(object):
         Program.task = task
         Program.library = task.library
 
+    @classmethod
+    def set_scibench_task(cls, scibench_task):
+        Program.scibench_task=scibench_task
+
 
     @classmethod
     def set_const_optimizer(cls, name, **kwargs):
@@ -572,10 +577,10 @@ class Program(object):
 
     def pretty(self):
         """Returns pretty printed string of the program"""
-        return [pretty(self.sympy_expr[i]) for i in range(Program.n_objects)] 
+        return [pretty(self.sympy_expr[i], num_columns=10_000) for i in range(Program.n_objects)]
 
 
-    def print_stats(self):
+    def print_stats(self, verbose=True):
         """Prints the statistics of the program
         
             We will print the most honest reward possible when using validation.
@@ -587,7 +592,9 @@ class Program(object):
         print("\tOriginally on Policy: {}".format(self.originally_on_policy))
         print("\tInvalid: {}".format(self.invalid))
         print("\tTraversal: {}".format(self))
-
+        if verbose:
+            self.scibench_task.rand_draw_data_with_X_fixed()
+            self.scibench_task.print_reward_function_all_metrics(self)
         if Program.n_objects == 1:
             print("\tExpression:")
             print("{}\n".format(indent(self.pretty()[0], '\t  ')))

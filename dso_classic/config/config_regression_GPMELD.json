@@ -13,7 +13,7 @@
       // supported functions. Note "const" will add placeholder constants that
       // will be optimized within the training loop. This will considerably
       // increase runtime.
-      "function_set": ["add", "sub", "mul", "div", "inv", "const"],
+      "function_set": ["scibench.function_set"],
 
       // Metric to be used for the reward function. See regression.py for
       // supported metrics.
@@ -55,14 +55,14 @@
       "p_crossover" : 0.5,
       "p_mutate" : 0.5,
       "tournament_size" : 5,
-      "train_n" : 25,
+      "train_n" : 20,
       "mutate_tree_max" : 3
    },
 
    // Only the key training hyperparameters are listed here. See
    // config_common.json for the full list.
    "training" : {
-      "n_samples":15000,
+      "n_samples":51200,
       "batch_size" : 1024,
       "epsilon" : 0.02,
       // <R> is the sample average _after_ epsilon sub-sampling and  R_e is the (1-epsilon)-quantile estimate.
