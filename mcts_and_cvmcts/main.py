@@ -211,7 +211,7 @@ def run_cv_mcts(
     mcts_model.print_hofs(-1, verbose=True)
 
 
-def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer,
+def cv_mcts(equation_name, num_per_episodes, metric_name, noise_type, noise_scale, optimizer,
             production_rules_mode,
             memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
@@ -228,7 +228,6 @@ def cv_mcts(equation_name, metric_name, noise_type, noise_scale, optimizer,
                             data_query_oracle)
     MCTS.program = Program(nvar, optimizer)
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
-    num_per_episodes = 30
     num_iterations = create_uniform_generations(num_per_episodes, nvar)
     if track_memory:
         import memray
@@ -255,7 +254,7 @@ if __name__ == '__main__':
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
-
+    parser.add_argument("--num_per_episodes", type=int, default=30, help="the number of episode for MCTS.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
     parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
     parser.add_argument("--memray_output_bin", type=str, help="memory profile")
@@ -278,7 +277,7 @@ if __name__ == '__main__':
 
     if args.cv_mcts:
         # run control variable experiment based Monte Carlo Tree Search
-        cv_mcts(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
+        cv_mcts(args.equation_name,  args.num_per_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
                 args.production_rule_mode,
                 args.memray_output_bin,
                 args.track_memory)

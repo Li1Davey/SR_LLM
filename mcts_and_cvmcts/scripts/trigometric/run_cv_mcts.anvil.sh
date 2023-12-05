@@ -5,6 +5,7 @@ py310=/home/x-jiang631/workspace/miniconda3/envs/py310/bin/python3
 type=$1
 nv=$2
 nt=$3
+num_per_episodes=$4
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_trigometric
@@ -35,11 +36,11 @@ for prog in {0..9}; do
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.cv_mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=24:00:00
-#SBATCH --mem=2GB
+
 
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
-				--production_rule_mode $rules\
-        		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.out
+				--num_per_episodes $num_per_episodes \
+				--production_rule_mode $rules        		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.out
 EOT
 done
