@@ -51,7 +51,7 @@ class MCTS(object):
         # Get index of all possible production rules starting with a given node
         valid_rules=[]
         for i, x in enumerate(self.grammars):
-            if x.startswith(Node) and np.sum([y in x[3:] for y in self.aug_nt_nodes]):
+            if x.startswith(Node) and np.sum([y in x[3:] for y in self.non_terminal_nodes]):
                 valid_rules.append(i)
         return valid_rules
         # return [self.grammars.index(x) for x in self.grammars if x.startswith(Node) ]

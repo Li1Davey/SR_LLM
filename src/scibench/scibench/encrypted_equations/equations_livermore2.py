@@ -141,7 +141,7 @@ class Livermore2_Vars2_11(KnownEquation):
 @register_eq_class
 class Livermore2_Vars2_12(KnownEquation):
     _eq_name = 'Livermore2_Vars2_12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'log', 'exp', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'n2','n3', 'log', 'exp', 'const']
 
     def __init__(self):
         super().__init__(num_vars=2)
