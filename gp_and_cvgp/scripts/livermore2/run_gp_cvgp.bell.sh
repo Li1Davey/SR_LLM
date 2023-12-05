@@ -6,7 +6,7 @@ nv=$1
 
 thispath=$basepath/gp_and_cvgp
 data_path=$basepath/data/unencrypted/equations_livermore2
-py3615=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
+py3=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 
 noise_type=normal
 noise_scale=0.0
