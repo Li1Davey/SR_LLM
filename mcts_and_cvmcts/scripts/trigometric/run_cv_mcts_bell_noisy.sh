@@ -8,6 +8,7 @@ py310=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 type=$1
 nv=$2
 nt=$3
+num_per_episodes=$4
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_trigometric

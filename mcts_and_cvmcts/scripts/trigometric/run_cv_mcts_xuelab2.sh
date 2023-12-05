@@ -6,6 +6,7 @@ py3=/home/jiang631/miniconda3/envs/py310/bin/python3.10
 type=$1
 nv=$2
 nt=$3
+num_per_episodes=$4
 
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_trigometric
@@ -24,6 +25,7 @@ for prog in {0..9}; do
 	fi
 	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv.mcts.out"
 	nohup timeout 24h $py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
+		--num_per_episodes $num_per_episodes \
 		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
 		>$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt$opt.cv_mcts.out &
 
