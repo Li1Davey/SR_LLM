@@ -4,13 +4,13 @@ basepath=/depot/yexiang/apps/jiang631/data/scibench
 type=Livermore2
 nv=$1
 
-thispath=$basepath/ctrl_var_gp_nan
-data_path=$basepath/data/unencrypted/equations_others
-py3615=/home/jiang631/workspace/miniconda3/envs/py3615/bin/python3
+thispath=$basepath/gp_and_cvgp
+data_path=$basepath/data/unencrypted/equations_livermore2
+py3615=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 
 noise_type=normal
 noise_scale=0.0
-metric_name=neg_mse
+metric_name=neg_nmse
 for prog in {1..25};
 do
     eq_name=${type}_Vars${nv}_$prog.in
@@ -33,16 +33,11 @@ do
 #SBATCH --job-name="gp_Vars${nv}_$prog"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
 #SBATCH --constraint=A
-#SBATCH --time=48:00:00
-#SBATCH --mem=2048MB
+#SBATCH --time=12:00:00
+#SBATCH --mem=4GB
 
-hostname
-
-module load anaconda
-
-
-python3 $thispath/try_gp_xyx.py --equation_name $data_path/$eq_name \
-        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
+$py3 $thispath/main.py --equation_name $data_path/$eq_name \
+        		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
         		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
 
 EOT
@@ -50,20 +45,19 @@ EOT
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="egp_Vars${nv}_$prog"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.egp.out
+#SBATCH --job-name="cvgp_Vars${nv}_$prog"
+#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.cvgp.out
 #SBATCH --constraint=A
-#SBATCH --time=48:00:00
-#SBATCH --mem=2048MB
+#SBATCH --time=12:00:00
+#SBATCH --mem=4GB
 
 hostname
 
-module load anaconda
 
 
-python3 $thispath/try_gp_xyx.py --equation_name $data_path/$eq_name --expand_gp \
-        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.egp.out
+$py3 $thispath/main.py --equation_name $data_path/$eq_name --cvgp \
+        		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
+        		 > $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cvgp.out
 
 EOT
 
