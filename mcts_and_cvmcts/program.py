@@ -67,7 +67,7 @@ class Program(object):
             return -np.inf, eq, 0, 0
         # count number of constants in equation
         num_changing_consts = eq.count('C')
-        t_optimized_constants, t_optimized_obj = 0, 0
+        t_optimized_constants, t_optimized_obj = 0, np.inf
         if num_changing_consts == 0:  # zero constant
             y_pred = execute(eq, data_X.T, input_var_Xs)
         elif num_changing_consts >= 20:  # discourage over complicated numerical estimations
@@ -91,67 +91,71 @@ class Program(object):
 
             # do more than one experiment,
             x0 = np.random.rand(len(c_lst))
-            # optimize the constants in the expression
-            if self.optimizer == 'Nelder-Mead':
-                opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
+            try:
+                # optimize the constants in the expression
+                if self.optimizer == 'Nelder-Mead':
+                    opt_result = minimize(f, x0, method='Nelder-Mead', options={'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': max_opt_iter})
 
-            elif self.optimizer == 'BFGS':
-                opt_result = minimize(f, x0, method='BFGS', options={'maxiter': max_opt_iter})
-            elif self.optimizer == 'CG':
-                opt_result = minimize(f, x0, method='CG', options={'maxiter': max_opt_iter})
-            elif self.optimizer == 'L-BFGS-B':
-                opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': max_opt_iter})
-            elif self.optimizer == "basinhopping":
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
-                opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=max_opt_iter)
-            elif self.optimizer == 'dual_annealing':
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
-                lw = [-5] * num_changing_consts
-                up = [5] * num_changing_consts
-                bounds = list(zip(lw, up))
-                opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, maxiter=max_opt_iter)
-            elif self.optimizer == 'shgo':
-                minimizer_kwargs = {"method": "Nelder-Mead",
-                                    "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
-                lw = [-5] * num_changing_consts
-                up = [5] * num_changing_consts
-                bounds = list(zip(lw, up))
-                opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
-            # elif self.optimizer == "direct":
-            #     lw = [-10] * num_changing_consts
-            #     up = [10] * num_changing_consts
-            #     bounds = list(zip(lw, up))
-            #     opt_result = direct(f, bounds, maxiter=max_opt_iter)
+                elif self.optimizer == 'BFGS':
+                    opt_result = minimize(f, x0, method='BFGS', options={'maxiter': max_opt_iter})
+                elif self.optimizer == 'CG':
+                    opt_result = minimize(f, x0, method='CG', options={'maxiter': max_opt_iter})
+                elif self.optimizer == 'L-BFGS-B':
+                    opt_result = minimize(f, x0, method='L-BFGS-B', options={'maxiter': max_opt_iter})
+                elif self.optimizer == "basinhopping":
+                    minimizer_kwargs = {"method": "Nelder-Mead",
+                                        "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
+                    opt_result = basinhopping(f, x0, minimizer_kwargs=minimizer_kwargs, niter=max_opt_iter)
+                elif self.optimizer == 'dual_annealing':
+                    minimizer_kwargs = {"method": "Nelder-Mead",
+                                        "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
+                    lw = [-5] * num_changing_consts
+                    up = [5] * num_changing_consts
+                    bounds = list(zip(lw, up))
+                    opt_result = dual_annealing(f, bounds, minimizer_kwargs=minimizer_kwargs, maxiter=max_opt_iter)
+                elif self.optimizer == 'shgo':
+                    minimizer_kwargs = {"method": "Nelder-Mead",
+                                        "options": {'xatol': 1e-10, 'fatol': 1e-10, 'maxiter': 100}}
+                    lw = [-5] * num_changing_consts
+                    up = [5] * num_changing_consts
+                    bounds = list(zip(lw, up))
+                    opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
+                # elif self.optimizer == "direct":
+                #     lw = [-10] * num_changing_consts
+                #     up = [10] * num_changing_consts
+                #     bounds = list(zip(lw, up))
+                #     opt_result = direct(f, bounds, maxiter=max_opt_iter)
 
-            t_optimized_constants = opt_result['x']
-            c_lst = t_optimized_constants.tolist()
-            t_optimized_obj = opt_result['fun']
+                t_optimized_constants = opt_result['x']
+                c_lst = t_optimized_constants.tolist()
+                t_optimized_obj = opt_result['fun']
 
-            if verbose:
-                print(opt_result)
-            eq_est = eq
+                if verbose:
+                    print(opt_result)
+                eq_est = eq
 
-            for i in range(len(c_lst)):
-                est_c = np.mean(c_lst[i])
-                if abs(est_c) < 1e-5:
-                    est_c = 0
-                eq_est = eq_est.replace('c' + str(i), str(est_c), 1)
-            eq_est = eq_est.replace('+ -', '-')
-            eq_est = eq_est.replace('- -', '+')
-            eq_est = eq_est.replace('- +', '-')
-            eq_est = eq_est.replace('+ +', '+')
+                for i in range(len(c_lst)):
+                    est_c = np.mean(c_lst[i])
+                    if abs(est_c) < 1e-5:
+                        est_c = 0
+                    eq_est = eq_est.replace('c' + str(i), str(est_c), 1)
+                eq_est = eq_est.replace('+ -', '-')
+                eq_est = eq_est.replace('- -', '+')
+                eq_est = eq_est.replace('- +', '-')
+                eq_est = eq_est.replace('+ +', '+')
 
-            y_pred = execute(eq_est, data_X.T, input_var_Xs)
-            var_ytrue = np.var(y_true)
+                y_pred = execute(eq_est, data_X.T, input_var_Xs)
+                var_ytrue = np.var(y_true)
 
-            eq = pretty_print_expr(parse_expr(eq_est))
+                eq = pretty_print_expr(parse_expr(eq_est))
 
-            print('\t reward',
-                  eta ** tree_size * float(-np.log10(1e-60 - self.evalaute_loss(y_pred, y_true, var_ytrue))), '\t loss:',
-                  -self.evalaute_loss(y_pred, y_true, var_ytrue),
-                  'simp:', eq)
+                print('\t reward',
+                      eta ** tree_size * float(-np.log10(1e-60 - self.evalaute_loss(y_pred, y_true, var_ytrue))), '\t loss:',
+                      -self.evalaute_loss(y_pred, y_true, var_ytrue),
+                      'simp:', eq)
+            except Exception as e:
+                print(e)
+                return -np.inf, eq, 0,np.inf
 
         r = eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
 

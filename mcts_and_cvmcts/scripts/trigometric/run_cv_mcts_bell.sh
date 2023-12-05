@@ -35,7 +35,7 @@ for prog in {0..9}; do
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.cv_mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=24:00:00
-#SBATCH --mem=4GB
+#SBATCH --mem=2GB
 
 hostname
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \

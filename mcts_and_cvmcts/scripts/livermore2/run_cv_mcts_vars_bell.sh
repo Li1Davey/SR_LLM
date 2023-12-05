@@ -38,6 +38,7 @@ for prog in {1..25}; do
 hostname
 
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
+						--production_rule_mode 'livermore2' \
 						--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
          				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt${opt}.cv_mcts.out
 

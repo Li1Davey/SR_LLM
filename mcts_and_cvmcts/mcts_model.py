@@ -47,6 +47,15 @@ class MCTS(object):
         # Get index of all possible production rules starting with a given node
         return [self.grammars.index(x) for x in self.grammars if x.startswith(Node)]
 
+    def valid_non_termianl_production_rules(self, Node):
+        # Get index of all possible production rules starting with a given node
+        valid_rules=[]
+        for i, x in enumerate(self.grammars):
+            if x.startswith(Node) and np.sum([y in x[3:] for y in self.aug_nt_nodes]):
+                valid_rules.append(i)
+        return valid_rules
+        # return [self.grammars.index(x) for x in self.grammars if x.startswith(Node) ]
+
     def get_non_terminal_nodes(self, prod) -> list:
         # Get all the non-terminal nodes from right-hand side of a production rule grammar
         return [i for i in prod[3:] if i in self.non_terminal_nodes]
@@ -232,7 +241,12 @@ class MCTS(object):
             new_freezed_exprs.append(expri)
             new_aug_nt_nodes.append(ntnodei)
         # only generate at most 3 template for the next round, otherwise it will be too time counsuming
-        return new_freezed_exprs, new_aug_nt_nodes, new_stand_alone_constants
+        ret_frezze_exprs, ret_aug_nt_nodes=[], []
+        for x, y in zip(new_freezed_exprs, new_aug_nt_nodes):
+            if x not in ret_frezze_exprs:
+                ret_frezze_exprs.append(x)
+                ret_aug_nt_nodes.append(y)
+        return ret_frezze_exprs, ret_aug_nt_nodes, new_stand_alone_constants
 
     def rollout(self, num_play, state_initial, ntn_initial):
         """
@@ -321,7 +335,7 @@ class MCTS(object):
         """
 
         def policy_fn(state, node):
-            valid_action = self.valid_production_rules(node)
+            valid_action = self.valid_non_termianl_production_rules(node)
 
             # collect ucb scores for all valid actions
             policy_valid = []
