@@ -11,7 +11,7 @@ required = [
     "pytest",
     "cython",
     "numpy",
-    "tensorflow==1.15.4",
+    "tensorflow==1.15.5",
     "numba",
     "sympy",
     "pandas",
@@ -28,7 +28,7 @@ required = [
 
 
 setup(name='dso',
-      version='1.01',
+      version='1.1',
       description='Deep symbolic optimization.',
       author='LLNL',
       packages=['dso'],

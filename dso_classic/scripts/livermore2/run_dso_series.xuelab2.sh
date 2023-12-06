@@ -1,5 +1,5 @@
 #!/usr/bin/zsh
-basepath=/home/jiangnan/PycharmProjects/scibench
+basepath=/home/jiang631/data/scibench
 py37=/home/jiangnan/anaconda3/envs/py37/bin/python3.7
 type=Livermore2
 nv=$1
