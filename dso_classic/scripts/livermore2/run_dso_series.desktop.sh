@@ -5,7 +5,7 @@ type=Livermore2
 nv=$1
 thispath=$basepath/dso_classic
 datapath=$basepath/data/unencrypted/equations_livermore2
-opt=L-BFGS-B
+
 
 noise_type=normal
 noise_scale=0.0
@@ -22,9 +22,9 @@ for prog in {1..25}; do
 	for bsl in DSR PQT VPG; do
 		echo $basepath/dso_classic/config/config_regression_${bsl}.json
 		echo $datapath/$eq_name
-		echo $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}
+		echo $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.${bsl}
 		timeout 12h $py37 $thispath/run.py $basepath/dso_classic/config/config_regression_${bsl}.json --equation_name $datapath/$eq_name \
-			--logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl} \
-			--noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.noise_${noise_type}${noise_scale}.opt$opt.${bsl}.out
+			--logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.${bsl} \
+			--noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.noise_${noise_type}${noise_scale}.${bsl}.out
 	done
 done

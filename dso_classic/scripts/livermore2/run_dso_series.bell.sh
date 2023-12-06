@@ -7,7 +7,7 @@ nv=$1
 
 thispath=$basepath/dso_classic
 data_path=$basepath/data/unencrypted/equations_livermore2
-opt=L-BFGS-B
+
 
 noise_type=normal
 noise_scale=0.0
@@ -32,7 +32,7 @@ for prog in {1..25}; do
 #!/bin/bash -l
 
 #SBATCH --job-name="$bsl-Vars${nv}_$prog"
-#SBATCH --output=$log_dir/${eq_name}.noise_${noise_type}_${noise_scale}.opt${opt}.${bsl}.out
+#SBATCH --output=$log_dir/${eq_name}.noise_${noise_type}_${noise_scale}.${bsl}.out
 #SBATCH --constraint=A
 #SBATCH --time=10:00:00
 #SBATCH --mem=4GB
@@ -41,7 +41,7 @@ hostname
 
 $py37 $thispath/run.py $basepath/dso_classic/config/config_regression_${bsl}.json \
 --equation_name $data_path/$eq_name --noise_type $noise_type --noise_scale $noise_scale \
- --logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl} > $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}.out
+ --logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}${bsl} > $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.${bsl}.out
 
 
 EOT
