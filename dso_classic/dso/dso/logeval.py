@@ -1,6 +1,7 @@
 """Tools to evaluate generated logfiles based on log directory."""
 
 import warnings
+
 warnings.filterwarnings('ignore', category=DeprecationWarning)
 warnings.filterwarnings('ignore', category=FutureWarning)
 
@@ -9,9 +10,8 @@ import os
 
 import click
 import pandas as pd
-import seaborn as sns
 import commentjson as json
-from matplotlib import pyplot as plt
+
 
 class LogEval():
     """Class to hold all logged information and provide tools
@@ -149,52 +149,17 @@ class LogEval():
         return log_df
 
     def _apply_pareto_filter(self, df):
-        df = df.sort_values(by=["complexity"],ascending=True)
+        df = df.sort_values(by=["complexity"], ascending=True)
         df = df.reset_index(drop=True)
         filtered_df = pd.DataFrame(columns=list(df))
         for index, row in df.iterrows():
             if not (filtered_df["r"] >= row["r"]).any() and \
                     not (filtered_df["complexity"] >= row["complexity"]).any() or \
-                    index == 0 :
+                    index == 0:
                 filtered_df = filtered_df.append(row, ignore_index=True)
         # make sure that filtered_df has the same column types as the original df
         filtered_df = filtered_df.astype(df.dtypes.to_dict())
         return filtered_df
-
-    def plot_results(self, results, log_type, boxplot_on=False, show_plots=False, save_plots=False):
-        """Plot data from log files ("hof" or "pf")."""
-        col_count = 0
-        _x = []
-        _y = []
-        _x_label = []
-        _y_label = []
-        for i in range(len(self.PLOT_HELPER[log_type]["y"])):
-            if self.PLOT_HELPER[log_type]["y"][i] in results:
-                col_count += 1
-                _x.append(self.PLOT_HELPER[log_type]["x"][i])
-                _y.append(self.PLOT_HELPER[log_type]["y"][i])
-                _x_label.append(self.PLOT_HELPER[log_type]["x_label"][i])
-                _y_label.append(self.PLOT_HELPER[log_type]["y_label"][i])
-        row_count = 2 if boxplot_on else 1
-        fig, ax = plt.subplots(row_count, col_count, squeeze=0, figsize=(8 * col_count, 4 * row_count))
-        for i in range(col_count):
-            sns.lineplot(data=results, x=_x[i], y=_y[i], ax=ax[0, i])
-            ax[0, i].set_xlabel(_x_label[i])
-            ax[0, i].set_ylabel(_y_label[i])
-            if boxplot_on:
-                sns.boxplot(results[_y[i]], ax=ax[1, i])
-                ax[1, i].set_xlabel( _y[i])
-        plt.suptitle(
-            "{} - {}".format(self.PLOT_HELPER[log_type]["name"], self.config["experiment"]["task_name"]),
-            fontsize=14)
-        plt.tight_layout()
-        # if save_plots:
-        #     save_path = os.path.join(self.save_path, "dso_{}_plot_{}.png".format(self.config["experiment"]["task_name"], log_type))
-        #     print("  Saving {} plot to {}".format(self.PLOT_HELPER[log_type]["name"], save_path))
-        #     plt.savefig(save_path)
-        if show_plots:
-            plt.show()
-        plt.close()
 
     def analyze_log(self, show_count=5, show_hof=True, show_pf=True, show_plots=False, save_plots=False):
         """Generates a summary of important experiment outcomes."""
@@ -217,20 +182,14 @@ class LogEval():
                     print('  {:3d}: S={:03d} R={:8.6f} <-- {}'.format(
                         i, self.hof_df.iloc[i]['seed'], self.hof_df.iloc[i]['r'],
                         self.hof_df.iloc[i]['expression']))
-                if show_plots or save_plots:
-                    self.plot_results(
-                        self.hof_df, log_type="hof", boxplot_on=True,
-                        show_plots=show_plots, save_plots=save_plots)
+
             if self.pf_df is not None and show_pf:
-                print('Pareto Front ({} of {})____'.format(min(show_count,len(self.pf_df.index)), len(self.pf_df.index)))
-                for i in range(min(show_count,len(self.pf_df.index))):
+                print('Pareto Front ({} of {})____'.format(min(show_count, len(self.pf_df.index)), len(self.pf_df.index)))
+                for i in range(min(show_count, len(self.pf_df.index))):
                     print('  {:3d}: S={:03d} R={:8.6f} C={:.2f} <-- {}'.format(
                         i, self.pf_df.iloc[i]['seed'], self.pf_df.iloc[i]['r'],
                         self.pf_df.iloc[i]['complexity'], self.pf_df.iloc[i]['expression']))
-                if show_plots or save_plots:
-                    self.plot_results(
-                        self.pf_df, log_type="pf",
-                        show_plots=show_plots, save_plots=save_plots)
+
         except FloatingPointError:
             print("Error when analyzing!")
             for warning in self.warnings:
@@ -246,7 +205,6 @@ class LogEval():
 @click.option('--show_plots', is_flag=True, help='Generate plots and show results as simple plots.')
 @click.option('--save_plots', is_flag=True, help='Generate plots and safe to log file as simple plots.')
 def main(config_path, show_count, show_hof, show_pf, show_plots, save_plots):
-
     log = LogEval(config_path)
     log.analyze_log(
         show_count=show_count,

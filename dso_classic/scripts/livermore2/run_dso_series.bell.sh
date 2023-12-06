@@ -21,7 +21,7 @@ for prog in {1..25}; do
 		echo "create output dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	log_dir=$basepath/log/Others/$(date +%F)
+	log_dir=$basepath/log/$(date +%F)
 	if [ ! -d "$log_dir" ]; then
 		echo "create dir: $log_dir"
 		mkdir -p $log_dir
@@ -34,14 +34,14 @@ for prog in {1..25}; do
 #SBATCH --job-name="$bsl-Vars${nv}_$prog"
 #SBATCH --output=$log_dir/${eq_name}.noise_${noise_type}_${noise_scale}.opt${opt}.${bsl}.out
 #SBATCH --constraint=A
-#SBATCH --time=12:00:00
+#SBATCH --time=10:00:00
 #SBATCH --mem=4GB
 
 hostname
 
 $py37 $thispath/run.py $basepath/dso_classic/config/config_regression_${bsl}.json \
 --equation_name $data_path/$eq_name --noise_type $noise_type --noise_scale $noise_scale \
- --logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}/ > $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}.out
+ --logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl} > $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}.out
 
 
 EOT
