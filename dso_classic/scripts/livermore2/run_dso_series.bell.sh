@@ -39,8 +39,9 @@ for prog in {1..25}; do
 
 hostname
 
-$py37 $thispath/run.py $basepath/dso_classic/config/config_regression_${bsl}.json --equation_name $data_path/$eq_name --noise_type $noise_type --noise_scale $noise_scale
- --logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl} > $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}.out
+$py37 $thispath/run.py $basepath/dso_classic/config/config_regression_${bsl}.json \
+--equation_name $data_path/$eq_name --noise_type $noise_type --noise_scale $noise_scale \
+ --logdir $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}/ > $dump_dir/${eq_name}.noise_${noise_type}${noise_scale}.opt${opt}.${bsl}.out
 
 
 EOT
