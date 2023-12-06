@@ -1,6 +1,6 @@
 #!/usr/bin/zsh
 basepath=/home/jiang631/data/scibench
-py37=/home/jiangnan/anaconda3/envs/py37/bin/python3.7
+py37=/home/jiang631/miniconda3/envs/py37/bin/python
 type=Livermore2
 nv=$1
 thispath=$basepath/dso_classic
