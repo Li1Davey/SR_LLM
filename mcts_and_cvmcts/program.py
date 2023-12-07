@@ -3,6 +3,7 @@ import copy
 
 import numpy as np
 import warnings
+
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.set_printoptions(precision=4, linewidth=np.inf)
 
@@ -155,7 +156,7 @@ class Program(object):
                       'simp:', eq)
             except Exception as e:
                 print(e)
-                return -np.inf, eq, 0,np.inf
+                return -np.inf, eq, 0, np.inf
 
         r = eta ** tree_size * float(-np.log10(1e-60 + np.mean((y_pred - y_true) ** 2)))
 
@@ -216,3 +217,9 @@ def simplify_template(eq):
         eq = eq.replace('C*C', 'C')
         eq = eq.replace('(C/C)', 'C')
     return eq
+
+
+if __name__ == '__main__':
+    expr_temp = 'sqrt(sqrt(C))*(sqrt(X0)+C)'
+
+    simplify_template(expr_temp)

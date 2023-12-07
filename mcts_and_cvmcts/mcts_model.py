@@ -240,7 +240,7 @@ class MCTS(object):
         else:
             new_freezed_exprs.append(expri)
             new_aug_nt_nodes.append(ntnodei)
-        # only generate at most 3 template for the next round, otherwise it will be too time counsuming
+        # only generate at most 3 template for the next round, otherwise it will be too time consuming
         ret_frezze_exprs, ret_aug_nt_nodes=[], []
         for x, y in zip(new_freezed_exprs, new_aug_nt_nodes):
             if x not in ret_frezze_exprs:
@@ -335,7 +335,7 @@ class MCTS(object):
         """
 
         def policy_fn(state, node):
-            valid_action = self.valid_non_termianl_production_rules(node)
+            valid_action = self.valid_production_rules(node)
 
             # collect ucb scores for all valid actions
             policy_valid = []
@@ -600,7 +600,7 @@ class MCTS(object):
         """used for print the error for all metrics between the predicted program `p` and true program."""
         y_hat = execute(expr_str, self.task.X.T, self.input_var_Xs)
         dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.X, y_hat)
-        dict_of_result['tree_edit_distance'] = self.task.data_query_oracle.compute_normalized_tree_edit_distance(expr_str)
+        # dict_of_result['tree_edit_distance'] = self.task.data_query_oracle.compute_normalized_tree_edit_distance(expr_str)
         print('-' * 30)
         for mertic_name in dict_of_result:
             print(f"{mertic_name} {dict_of_result[mertic_name]}")

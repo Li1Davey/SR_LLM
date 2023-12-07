@@ -11,8 +11,8 @@ opt=L-BFGS-B
 
 noise_type=normal
 noise_scale=0.0
-metric_name=neg_nmse
-for prog in {1..20}; do
+metric_name=neg_mse
+for prog in {1..10}; do
 	eq_name=${type}_Vars${nv}_$prog.in
 	echo "submit $eq_name"
 	dump_dir=$basepath/result/${type}_Vars${nv}/$(date +%F)

@@ -144,24 +144,24 @@ def get_var_i_production_rules(round_idx, operators_set):
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
     # [A-> C*Xi]
-    return [f'{non_terminal_node}->X{xi}', ]
+    return [f'{non_terminal_node}->C*X{xi}', ]
 
 
 def get_ith_n2_rules(xi: int, non_terminal_node='A') -> list:
     # [A-> C*Xi]
-    return [f'{non_terminal_node}->X{xi}**2', ]
+    return [f'{non_terminal_node}->C*X{xi}**2', ]
 
 
 def get_ith_n3_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**3', ]
+    return [f'{non_terminal_node}->C*X{xi}**3', ]
 
 
 def get_ith_n4_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**4', ]
+    return [f'{non_terminal_node}->C*X{xi}**4', ]
 
 
 def get_ith_n5_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**5', ]
+    return [f'{non_terminal_node}->C*X{xi}**5', ]
 
 
 def get_ith_inv_rules(xi: int, non_terminal_node='A') -> list:
@@ -170,6 +170,10 @@ def get_ith_inv_rules(xi: int, non_terminal_node='A') -> list:
 
 
 if __name__ == '__main__':
-    X0 = Symbol('X0')
-    expr = 2.1 / X0  # 3.5*X0+4.0+
-    preorder_traversal_expr = to_binary_expr_tree(expr)
+    seq = "f->A,A->A*A,A->sqrt(A),A->sqrt(A),A->C,A->(A+A),A->sqrt(A),A->X0,A->C"
+    seq = seq.split(',')
+    production_rules_to_expr(seq)
+
+    # X0 = Symbol('X0')
+    # expr = 2.1 / X0  # 3.5*X0+4.0+
+    # preorder_traversal_expr = to_binary_expr_tree(expr)
