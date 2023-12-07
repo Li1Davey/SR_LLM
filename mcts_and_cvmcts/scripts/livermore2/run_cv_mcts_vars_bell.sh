@@ -33,11 +33,11 @@ for prog in {1..25}; do
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.cv_mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
-#SBATCH --mem=10240MB
+
 
 hostname
 
-$py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
+$py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
 						--production_rule_mode 'livermore2' \
 						--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
          				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.opt${opt}.cv_mcts.out
