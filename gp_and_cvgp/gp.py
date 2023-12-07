@@ -58,7 +58,7 @@ class GeneticProgram(object):
                 # print("")
                 most_recent_timestamp = now_time_stamp
 
-    def one_generation(self, iter=None):
+    def one_generation(self, verbose=True):
         """
         One step of the genetic algorithm.
         This wraps selection, mutation, crossover and hall of fame computation
@@ -74,18 +74,18 @@ class GeneticProgram(object):
 
         # Selection the next generation individuals
         offspring = self.selectTournament(self.population_size, self.tour_size)
-
-        print('offspring after select=')
-        print_prs(offspring)
-        print("")
+        if verbose:
+            print('offspring after select=')
+            print_prs(offspring)
+            print("")
 
         # Vary the pool of individuals
         # the crossover and mutation.
         offspring = self._var_and(offspring)
-
-        print('offspring after _var_and=')
-        print_prs(offspring)
-        print("")
+        if verbose:
+            print('offspring after _var_and=')
+            print_prs(offspring)
+            print("")
 
         # Replace the current population by the offspring
         self.population = offspring + self.hof
@@ -185,11 +185,10 @@ class GeneticProgram(object):
             print(pr.__getstate__())
 
     def print_hof(self):
-        for pr in self.hof:
+        new_hof = sorted(self.hof, reverse=False, key=attrgetter('r'))
+        for pr in new_hof:
             print(pr.__getstate__())
             pr.task.rand_draw_X_non_fixed()
-
             print('validate r=', pr.task.reward_function(pr))
             pr.task.print_reward_function_all_metrics(pr)
-
             pr.print_expression()

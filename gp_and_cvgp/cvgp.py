@@ -281,7 +281,7 @@ class ExpandingGeneticProgram(object):
             print(pr.__getstate__())
 
     def print_hof(self):
-        new_hof = sorted(self.hof, reverse=True, key=attrgetter('r'))
+        new_hof = sorted(self.hof, reverse=False, key=attrgetter('r'))
         for pr in new_hof:
             print(pr.__getstate__())
             pr.task.rand_draw_X_non_fixed()
