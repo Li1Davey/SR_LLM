@@ -1,18 +1,12 @@
-import argparse
-from dso.program import Program
+
 import pandas as pd
-# used to load true program for data generation
-from dso.library import Library, Token, PlaceholderConstant
-from dso.const import ScipyMinimize
-import dso.functions as functions
-import pickle
 import numpy as np
 
 from sympy.parsing.sympy_parser import parse_expr
 import scipy
 from sklearn.metrics import r2_score
-from symbolic_data_generator import DataX
-from symbolic_equation_evaluator_public import Equation_evaluator
+from scibench.symbolic_data_generator import DataX
+from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 
 
 def read_dso_expression(csv_file, X_test):
