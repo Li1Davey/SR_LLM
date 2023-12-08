@@ -55,7 +55,7 @@ EOT
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name=VSR-GP_${type}_$eq_name"
+#SBATCH --job-name="VSR_GP_${type}_$eq_name"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.cvgp.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
