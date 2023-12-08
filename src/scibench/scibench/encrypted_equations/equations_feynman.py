@@ -2747,7 +2747,7 @@ class FeynmanIICh2Eq42(KnownEquation):
         - x[4] != 0
     """
     _eq_name = 'feynman-ii.2.42'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'neg']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
 
     def __init__(self):
         vars_range_and_types = [

@@ -38,7 +38,7 @@ for eq_name in $all_files; do
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
+	timeout 12h $py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
 		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
 		>$dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cv_mcts.out &
 

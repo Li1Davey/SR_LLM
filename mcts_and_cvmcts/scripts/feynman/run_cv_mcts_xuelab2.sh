@@ -1,16 +1,18 @@
 #!/usr/bin/zsh
+set -x
 
-basepath=/home/jiangnan/PycharmProjects/scibench
-py3=/home/jiangnan/miniconda3/bin/python
+basepath=/home/jiang631/data/scibench
+py3=/home/jiang631/miniconda3/envs/py310/bin/python3.10
+type=$1
+num_per_episodes=$2
 
 thispath=$basepath/mcts_and_cvmcts
-data_path=$basepath/data/unencrypted/equations_feynman
+data_path=$basepath/data/unencrypted/equations_trigometric
 opt=L-BFGS-B
-type=$1
+
 noise_type=normal
 noise_scale=0.0
-metric_name=neg_nmse
-
+metric_name=neg_mse
 if [[ $type -eq 2 ]]
 then
 echo EQUILATERAL
@@ -32,14 +34,14 @@ echo "Incorrect input"
 fi
 
 for eq_name in $all_files; do
-	echo "submit $eq_name"
 	dump_dir=$basepath/result/feynman_vars${type}/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	timeout 12h $py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
+	nohup timeout 12h $py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
 		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
-		>$dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.mcts.out &
+		--num_per_episodes $num_per_episodes \
+		>$dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cv_mcts.out &
 
 done
