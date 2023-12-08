@@ -21,8 +21,12 @@
 ./run_mcts_bell.sh sincosinv 6 68
 ./run_mcts_bell.sh sincosinv 6 610
 
+## 1.2 VSR-MCTS model
+./run_cv_mcts_bell.sh sincosinv 6 68 10
+./run_cv_mcts_bell.sh sincosinv 6 610 10
+
 # 2 noisy settings
-## 2.2 CV-MCTS model
+## 2.2 VSR-MCTS model
 ./run_cv_mcts_bell_noisy.sh inv 2 11
 ./run_cv_mcts_bell_noisy.sh inv 3 22
 ./run_cv_mcts_bell_noisy.sh inv 4 46
