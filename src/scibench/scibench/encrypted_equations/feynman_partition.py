@@ -126,10 +126,10 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
         name_map[one_equation.num_vars].append(eqname)
 
     for key in name_map:
-        print(key)
+        print(f'var{key}=', end='"')
         for na in name_map[key]:
-            print(f"{na}.in ",end="")
-        print()
+            print(f"{na}",end=" ")
+        print('"')
 
 
 

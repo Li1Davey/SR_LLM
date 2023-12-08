@@ -6,7 +6,7 @@ type=$1
 thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_feynman
 opt=L-BFGS-B
-
+num_episodes=5000
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_nmse
@@ -48,16 +48,17 @@ for eq_name in $all_files; do
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="mtcs_$trimed_name"
+#SBATCH --job-name="mtcs_${type}_$trimed_name"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
-#SBATCH --mem=4096MB
+#SBATCH --mem=4GB
 
 hostname
 
 $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
 						--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
+						--num_episodes $num_episodes \
          				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.mcts.out
 
 EOT

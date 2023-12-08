@@ -34,6 +34,8 @@ var5 = ['FeynmanICh12Eq11', 'FeynmanIICh2Eq42', 'FeynmanIICh6Eq15a', 'FeynmanIIC
         'FeynmanBonus16']
 
 var678 = ['FeynmanICh11Eq19', 'FeynmanBonus2', 'FeynmanBonus17', 'FeynmanBonus6', 'FeynmanICh9Eq18']
+
+
 def work(arg):
     try:
         benchmark, eureqa_params, seed = arg
@@ -184,7 +186,7 @@ def get_model(project, base_model, eureqa_params, seed):
 @click.option("--num_workers", type=int, default=10, help="Number of workers.")
 @click.option("--seed_shift", type=int, default=0, help="Starting seed value.")
 @click.option("--dataset_path", type=str, default="PATH-TO-dataset-FILE", help="Path to csv dataset")
-@click.option("--nvars", type=int, default=2, help="number of multiple variables.")
+@click.option("--nvars", type=str, default='2', help="number of multiple variables.")
 def main(results_path, config_path, credential_path, mc, num_workers, seed_shift, dataset_path, nvars):
     """Run Eureqa on benchmarks for multiple random seeds."""
 
@@ -198,11 +200,16 @@ def main(results_path, config_path, credential_path, mc, num_workers, seed_shift
     # Define the work
     args = []
     seeds = [i + seed_shift for i in range(mc)]
-
-    if nvars == 4:
+    if nvars == '2':
+        file_array = var2
+    elif nvars == '3':
+        file_array = var3
+    elif nvars == '4':
         file_array = var4
-    elif nvars == 5:
+    elif nvars == '5':
         file_array = var5
+    elif nvars == '678':
+        file_array = var678
 
     for seed in seeds:
 

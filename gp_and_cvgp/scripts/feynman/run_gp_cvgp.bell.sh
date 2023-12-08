@@ -8,7 +8,7 @@ py3=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 type=$1
 noise_type=normal
 noise_scale=0.0
-metric_name=neg_mse
+metric_name=neg_nmse
 
 
 if [[ $type -eq 2 ]]
