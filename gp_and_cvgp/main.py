@@ -171,7 +171,7 @@ def run_GP(equation_name, metric_name, noise_type, noise_scale, optimizer, memra
 
     else:
         start = time.time()
-        gp.run()
+        gp.run(verbose=False)
         end_time = time.time() - start
     # print
     print('final hof=')

@@ -5,6 +5,7 @@ from operator import attrgetter
 from program import Program
 from utils import print_prs
 
+
 class GeneticProgram(object):
     """
     Parameters
@@ -44,12 +45,12 @@ class GeneticProgram(object):
         self.gen_num = 0
         self.create_init_population()
 
-    def run(self):
+    def run(self, print_freq=5, verbose=True):
         # run for n generations
         most_recent_timestamp = time.perf_counter()
-        for i in range(self.n_generations):
-            print('++++++++++++++++++ ITERATION {0} ++++++++++++++++++'.format(i))
-            self.one_generation()
+        for i in range(1, self.n_generations + 1):
+            print(f'++++++++++++++++++ ITERATION {i} ++++++++++++++++++')
+            self.one_generation(verbose)
 
             now_time_stamp = time.perf_counter()
             if now_time_stamp - most_recent_timestamp >= 900:  # 15 min
@@ -57,6 +58,8 @@ class GeneticProgram(object):
                 # self.print_hof()
                 # print("")
                 most_recent_timestamp = now_time_stamp
+            if i % print_freq == 0:
+                self.print_hof()
 
     def one_generation(self, verbose=True):
         """
