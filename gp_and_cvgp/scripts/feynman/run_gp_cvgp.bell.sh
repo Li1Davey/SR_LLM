@@ -1,4 +1,4 @@
-#!/bin/bash -l
+#!/usr/bin/zsh
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 
@@ -25,6 +25,7 @@ else
 fi
 
 for eq_name in $all_files; do
+	echo $eq_name
 	dump_dir=$basepath/result/Feynman_var$type/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
