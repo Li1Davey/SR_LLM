@@ -33,7 +33,7 @@ fi
 
 for eq_name in $all_files; do
 	echo "submit $eq_name"
-	dump_dir=$basepath/result/feynman_vars${type}/$(date +%F)
+	dump_dir=$basepath/result/Feynman_vars${type}/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
