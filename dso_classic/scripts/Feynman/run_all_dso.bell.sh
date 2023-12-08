@@ -1,16 +1,8 @@
 #!/usr/bin/zsh
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
-py310=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
+py37=/home/jiang631/workspace/miniconda3/envs/py37/bin/python
 type=$1
-num_per_episodes=$2
-thispath=$basepath/mcts_and_cvmcts
-data_path=$basepath/data/unencrypted/equations_feynman
-opt=L-BFGS-B
-
-noise_type=normal
-noise_scale=0.0
-metric_name=neg_nmse
 
 if [[ $type -eq 2 ]]; then
 	all_files=(FeynmanICh12Eq1.in FeynmanICh6Eq20.in FeynmanICh10Eq7.in FeynmanICh12Eq4.in FeynmanICh14Eq3.in FeynmanICh12Eq5.in FeynmanICh14Eq4.in FeynmanICh15Eq10.in FeynmanICh16Eq6.in FeynmanICh25Eq13.in FeynmanICh26Eq2.in FeynmanICh32Eq5.in FeynmanICh34Eq10.in FeynmanICh34Eq14.in FeynmanICh38Eq12.in FeynmanICh39Eq10.in FeynmanICh41Eq16.in FeynmanICh43Eq31.in FeynmanICh48Eq2.in FeynmanIICh3Eq24.in FeynmanIICh4Eq23.in FeynmanIICh8Eq7.in FeynmanIICh10Eq9.in FeynmanIICh11Eq28.in FeynmanIICh13Eq17.in FeynmanIICh13Eq23.in FeynmanIICh13Eq34.in FeynmanIICh24Eq17.in FeynmanIICh34Eq29a.in FeynmanIICh38Eq14.in FeynmanIIICh4Eq32.in FeynmanIIICh4Eq33.in FeynmanIIICh7Eq38.in FeynmanIIICh8Eq54.in FeynmanIIICh15Eq14.in FeynmanBonus8.in FeynmanBonus10.in)
@@ -26,35 +18,36 @@ else
 	echo "Incorrect input"
 fi
 
-for eq_name in $all_files; do
-	echo "submit $eq_name"
-	trimed_name=${eq_name:7:-3}
-	dump_dir=$basepath/result/feynman_vars$type/$(date +%F)
+for pgn in $all_files; do
+	trimed_name=${pgn:7:-3}
+	echo "submit $trimed_name"
+	equation_name=$basepath/data/unencrypted/equations_feynman/$pgn
+	dump_dir=$basepath/result/Feynman/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
-		echo "create dir: $dump_dir"
+		echo "create output dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	log_dir=$basepath/log/$(date +%F)
+	log_dir=$basepath/log/Feynman/$(date +%F)
 	if [ ! -d "$log_dir" ]; then
 		echo "create dir: $log_dir"
 		mkdir -p $log_dir
 	fi
-	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
+	for bsl in DSR PQT VPG GPMELD; do
+		echo $bsl, $(date +'%R/%m/%d/%Y')
+		sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="VSR_${type}_$trimed_name"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.cv_mcts.out
+#SBATCH --job-name="$bsl-${trimed_name}"
+#SBATCH --output=$log_dir/run_${bsl}_${pgn}.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
 #SBATCH --mem=4GB
 
 hostname
 
-$py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
-					--num_per_episodes $num_per_episodes \
-						--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
-         				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cv_mcts.out
+$py37 -m dso.run $basepath/dso_classic/config/config_regression_${bsl}.json \
+ --equation_name $equation_name --noise_type normal --noise_scale 0.0  > $dump_dir/$pgn.${bsl}.out
 
 EOT
-
+	done
 done
