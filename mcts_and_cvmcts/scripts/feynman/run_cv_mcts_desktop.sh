@@ -1,15 +1,15 @@
-#!/bin/bash -l
+#!/usr/bin/zsh
 
-basepath=/depot/yexiang/apps/jiang631/data/scibench
+basepath=/home/jiangnan/PycharmProjects/scibench
+py3=/home/jiangnan/miniconda3/bin/python
 
-thispath=$basepath/ctrl_var_gp_nan
+thispath=$basepath/mcts_and_cvmcts
 data_path=$basepath/data/unencrypted/equations_feynman
-py3=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
+opt=L-BFGS-B
 type=$1
 noise_type=normal
 noise_scale=0.0
 metric_name=neg_mse
-
 
 if [[ $type -eq 2 ]]
 then
@@ -32,52 +32,14 @@ echo "Incorrect input"
 fi
 
 for eq_name in $all_files; do
-   	dump_dir=$basepath/result/Feynman_var$type/$(date +%F)
-    if [ ! -d "$dump_dir" ]
-    then
-    	echo "create dir: $dump_dir"
-    	mkdir -p $dump_dir
+	echo "submit $eq_name"
+	dump_dir=$basepath/result/feynman_vars${type}/$(date +%F)
+	if [ ! -d "$dump_dir" ]; then
+		echo "create dir: $dump_dir"
+		mkdir -p $dump_dir
 	fi
-	log_dir=$basepath/log/Feynman_var$type/$(date +%F)/
-	if [ ! -d "$log_dir" ]
-	then
-    	echo "create dir: $log_dir"
-    	mkdir -p $log_dir
-	fi
-    sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
-#!/bin/bash -l
-
-#SBATCH --job-name="gp_${type}_${eq_name}"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
-#SBATCH --constraint=A
-#SBATCH --time=12:00:00
-#SBATCH --mem=4GB
-
-hostname
-
-$py3 $thispath/main.py --equation_name $data_path/$eq_name \
-        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.gp.out
-
-EOT
-
-	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
-#!/bin/bash -l
-
-#SBATCH --job-name="gp_${type}_$eq_name"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.cvgp.out
-#SBATCH --constraint=A
-#SBATCH --time=12:00:00
-#SBATCH --mem=4GB
-
-hostname
-
-
-$py3 $thispath/main.py --equation_name $data_path/$eq_name --expand_gp \
-        		--metric_name 'neg_mse' --noise_type $noise_type --noise_scale $noise_scale \
-        		 > $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.cvgp.out
-
-EOT
+	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
+		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
+		>$dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cv_mcts.out &
 
 done
-

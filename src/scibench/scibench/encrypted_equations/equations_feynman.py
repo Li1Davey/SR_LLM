@@ -3,25 +3,12 @@ import numpy as np
 from base import KnownEquation, LogUniformSampling, IntegerUniformSampling, UniformSampling
 import sympy
 
-
-GRAVITATIONAL_CONSTANT = 6.67430e-11
-GRAVITATIONAL_ACCELERATION = 9.80665
-SPEED_OF_LIGHT = 2.99792458e8
-ELECTRIC_CONSTANT = 8.854e-12
-PLANCK_CONSTANT = 6.626e-34
-BOLTZMANN_CONSTANT = 1.380649e-23
-BOHR_MAGNETON = 9.2740100783e-24
-DIRAC_CONSTANT = 1.054571817e-34
-ELECTRON_MASS = 9.10938356e-31
-FINE_STRUCTURE_CONSTANT = 7.2973525693e-3
-
 EQUATION_CLASS_DICT = OrderedDict()
 
 
 def register_eq_class(cls):
     EQUATION_CLASS_DICT[cls.__name__] = cls
     return cls
-
 
 
 def get_eq_obj(key, **kwargs):
@@ -46,9 +33,7 @@ class FeynmanICh6Eq20a(KnownEquation):
     expr_consts_thres = None
 
     def __init__(self):
-        vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
-
-        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=1)
         x = self.x
         self.sympy_eq = sympy.exp(-x[0] ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
 
@@ -65,16 +50,12 @@ class FeynmanICh29Eq4(KnownEquation):
     """
     _eq_name = 'feynman-i.29.4'
     _function_set = ['add', 'sub', 'mul', 'div', 'const']
-    expr_obj_thres = 100
+    expr_obj_thres = 1
 
     def __init__(self):
-        vars_range_and_types = [
-            LogUniformSampling(1.0e9, 1.0e11, only_positive=True)
-        ]
-
-        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = x[0] / SPEED_OF_LIGHT
+        self.sympy_eq = x[0]/100
 
 
 @register_eq_class
@@ -91,11 +72,9 @@ class FeynmanICh34Eq27(KnownEquation):
     _function_set = ['add', 'sub', 'mul', 'div', 'const']
 
     def __init__(self):
-        vars_range_and_types = [LogUniformSampling(1.0e9, 1.0e11, only_positive=True)]
-
-        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) * x[0]
+        self.sympy_eq = (1 / (2 * sympy.pi)) * x[0]
 
 
 @register_eq_class
@@ -114,9 +93,9 @@ class FeynmanIICh8Eq31(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e1, 1.0e3, only_positive=True)]
 
-        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2 / 2
+        self.sympy_eq = x[0] ** 2 / 2
 
 
 @register_eq_class
@@ -135,9 +114,9 @@ class FeynmanIICh27Eq16(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
-        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2
+        self.sympy_eq = x[0] ** 2
 
 
 @register_eq_class
@@ -156,9 +135,9 @@ class FeynmanIICh27Eq18(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
-        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = ELECTRIC_CONSTANT * x[0] ** 2
+        self.sympy_eq = 1 * x[0] ** 2
 
 
 @register_eq_class
@@ -177,9 +156,9 @@ class FeynmanIIICh12Eq43(KnownEquation):
     def __init__(self):
         vars_range_and_types = [IntegerUniformSampling(1, 1.0e2, only_positive=True)]
 
-        super().__init__(num_vars=1, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=1)
         x = self.x
-        self.sympy_eq = x[0] * (PLANCK_CONSTANT / (2 * sympy.pi))
+        self.sympy_eq = x[0] * (1 / (2 * sympy.pi))
 
 
 @register_eq_class
@@ -194,7 +173,7 @@ class FeynmanICh12Eq1(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.12.1'
-    _function_set = ['add', 'sub', 'mul', 'div']  #
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']  #
     expr_obj_thres = 0.1
     expr_consts_thres = None
 
@@ -204,7 +183,7 @@ class FeynmanICh12Eq1(KnownEquation):
             LogUniformSampling(1.0e-2, 1.0, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] * x[1]
 
@@ -227,7 +206,7 @@ class FeynmanICh6Eq20(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = sympy.exp(-(x[0] / x[1]) ** 2 / 2) / (sympy.sqrt(2 * sympy.pi) * x[1])
 
@@ -254,9 +233,9 @@ class FeynmanICh10Eq7(KnownEquation):
             LogUniformSampling(1.0e5, 1.0e8, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / 10000)
 
 
 @register_eq_class
@@ -277,9 +256,9 @@ class FeynmanICh12Eq4(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] * x[1] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] ** 3)
+        self.sympy_eq = x[0] * x[1] / (4 * sympy.pi * x[1] ** 3)
 
 
 @register_eq_class
@@ -299,9 +278,9 @@ class FeynmanICh14Eq3(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-2, 1.0)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = GRAVITATIONAL_ACCELERATION * x[0] * x[1]
+        self.sympy_eq = 1 * x[0] * x[1]
 
 
 @register_eq_class
@@ -316,12 +295,12 @@ class FeynmanICh12Eq5(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.12.5'
-    _function_set = ['add', 'sub', 'mul', 'div']
+    _function_set = ['add', 'sub', 'mul', 'div', 'const']
 
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] * x[1]
 
@@ -343,7 +322,7 @@ class FeynmanICh14Eq4(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e2, 1.0e4, only_positive=True), LogUniformSampling(1.0e-2, 1.0)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = 1 / 2 * x[0] * x[1] ** 2
 
@@ -366,9 +345,9 @@ class FeynmanICh15Eq10(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e5, 1.0e7)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / 10000)
 
 
 @register_eq_class
@@ -389,9 +368,9 @@ class FeynmanICh16Eq6(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e6, 1.0e8, only_positive=True), LogUniformSampling(1.0e6, 1.0e8, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = (x[0] + x[1]) / (1 + x[0] * x[1] / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = (x[0] + x[1]) / (1 + x[0] * x[1] / 100)
 
 
 @register_eq_class
@@ -407,12 +386,12 @@ class FeynmanICh25Eq13(KnownEquation):
         - x[1] != 0
     """
     _eq_name = 'feynman-i.25.13'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
 
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-5, 1.0e-3), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / x[1]
 
@@ -431,14 +410,14 @@ class FeynmanICh26Eq2(KnownEquation):
         - x[0] * np.sin(x[1]) <= np.pi/2
     """
     _eq_name = 'feynman-i.26.2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         vars_range_and_types = [
             UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = sympy.sin(x[0]) / sympy.sin(x[1])
 
@@ -464,9 +443,9 @@ class FeynmanICh32Eq5(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e5, 1.0e7, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] ** 2 * x[1] ** 2 / (6 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 3)
+        self.sympy_eq = x[0] ** 2 * x[1] ** 2 / (6 * sympy.pi)
 
 
 @register_eq_class
@@ -487,9 +466,9 @@ class FeynmanICh34Eq10(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e9, 1.0e11, only_positive=True), LogUniformSampling(1.0e5, 1.0e7)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] / (1 - x[1] / SPEED_OF_LIGHT)
+        self.sympy_eq = x[0] / (1 - x[1] / 20)
 
 
 @register_eq_class
@@ -511,9 +490,9 @@ class FeynmanICh34Eq14(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e6, 1.0e8), LogUniformSampling(1.0e9, 1.0e11, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = (1 + x[0] / SPEED_OF_LIGHT) / sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1]
+        self.sympy_eq = (1 + x[0] / 1) / sympy.sqrt(1 - x[0] ** 2 / 1 ** 2) * x[1]
 
 
 @register_eq_class
@@ -538,9 +517,9 @@ class FeynmanICh38Eq12(KnownEquation):
             LogUniformSampling(1.0e-11, 1.0e-9)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = 4 * sympy.pi * ELECTRIC_CONSTANT * (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (x[0] * x[1] ** 2)
+        self.sympy_eq = 4 * sympy.pi * (1 / (2 * sympy.pi)) ** 2 / (x[0] * x[1] ** 2)
 
 
 @register_eq_class
@@ -562,7 +541,7 @@ class FeynmanICh39Eq10(KnownEquation):
             LogUniformSampling(1.0e4, 1.0e6, only_positive=True), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = 3 / 2 * x[0] * x[1]
 
@@ -587,10 +566,10 @@ class FeynmanICh41Eq16(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = PLANCK_CONSTANT / (2 * sympy.pi) * x[0] ** 3 / (sympy.pi ** 2 * SPEED_OF_LIGHT ** 2 * (
-                sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1))
+        self.sympy_eq = 1 / (2 * sympy.pi) * x[0] ** 3 / (sympy.pi ** 2 * (
+                sympy.exp(x[0] / x[1]) - 1))
 
 
 @register_eq_class
@@ -612,9 +591,9 @@ class FeynmanICh43Eq31(KnownEquation):
             LogUniformSampling(1.0e13, 1.0e15, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1]
+        self.sympy_eq = x[0] * x[1]
 
 
 @register_eq_class
@@ -638,9 +617,9 @@ class FeynmanICh48Eq2(KnownEquation):
             LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] * SPEED_OF_LIGHT ** 2 / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / 10000)
 
 
 @register_eq_class
@@ -661,7 +640,7 @@ class FeynmanIICh3Eq24(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0, 1.0e2), LogUniformSampling(1.0e-2, 1.0, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / (4 * sympy.pi * x[1] ** 2)
 
@@ -684,9 +663,9 @@ class FeynmanIICh4Eq23(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-2, 1.0, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
+        self.sympy_eq = x[0] / (4 * sympy.pi * x[1])
 
 
 @register_eq_class
@@ -707,9 +686,9 @@ class FeynmanIICh8Eq7(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-12, 1.0e-10, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = 3 / 5 * x[0] ** 2 / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1])
+        self.sympy_eq = 3 / 5 * x[0] ** 2 / (4 * sympy.pi * x[1])
 
 
 @register_eq_class
@@ -730,9 +709,9 @@ class FeynmanIICh10Eq9(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0, 1.0e2, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] / ELECTRIC_CONSTANT * 1 / (1 + x[1])
+        self.sympy_eq = x[0] / 1 / (1 + x[1])
 
 
 @register_eq_class
@@ -756,7 +735,7 @@ class FeynmanIICh11Eq28(KnownEquation):
             LogUniformSampling(1.0e-33, 1.0e-31, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = 1 + x[0] * x[1] / (1 - (x[0] * x[1] / 3))
 
@@ -779,9 +758,9 @@ class FeynmanIICh13Eq17(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2) * 2 * x[0] / x[1]
+        self.sympy_eq = 1 / (4 * sympy.pi) * 2 * x[0] / x[1]
 
 
 @register_eq_class
@@ -805,9 +784,9 @@ class FeynmanIICh13Eq23(KnownEquation):
             LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = x[0] / sympy.sqrt(1 - x[1] ** 2 / 10000)
 
 
 @register_eq_class
@@ -831,9 +810,9 @@ class FeynmanIICh13Eq34(KnownEquation):
             LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = x[0] * x[1] / sympy.sqrt(1 - x[1] ** 2 / 10000)
 
 
 @register_eq_class
@@ -855,9 +834,9 @@ class FeynmanIICh24Eq17(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e9, 1.0e11), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.sqrt(x[0] ** 2 / SPEED_OF_LIGHT ** 2 - sympy.pi ** 2 / x[1] ** 2)
+        self.sympy_eq = sympy.sqrt(x[0] ** 2 / 10000 - sympy.pi ** 2 / x[1] ** 2)
 
 
 @register_eq_class
@@ -878,9 +857,9 @@ class FeynmanIICh34Eq29a(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] * PLANCK_CONSTANT / (4 * sympy.pi * x[1])
+        self.sympy_eq = x[0] / (4 * sympy.pi * x[1])
 
 
 @register_eq_class
@@ -904,7 +883,7 @@ class FeynmanIICh38Eq14(KnownEquation):
             LogUniformSampling(1.0e-2, 1.0, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
         self.sympy_eq = x[0] / (2 * (1 + x[1]))
 
@@ -931,9 +910,9 @@ class FeynmanIIICh4Eq32(KnownEquation):
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = 1 / (sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
+        self.sympy_eq = 1 / (sympy.exp((1 / (2 * sympy.pi)) * x[0] / (x[1])) - 1)
 
 
 @register_eq_class
@@ -958,10 +937,10 @@ class FeynmanIIICh4Eq33(KnownEquation):
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (
-                sympy.exp((PLANCK_CONSTANT / (2 * sympy.pi)) * x[0] / (BOLTZMANN_CONSTANT * x[1])) - 1)
+        self.sympy_eq = (1 / (2 * sympy.pi)) * x[0] / (
+                sympy.exp((1 / (2 * sympy.pi)) * x[0] / (x[1])) - 1)
 
 
 @register_eq_class
@@ -981,9 +960,9 @@ class FeynmanIIICh7Eq38(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-11, 1.0e-9), LogUniformSampling(1.0e-3, 1.0e-1)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = 2 * x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))
+        self.sympy_eq = 2 * x[0] * x[1] / (1 / (2 * sympy.pi))
 
 
 @register_eq_class
@@ -1003,9 +982,9 @@ class FeynmanIIICh8Eq54(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-18, 1.0e-16), LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = sympy.sin(x[0] * x[1] / (PLANCK_CONSTANT / (2 * sympy.pi))) ** 2
+        self.sympy_eq = sympy.sin(x[0] * x[1] / (1 / (2 * sympy.pi))) ** 2
 
 
 @register_eq_class
@@ -1030,9 +1009,9 @@ class FeynmanIIICh15Eq14(KnownEquation):
             LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2 / (2 * x[0] * x[1] ** 2)
+        self.sympy_eq = (1 / (2 * sympy.pi)) ** 2 / (2 * x[0] * x[1] ** 2)
 
 
 @register_eq_class
@@ -1053,9 +1032,9 @@ class FeynmanBonus8(KnownEquation):
     def __init__(self):
         vars_range_and_types = [LogUniformSampling(1.0e-24, 1.0e-22, only_positive=True), UniformSampling(-np.pi, np.pi)]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = x[0] / (1 + x[0] / (ELECTRON_MASS * SPEED_OF_LIGHT ** 2) * (1 - sympy.cos(x[1])))
+        self.sympy_eq = x[0] / (1 + x[0] * (1 - sympy.cos(x[1])))
 
 
 @register_eq_class
@@ -1081,9 +1060,9 @@ class FeynmanBonus10(KnownEquation):
             LogUniformSampling(1.0e5, 1.0e7, only_positive=True)
         ]
 
-        super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=2)
         x = self.x
-        self.sympy_eq = (sympy.cos(x[0]) - x[1] / SPEED_OF_LIGHT) / (1 - x[1] / SPEED_OF_LIGHT * sympy.cos(x[0]))
+        self.sympy_eq = (sympy.cos(x[0]) - x[1]) / (1 - x[1] * sympy.cos(x[0]))
 
 
 @register_eq_class
@@ -1108,7 +1087,7 @@ class FeynmanICh6Eq20b(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = sympy.exp(-((x[0] - x[1]) / x[2]) ** 2 / 2) / sympy.sqrt(2 * sympy.pi)
 
@@ -1135,9 +1114,9 @@ class FeynmanICh12Eq2(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = x[0] * x[1] * x[2] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[2] ** 3)
+        self.sympy_eq = x[0] * x[1] * x[2] / (4 * sympy.pi * x[2] ** 3)
 
 
 @register_eq_class
@@ -1162,9 +1141,9 @@ class FeynmanICh15Eq3t(KnownEquation):
             LogUniformSampling(1.0e5, 1.0e7), LogUniformSampling(1.0, 1.0e2)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = (x[0] - x[1] * x[2] / SPEED_OF_LIGHT ** 2) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = (x[0] - x[1] * x[2]) / sympy.sqrt(1 - x[1] ** 2 / 10000)
 
 
 @register_eq_class
@@ -1189,9 +1168,9 @@ class FeynmanICh15Eq3x(KnownEquation):
             LogUniformSampling(1.0e-6, 1.0e-4, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = (x[0] - x[1] * x[2]) / sympy.sqrt(1 - x[1] ** 2 / SPEED_OF_LIGHT ** 2)
+        self.sympy_eq = (x[0] - x[1] * x[2]) / sympy.sqrt(1 - x[1] ** 2 / 10000)
 
 
 @register_eq_class
@@ -1216,10 +1195,9 @@ class FeynmanBonus20(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = 1 / (4 * sympy.pi) * FINE_STRUCTURE_CONSTANT ** 2 * PLANCK_CONSTANT ** 2 / (
-                ELECTRON_MASS ** 2 * SPEED_OF_LIGHT ** 2) * (x[0] / x[1]) ** 2 * (x[0] / x[1] + x[1] / x[0] - sympy.sin(x[2]) ** 2)
+        self.sympy_eq = 1 / (4 * sympy.pi) * (x[0] / x[1]) ** 2 * (x[0] / x[1] + x[1] / x[0] - sympy.sin(x[2]) ** 2)
 
 
 @register_eq_class
@@ -1243,7 +1221,7 @@ class FeynmanICh18Eq12(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * x[1] * sympy.sin(x[2])
 
@@ -1272,7 +1250,7 @@ class FeynmanICh27Eq6(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e1, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 1 / (1 / x[0] + x[1] / x[2])
 
@@ -1299,7 +1277,7 @@ class FeynmanICh30Eq3(KnownEquation):
             UniformSampling(-2 * np.pi, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * sympy.sin(x[1] * x[2] / 2) ** 2 / sympy.sin(x[2] / 2) ** 2
 
@@ -1328,7 +1306,7 @@ class FeynmanICh30Eq5(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] / (x[1] * sympy.sin(x[2]))
 
@@ -1355,7 +1333,7 @@ class FeynmanICh37Eq4(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] + x[1] + 2 * sympy.sqrt(x[0] * x[1]) * sympy.cos(x[2])
 
@@ -1382,7 +1360,7 @@ class FeynmanICh39Eq11(KnownEquation):
             LogUniformSampling(1.0e4, 1.0e6, only_positive=True), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 1 / (x[0] - 1) * x[1] * x[2]
 
@@ -1409,9 +1387,9 @@ class FeynmanICh39Eq22(KnownEquation):
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True), LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] / x[2]
+        self.sympy_eq = x[0] * x[1] / x[2]
 
 
 @register_eq_class
@@ -1438,9 +1416,9 @@ class FeynmanICh43Eq43(KnownEquation):
             LogUniformSampling(1.0e-21, 1.0e-19, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = 1 / (x[0] - 1) * BOLTZMANN_CONSTANT * x[1] / x[2]
+        self.sympy_eq = 1 / (x[0] - 1) * x[1] / x[2]
 
 
 @register_eq_class
@@ -1466,7 +1444,7 @@ class FeynmanICh47Eq23(KnownEquation):
             UniformSampling(1, 2, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = sympy.sqrt(x[0] * x[1] / x[2])
 
@@ -1493,9 +1471,9 @@ class FeynmanIICh6Eq11(KnownEquation):
             LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = 1 / (4 * sympy.pi * ELECTRIC_CONSTANT) * x[0] * sympy.cos(x[1]) / x[2] ** 2
+        self.sympy_eq = 1 / (4 * sympy.pi) * x[0] * sympy.cos(x[1]) / x[2] ** 2
 
 
 @register_eq_class
@@ -1520,9 +1498,9 @@ class FeynmanIICh6Eq15b(KnownEquation):
             LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT) * 3 * sympy.cos(x[1]) * sympy.sin(x[1]) / x[2] ** 3
+        self.sympy_eq = x[0] / (4 * sympy.pi) * 3 * sympy.cos(x[1]) * sympy.sin(x[1]) / x[2] ** 3
 
 
 @register_eq_class
@@ -1548,9 +1526,9 @@ class FeynmanIICh11Eq27(KnownEquation):
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = x[0] * x[1] / (1 - (x[0] * x[1] / 3)) * ELECTRIC_CONSTANT * x[2]
+        self.sympy_eq = x[0] * x[1] / (1 - (x[0] * x[1] / 3)) * x[2]
 
 
 @register_eq_class
@@ -1574,7 +1552,7 @@ class FeynmanIICh15Eq4(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
 
@@ -1600,7 +1578,7 @@ class FeynmanIICh15Eq5(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = -x[0] * x[1] * sympy.cos(x[2])
 
@@ -1628,9 +1606,9 @@ class FeynmanIICh21Eq32(KnownEquation):
             LogUniformSampling(1.0e6, 1.0e8, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT * x[1] * (1 - x[2] / SPEED_OF_LIGHT))
+        self.sympy_eq = x[0] / (4 * sympy.pi * x[1] * (1 - x[2] / 1))
 
 
 @register_eq_class
@@ -1655,7 +1633,7 @@ class FeynmanIICh34Eq2a(KnownEquation):
             LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * x[1] / (2 * sympy.pi * x[2])
 
@@ -1681,7 +1659,7 @@ class FeynmanIICh34Eq2(KnownEquation):
             LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / 2
 
@@ -1707,9 +1685,9 @@ class FeynmanIICh34Eq29b(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1), LogUniformSampling(1.0e-26, 1.0e-22)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = x[0] * BOHR_MAGNETON * x[1] * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
+        self.sympy_eq = x[0] * x[1] * x[2] / (1 / (2 * sympy.pi))
 
 
 @register_eq_class
@@ -1733,7 +1711,7 @@ class FeynmanIICh37Eq1(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * (1 + x[1]) * x[2]
 
@@ -1759,9 +1737,9 @@ class FeynmanIIICh13Eq18(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = 2 * x[0] * x[1] ** 2 * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))
+        self.sympy_eq = 2 * x[0] * x[1] ** 2 * x[2] / (1 / (2 * sympy.pi))
 
 
 @register_eq_class
@@ -1786,7 +1764,7 @@ class FeynmanIIICh15Eq12(KnownEquation):
             LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 2 * x[0] * (1 - sympy.cos(x[1] * x[2]))
 
@@ -1814,7 +1792,7 @@ class FeynmanIIICh15Eq27(KnownEquation):
             LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = 2 * sympy.pi * x[0] / (x[1] * x[2])
 
@@ -1840,7 +1818,7 @@ class FeynmanIIICh17Eq37(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
         self.sympy_eq = x[0] * (1 + x[1] * sympy.cos(x[2]))
 
@@ -1867,9 +1845,9 @@ class FeynmanIIICh19Eq51(KnownEquation):
             IntegerUniformSampling(1, 1.0e2, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = -x[0] * x[1] ** 4 / (2 * (4 * sympy.pi * ELECTRIC_CONSTANT) ** 2 * (PLANCK_CONSTANT / (2 * sympy.pi)) ** 2) * (
+        self.sympy_eq = -x[0] * x[1] ** 4 / (2 * (4 * sympy.pi) ** 2 * (1 / (2 * sympy.pi)) ** 2) * (
                 1 / x[2] ** 2)
 
 
@@ -1898,9 +1876,9 @@ class FeynmanBonus5(KnownEquation):
             LogUniformSampling(1.0e23, 1.0e25, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = 2 * sympy.pi * x[0] ** (3 / 2) / sympy.sqrt(GRAVITATIONAL_CONSTANT * (x[1] + x[2]))
+        self.sympy_eq = 2 * sympy.pi * x[0] ** (3 / 2) / sympy.sqrt(1 * (x[1] + x[2]))
 
 
 @register_eq_class
@@ -1926,9 +1904,9 @@ class FeynmanBonus7(KnownEquation):
             LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = sympy.sqrt(8 * sympy.pi * GRAVITATIONAL_CONSTANT * x[0] / 3 - x[1] * SPEED_OF_LIGHT ** 2 / x[2] ** 2)
+        self.sympy_eq = sympy.sqrt(8 * sympy.pi * x[0] / 3 - x[1] / x[2] ** 2)
 
 
 @register_eq_class
@@ -1954,9 +1932,9 @@ class FeynmanBonus9(KnownEquation):
             LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = -32 / 5 * GRAVITATIONAL_CONSTANT ** 4 / SPEED_OF_LIGHT ** 5 * (x[0] * x[1]) ** 2 * (x[0] + x[1]) / x[2] ** 5
+        self.sympy_eq = -32 / 5 * (x[0] * x[1]) ** 2 * (x[0] + x[1]) / x[2] ** 5
 
 
 @register_eq_class
@@ -1982,9 +1960,9 @@ class FeynmanBonus15(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = sympy.sqrt(1 - x[0] ** 2 / SPEED_OF_LIGHT ** 2) * x[1] / (1 + x[0] / SPEED_OF_LIGHT * sympy.cos(x[2]))
+        self.sympy_eq = sympy.sqrt(1 - x[0] ** 2 / 1 ** 2) * x[1] / (1 + x[0] / 1 * sympy.cos(x[2]))
 
 
 @register_eq_class
@@ -2009,9 +1987,9 @@ class FeynmanBonus18(KnownEquation):
             LogUniformSampling(1.0, 1.0e2)
         ]
 
-        super().__init__(num_vars=3, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=3)
         x = self.x
-        self.sympy_eq = 3 / (8 * sympy.pi * GRAVITATIONAL_CONSTANT) * (SPEED_OF_LIGHT ** 2 * x[0] / x[1] ** 2 + x[2] ** 2)
+        self.sympy_eq = 3 / (8 * sympy.pi) * (1 ** 2 * x[0] / x[1] ** 2 + x[2] ** 2)
 
 
 @register_eq_class
@@ -2036,7 +2014,7 @@ class FeynmanICh8Eq14(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = sympy.sqrt((x[0] - x[1]) ** 2 + (x[2] - x[3]) ** 2)
 
@@ -2063,7 +2041,7 @@ class FeynmanICh13Eq4(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
@@ -2092,9 +2070,9 @@ class FeynmanICh13Eq12(KnownEquation):
             LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = GRAVITATIONAL_CONSTANT * x[0] * x[1] * (1 / x[2] - 1 / x[3])
+        self.sympy_eq = 1 * x[0] * x[1] * (1 / x[2] - 1 / x[3])
 
 
 @register_eq_class
@@ -2120,7 +2098,7 @@ class FeynmanICh18Eq4(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = (x[0] * x[1] + x[2] * x[3]) / (x[0] + x[2])
 
@@ -2148,7 +2126,7 @@ class FeynmanICh18Eq16(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] * sympy.sin(x[3])
 
@@ -2167,7 +2145,7 @@ class FeynmanICh24Eq6(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.24.6'
-    _function_set = ['add', 'sub', 'mul','n2', 'const']
+    _function_set = ['add', 'sub', 'mul', 'n2', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2175,9 +2153,9 @@ class FeynmanICh24Eq6(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2) * 1 / 2 * x[3] ** 2
+        self.sympy_eq = 1 / 2 * x[0] * (x[1] ** 2 + x[2] ** 2) / 2 * x[3] ** 2
 
 
 @register_eq_class
@@ -2203,7 +2181,7 @@ class FeynmanICh29Eq16(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = sympy.sqrt(x[0] ** 2 + x[1] ** 2 + 2 * x[0] * x[1] * sympy.cos(x[2] - x[3]))
 
@@ -2223,7 +2201,7 @@ class FeynmanICh32Eq17(KnownEquation):
         - x[2] ** 2 - x[3] ** 2 != 0
     """
     _eq_name = 'feynman-i.32.17'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv',  'n2', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'n2', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2231,9 +2209,9 @@ class FeynmanICh32Eq17(KnownEquation):
             LogUniformSampling(1.0e9, 1.0e11), LogUniformSampling(1.0e9, 1.0e11)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = (1 / 2 * ELECTRIC_CONSTANT * SPEED_OF_LIGHT * x[0] ** 2) \
+        self.sympy_eq = (1 / 2 * x[0] ** 2) \
                         * (8 * sympy.pi * x[1] ** 2 / 3) * (x[2] ** 4 / (x[2] ** 2 - x[3] ** 2) ** 2)
 
 
@@ -2252,7 +2230,7 @@ class FeynmanICh34Eq8(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-i.34.8'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2260,7 +2238,7 @@ class FeynmanICh34Eq8(KnownEquation):
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True), LogUniformSampling(1.0e9, 1.0e11, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
@@ -2289,9 +2267,9 @@ class FeynmanICh40Eq1(KnownEquation):
             LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] * sympy.exp(-x[1] * GRAVITATIONAL_ACCELERATION * x[2] / (BOLTZMANN_CONSTANT * x[3]))
+        self.sympy_eq = x[0] * sympy.exp(-x[1] * x[2] / (1 * x[3]))
 
 
 @register_eq_class
@@ -2317,7 +2295,7 @@ class FeynmanICh43Eq16(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
@@ -2347,9 +2325,9 @@ class FeynmanICh44Eq4(KnownEquation):
             LogUniformSampling(1.0e-5, 1.0e-3, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] * BOLTZMANN_CONSTANT * x[1] * sympy.log(x[2] / x[3])
+        self.sympy_eq = x[0] * x[1] * sympy.log(x[2] / x[3])
 
 
 @register_eq_class
@@ -2374,7 +2352,7 @@ class FeynmanICh50Eq26(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * (sympy.cos(x[1] * x[2]) + x[3] * sympy.cos(x[1] * x[2]) ** 2)
 
@@ -2402,9 +2380,9 @@ class FeynmanIICh11Eq20(KnownEquation):
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] * x[1] ** 2 * x[2] / (3 * BOLTZMANN_CONSTANT * x[3])
+        self.sympy_eq = x[0] * x[1] ** 2 * x[2] / (3 * x[3])
 
 
 @register_eq_class
@@ -2431,7 +2409,7 @@ class FeynmanIICh34Eq11(KnownEquation):
             LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / (2 * x[3])
 
@@ -2460,10 +2438,10 @@ class FeynmanIICh35Eq18(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] / (sympy.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
-                                + sympy.exp(-x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])))
+        self.sympy_eq = x[0] / (sympy.exp(x[1] * x[2] / (1 * x[3]))
+                                + sympy.exp(-x[1] * x[2] / (1 * x[3])))
 
 
 @register_eq_class
@@ -2481,7 +2459,7 @@ class FeynmanIICh35Eq21(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-ii.35.21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','sin','cos','tanh', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'tanh', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2490,9 +2468,9 @@ class FeynmanIICh35Eq21(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] * x[1] * sympy.tanh(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3]))
+        self.sympy_eq = x[0] * x[1] * sympy.tanh(x[1] * x[2] / (1 * x[3]))
 
 
 @register_eq_class
@@ -2510,7 +2488,7 @@ class FeynmanIICh38Eq3(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-ii.38.3'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2519,7 +2497,7 @@ class FeynmanIICh38Eq3(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * x[1] * x[2] / x[3]
 
@@ -2546,7 +2524,7 @@ class FeynmanIIICh10Eq19(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * sympy.sqrt(x[1] ** 2 + x[2] ** 2 + x[3] ** 2)
 
@@ -2566,7 +2544,7 @@ class FeynmanIIICh14Eq14(KnownEquation):
         - x[3] != 0
     """
     _eq_name = 'feynman-iii.14.14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv','exp', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'exp', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2574,9 +2552,9 @@ class FeynmanIIICh14Eq14(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = x[0] * (sympy.exp(x[1] * x[2] / (BOLTZMANN_CONSTANT * x[3])) - 1)
+        self.sympy_eq = x[0] * (sympy.exp(x[1] * x[2] / (1 * x[3])) - 1)
 
 
 @register_eq_class
@@ -2603,7 +2581,7 @@ class FeynmanIIICh21Eq20(KnownEquation):
             LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = -x[0] * x[1] * x[2] / x[3]
 
@@ -2633,9 +2611,9 @@ class FeynmanBonus1(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = (x[0] * x[1]/ (4 * x[2] * sympy.sin(x[3] / 2) ** 2)) ** 2
+        self.sympy_eq = (x[0] * x[1] / (4 * x[2] * sympy.sin(x[3] / 2) ** 2)) ** 2
 
 
 @register_eq_class
@@ -2661,7 +2639,7 @@ class FeynmanBonus3(KnownEquation):
             UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * (1 - x[1] ** 2) / (1 + x[1] * sympy.cos(x[2] - x[3]))
 
@@ -2680,7 +2658,7 @@ class FeynmanBonus11(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-bonus.11'
-    _function_set = ['add', 'sub', 'mul', 'div','n2', 'inv', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'inv', 'sin', 'cos', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2689,7 +2667,7 @@ class FeynmanBonus11(KnownEquation):
             IntegerUniformSampling(1.0, 1.0e2, only_positive=True), LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
         self.sympy_eq = x[0] * (sympy.sin(x[1] / 2) * sympy.sin(x[2] * x[3] / 2) / (x[1] / 2 * sympy.sin(x[3] / 2))) ** 2
 
@@ -2717,10 +2695,10 @@ class FeynmanBonus19(KnownEquation):
             LogUniformSampling(1.0, 1.0e2, only_positive=True), UniformSampling(-10, 10, only_positive=True)
         ]
 
-        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=4)
         x = self.x
-        self.sympy_eq = -1 / (8 * sympy.pi * GRAVITATIONAL_CONSTANT) * (
-                SPEED_OF_LIGHT ** 4 * x[0] / x[1] ** 2 + x[2] ** 2 * SPEED_OF_LIGHT ** 2 * (1 - 2 * x[3]))
+        self.sympy_eq = -1 / (8 * sympy.pi) * (
+                1 ** 4 * x[0] / x[1] ** 2 + x[2] ** 2 * (1 - 2 * x[3]))
 
 
 @register_eq_class
@@ -2738,7 +2716,7 @@ class FeynmanICh12Eq11(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.12.11'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos','const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sin', 'cos', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2748,7 +2726,7 @@ class FeynmanICh12Eq11(KnownEquation):
             UniformSampling(0.0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
         self.sympy_eq = x[0] * (x[1] + x[2] * x[3] * sympy.sin(x[4]))
 
@@ -2778,7 +2756,7 @@ class FeynmanIICh2Eq42(KnownEquation):
             LogUniformSampling(1.0e-4, 1.0e-2, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
         self.sympy_eq = x[0] * (x[1] - x[2]) * x[3] / x[4]
 
@@ -2799,7 +2777,7 @@ class FeynmanIICh6Eq15a(KnownEquation):
         - x[2] != 0
     """
     _eq_name = 'feynman-ii.6.15a'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sqrt', 'n2','n5', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sqrt', 'n2', 'n5', 'const']
 
     def __init__(self):
         vars_range_and_types = [
@@ -2808,9 +2786,9 @@ class FeynmanIICh6Eq15a(KnownEquation):
             LogUniformSampling(1.0e-10, 1.0e-8, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = x[0] / (4 * sympy.pi * ELECTRIC_CONSTANT) \
+        self.sympy_eq = x[0] / (4 * sympy.pi) \
                         * 3 * x[1] / x[2] ** 5 * sympy.sqrt(x[3] ** 2 + x[4] ** 2)
 
 
@@ -2835,12 +2813,12 @@ class FeynmanIICh11Eq3(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True), LogUniformSampling(1.0e-9, 1.0e-7, only_positive=True),
-            LogUniformSampling(1.0e-28, 1.0e-26, only_positive=True), LogUniformSampling(1.0e9, 1.0e11, only_positive=True),
-            LogUniformSampling(1.0e9, 1.0e11, only_positive=True)
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
         self.sympy_eq = x[0] * x[1] / (x[2] * (x[3] ** 2 - x[4] ** 2))
 
@@ -2865,14 +2843,14 @@ class FeynmanIICh11Eq17(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e27, 1.0e29, only_positive=True), LogUniformSampling(1.0e-22, 1.0e-20, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True),
             LogUniformSampling(1.0e1, 1.0e3, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = x[0] * (1 + x[1] * x[2] * sympy.cos(x[3]) / (BOLTZMANN_CONSTANT * x[4]))
+        self.sympy_eq = x[0] * (1 + x[1] * x[2] * sympy.cos(x[3]) / (x[4]))
 
 
 @register_eq_class
@@ -2895,16 +2873,15 @@ class FeynmanIICh36Eq38(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-25, 1.0e-23, only_positive=True), LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True),
-            LogUniformSampling(1.0e1, 1.0e3, only_positive=True), UniformSampling(0, 1, only_positive=True),
-            LogUniformSampling(1.0e23, 1.0e25, only_positive=True)
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e3, only_positive=True), UniformSampling(0, 1, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
 
-        self.sympy_eq = x[0] * x[1] / (BOLTZMANN_CONSTANT * x[2]) + (x[0] * x[3]) / (
-                ELECTRIC_CONSTANT * SPEED_OF_LIGHT ** 2 * BOLTZMANN_CONSTANT * x[2]) * x[4]
+        self.sympy_eq = x[0] * x[1] / (x[2]) + (x[0] * x[3]) / (x[2]) * x[4]
 
 
 @register_eq_class
@@ -2928,14 +2905,14 @@ class FeynmanIIICh9Eq52(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-22, 1.0e-20, only_positive=True), LogUniformSampling(1.0e1, 1.0e3, only_positive=True),
-            LogUniformSampling(1.0e-18, 1.0e-16, only_positive=True),
-            LogUniformSampling(1.0e8, 1.0e10, only_positive=True), LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = (x[0] * x[1] * x[2] / (PLANCK_CONSTANT / (2 * sympy.pi))) * sympy.sin((x[3] - x[4]) * x[2] / 2) ** 2 / (
+        self.sympy_eq = (x[0] * x[1] * x[2] / (1 / (2 * sympy.pi))) * sympy.sin((x[3] - x[4]) * x[2] / 2) ** 2 / (
                 (x[3] - x[4]) * x[2] / 2) ** 2
 
 
@@ -2962,13 +2939,13 @@ class FeynmanBonus4(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
-            LogUniformSampling(1.0e25, 1.0e27, only_positive=True),
-            LogUniformSampling(1.0e25, 1.0e27, only_positive=True), LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
-            LogUniformSampling(1.0e8, 1.0e10, only_positive=True)
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
         self.sympy_eq = sympy.sqrt(2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2)))
 
@@ -2994,12 +2971,12 @@ class FeynmanBonus12(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-12, 1.0e-10, only_positive=True),
+            LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
             LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
             LogUniformSampling(1.0e-2, 1.0, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
         self.sympy_eq = x[0] / (4 * sympy.pi * x[1] * x[2] ** 2) \
                         * (4 * sympy.pi * x[1] * x[3] * x[4] - x[0] * x[4] * x[2] ** 3 / (x[2] ** 2 - x[4] ** 2) ** 2)
@@ -3026,12 +3003,12 @@ class FeynmanBonus13(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-12, 1.0e-10, only_positive=True),
-            LogUniformSampling(1.0e-3, 1.0e-1, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True),
-            LogUniformSampling(1.0e-2, 1.0, only_positive=True), UniformSampling(0, np.pi, only_positive=True)
+            LogUniformSampling(1.0e2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), UniformSampling(0, np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
         self.sympy_eq = 1 / (4 * sympy.pi * x[0]) * x[1] / sympy.sqrt(x[2] ** 2 + x[3] ** 2 - 2 * x[2] * x[3] * sympy.cos(x[4]))
 
@@ -3053,17 +3030,17 @@ class FeynmanBonus14(KnownEquation):
         - x[4] != -2
     """
     _eq_name = 'feynman-bonus.14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'n2','n3', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'n2', 'n3', 'sin', 'cos', 'const']
     expr_obj_thres = 1e-24
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e1, 1.0e3, only_positive=True), UniformSampling(0, np.pi, only_positive=True),
-            LogUniformSampling(1.0e-2, 1.0, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), UniformSampling(0, np.pi, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
         self.sympy_eq = x[0] * sympy.cos(x[1]) * (-x[2] + x[3] ** 3 / x[2] ** 2 * (x[4] - 1) / (x[4] + 2))
 
@@ -3093,9 +3070,9 @@ class FeynmanBonus16(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
         ]
 
-        super().__init__(num_vars=5, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = sympy.sqrt((x[0] - x[1] * x[2]) ** 2 * SPEED_OF_LIGHT ** 2 + x[3] ** 2 * SPEED_OF_LIGHT ** 4) \
+        self.sympy_eq = sympy.sqrt((x[0] - x[1] * x[2]) ** 2 + x[3] ** 2) \
                         + x[1] * x[4]
 
 
@@ -3126,7 +3103,7 @@ class FeynmanICh11Eq19(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True)
         ]
 
-        super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=6)
         x = self.x
         self.sympy_eq = x[0] * x[1] + x[2] * x[3] + x[4] * x[5]
 
@@ -3155,14 +3132,14 @@ class FeynmanBonus2(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e23, 1.0e25, only_positive=True),
-            LogUniformSampling(1.0e9, 1.0e11, only_positive=True),
-            LogUniformSampling(1.0e8, 1.0e10, only_positive=True),
-            LogUniformSampling(1.0e25, 1.0e27, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
             UniformSampling(0, 2 * np.pi, only_positive=True), UniformSampling(0, 2 * np.pi, only_positive=True)
         ]
 
-        super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=6)
         x = self.x
         self.sympy_eq = x[0] * x[1] / x[2] ** 2 * (1 + sympy.sqrt(1 + 2 * x[3] * x[2] ** 2 / (x[0] * x[1] ** 2)) * sympy.cos(x[4] - x[5]))
 
@@ -3190,12 +3167,12 @@ class FeynmanBonus17(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-30, 1.0e-28, only_positive=True), LogUniformSampling(1.0e-9, 1.0e-7, only_positive=True),
-            LogUniformSampling(1.0e9, 1.0e11, only_positive=True), LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True),
-            LogUniformSampling(1.0e-1, 1.0e1, only_positive=True), LogUniformSampling(1.0e-11, 1.0e-9, only_positive=True)
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-2, 1.0e2, only_positive=True), LogUniformSampling(1.0e-2, 1.0e2, only_positive=True)
         ]
 
-        super().__init__(num_vars=6, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=6)
         x = self.x
         self.sympy_eq = 1 / (2 * x[0]) * (x[1] ** 2 + x[0] ** 2 * x[2] ** 2 * x[3] ** 2 * (1 + x[4] * x[3] / x[5]))
 
@@ -3246,7 +3223,7 @@ class FeynmanBonus6(KnownEquation):
             LogUniformSampling(1.0e-1, 1.0e1, only_positive=True),
         ]
 
-        super().__init__(num_vars=7, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=7)
         x = self.x
         # we need to write the traversal by ourself, sympy do very weried optimization, which make the numerical evaluation unstable.
         # self.eq_expression=[('sqrt', 'unary'), ('add', 'binary'), (1, 'const'), ('mul', 'binary'), (2, 'const'), ('mul', 'binary'), ('X_0', 'var'), ('mul', 'binary'), ('X_1', 'var'), ('mul', 'binary'), ('pow', 'binary'), ('X_2', 'var'), (2, 'const'), ('mul', 'binary'), ('pow', 'binary'), ('X_3', 'var'), (-1, 'const'), ('mul', 'binary'), ('pow', 'binary'), ('X_4', 'var'), (-2, 'const'), ('mul', 'binary'), ('pow', 'binary'), ('X_5', 'var'), (-2, 'const'), ('pow', 'binary'), ('X_6', 'var'), (-4, 'const'), (1/2, 'const')]
@@ -3280,31 +3257,31 @@ class FeynmanICh9Eq18(KnownEquation):
     def __init__(self):
         # Consider Cavendish experiment
         vars_range_and_types = [
-            LogUniformSampling(1.0e5, 1.0e10, only_positive=True),
-            LogUniformSampling(1.0e5, 1.0e10, only_positive=True),
-            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
-            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
-            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
-            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
-            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
-            LogUniformSampling(1.0e3, 1.0e6, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
+            LogUniformSampling(1.0e-1, 1.0e2, only_positive=True),
         ]
 
-        super().__init__(num_vars=8, vars_range_and_types=vars_range_and_types)
+        super().__init__(num_vars=8)
         x = self.x
         self.preorder_traversal = [
             ('mul', 'binary'),
-                (GRAVITATIONAL_CONSTANT, 'const'),
-                ('mul', 'binary'),
-                    (str(x[0]), 'var'),
-                    ('div', 'binary'),
-                        (str(x[1]), 'var'),
-                        ('add', 'binary'),
-                            ('n2', 'unary'), ('sub', 'binary'), (str(x[2]), 'var'), (str(x[3]), 'var'), (2, 'const'),
-                                ('add', 'binary'),
-                                    ('n2', 'unary'), ('sub', 'binary'), ('X_4', 'var'), (str(x[5]), 'var'), (2, 'const'),
-                                    ('n2', 'unary'), ('sub', 'binary'), ('X_6', 'var'), (str(x[7]), 'var'), (2, 'const'),
+            (1, 'const'),
+            ('mul', 'binary'),
+            (str(x[0]), 'var'),
+            ('div', 'binary'),
+            (str(x[1]), 'var'),
+            ('add', 'binary'),
+            ('n2', 'unary'), ('sub', 'binary'), (str(x[2]), 'var'), (str(x[3]), 'var'), (2, 'const'),
+            ('add', 'binary'),
+            ('n2', 'unary'), ('sub', 'binary'), ('X4', 'var'), (str(x[5]), 'var'), (2, 'const'),
+            ('n2', 'unary'), ('sub', 'binary'), ('X6', 'var'), (str(x[7]), 'var'), (2, 'const'),
 
         ]
 
-        self.sympy_eq = GRAVITATIONAL_CONSTANT * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)
+        self.sympy_eq = 1 * x[0] * x[1] / ((x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2)

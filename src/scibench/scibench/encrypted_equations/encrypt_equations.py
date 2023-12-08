@@ -164,10 +164,10 @@ def main(private_key_folder='./', key_filename="public.key", output_folder="./",
 
 
 if __name__ == '__main__':
-    X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7, X_8, X_9, X_10, X_11, X_12 =symbols('X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7,X_8,X_9,X_10,X_11,X_12')
-    # from equations_feynman import *
-    #
-    # main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
+    X_0,X_1,X_2,X_3,X_4,X_5,X_6,X_7, X_8, X_9, X_10, X_11, X_12 =symbols('X0,X1,X2,X3,X4,X5,X6,X7,X8,X9,X10,X11,X12')
+    from equations_feynman import *
+
+    main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_feynman')
     from equations_others import *
 
     main(output_folder='/home/jiangnan/PycharmProjects/scibench/data/', folder_prefix='equations_others')
