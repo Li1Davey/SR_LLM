@@ -104,7 +104,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
     if production_rules_mode == 'trigometric':
         from production_rules_trigometric import get_var_i_production_rules, get_production_rules
-    elif production_rules_mode == 'livermore2':
+    elif production_rules_mode == 'livermore2' or production_rules_mode == 'feynman':
         from production_rules import get_var_i_production_rules, get_production_rules
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
@@ -140,7 +140,7 @@ def run_cv_mcts(
     # define production rules and non-terminal nodes.
     if production_rules_mode == 'trigometric':
         from production_rules_trigometric import get_var_i_production_rules, get_production_rules
-    elif production_rules_mode == 'livermore2':
+    elif production_rules_mode == 'livermore2' or production_rules_mode == 'feynman':
         from production_rules import get_var_i_production_rules, get_production_rules
     production_rules = get_production_rules(0, operators_set)
     print("The production rules are:", production_rules)
