@@ -11,7 +11,7 @@ opt=L-BFGS-B
 
 noise_type=normal
 noise_scale=0.0
-metric_name=neg_nmse
+metric_name=neg_mse
 for prog in {1..25}; do
 	eq_name=${type}_Vars${nv}_$prog.in
 	echo "submit $eq_name"

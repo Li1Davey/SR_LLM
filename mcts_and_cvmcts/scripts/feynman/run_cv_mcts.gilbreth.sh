@@ -26,10 +26,11 @@ else
 	echo "Incorrect input"
 fi
 
+set -x
 for eq_name in $all_files; do
 	echo "submit $eq_name"
 	trimed_name=${eq_name:7:-3}
-	dump_dir=$basepath/result/Feynman_Vars${type}/$(date +%F)
+	dump_dir=$basepath/result/Feynman_vars$type/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
@@ -39,22 +40,9 @@ for eq_name in $all_files; do
 		echo "create dir: $log_dir"
 		mkdir -p $log_dir
 	fi
-	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
-#!/bin/bash -l
-
-#SBATCH --job-name="VSR_${type}_$trimed_name"
-#SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.cv_mcts.out
-#SBATCH --constraint=A
-#SBATCH --time=12:00:00
-#SBATCH --mem=4GB
-
-hostname
-
-$py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
-					--num_per_episodes $num_per_episodes \
-						--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
-         				> $dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cv_mcts.out
-
-EOT
+	nohup timeout 12h $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
+		--num_per_episodes $num_per_episodes \
+		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
+		>$dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cv_mcts.out &
 
 done

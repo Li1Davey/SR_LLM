@@ -2010,11 +2010,11 @@ class FeynmanICh8Eq14(KnownEquation):
 
     def __init__(self):
         vars_range_and_types = [
-            LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1),
-            LogUniformSampling(1.0e-1, 1.0e1), LogUniformSampling(1.0e-1, 1.0e1)
+            LogUniformSampling(1.0e1, 1.0e2), LogUniformSampling(1.0e-1, 1.0e1),
+            LogUniformSampling(1.0e1, 1.0e2), LogUniformSampling(1.0e-1, 1.0e1)
         ]
 
-        super().__init__(num_vars=4)
+        super().__init__(num_vars=4, vars_range_and_types=vars_range_and_types)
         x = self.x
         self.sympy_eq = sympy.sqrt((x[0] - x[1]) ** 2 + (x[2] - x[3]) ** 2)
 

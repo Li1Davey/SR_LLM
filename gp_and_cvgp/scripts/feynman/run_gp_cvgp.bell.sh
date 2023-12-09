@@ -2,7 +2,7 @@
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 
-thispath=$basepath/ctrl_var_gp_nan
+thispath=$basepath/gp_and_cvgp
 data_path=$basepath/data/unencrypted/equations_feynman
 py3=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 type=$1
@@ -26,12 +26,12 @@ fi
 
 for eq_name in $all_files; do
 	echo $eq_name
-	dump_dir=$basepath/result/Feynman_var$type/$(date +%F)
+	dump_dir=$basepath/result/Feynman_Vars${type}/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	log_dir=$basepath/log/Feynman_var$type/$(date +%F)/
+	log_dir=$basepath/log/$(date +%F)/
 	if [ ! -d "$log_dir" ]; then
 		echo "create dir: $log_dir"
 		mkdir -p $log_dir
