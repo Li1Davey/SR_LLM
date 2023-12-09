@@ -39,7 +39,7 @@ for eq_name in $all_files; do
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
 	fi
-	nohup timeout 12h $py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
+	nohup timeout 12h $py310 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
 		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
 		--num_episodes $num_episodes \
 		--production_rule_mode $rules \
