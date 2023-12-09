@@ -11,6 +11,7 @@ noise_type=normal
 noise_scale=0.0
 metric_name=neg_nmse
 num_episodes=50000
+rules=feynman
 if [[ $type -eq 2 ]]
 then
 echo EQUILATERAL
@@ -33,7 +34,7 @@ fi
 
 for eq_name in $all_files; do
 	echo "submit $eq_name"
-	dump_dir=$basepath/result/Feynman_vars${type}/$(date +%F)
+	dump_dir=$basepath/result/Feynman_Vars${type}/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
@@ -41,6 +42,7 @@ for eq_name in $all_files; do
 	timeout 12h $py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
 		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
 		--num_episodes $num_episodes \
+		--production_rule_mode $rules \
 		>$dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.mcts.out &
 
 done

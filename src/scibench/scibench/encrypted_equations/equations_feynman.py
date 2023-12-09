@@ -2933,7 +2933,7 @@ class FeynmanBonus4(KnownEquation):
         - x[4] != 0
     """
     _eq_name = 'feynman-bonus.4'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sqrt', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'const']
     expr_obj_thres = 1e-24
 
     def __init__(self):
@@ -2946,7 +2946,7 @@ class FeynmanBonus4(KnownEquation):
 
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = sympy.sqrt(2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2)))
+        self.sympy_eq = 2 / x[0] * (x[1] - x[2] - x[3] ** 2 / (2 * x[0] * x[4] ** 2))
 
 
 @register_eq_class
@@ -3091,7 +3091,7 @@ class FeynmanICh11Eq19(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.11.19'
-    _function_set = ['add', 'sub', 'mul', 'div']  #
+    _function_set = ['add', 'sub', 'mul', 'div','const']  #
     expr_obj_thres = 1e-24
 
     def __init__(self):
@@ -3126,7 +3126,7 @@ class FeynmanBonus2(KnownEquation):
         - x[3] * x[2] ** 2 / (x[0] * x[1] ** 2) >= -1 / 2
     """
     _eq_name = 'feynman-bonus.2'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos', 'sqrt', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos','n2', 'sqrt', 'const']
     expr_obj_thres = 1e-24
 
     def __init__(self):
@@ -3248,7 +3248,7 @@ class FeynmanICh9Eq18(KnownEquation):
         - (x[2] - x[3]) ** 2 + (x[4] - x[5]) ** 2 + (x[6] - x[7]) ** 2 != 0
     """
     _eq_name = 'feynman-i.9.18'
-    _function_set = ['add', 'sub', 'mul', 'div', 'n2', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div','inv', 'n2', 'const']
     expr_obj_thres = 1e-1
 
     # expr_consts_thres=None

@@ -5,9 +5,9 @@ basepath=/home/jiang631/data/scibench
 py3=/home/jiang631/miniconda3/envs/py310/bin/python3.10
 type=$1
 num_per_episodes=$2
-
+rules=feynman
 thispath=$basepath/mcts_and_cvmcts
-data_path=$basepath/data/unencrypted/equations_trigometric
+data_path=$basepath/data/unencrypted/equations_feynman
 opt=L-BFGS-B
 
 noise_type=normal
@@ -34,7 +34,7 @@ echo "Incorrect input"
 fi
 
 for eq_name in $all_files; do
-	dump_dir=$basepath/result/Feynman_vars${type}/$(date +%F)
+	dump_dir=$basepath/result/Feynman_Vars${type}/$(date +%F)
 	if [ ! -d "$dump_dir" ]; then
 		echo "create dir: $dump_dir"
 		mkdir -p $dump_dir
@@ -42,6 +42,7 @@ for eq_name in $all_files; do
 	nohup timeout 12h $py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cv_mcts \
 		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale \
 		--num_per_episodes $num_per_episodes \
+		--production_rule_mode $rules\
 		>$dump_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}${noise_scale}.cv_mcts.out &
 
 done

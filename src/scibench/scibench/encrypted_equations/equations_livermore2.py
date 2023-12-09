@@ -867,7 +867,7 @@ class Livermore2_Vars5_1(KnownEquation):
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = -x[0] + x[1] - x[2] + x[3] - x[4] - 4.75
+        self.sympy_eq = - 1.49610041*x[0] + 0.45513135* x[1] - 0.66025708* x[2] + -0.29496258*x[3] - 1.5078599*x[4] - 4.75
 
 
 @register_eq_class
@@ -884,7 +884,7 @@ class Livermore2_Vars5_2(KnownEquation):
 @register_eq_class
 class Livermore2_Vars5_3(KnownEquation):
     _eq_name = 'Livermore2_Vars5_3'
-    _function_set = ['add', 'sub', 'mul', 'const', 'log', 'sin']
+    _function_set = ['add', 'sub', 'mul', 'log', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -895,12 +895,12 @@ class Livermore2_Vars5_3(KnownEquation):
 @register_eq_class
 class Livermore2_Vars5_4(KnownEquation):
     _eq_name = 'Livermore2_Vars5_4'
-    _function_set = ['add', 'sub', 'mul', 'n2', 'const', 'sin']
+    _function_set = ['add', 'sub', 'mul', 'n2', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
         x = self.x
-        self.sympy_eq = x[1] + x[2] * x[3] + x[4] ** 2 + sympy.sin(x[0])
+        self.sympy_eq = 1.9278154269561125 *x[1] + 0.018273668817525703 *x[2] * x[3] + 1.5928760021692208 * x[4] ** 2 + -0.09851514736678954 *sympy.sin(x[0])
 
 
 @register_eq_class
@@ -928,7 +928,7 @@ class Livermore2_Vars5_6(KnownEquation):
 @register_eq_class
 class Livermore2_Vars5_7(KnownEquation):
     _eq_name = 'Livermore2_Vars5_7'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'const', 'cos']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1007,7 +1007,7 @@ class Livermore2_Vars5_13(KnownEquation):
 @register_eq_class
 class Livermore2_Vars5_14(KnownEquation):
     _eq_name = 'Livermore2_Vars5_14'
-    _function_set = ['add', 'sub', 'mul', 'div', 'const', 'exp', 'cos']
+    _function_set = ['add', 'sub', 'mul', 'div', 'exp', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1063,7 +1063,7 @@ class Livermore2_Vars5_18(KnownEquation):
 @register_eq_class
 class Livermore2_Vars5_19(KnownEquation):
     _eq_name = 'Livermore2_Vars5_19'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
@@ -1086,7 +1086,7 @@ class Livermore2_Vars5_20(KnownEquation):
 @register_eq_class
 class Livermore2_Vars5_21(KnownEquation):
     _eq_name = 'Livermore2_Vars5_21'
-    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt', 'n2', 'log', 'exp', 'sin', 'cos', 'const']
+    _function_set = ['add', 'sub', 'mul', 'div', 'sqrt',  'log', 'exp', 'sin', 'cos', 'const']
 
     def __init__(self):
         super().__init__(num_vars=5)
