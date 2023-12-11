@@ -14,11 +14,11 @@ if [ ! -d "$dump_dir" ]; then
 	mkdir -p $dump_dir
 fi
 python3 $basepath/run_eureqa.py $dump_dir \
-	--config_path $basepath/config_${operators}.json \
-	--credential_path $basepath/credentials.json \
+	--config_path $basepath/configs/config_${operators}.json \
+	--credential_path $basepath/credentials_dec8.json \
     --mc 1 \
-	--num_workers 25 \
-	--seed_shift 10010 \
-	--dataset_path $basepath/data/equations_others/${datasource} \
+	--num_workers 2 \
+	--seed_shift 42 \
+	--dataset_path $basepath/data/equations_livermore2/${datasource} \
 	--nvars $nvar
 

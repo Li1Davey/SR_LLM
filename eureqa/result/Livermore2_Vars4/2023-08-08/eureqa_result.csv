@@ -5,4 +5,4 @@ benchmark,seed,project_id,base_model_id,model_id,solution
 /home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_others/Livermore2_Vars4_22,10086,64d1ecc3f97188a226e1b7ab,64d1ed82b0318e9fd4147a54,64d1ed82b0318e9fd4147a54,547.475293284292*x2 + 0.0545561913301389*exp(x2) - 3.30363634312216
 /home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_others/Livermore2_Vars4_23,10086,64d1ecc1cebbc64456e1b989,64d1edcfb0318e9fd4147bac,64d1edcfb0318e9fd4147bac,1.01467415131156*x3*log(x4) + 1.59609377227694*log(x2)^2 + -2.6655545006722*sqrt(x1)/x2 - 0.97077687969913 - 2.70379723742947*x3 - 2.25524703195558*x2*x3
 /home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_others/Livermore2_Vars4_25,10086,64d1ecc105a4bf9e689ab6b0,64d1ed8ab0318e9fd4147a7c,64d1ed8ab0318e9fd4147a7c,1.44531065576903 + -1.00399068956286*x1/(x2*x4) + -0.195426771466407*exp(cos(x2))/x4 - 0.107435453805486*x4
->>>>>>> 055298d5eb42da97d47609e62da1370dcd779795
+

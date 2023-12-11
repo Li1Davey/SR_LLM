@@ -3,8 +3,8 @@ import os
 import numpy as np
 import pandas as pd
 from sympy.parsing.sympy_parser import parse_expr
-from symbolic_data_generator import DataX
-from symbolic_equation_evaluator_public import Equation_evaluator
+from scibench.symbolic_data_generator import DataX
+from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 
 
 def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_str, testset_size, metric_name="neg_mse"):
@@ -12,7 +12,7 @@ def compute_eureqa_all_metrics(equation_filename, noise_type, noise_scale, expr_
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
 
-    X_test = dataXgen.randn(testset_size)
+    X_test = dataXgen.randn(testset_size).T
     # y_test_noiseless = y_test
     expr_str = expr_str.replace("^", "**")
     print("orig expr string:", expr_str)
@@ -57,7 +57,7 @@ def parse_eureqa_solutions(eureqa_basepath, noise_type, noise_scale, is_numbered
 
 def pretty_print_eureqa(all_eureqa_rs, is_numbered):
     for key in ['neg_nmse', 'neg_mse', 'neg_rmse', 'neg_nrmse']:
-        # print('{}\ndata idx, gp, expand_gp, dso'.format(key))
+        # print('{}\ndata idx, gp, expand_gp, cvdso'.format(key))
         print(key, ", EUREQA")
         if is_numbered:
             for idx in range(26):

@@ -3,9 +3,9 @@ set -x
 #basepath=/home/jiang631/data/scibench
 basepath=/home/jiangnan/PycharmProjects/scibench/eureqa/
 type=Feynman
-nv=5
+nv=2
 datasource=${type}_Vars${nv}
-dates=2023-08-15
+dates=2023-12-08
 
 
 
