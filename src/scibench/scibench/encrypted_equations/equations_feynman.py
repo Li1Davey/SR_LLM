@@ -1213,7 +1213,7 @@ class FeynmanICh18Eq12(KnownEquation):
     - Constraints:
     """
     _eq_name = 'feynman-i.18.12'
-    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos']
+    _function_set = ['add', 'sub', 'mul', 'div', 'inv', 'sin', 'cos','const']
 
     def __init__(self):
         vars_range_and_types = [
