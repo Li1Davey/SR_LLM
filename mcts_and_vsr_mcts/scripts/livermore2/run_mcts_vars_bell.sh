@@ -32,7 +32,7 @@ for prog in {1..25}; do
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
-#SBATCH --mem=10240MB
+#SBATCH --mem=4GB
 
 hostname
 

@@ -1,5 +1,7 @@
 #!/usr/bin/zsh
-set -x
+
+
+
 basepath=/home/jiangnan/PycharmProjects/scibench/
 py3=/home/jiangnan/miniconda3/bin/python
 
@@ -7,7 +9,7 @@ type=$1
 nv=$2
 nt=$3
 
-thispath=$basepath/gp_and_cvgp
+thispath=$basepath/gp_and_vsr_gp
 data_path=$basepath/data/unencrypted/equations_trigometric
 
 noise_type=normal
@@ -29,11 +31,5 @@ for prog in {0..9}; do
 	fi
 	echo "$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.cvgp.out"
 	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt --cvgp \
-		--track_memory \
-		--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.bin \
 		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.cvgp.out &
-	$py3 $thispath/main.py --equation_name $data_path/$eq_name --optimizer $opt \
-		--track_memory \
-		--memray_output_bin $dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.bin \
-		--metric_name $metric_name --noise_type $noise_type --noise_scale $noise_scale >$dump_dir/prog_${prog}.metric_${metric_name}.noise_${noise_type}${noise_scale}.optim_$opt.gp.out
 done

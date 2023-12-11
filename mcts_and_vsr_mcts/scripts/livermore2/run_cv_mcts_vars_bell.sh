@@ -29,11 +29,11 @@ for prog in {1..25}; do
 	sbatch -A yexiang --nodes=1 --ntasks=1 --cpus-per-task=1 <<EOT
 #!/bin/bash -l
 
-#SBATCH --job-name="VSR-Vr${nv}_${prog}"
+#SBATCH --job-name="VSR-Var${nv}_${prog}"
 #SBATCH --output=$log_dir/${eq_name}.metric_${metric_name}.noise_${noise_type}_${noise_scale}.opt${opt}.cv_mcts.out
 #SBATCH --constraint=A
 #SBATCH --time=12:00:00
-
+#SBATCH --mem=4GB
 
 hostname
 

@@ -8,7 +8,7 @@ type=$1
 nv=$2
 nt=$3
 
-thispath=$basepath/gp_and_cvgp
+thispath=$basepath/gp_and_vsr_gp
 data_path=$basepath/data/unencrypted/equations_trigometric
 
 noise_type=normal

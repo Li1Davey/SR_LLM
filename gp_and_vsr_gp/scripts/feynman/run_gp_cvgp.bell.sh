@@ -2,7 +2,7 @@
 
 basepath=/depot/yexiang/apps/jiang631/data/scibench
 
-thispath=$basepath/gp_and_cvgp
+thispath=$basepath/gp_and_vsr_gp
 data_path=$basepath/data/unencrypted/equations_feynman
 py3=/home/jiang631/workspace/miniconda3/envs/py310/bin/python3
 type=$1
