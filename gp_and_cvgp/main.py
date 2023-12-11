@@ -29,7 +29,7 @@ config = {
 }
 
 
-def run_CVGP(equation_name, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
+def run_VSR_GP(equation_name, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -83,7 +83,7 @@ def run_CVGP(equation_name, metric_name, noise_type, noise_scale, optimizer, mem
     # set GP
     ExpandingGeneticProgram.library = protected_library
     ExpandingGeneticProgram.gp_helper = gp_helper
-    cvgp = ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
+    vsr_gp = ExpandingGeneticProgram(cxpb, mutpb, maxdepth, population_size,
                                                tour_size, hof_size, n_generations, nvar)
 
     # run GP
@@ -93,17 +93,17 @@ def run_CVGP(equation_name, metric_name, noise_type, noise_scale, optimizer, mem
             os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
             start = time.time()
-            cvgp.run()
+            vsr_gp.run()
             end_time = time.time() - start
 
     else:
         start = time.time()
-        cvgp.run()
+        vsr_gp.run()
         end_time = time.time() - start
     # print
     print('final hof=')
-    cvgp.print_hof()
-    print("CVGP {} mins".format(np.round(end_time / 60, 3)))
+    vsr_gp.print_hof()
+    print("VSR_GP {} mins".format(np.round(end_time / 60, 3)))
 
 
 def run_GP(equation_name, metric_name, noise_type, noise_scale, optimizer, memray_output_bin, track_memory=False):
@@ -119,10 +119,10 @@ def run_GP(equation_name, metric_name, noise_type, noise_scale, optimizer, memra
     cxpb = 0.8
     mutpb = 0.8
     maxdepth = 2
-    population_size = 500  # 00
+    population_size = 100  # 00
     tour_size = 3
-    hof_size = 100
-    n_generations = 80  # 00
+    hof_size = 50
+    n_generations = 20* nvar  # 00
 
     # get all the functions and variables ready
     all_tokens = create_tokens(nvar, data_query_oracle.operators_set, protected=True)
@@ -206,8 +206,8 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
 
     if args.cvgp:
-        run_CVGP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.memray_output_bin,
-                 args.track_memory)
+        run_VSR_GP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.memray_output_bin,
+                   args.track_memory)
     else:
         run_GP(args.equation_name, args.metric_name, args.noise_type, args.noise_scale, args.optimizer, args.memray_output_bin,
                args.track_memory)
