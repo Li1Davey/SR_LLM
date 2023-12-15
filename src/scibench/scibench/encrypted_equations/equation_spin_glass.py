@@ -155,3 +155,7 @@ class spin_glass_N6_M2_2(KnownEquation):
                                 IntegerUniformSampling(4, 5, only_positive=True)]
         super().__init__(num_vars=2, vars_range_and_types=vars_range_and_types)
         self.sympy_eq = Float(-0.00462963)
+
+### for differnet N, fix m, compute diagonal values of convariance matrix.
+### N must be even number.
+### need to add x^(1/2), x^(1/3), x^(1/4), x^(1/5)...
