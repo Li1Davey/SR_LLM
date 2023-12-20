@@ -33,7 +33,9 @@ var5 = ['FeynmanICh12Eq11', 'FeynmanIICh2Eq42', 'FeynmanIICh6Eq15a', 'FeynmanIIC
         'FeynmanIICh36Eq38', 'FeynmanIIICh9Eq52', 'FeynmanBonus4', 'FeynmanBonus12', 'FeynmanBonus13', 'FeynmanBonus14',
         'FeynmanBonus16']
 
-var678 = ['FeynmanICh11Eq19', 'FeynmanBonus2', 'FeynmanBonus17', 'FeynmanBonus6', 'FeynmanICh9Eq18']
+var6 = ['FeynmanICh11Eq19', 'FeynmanBonus2', 'FeynmanBonus17']
+var7 = ['FeynmanBonus6']
+var8 = ['FeynmanICh9Eq18']
 
 
 def work(arg):
@@ -208,9 +210,14 @@ def main(results_path, config_path, credential_path, mc, num_workers, seed_shift
         file_array = var4
     elif nvars == '5':
         file_array = var5
-    elif nvars == '678':
-        file_array = var678
-
+    elif nvars == '6':
+        file_array = var6
+    elif nvars == '7':
+        file_array = var7
+    elif nvars == '8':
+        file_array = var8
+    print(f"nvars={nvars}")
+    print(file_array)
     for seed in seeds:
 
         for filename in file_array:

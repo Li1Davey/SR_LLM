@@ -1,0 +1,2 @@
+benchmark,seed,project_id,base_model_id,model_id,solution
+/home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_feynman/FeynmanBonus6,42,6572e98f2602b1b25fb7c2f0,6572ea0d5bc5089b9d333098,6576dd01b38032747f38d87f,2.40525125940763 + 6.23648153397813*x1*x3/(x5*x6*x7)
