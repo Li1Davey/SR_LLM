@@ -100,9 +100,6 @@ class DeepSymbolicOptimizer(object):
         self.gp_controller = self.make_gp_controller()
 
     def train(self):
-        # Setup the model
-
-
         # Train the model
         result = {"seed": self.config_experiment["seed"]}  # Seed listed first
         result.update(learn(self.sess,

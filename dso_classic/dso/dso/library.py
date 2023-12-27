@@ -219,8 +219,7 @@ class Library():
         Tokens in the Library."""
 
         tokens = self.tokenize(inputs)
-        actions = np.array([self.tokens.index(t) for t in tokens],
-                           dtype=np.int32)
+        actions = np.array([self.tokens.index(t) for t in tokens], dtype=np.int32)
         return actions
 
 

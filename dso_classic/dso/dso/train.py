@@ -41,14 +41,9 @@ def learn(sess, controller, pool, gp_controller, output_file,
 
     """
     Executes the main training loop.
+    sess : tf.Session. TensorFlow Session object.
 
-    Parameters
-    ----------
-    sess : tf.Session
-        TensorFlow Session object.
-
-    controller : dso.controller.Controller
-        Controller object used to generate Programs.
+    controller : dso.controller.Controller. Controller object used to generate Programs.
 
     pool : multiprocessing.Pool or None
         Pool to parallelize reward computation. For the control task, each

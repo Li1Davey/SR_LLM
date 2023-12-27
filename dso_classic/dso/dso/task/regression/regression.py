@@ -198,7 +198,7 @@ class RegressionTask(HierarchicalTask):
 
         # Compute estimated values
         y_hat = p.execute(self.X_train)
-
+        # print(y_hat.shape)
         # For invalid expressions, return invalid_reward
         if p.invalid:
             return self.invalid_reward
