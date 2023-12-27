@@ -13,6 +13,7 @@ required = [
     "scipy",
     "click",
     "cryptography",
+    "zss"
 ]
 
 setup(name='scibench',
