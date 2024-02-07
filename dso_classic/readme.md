@@ -8,9 +8,10 @@ We add our dataoracle and remove the steps of loading a large ".csv" file to a a
 
 ### 2.0 prequisites
 Make sure you have alredy install the `anaconda` or `miniconda` in your computer.
+Due to the dependency on tensorflow 1.15, DSO software requires to install a old Python with version 3.7.
 1. install python environment 3.7 though conda : `conda create -n py37 python=3.7.16`.
 2. use the environment `conda env py37`.
-3. install `dso` software
+3. install `dso` software by running the following instructions in the command line:
 
 ```cmd
 cd ./dso_classic/dso
