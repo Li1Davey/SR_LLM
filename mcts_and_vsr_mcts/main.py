@@ -5,7 +5,7 @@ import os
 
 from mcts_model import MCTS
 
-from utils import create_uniform_generations, create_geometric_generations, create_reward_threshold
+from utils import create_uniform_generations, create_reward_threshold
 import random
 import numpy as np
 from scibench.symbolic_data_generator import DataX

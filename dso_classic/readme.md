@@ -2,40 +2,34 @@
 ## 2. Run DSR, PQT, VPG, GPMeld
 
 ### Our Modification
-We add our dataoracle and change the dataloader from reading a large ".csv" file to a active query API.
+We add our dataoracle and remove the steps of loading a large ".csv" file to a active query API.
+
+
 
 ### 2.0 prequisites
-
-1. install python environment 3.6.13: `conda create -n py3613 python=3.6.13`.
-2. use the enviorment `conda env py3613`.
-3. install `dso`
+Make sure you have alredy install the `anaconda` or `miniconda` in your computer.
+1. install python environment 3.7 though conda : `conda create -n py37 python=3.7.16`.
+2. use the environment `conda env py37`.
+3. install `dso` software
 
 ```cmd
-cd ./dso
-pip install --upgrade setuptools pip
+cd ./dso_classic/dso
+pip install --upgrade setuptools pip numpy Cython
 export CFLAGS="-I $(python -c "import numpy; print(numpy.get_include())") $CFLAGS"
 pip install -e ./dso
 ```
 
-3. create the `.csv` data file and `.json` model configuration file
+4. pick one configuration file inside the `dso_classic/config` folder.
 
 
-```bash
-# generate the **Noiseless** **[inv, sincos, sincosinv]** dataset with configurations *(5,5,8)*.
-./dso/dataset/gen_data.sh
-# generate the **Noisy** **[inv, sincos, sincosinv]** dataset with configurations *(5,5,8)*.
-./dso/dataset/noisy_gen_data.sh
-```
 
-4. run DSR, PQT, VPG, GPMeld models by
-   If you want to run DSR, PQT, VPG, GPMeld on **Noiseless** datasets.
+5. run `DSR`, `PQT`, `VPG`, `GPMeld` models.
+   If you want to run DSR, PQT, VPG, GPMeld on **trigonometric** datasets.
 
-```bash
-./dso/scripts/run_dsr_pqt_vpg_gpmeld.sh
-```
+You need to modify the values for `py37` and `basepath` in the file `/dso_classic/scripts/trigonometric/run_dso_series.desktop.sh`. 
 
-If you want to run DSR, PQT, VPG, GPMeld on **Noisy** datasets.
+After that, you can use any line of code inside `/dso_classic/scripts/trigonometric/onekey.sh`.
 
-```bash
-./dso/scripts/noisy_run_dsr_pqt_vpg_gpmeld.sh
-```
+For example, going to the folder `/dso_classic/scripts/trigonometric/` and run the program by
+
+`./run_dso_series.desktop.sh inv 2 11`

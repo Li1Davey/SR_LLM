@@ -1,2 +1,0 @@
-0
-{"eq_name": "spin_glass_N5_M2_1", "num_vars": 3, "dim": [1, 1, 1], "vars_range_and_types": "[{\"name\": \"IntegerUniform\", \"range\": [12, 13], \"dim\": [1], \"only_positive\": true}, {\"name\": \"IntegerUniform\", \"range\": [3, 4], \"dim\": [1], \"only_positive\": true}, {\"name\": \"IntegerUniform\", \"range\": [4, 5], \"dim\": [1], \"only_positive\": true}]", "function_set": ["add", "sub", "mul", "div", "const"], "eq_expression": "[(0.109523810000000, 'const')]", "simulated_exec": false, "expr": "0.109523810000000", "expr_obj_thres": 1e-08}

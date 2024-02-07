@@ -62,6 +62,7 @@ def decrypt_equation(eq_file, key_filename=None):
 
 
 def to_binary_expr_tree(expr):
+    """convert a Sympy expression to a binary expression tree"""
     if isinstance(expr, Symbol):
         return str(expr)
     elif isinstance(expr, Float) or isinstance(expr, Integer) or isinstance(expr, Rational):

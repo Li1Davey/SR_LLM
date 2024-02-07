@@ -4,12 +4,11 @@ py37=/home/jiangnan/anaconda3/envs/py37/bin/python3.7
 type=Livermore2
 nv=$1
 thispath=$basepath/dso_classic
-datapath=$basepath/data/unencrypted/equations_livermore2
+datapath=$basepath/data/unencrypted/equations_trigonometric
 
 
 noise_type=normal
 noise_scale=0.0
-#metric_name=neg_nmse
 for prog in {1..25}; do
 	eq_name=${type}_Vars${nv}_$prog.in
 	echo "submit $eq_name"

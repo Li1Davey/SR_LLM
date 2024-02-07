@@ -25,6 +25,7 @@ from dso.config import load_config
 from dso.tf_state_manager import make_state_manager as manager_make_state_manager
 
 
+
 class DeepSymbolicOptimizer(object):
     """
     Deep symbolic optimization model. Includes model hyperparameters and
