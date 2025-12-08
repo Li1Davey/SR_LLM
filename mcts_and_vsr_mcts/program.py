@@ -190,6 +190,17 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
         # print(e, expr)
         y_hat = np.ones(data_X.shape[-1]) * np.infty
 
+    # ------------------------------
+    # Convert scalar or list-like output to numpy array
+    y_hat = np.asarray(y_hat, dtype=float)
+
+    # Convert nan, +inf, -inf to controlled values
+    y_hat = np.nan_to_num(y_hat, nan=np.inf, posinf=np.inf, neginf=-np.inf)
+
+    # Limit values to avoid exploding during optimization
+    y_hat = np.clip(y_hat, -1e6, 1e6)
+    # ------------------------------
+
     return y_hat
 
 
