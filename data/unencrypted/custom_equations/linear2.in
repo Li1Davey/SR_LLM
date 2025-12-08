@@ -1,0 +1,2 @@
+0
+{"eq_name": "linear2", "num_vars": 2, "dim": [1, 1], "vars_range_and_types": "[{\"name\": \"Uniform\", \"range\": [-5.0, 5.0], \"dim\": [1], \"only_positive\": false}, {\"name\": \"Uniform\", \"range\": [-5.0, 5.0], \"dim\": [1], \"only_positive\": false}]", "function_set": ["add", "sub", "mul", "div", "const"], "eq_expression": "[('add', 'binary'), ('mul', 'binary'), (2.0, 'const'), ('X0', 'var'), ('mul', 'binary'), (3.0, 'const'), ('X1', 'var')]", "simulated_exec": false, "expr": "2*X0 + 3*X1", "expr_obj_thres": 0.01}
