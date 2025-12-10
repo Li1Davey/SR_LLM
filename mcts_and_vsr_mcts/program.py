@@ -1,17 +1,26 @@
 """Class for symbolic expression object or program."""
 import copy
 
-import numpy as np
+try:
+    import numpy as np
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import numpy_stub as np  # type: ignore
 import warnings
 
 warnings.filterwarnings("ignore", category=RuntimeWarning)
 np.set_printoptions(precision=4, linewidth=np.inf)
 
-from sympy.parsing.sympy_parser import parse_expr
-from sympy import lambdify
+try:
+    from sympy.parsing.sympy_parser import parse_expr
+    from sympy import lambdify
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    from sympy_stub import parse_expr, lambdify  # type: ignore
 
-from scipy.optimize import minimize
-from scipy.optimize import basinhopping, shgo, dual_annealing
+try:
+    from scipy.optimize import minimize
+    from scipy.optimize import basinhopping, shgo, dual_annealing
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    from scipy_optimize_stub import basinhopping, dual_annealing, minimize, shgo  # type: ignore
 
 from utils import pretty_print_expr
 

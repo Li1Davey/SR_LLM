@@ -1,7 +1,11 @@
-import sympy
-from sympy.core.numbers import Float, Rational, NegativeOne, Integer
-from sympy import simplify, expand, Symbol
-from sympy.parsing.sympy_parser import parse_expr
+try:
+    import sympy
+    from sympy.core.numbers import Float, Rational, NegativeOne, Integer
+    from sympy import simplify, expand, Symbol
+    from sympy.parsing.sympy_parser import parse_expr
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import sympy_stub as sympy  # type: ignore
+    from sympy_stub import Float, Rational, NegativeOne, Integer, parse_expr, Symbol, simplify, expand  # type: ignore
 
 
 def pretty_print_expr(eq) -> str:

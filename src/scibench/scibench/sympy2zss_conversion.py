@@ -1,5 +1,11 @@
-import sympy
-from sympy.utilities.misc import func_name
+try:
+    import sympy
+    from sympy.utilities.misc import func_name
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import sympy_stub as sympy  # type: ignore
+
+    def func_name(obj):  # type: ignore
+        return getattr(obj, "__name__", str(obj))
 from zss import Node, simple_distance
 
 NODE_WITH_END_TOKEN_SET = set()

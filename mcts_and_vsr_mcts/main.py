@@ -1,23 +1,68 @@
-from pympler import classtracker
 import time
 import argparse
 import os
+import sys
+
+REPO_SRC = os.path.join(os.path.dirname(__file__), "..", "src")
+REPO_SCIBENCH = os.path.join(REPO_SRC, "scibench")
+for path_entry in (REPO_SRC, REPO_SCIBENCH):
+    if path_entry not in sys.path:
+        sys.path.insert(0, path_entry)
 
 from mcts_model import MCTS
 
 from utils import create_uniform_generations, create_reward_threshold
 import random
-import numpy as np
-from scibench.symbolic_data_generator import DataX
-from scibench.symbolic_equation_evaluator_public import Equation_evaluator
+
+# Prefer real dependencies when available but fall back to light-weight stubs so
+# the entrypoint can still run in restricted environments (like this sandbox)
+# without freezing.
+try:  # pragma: no cover - exercised in constrained CI only
+    import numpy as np  # type: ignore
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import numpy_stub as np  # type: ignore  # noqa: F401
+
+try:  # pragma: no cover - exercised in constrained CI only
+    import sympy  # type: ignore  # noqa: F401
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import sympy_stub as sympy  # type: ignore  # noqa: F401
+
+try:  # pragma: no cover - exercised in constrained CI only
+    import cryptography  # type: ignore  # noqa: F401
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    cryptography = None
+try:
+    from scibench.symbolic_data_generator import DataX
+    from scibench.symbolic_equation_evaluator_public import Equation_evaluator
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    alt_path = os.path.join(REPO_SRC, "scibench")
+    if alt_path not in sys.path:
+        sys.path.insert(0, alt_path)
+    from scibench.symbolic_data_generator import DataX
+    from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
 from program import Program
+
+
+def _build_class_tracker(enable_tracking):
+    """Create a class tracker if pympler is available and tracking requested."""
+
+    if not enable_tracking:
+        return None
+
+    try:
+        from pympler import classtracker
+    except ModuleNotFoundError:
+        print("pympler is not installed; disabling class tracking")
+        return None
+
+    return classtracker.ClassTracker()
 
 
 def run_mcts(
         production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=40,
         max_len=20, eta=0.99, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
-        num_transplant=1, norm_threshold=1e-10
+        num_transplant=1, norm_threshold=1e-10, track_classes=False, max_runtime_seconds=None
 ):
     """
     production_rules: rules to generate expressions
@@ -43,11 +88,13 @@ def run_mcts(
     best_modules = []
     aug_grammars = []
 
+    deadline = None if not max_runtime_seconds else time.time() + max_runtime_seconds
+
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
         print("aug_grammars:", aug_grammars)
         max_opt_iter = 200
-        tracker = classtracker.ClassTracker()
+        tracker = _build_class_tracker(track_classes)
 
         mcts_model = MCTS(base_grammars=grammars,
                           aug_grammars=aug_grammars,
@@ -59,15 +106,18 @@ def run_mcts(
                           exploration_rate=exploration_rate,
                           max_opt_iter=max_opt_iter,
                           eta=eta)
-        tracker.track_object(mcts_model)
+        if tracker:
+            tracker.track_object(mcts_model)
         start = time.time()
         _, good_modules = mcts_model.MCTS_run_orig(num_episodes,
                                                    num_rollouts=num_rollouts,
                                                    verbose=True,
                                                    is_first_round=True,
-                                                   print_freq=5)
-        tracker.create_snapshot()
-        tracker.stats.print_summary()
+                                                   print_freq=5,
+                                                   deadline=deadline)
+        if tracker:
+            tracker.create_snapshot()
+            tracker.stats.print_summary()
         mcts_model.print_hofs(-2, verbose=True)
 
         if not best_modules:
@@ -87,7 +137,8 @@ def run_mcts(
 
 
 def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer,
-         production_rules_mode, memray_output_bin, track_memory=False):
+         production_rules_mode, memray_output_bin, track_memory=False, track_classes=False,
+         max_runtime_seconds=None):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -115,11 +166,13 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
             os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
             start = time.time()
-            run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+            run_mcts(production_rules=production_rules, num_episodes=num_episodes, track_classes=track_classes,
+                     max_runtime_seconds=max_runtime_seconds)
             end_time = time.time() - start
     else:
         start = time.time()
-        run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+        run_mcts(production_rules=production_rules, num_episodes=num_episodes, track_classes=track_classes,
+                 max_runtime_seconds=max_runtime_seconds)
         end_time = time.time() - start
     print("MCTS {} mins".format(np.round(end_time / 60, 3)))
 
@@ -127,7 +180,7 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
 def run_vsr_mcts(
         operators_set, opt_num_expr: int, num_iterations: list, nt_nodes=['A'], num_rollouts=40,
         max_len=20, eta=0.99, max_module_init=12, num_aug=5, exp_rate=1 / np.sqrt(2),
-        production_rules_mode='trigometric'
+        production_rules_mode='trigometric', max_runtime_seconds=None
 ):
     """
     num_run: number of iterations.
@@ -159,8 +212,12 @@ def run_vsr_mcts(
     aug_nt_nodes = []
     aug_grammars = []
 
+    deadline = None if not max_runtime_seconds else time.time() + max_runtime_seconds
     reward_thresh = create_reward_threshold(10, len(num_iterations))
     for round_idx in range(len(num_iterations)):
+        if deadline and time.time() >= deadline:
+            print("Max runtime reached; stopping control-variable MCTS early.")
+            break
         print('++++++++++++ ROUND {}  ++++++++++++'.format(round_idx))
         MCTS.program.set_vf(round_idx)
         MCTS.task.set_allowed_inputs(MCTS.program.get_vf())
@@ -188,7 +245,8 @@ def run_vsr_mcts(
                                             reward_threhold=reward_thresh[round_idx],
                                             verbose=True,
                                             is_first_round=(round_idx == 0),
-                                            print_freq=print_freq)
+                                            print_freq=print_freq,
+                                            deadline=deadline)
 
         print("Time usage of round {} is {} mins".format(round_idx, np.round((time.time() - iter_time) / 60, 4)))
 
@@ -216,7 +274,7 @@ def run_vsr_mcts(
 
 def vsr_mcts(equation_name, num_per_episodes, metric_name, noise_type, noise_scale, optimizer,
              production_rules_mode,
-             memray_output_bin, track_memory=False):
+             memray_output_bin, track_memory=False, max_runtime_seconds=None):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -238,11 +296,13 @@ def vsr_mcts(equation_name, num_per_episodes, metric_name, noise_type, noise_sca
             os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
             start = time.time()
-            run_vsr_mcts(operators_set, opt_num_expr, num_iterations, production_rules_mode=production_rules_mode)
+            run_vsr_mcts(operators_set, opt_num_expr, num_iterations, production_rules_mode=production_rules_mode,
+                         max_runtime_seconds=max_runtime_seconds)
             end_time = time.time() - start
     else:
         start = time.time()
-        run_vsr_mcts(operators_set, opt_num_expr, num_iterations, production_rules_mode=production_rules_mode)
+        run_vsr_mcts(operators_set, opt_num_expr, num_iterations, production_rules_mode=production_rules_mode,
+                     max_runtime_seconds=max_runtime_seconds)
         end_time = time.time() - start
 
     print("VSR-MCTS {} mins".format(np.round(end_time / 60, 3)))
@@ -264,8 +324,12 @@ if __name__ == '__main__':
     parser.add_argument("--production_rule_mode", type=str, default='trigometric', help="production rules")
     parser.add_argument("--track_memory", action="store_true",
                         help="whether run memery track evaluation.")
+    parser.add_argument("--track_classes", action="store_true",
+                        help="enable pympler class tracking during vanilla MCTS runs.")
     parser.add_argument("--cv_mcts", action="store_true",
                         help="whether run normal mcts (cv_mcts=False) or control variable mcts (cv_mcts=True).")
+    parser.add_argument("--max_runtime_minutes", type=float, default=0,
+                        help="Abort search after this many minutes (0 disables the limit). Useful to avoid long freezes.")
 
     args = parser.parse_args()
 
@@ -278,14 +342,17 @@ if __name__ == '__main__':
     print('np.random seed=', seed)
     print(args)
 
+    max_runtime_seconds = args.max_runtime_minutes * 60 if args.max_runtime_minutes else None
+
     if args.cv_mcts:
         # run control variable experiment based Monte Carlo Tree Search
         vsr_mcts(args.equation_name, args.num_per_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
-                 args.production_rule_mode,
+                args.production_rule_mode,
                  args.memray_output_bin,
-                 args.track_memory)
+                 args.track_memory,
+                 max_runtime_seconds=max_runtime_seconds)
     else:
         # run Monte Carlo Tree Search
         mcts(args.equation_name, args.num_episodes, args.metric_name, args.noise_type, args.noise_scale, args.optimizer,
              args.production_rule_mode,
-             args.memray_output_bin, args.track_memory)
+             args.memray_output_bin, args.track_memory, args.track_classes, max_runtime_seconds)

@@ -1,9 +1,17 @@
 import copy
 import sys
-import numpy as np
+import time
+
+try:
+    import numpy as np
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import numpy_stub as np  # type: ignore
 from collections import defaultdict
-from sympy import Symbol
-from sympy.parsing.sympy_parser import parse_expr
+try:
+    from sympy import Symbol
+    from sympy.parsing.sympy_parser import parse_expr
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    from sympy_stub import Symbol, parse_expr  # type: ignore
 from production_rules import production_rules_to_expr
 from program import execute
 from utils import pretty_print_expr, expression_to_template, nth_repl
@@ -390,7 +398,8 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
 
-    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
+    def MCTS_run(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10,
+                 deadline=None):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -405,6 +414,9 @@ class MCTS(object):
         best_solution = ('C', -100)
 
         for t in range(1, num_episodes + 1):
+            if deadline and time.time() >= deadline:
+                print("\tStopping search early because max runtime was reached.")
+                break
             print("\tITER {}/{}...".format(t, num_episodes))
             if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
@@ -423,6 +435,9 @@ class MCTS(object):
 
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
+                if deadline and time.time() >= deadline:
+                    print("\tStopping UCB traversal because max runtime was reached.")
+                    break
                 prob = ucb_policy(state, ntn[0])
                 print("UCB_policy... prob=", prob)
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
@@ -455,6 +470,9 @@ class MCTS(object):
 
             # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
             while unvisited_children:
+                if deadline and time.time() >= deadline:
+                    print("\tStopping rollout because max runtime was reached.")
+                    break
                 print("uniform_random_policy... ", unvisited_children)
                 # prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children)
@@ -485,7 +503,8 @@ class MCTS(object):
 
         return reward_his, self.hall_of_fame
 
-    def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
+    def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10,
+                      deadline=None):
         """
         Monte Carlo Tree Search algorithm
         """
@@ -500,6 +519,9 @@ class MCTS(object):
         best_solution = ('C', -100)
 
         for t in range(1, num_episodes + 1):
+            if deadline and time.time() >= deadline:
+                print("\tStopping search early because max runtime was reached.")
+                break
             print("\tITER {}/{}...".format(t, num_episodes))
             if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("\tIteration {}/{}...".format(t, num_episodes))
@@ -518,6 +540,9 @@ class MCTS(object):
 
             # scenario 1: if current parent node fully expanded, follow ucb_policy
             while not unvisited_children:
+                if deadline and time.time() >= deadline:
+                    print("\tStopping UCB traversal because max runtime was reached.")
+                    break
                 prob = ucb_policy(state, ntn[0])
                 print("UCB_policy... prob=", prob)
                 action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
@@ -549,6 +574,10 @@ class MCTS(object):
                     break
 
             # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
+            if deadline and time.time() >= deadline:
+                print("\tStopping rollout because max runtime was reached.")
+                break
+
             if len(unvisited_children) != 0:
                 print("uniform_random_policy... ", unvisited_children)
                 # prob = uniform_random_policy(unvisited_children)

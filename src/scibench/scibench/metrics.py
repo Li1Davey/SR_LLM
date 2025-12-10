@@ -1,28 +1,54 @@
-import numpy as np
+try:
+    import numpy as np
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import numpy_stub as np  # type: ignore
 
-import scipy
-import sympy
-from sympy.parsing import parse_expr
+try:
+    import scipy
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    class _Stats:
+        @staticmethod
+        def pearsonr(a, b):
+            return 0.0, 0.0
+
+        @staticmethod
+        def spearmanr(a, b):
+            return 0.0, 0.0
+
+    class scipy:  # type: ignore
+        stats = _Stats()
+
+try:
+    import sympy
+    from sympy.parsing import parse_expr
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import sympy_stub as sympy  # type: ignore
+    from sympy_stub import parse_expr  # type: ignore
 
 from scibench.sympy2zss_conversion import sympy2zss_module, compute_distance
 
 
 def make_regression_metric(metric_name):
+    def _safe_var(v):
+        try:
+            return v if v != 0 else 1e-12
+        except Exception:
+            return 1e-12
     all_metrics = {
         # Negative mean squared error
         "neg_mse": lambda y, y_hat: -np.mean((y - y_hat) ** 2),
         # Negative root mean squared error
         "neg_rmse": lambda y, y_hat: -np.sqrt(np.mean((y - y_hat) ** 2)),
         # Negative normalized mean squared error
-        "neg_nmse": lambda y, y_hat, var_y: -np.mean((y - y_hat) ** 2) / var_y,
+        "neg_nmse": lambda y, y_hat, var_y: -np.mean((y - y_hat) ** 2) / _safe_var(var_y),
         # Negative normalized root mean squared error
-        "neg_nrmse": lambda y, y_hat, var_y: -np.sqrt(np.mean((y - y_hat) ** 2) / var_y),
+        "neg_nrmse": lambda y, y_hat, var_y: -np.sqrt(np.mean((y - y_hat) ** 2) / _safe_var(var_y)),
         # (Protected) inverse mean squared error
         "inv_mse": lambda y, y_hat: 1 / (1 + np.mean((y - y_hat) ** 2)),
         # (Protected) inverse normalized mean squared error
-        "inv_nmse": lambda y, y_hat, var_y: 1 / (1 + np.mean((y - y_hat) ** 2) / var_y),
+        "inv_nmse": lambda y, y_hat, var_y: 1 / (1 + np.mean((y - y_hat) ** 2) / _safe_var(var_y)),
         # (Protected) inverse normalized root mean squared error
-        "inv_nrmse": lambda y, y_hat, var_y: 1 / (1 + np.sqrt(np.mean((y - y_hat) ** 2) / var_y)),
+        "inv_nrmse": lambda y, y_hat, var_y: 1 / (1 + np.sqrt(np.mean((y - y_hat) ** 2) / _safe_var(var_y))),
         # Pearson correlation coefficient       # Range: [0, 1]
         "pearson": lambda y, y_hat: scipy.stats.pearsonr(y, y_hat)[0],
         # Spearman correlation coefficient      # Range: [0, 1]

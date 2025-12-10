@@ -1,6 +1,9 @@
 from sympy import Symbol, Float, Integer, Rational
 import sympy
-import numpy as np
+try:
+    import numpy as np
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import numpy_stub as np  # type: ignore
 
 
 def production_rules_to_expr(list_of_production_rules):

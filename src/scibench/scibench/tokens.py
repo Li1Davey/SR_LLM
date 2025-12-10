@@ -1,7 +1,10 @@
 from typing import List
 
 from fractions import Fraction
-import numpy as np
+try:
+    import numpy as np
+except ModuleNotFoundError:  # pragma: no cover - sandbox fallback
+    import numpy_stub as np  # type: ignore
 
 from scibench.file_util import is_float
 
