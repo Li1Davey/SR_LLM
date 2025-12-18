@@ -268,6 +268,8 @@ if __name__ == '__main__':
                         help="whether run normal mcts (cv_mcts=False) or control variable mcts (cv_mcts=True).")
 
     args = parser.parse_args()
+    
+    os.environ["SCIBENCH_EQ_FILE"] = args.equation_name
 
     seed = int(time.perf_counter() * 10000) % 1000007
     random.seed(seed)
