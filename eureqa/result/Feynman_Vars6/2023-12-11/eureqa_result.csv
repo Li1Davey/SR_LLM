@@ -1,4 +1,0 @@
-benchmark,seed,project_id,base_model_id,model_id,solution
-/home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_feynman/FeynmanICh11Eq19,42,6572e811e338f42f72321b6a,6572e87f76b55bc79238d87c,6576dcfc62cf00dc283332b4,x1*x2 + x3*x4 + x5*x6
-/home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_feynman/FeynmanBonus2,42,6572e8112602b1b25fb7c2a6,6572e88f39d6caaeaf333108,6576dcfc210a1f25316e7818,5.44689995772887 + 0.647222814533486*x1*x2*exp(sin(0.931030040636313 + x5)/(0.974210371437386 + x3))/(x3^2)
-/home/jiangnan/PycharmProjects/scibench/data/unencrypted/equations_feynman/FeynmanBonus17,42,6572e90d55cdd5d82c321d64,6572e97ce66c024ffc6e77c9,6576ddad210a1f25316e7a3b,12.8000376413579 + 18.6304913370311*x2 + 0.49925033257348*x1*x3^2*x4^2 + 0.500000895693865*x1*x3^2*x4^3*x5/x6 - 33.2274162062551*sqrt(x2)
