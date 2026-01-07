@@ -26,7 +26,7 @@ class DataX(object):
         :return: return [#input_variables, sample_size, dimension of each variables]
         """
         list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
-        X = np.stack(list_of_X, axis=0).squeeze()
+        X = np.stack(list_of_X, axis=-1)
 
         # --- optional: save generated X to disk ---
         if os.getenv("SCIBENCH_SAVE_X", "0") == "1":

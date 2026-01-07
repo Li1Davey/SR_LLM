@@ -1,0 +1,2 @@
+0
+{"eq_name":"case3_report","num_vars":1,"dim":[1],"vars_range_and_types":"[{\"name\":\"Uniform\",\"range\":[0.0,10.0],\"dim\":[1],\"only_positive\":true}]","function_set":["add","sub","mul","exp","sin","const"],"eq_expression":"[('mul','binary'),(2.0,'const'),('sub','binary'),(1.0,'const'),('mul','binary'),('exp','unary'),('mul','binary'),(-0.3,'const'),('X0','var'),('sin','unary'),('add','binary'),('mul','binary'),(1.5,'const'),('X0','var'),(0.7,'const')]","simulated_exec":false,"expr":"2.0*(1.0 - exp(-0.3*X0)*sin(1.5*X0 + 0.7))","expr_obj_thres":0.01}
