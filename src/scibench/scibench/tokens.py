@@ -156,6 +156,10 @@ def logabs(x1):
 def expneg(x1):
     return np.exp(-x1)
 
+def safe_exp(x1):
+    """Safe exponential that clips inputs to avoid overflow."""
+    with np.errstate(over='ignore', invalid='ignore'):
+        return np.exp(np.clip(x1, -50, 50))
 
 def n3(x1):
     return np.power(x1, 3)
@@ -198,6 +202,7 @@ unprotected_ops = [
     sciToken(np.cos, "cos", arity=1, complexity=3),
     sciToken(np.tan, "tan", arity=1, complexity=4),
     sciToken(np.exp, "exp", arity=1, complexity=4),
+    sciToken(safe_exp, "safe_exp", arity=1, complexity=4),
     sciToken(np.log, "log", arity=1, complexity=4),
     sciToken(np.sqrt, "sqrt", arity=1, complexity=4),
 
@@ -231,6 +236,10 @@ def protected_exp(x1):
     with np.errstate(over='ignore'):
         return np.where(x1 < 100, np.exp(x1), 0.0)
 
+def safe_exp(x1):
+    """Safe exponential that avoids overflow by clipping the input."""
+    with np.errstate(over='ignore', invalid='ignore'):
+        return np.exp(np.clip(x1, -50, 50))
 
 def protected_log(x1):
     """Closure of log for non-positive arguments."""
@@ -280,6 +289,7 @@ protected_ops = [
 
     # Protected unary operators
     sciToken(protected_exp, "exp", arity=1, complexity=4),
+    sciToken(safe_exp, "safe_exp", arity=1, complexity=4),
     sciToken(protected_log, "log", arity=1, complexity=4),
     sciToken(protected_log, "logabs", arity=1, complexity=4),  # Protected logabs is support, but redundant
     sciToken(protected_sqrt, "sqrt", arity=1, complexity=4),

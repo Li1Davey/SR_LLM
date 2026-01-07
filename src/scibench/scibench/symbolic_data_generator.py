@@ -1,5 +1,7 @@
 import numpy as np
 import json
+import os
+from datetime import datetime
 
 
 class DataX(object):
@@ -20,12 +22,29 @@ class DataX(object):
 
     def randn(self, sample_size):
         """
-
         :param sample_size: batch size
         :return: return [#input_variables, sample_size, dimension of each variables]
         """
         list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
-        return np.stack(list_of_X, axis=0).squeeze()
+        X = np.stack(list_of_X, axis=0).squeeze()
+
+        # --- optional: save generated X to disk ---
+        if os.getenv("SCIBENCH_SAVE_X", "0") == "1":
+            save_dir = os.getenv("SCIBENCH_SAVE_DIR", "")
+            eq_file = os.getenv("SCIBENCH_EQ_FILE", "unknown_equation")
+            run_tag = os.getenv("SCIBENCH_RUN_TAG", "run")
+
+            if save_dir:
+                os.makedirs(save_dir, exist_ok=True)
+
+                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+                eq_base = os.path.splitext(os.path.basename(eq_file))[0]
+                pid = os.getpid()
+
+                out_path = os.path.join(save_dir, f"{ts}_{eq_base}_pid{pid}_{run_tag}_X.npy")
+                np.save(out_path, X)
+
+        return X
 
 
 class DefaultSampling(object):
