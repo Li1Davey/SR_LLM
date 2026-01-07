@@ -1,0 +1,78 @@
+---
+config:
+  layout: elk
+---
+classDiagram
+    direction LR
+    class Main {
+        +run_vsr_mcts()
+        +run_mcts()
+        +configure_grammar()
+    }
+    class Equation_evaluator {
+        +get_nvars()
+        +get_vars_range_and_types()
+        +evaluate()
+        +compute_metric()
+    }
+
+    class DataX {
+        +sample()
+        +vars_range_and_types
+    }
+    class RegressTask {
+        +rand_draw_data_with_X_fixed()
+        +evaluate()
+        +set_allowed_inputs()
+        +oracle
+        +dataX
+    }
+
+    class Program {
+        +optimize()
+        +evalaute_loss()
+        +set_vf()
+        +free_var_mask
+    }
+    class ProductionRules {
+        <<module>>
+        +get_production_rules()
+        +get_var_i_production_rules()
+        +base_grammar
+        +augmented_grammars
+    }
+    class Utils {
+        <<module>>
+        +create_uniform_generations()
+        +create_reward_threshold()
+        +pretty_print_expr()
+        +expression_to_template()
+        +nth_repl()
+    }
+    class MCTS {
+        +step()
+        +freeze_equations()
+        +task
+        +program
+    }
+    Main --> Equation_evaluator : instantiates
+    Equation_evaluator --> DataX : exposes ranges
+    Main --> DataX : configures
+    Main --> RegressTask : wraps
+    Main --> Program : constructs
+    Main --> MCTS : builds
+    Main --> ProductionRules : selects
+    Main --> Utils : schedules
+    RegressTask --> Equation_evaluator : evaluate (labels/metrics)
+    MCTS --> RegressTask : rand_draw_data_with_X_fixed (draw batches)
+    MCTS --> Program : optimize, evalaute_loss (score rollouts)
+    Program --> Equation_evaluator : compute_metric (loss metric)
+    MCTS ..> RegressTask : set_allowed_inputs (update allowed inputs)
+    MCTS ..> Program : set_vf (control variable mask)
+    MCTS ..> MCTS : freeze_equations (augment grammar)
+    MCTS --> ProductionRules : expand rules
+    Program --> Utils : pretty_print_expr (report expressions)
+    MCTS --> Utils : expression_to_template, nth_repl (module templating)
+
+    note for ProductionRules "Provided by production_rules.py, production_rules_trigometric.py, and production_rules_feynman.py."
+    note for Utils "Utilities in utils.py for schedules, pretty-printing, and module templating."
