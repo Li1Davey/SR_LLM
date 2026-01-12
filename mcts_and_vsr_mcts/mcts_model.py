@@ -254,6 +254,7 @@ class MCTS(object):
                 action = np.random.choice(valid_index)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 state, ntn = next_state, ntn_next
+                self.QN[state][1] += 1
 
                 if state.count(",") >= self.max_len:
                     break
