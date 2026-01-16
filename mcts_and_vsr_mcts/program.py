@@ -182,13 +182,13 @@ def execute(expr_str: str, data_X: np.ndarray, input_var_Xs):
         else:
             y_hat = float(expr)
         if y_hat is complex:
-            return np.ones(data_X.shape[-1]) * np.infty
+            return np.ones(data_X.shape[-1]) * np.inf
     except TypeError as e:
         # print(e, expr, input_var_Xs, data_X.shape)
-        y_hat = np.ones(data_X.shape[-1]) * np.infty
+        y_hat = np.ones(data_X.shape[-1]) * np.inf
     except KeyError as e:
         # print(e, expr)
-        y_hat = np.ones(data_X.shape[-1]) * np.infty
+        y_hat = np.ones(data_X.shape[-1]) * np.inf
 
     # ------------------------------
     # Convert scalar or list-like output to numpy array
