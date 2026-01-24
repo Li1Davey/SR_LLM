@@ -64,7 +64,14 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
 
-    run_mcts(production_rules=production_rules, num_episodes=num_episodes)
+    run_mcts(
+        production_rules=production_rules,
+        num_episodes=num_episodes,
+        num_rollouts=args.num_rollouts,
+        max_len=args.max_len,
+        eta=args.eta,
+    )
+
 
 
 if __name__ == "__main__":
@@ -74,6 +81,14 @@ if __name__ == "__main__":
                         choices=["BFGS", "L-BFGS-B", "Nelder-Mead", "CG", "basinhopping", "dual_annealing", "shgo"])
     parser.add_argument("--metric_name", type=str, default="neg_nmse")
     parser.add_argument("--num_episodes", type=int, default=1000)
+    parser.add_argument("--num_rollouts", type=int, default=40)
+    parser.add_argument("--max_len", type=int, default=20, help="Max grammar expansion length (tree depth limit).")
+    parser.add_argument(
+        "--eta",
+        type=float,
+        default=0.99,
+        help="Reward decay factor for expression length (closer to 1.0 = weaker penalty)"
+    )
     parser.add_argument("--noise_type", type=str, default="normal")
     parser.add_argument("--noise_scale", type=float, default=0.0)
     parser.add_argument("--production_rule_mode", type=str, default="trigometric")

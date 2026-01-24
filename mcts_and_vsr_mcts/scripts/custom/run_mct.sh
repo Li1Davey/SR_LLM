@@ -9,6 +9,9 @@ RUN="${2}"
 MODE="${3}"
 METRIC="${4}"
 NUM_EPISODES="${5:-1000}"   # default = 1000
+ROLLOUTS="${6:-40}"
+MAX_LEN="${7:-20}"
+ETA="${8:-0.99}"
 
 BASE=~/workspace/scibench
 EQ_FILE="${BASE}/data/unencrypted/custom_equations/${CASE}_report.in"
@@ -41,6 +44,9 @@ nohup timeout 48h python main.py \
   --optimizer L-BFGS-B \
   --metric_name "${METRIC}" \
   --num_episodes "${NUM_EPISODES}" \
+  --num_rollouts "${ROLLOUTS}" \
+  --max_len "${MAX_LEN}" \
+  --eta "${ETA}" \
   --noise_type normal \
   --noise_scale 0.0 \
   --production_rule_mode "${MODE}" \
