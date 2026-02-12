@@ -182,7 +182,6 @@ class MCTS(object):
         N_parent = self.QN[state][1]
         N_child = self.QN[next_state][1]
 
-        # avoid div-by-zero
         if N_child <= 0:
             return float("inf")
         if N_parent <= 0:
@@ -197,12 +196,10 @@ class MCTS(object):
         """
         action = self.grammars[action_index]
 
-        # update (state, action) edge
         edge_key = state + "," + action
         self.QN[edge_key][0] += reward
         self.QN[edge_key][1] += 1
 
-        # update state chain
         cur_state = state
         cur_action = action
 
@@ -210,7 +207,6 @@ class MCTS(object):
             self.QN[cur_state][0] += reward
             self.QN[cur_state][1] += 1
 
-            # update UCB for the action taken at this state
             try:
                 aidx = self.grammars.index(cur_action)
                 self.UCBs[cur_state][aidx] = self.update_ucb_mcts(cur_state, cur_action)
@@ -255,6 +251,9 @@ class MCTS(object):
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 state, ntn = next_state, ntn_next
 
+                # record visits to deeper nodes
+                self.QN[state][1] += 1
+
                 if state.count(",") >= self.max_len:
                     break
 
@@ -268,51 +267,83 @@ class MCTS(object):
 
         return best_r, best_eq, best_state
 
+    # -------- NEW: Tree stats helpers --------
+    def tree_num_nodes(self):
+        """Total number of nodes tracked in QN."""
+        return len(self.QN)
+
+    def tree_height(self):
+        """Maximum depth among QN states (depth = number of commas)."""
+        if not self.QN:
+            return 0
+        return max(s.count(",") for s in self.QN.keys())
+    # ----------------------------------------
+
     def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5):
         """
         Simple MCTS loop:
         - selects one unvisited child from root each episode
         - uses rollout to estimate reward
         - backpropagates reward for root-edge
-        - ALSO records best deep rollout state into QN (so exported QN is informative)
+        - records deep rollout states in QN for analysis
+        - prints tree stats only every N iterations (print_freq)
         """
         best_solution = ("C", -100)
         save_every = int(os.environ.get("SCIBENCH_SAVE_QN_EVERY", "0") or 0)
 
         for t in range(1, num_episodes + 1):
-            print("\tITER {}/{}...".format(t, num_episodes))
+            # Print only every N iterations (and at start)
+            if t == 1 or (print_freq and t % print_freq == 0):
+                print(
+                    f"\tITER {t}/{num_episodes} | "
+                    f"Tree nodes={self.tree_num_nodes()} | "
+                    f"Tree height={self.tree_height()}"
+                )
 
             state = "f->A"
             ntn = ["A"]
 
             unvisited_children = self.get_unvisited_children(state, ntn[0])
+            valid_actions = self.valid_production_rules(ntn[0])
 
+            # NEW: if root is fully expanded, choose an action by UCB (instead of stalling)
             if len(unvisited_children) != 0:
                 action_idx = np.random.choice(unvisited_children)
-                next_state, ntn_next, reward, done, eq = self.step(state, action_idx, ntn[1:])
-
-                best_state = None
-
-                if not done:
-                    reward, eq, best_state = self.rollout(num_rollouts, next_state, ntn_next)
+            else:
+                # choose best UCB among valid root actions
+                ucb_vals = self.UCBs[state][valid_actions]
+                if np.allclose(ucb_vals, 0):
+                    action_idx = np.random.choice(valid_actions)
                 else:
-                    best_state = next_state
+                    ucb_vals = self.UCBs[state][valid_actions]
+                    ucb_vals = ucb_vals - np.max(ucb_vals)
+                    p = np.exp(ucb_vals)
+                    p = p / np.sum(p)
+                    action_idx = np.random.choice(valid_actions, p=p)
 
-                # record deep best state so QN includes deeper keys
-                if best_state is not None:
-                    self.QN[best_state][0] += reward
-                    self.QN[best_state][1] += 1
+            next_state, ntn_next, reward, done, eq = self.step(state, action_idx, ntn[1:])
 
-                if reward > best_solution[1]:
-                    best_solution = (eq, reward)
+            best_state = None
+            if not done:
+                reward, eq, best_state = self.rollout(num_rollouts, next_state, ntn_next)
+            else:
+                best_state = next_state
 
-                # backprop from root choice (still improves root policy)
-                self.back_propagate(state, action_idx, reward)
+            # record deep best state so QN includes deeper keys
+            if best_state is not None:
+                self.QN[best_state][0] += reward
+                self.QN[best_state][1] += 1
+
+            if reward > best_solution[1]:
+                best_solution = (eq, reward)
+
+            # backprop from root choice
+            self.back_propagate(state, action_idx, reward)
 
             if save_every and (t % save_every == 0):
                 _save_qn_snapshot(self.QN, step=t, reason="periodic")
 
-            if t % print_freq == 0 and verbose:
+            if verbose and (t == 1 or (print_freq and t % print_freq == 0)):
                 print("#QN:", len(self.QN.keys()))
                 self.print_hofs()
 
