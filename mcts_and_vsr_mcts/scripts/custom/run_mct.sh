@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Usage:
-#   ./run_mct.sh case1 run1 feynman neg_nmse [num_episodes]
+#   ./run_mct.sh practice run1 feynman neg_nmse [NUM_EPISODES] [ROLLOUTS] [MAX_LEN] [ETA]
 
 CASE="${1}"
 RUN="${2}"
@@ -14,7 +14,7 @@ MAX_LEN="${7:-20}"
 ETA="${8:-0.99}"
 
 BASE=~/workspace/scibench
-EQ_FILE="${BASE}/data/unencrypted/custom_equations/${CASE}_report.in"
+EQ_FILE="${BASE}/data/unencrypted/custom_equations/${CASE}_report.in"report
 OUT_DIR="${BASE}/result/report_tests/${CASE}/${RUN}"
 DATA_DIR="${OUT_DIR}/generated_data"
 QN_DIR="${OUT_DIR}/qn_logs"
