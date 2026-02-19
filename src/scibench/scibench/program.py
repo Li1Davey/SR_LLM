@@ -53,83 +53,61 @@ class sciProgram(object):
 
     @classmethod
     def set_execute(cls, protected, simulated_exec=False):
-        """Sets which execute method to use"""
-
         if simulated_exec == True:
-            execute_function = python_execute2d
+            raw_execute = python_execute2d
         else:
-            # execute_function = python_execute
+            raw_execute = cython_execute
 
-            execute_function = cython_execute
+        sciProgram.protected = bool(protected)
 
-        if protected:
-            sciProgram.protected = True
-            sciProgram.execute_function = execute_function
+        # wrapper used for BOTH protected and unsafe modes
+        def execute_checked(traversal, X):
+            # avoid expensive warning logging; just ignore and check result
+            with np.errstate(all='ignore'):
+                y = raw_execute(traversal, X)
+
+            # normalize result to np.array
+            if y is None:
+                return None, True, 'none', 'invalid'
+
+            y = np.asarray(y)
+
+            # fast reject if any non-finite
+            if not np.all(np.isfinite(y)):
+                return y, True, 'nonfinite', 'invalid'
+
+            return y, False, None, None
+
+        if sciProgram.protected:
+            # protected still returns only y to caller, but we also want invalid info
+            def protected_execute(traversal, X):
+                y, invalid, error_node, error_type = execute_checked(traversal, X)
+                # stash latest flags on class so Program.execute can read if desired
+                sciProgram._last_invalid = invalid
+                sciProgram._last_error_node = error_node
+                sciProgram._last_error_type = error_type
+                return y
+
+            sciProgram.execute_function = protected_execute
+            sciProgram._last_invalid = False
+            sciProgram._last_error_node = None
+            sciProgram._last_error_type = None
+
         else:
-            sciProgram.protected = False
-
-            class InvalidLog():
-                """Log class to catch and record numpy warning messages"""
-
-                def __init__(self):
-                    self.error_type = None  # One of ['divide', 'overflow', 'underflow', 'invalid']
-                    self.error_node = None  # E.g. 'exp', 'log', 'true_divide'
-                    self.new_entry = False  # Flag for whether a warning has been encountered during a call to Program.execute()
-
-                def write(self, message):
-                    """This is called by numpy when encountering a warning"""
-
-                    if not self.new_entry:  # Only record the first warning encounter
-                        message = message.strip().split(' ')
-                        self.error_type = message[1]
-                        self.error_node = message[-1]
-                    self.new_entry = True
-
-                def update(self):
-                    """If a floating-point error was encountered, set Program.invalid
-                    to True and record the error type and error node."""
-
-                    if self.new_entry:
-                        self.new_entry = False
-                        return True, self.error_type, self.error_node
-                    else:
-                        return False, None, None
-
-            invalid_log = InvalidLog()
-            np.seterrcall(invalid_log)  # Tells numpy to call InvalidLog.write() when encountering a warning
-
-            # Define closure for execute function
+            # unsafe mode returns (y, invalid, node, type) already
             def unsafe_execute(traversal, X):
-                """This is a wrapper for execute_function. If a floating-point error
-                would be hit, a warning is logged instead, p.invalid is set to True,
-                and the appropriate nan/inf value is returned. It's up to the task's
-                reward function to decide how to handle nans/infs."""
-
-                with np.errstate(all='log'):
-                    y = execute_function(traversal, X)
-                    invalid, error_node, error_type = invalid_log.update()
-                    return y, invalid, error_node, error_type
+                return execute_checked(traversal, X)
 
             sciProgram.execute_function = unsafe_execute
 
     def execute(self, X):
-        """
-        Execute program on input X.
-
-        Parameters:
-        X : np.array. Input to execute the Program over.
-
-        Returns
-        result : np.array or list of np.array
-            In a single-object Program, returns just an array.
-        """
-
         if not sciProgram.protected:
-            # return some weired error.
             result, self.invalid, self.error_node, self.error_type = sciProgram.execute_function(self.traversal, X)
         else:
             result = sciProgram.execute_function(self.traversal, X)
-            # always protected. 1/div
+            self.invalid = getattr(sciProgram, "_last_invalid", False)
+            self.error_node = getattr(sciProgram, "_last_error_node", None)
+            self.error_type = getattr(sciProgram, "_last_error_type", None)
         return result
 
     def print_expression(self):

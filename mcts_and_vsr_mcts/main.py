@@ -6,6 +6,7 @@ import random
 import numpy as np
 
 from mcts_model import MCTS
+from scibench.program import sciProgram
 from scibench.symbolic_data_generator import DataX
 from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
@@ -17,8 +18,13 @@ def run_mcts(production_rules, non_terminal_nodes=["A"], num_episodes=1000, num_
             num_transplant=1):
     grammars = production_rules
     exploration_rate = exp_rate
+    
+    max_opt_iter = int(os.getenv("SCIBENCH_MAX_OPT_ITER", "50"))
 
-    tracker = classtracker.ClassTracker()
+
+    use_tracker = os.getenv("SCIBENCH_TRACK_MEM", "0") == "1"
+    tracker = classtracker.ClassTracker() if use_tracker else None
+
     mcts_model = MCTS(
         base_grammars=grammars,
         aug_grammars=[],
@@ -28,15 +34,25 @@ def run_mcts(production_rules, non_terminal_nodes=["A"], num_episodes=1000, num_
         max_module=max_module_init,
         aug_grammars_allowed=num_aug,
         exploration_rate=exploration_rate,
-        max_opt_iter=200,
+        max_opt_iter=max_opt_iter,
         eta=eta,
     )
-    tracker.track_object(mcts_model)
+
+    if tracker:
+        tracker.track_object(mcts_model)
 
     start = time.time()
-    mcts_model.MCTS_run_orig(num_episodes, num_rollouts=num_rollouts, verbose=True, print_freq=5)
-    tracker.create_snapshot()
-    tracker.stats.print_summary()
+    mcts_model.MCTS_run_orig(
+        num_episodes,
+        num_rollouts=num_rollouts,
+        verbose=True,
+        print_freq=5
+    )
+
+    if tracker:
+        tracker.create_snapshot()
+        tracker.stats.print_summary()
+
 
     print("MCTS {} mins".format(np.round((time.time() - start) / 60, 3)))
 
@@ -47,6 +63,10 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     nvar = data_query_oracle.get_nvars()
     operators_set = data_query_oracle.get_operators_set()
 
+    protected = os.getenv("SCIBENCH_PROTECTED", "1") == "1"
+    sciProgram.set_execute(protected=protected, simulated_exec=False)
+    print(f"[exec] protected={protected}")
+    
     regress_batchsize = 256
     MCTS.task = RegressTask(regress_batchsize, dataXgen, data_query_oracle)
     MCTS.program = Program(nvar, optimizer)

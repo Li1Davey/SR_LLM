@@ -28,5 +28,14 @@ class RegressTask(object):
 
     def reward_function(self, p):
         y_hat = p.execute(self.X)
+
+        # hard reject invalid outputs
+        if isinstance(y_hat, np.ndarray) and (not np.all(np.isfinite(y_hat))):
+            return -1e9
+
+        # if Program tracks invalids, reject those too
+        if getattr(p, "invalid", False):
+            return -1e9
+
         return self.data_query_oracle._evaluate_loss(self.X, y_hat)
     

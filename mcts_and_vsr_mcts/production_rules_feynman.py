@@ -1,5 +1,6 @@
 from sympy import Symbol, Float, Integer, Rational
 import sympy
+import os
 import numpy as np
 
 
@@ -41,6 +42,8 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     operators_set: set of mathematical operators.
     Return: for example, A->(A+A), A->(A-A), A->A*A, A->(A)/(A)
     """
+    if os.getenv("SCIBENCH_SAFE_GRAMMAR", "0") == "1":
+        return get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node)
     base_rules = [f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
                   f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
                   f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}']
@@ -79,6 +82,83 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
         rules += get_n5_rules(nvars)
     return rules
 
+def get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node="A"):
+    rules = [
+        f"{non_terminal_node}->({non_terminal_node}+{non_terminal_node})",
+        f"{non_terminal_node}->({non_terminal_node}-{non_terminal_node})",
+        f"{non_terminal_node}->{non_terminal_node}*{non_terminal_node}",
+    ]
+
+    # variables
+    rules += get_vars_rules(nvars, non_terminal_node)
+
+    # constants
+    if "const" in operators_set:
+        rules += [f"{non_terminal_node}->C"]
+
+    # inv (safe-ish): ONLY 1/Xi, not 1/(A)
+    if "inv" in operators_set:
+        for i in range(nvars):
+            rules += [f"{non_terminal_node}->1/X{i}"]
+
+    # div: constrain denominators to avoid monsters
+    if "div" in operators_set:
+        for i in range(nvars):
+            rules += [f"{non_terminal_node}->({non_terminal_node})/(X{i})"]
+            if "const" in operators_set:
+                rules += [f"{non_terminal_node}->({non_terminal_node})/(X{i}+C)"]
+
+        if nvars >= 2:
+            rules += [f"{non_terminal_node}->({non_terminal_node})/(X1-X0)"]
+            if ("abs" in operators_set) and ("const" in operators_set):
+                rules += [f"{non_terminal_node}->({non_terminal_node})/(abs(X1-X0)+C)"]
+
+    # exp: only allow exp(Xi) or exp(C*Xi), NOT exp(A)
+    if "exp" in operators_set:
+        for i in range(nvars):
+            rules += [f"{non_terminal_node}->exp(X{i})"]
+            if "const" in operators_set:
+                rules += [f"{non_terminal_node}->exp(C*X{i})"]
+
+    # sin/cos: keep restricted to variables (not sin(A))
+    if ("sin" in operators_set) or ("cos" in operators_set):
+        for i in range(nvars):
+            if "sin" in operators_set:
+                rules += [f"{non_terminal_node}->sin(X{i})"]
+            if "cos" in operators_set:
+                rules += [f"{non_terminal_node}->cos(X{i})"]
+
+    # sqrt/log/abs: these can still cause issues if applied to A repeatedly.
+    # For now: restrict them to variables (and maybe abs(A) if you want).
+    if "sqrt" in operators_set:
+        for i in range(nvars):
+            rules += [f"{non_terminal_node}->sqrt(abs(X{i}))"] if "abs" in operators_set else [f"{non_terminal_node}->sqrt(X{i})"]
+
+    if "log" in operators_set:
+        # safest: log(abs(Xi)+C) if abs+const exist
+        for i in range(nvars):
+            if ("abs" in operators_set) and ("const" in operators_set):
+                rules += [f"{non_terminal_node}->log(abs(X{i})+C)"]
+            else:
+                # less safe, but keeps compatibility
+                rules += [f"{non_terminal_node}->log(X{i})"]
+
+    if "abs" in operators_set:
+        for i in range(nvars):
+            rules += [f"{non_terminal_node}->abs(X{i})"]
+
+    # powers: keep as direct Xi**k only (avoid (A)**k explosions)
+    if "n2" in operators_set:
+        rules += get_n2_rules(nvars, non_terminal_node)
+    if "n3" in operators_set:
+        rules += get_n3_rules(nvars, non_terminal_node)
+    if "n4" in operators_set:
+        rules += get_n4_rules(nvars, non_terminal_node)
+    if "n5" in operators_set:
+        rules += get_n5_rules(nvars, non_terminal_node)
+
+    return rules
+
 
 def get_inv_rules(nvars: int, non_terminal_node='A') -> list:
     rules = []
@@ -111,7 +191,7 @@ def get_n3_rules(nvars: int, non_terminal_node='A') -> list:
 def get_n4_rules(nvars: int, non_terminal_node='A') -> list:
     rules = []
     for i in range(nvars):
-        rules += get_ith_n5_rules(i, non_terminal_node)
+        rules += get_ith_n4_rules(i, non_terminal_node)
     return rules
 
 
