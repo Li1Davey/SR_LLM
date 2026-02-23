@@ -104,14 +104,25 @@ def get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node="A
     # div: constrain denominators to avoid monsters
     if "div" in operators_set:
         for i in range(nvars):
-            rules += [f"{non_terminal_node}->({non_terminal_node})/(X{i})"]
-            if "const" in operators_set:
-                rules += [f"{non_terminal_node}->({non_terminal_node})/(X{i}+C)"]
+            # "normalized" / saturating forms
+            rules += [
+                f"A->X{i}/(X{i}+C)",
+                f"A->C/(X{i}+C)",
+            ]
 
-        if nvars >= 2:
-            rules += [f"{non_terminal_node}->({non_terminal_node})/(X1-X0)"]
-            if ("abs" in operators_set) and ("const" in operators_set):
-                rules += [f"{non_terminal_node}->({non_terminal_node})/(abs(X1-X0)+C)"]
+            for j in range(nvars):
+                if i == j:
+                    continue
+                rules += [
+                    f"A->X{i}/(X{j}+C)",
+                    f"A->(X{i}+C)/(X{j}+C)",
+                ]
+
+            # allow A in numerator, but stabilize denominator
+            rules += [f"{non_terminal_node}->({non_terminal_node})/(X{i}+C)"]
+
+        if nvars >= 2 and "abs" in operators_set:
+            rules += [f"{non_terminal_node}->({non_terminal_node})/(abs(X1-X0)+C)"]
 
     # exp: only allow exp(Xi) or exp(C*Xi), NOT exp(A)
     if "exp" in operators_set:
