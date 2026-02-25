@@ -10,6 +10,7 @@ NUM_EPISODES="${6:-1000}"
 ROLLOUTS="${7:-40}"
 MAX_LEN="${8:-20}"
 ETA="${9:-0.99}"
+KEY="${10:-0}"   # 0 = no LLM, 1 = use LLM
 
 BASE=~/workspace/scibench
 EQ_FILE="${BASE}/data/unencrypted/custom_equations/${CASE}_report.in"
@@ -44,6 +45,24 @@ if [[ "${STAGE}" == "1" ]]; then
 else
   export SCIBENCH_USE_DELTA=0
   export SCIBENCH_MAX_OPT_ITER=150
+fi
+
+# -------------------------------------------------
+# LLM subtree feedback (optional)
+# -------------------------------------------------
+if [[ "${KEY}" == "1" ]]; then
+  export SCIBENCH_LLM_ENABLE=1
+  export SCIBENCH_LLM_CACHE_DIR="${OUT_DIR}/llm_cache"
+
+  if [[ -z "${OPENAI_API_KEY:-}" ]]; then
+    echo "[ERROR] KEY=1 but OPENAI_API_KEY is not set"
+    exit 1
+  fi
+
+  echo "[INFO] LLM feedback ENABLED"
+else
+  export SCIBENCH_LLM_ENABLE=0
+  echo "[INFO] LLM feedback disabled"
 fi
 
 # -----------------------

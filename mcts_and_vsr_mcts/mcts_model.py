@@ -7,6 +7,7 @@ import numpy as np
 from collections import defaultdict
 from sympy import Symbol
 
+from llm_subtree_feedback import get_llm_subtree_bonus, LLM_BONUS_SCALE
 from production_rules import production_rules_to_expr
 from program import execute
 from utils import pretty_print_expr
@@ -220,6 +221,11 @@ class MCTS(object):
 
     def update_hall_of_fame(self, state, reward, eq):
         module = state
+        # ---- LLM subtree bonus (cheap gating: only HOF candidates) ----
+        res = get_llm_subtree_bonus(module)
+        if res is not None:
+            reward = reward + (LLM_BONUS_SCALE * res.bonus)
+        # --------------------------------------------------------------
         if state.count(",") <= self.max_module:
             if not self.hall_of_fame:
                 self.hall_of_fame = [(module, reward, eq)]
