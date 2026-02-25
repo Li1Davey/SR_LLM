@@ -1,6 +1,7 @@
 # llm_subtree_feedback.py
-import os
+import importlib
 import json
+import os
 import time
 import hashlib
 from dataclasses import dataclass
@@ -9,10 +10,15 @@ from typing import Dict, List, Optional, Tuple
 # --- knobs ---
 LLM_BONUS_SCALE = float(os.getenv("SCIBENCH_LLM_BONUS_SCALE", "0.1"))
 
-CACHE_PATH = os.getenv(
-    "SCIBENCH_LLM_CACHE_PATH",
-    os.path.expanduser("~/.cache/scibench_llm_subtree_cache.json")
-)
+_cache_path_env = os.getenv("SCIBENCH_LLM_CACHE_PATH", "").strip()
+_cache_dir_env = os.getenv("SCIBENCH_LLM_CACHE_DIR", "").strip()
+
+if _cache_path_env:
+    CACHE_PATH = _cache_path_env
+elif _cache_dir_env:
+    CACHE_PATH = os.path.join(_cache_dir_env, "scibench_llm_subtree_cache.json")
+else:
+    CACHE_PATH = os.path.expanduser("~/.cache/scibench_llm_subtree_cache.json")
 CACHE_FLUSH_EVERY = int(os.getenv("SCIBENCH_LLM_CACHE_FLUSH_EVERY", "50"))
 
 # How many subtrees to consider from a state (keep cost bounded)
@@ -21,6 +27,12 @@ MAX_SUBTREES = int(os.getenv("SCIBENCH_LLM_MAX_SUBTREES", "32"))
 # If you want to disable calling any LLM, set 0 (still uses heuristic + caching)
 ENABLE_LLM = os.getenv("SCIBENCH_LLM_ENABLE", "0") == "1"
 
+# LLM API configuration
+LLM_MODEL = os.getenv("SCIBENCH_LLM_MODEL", "gpt-4.1-mini")
+LLM_TIMEOUT_SECONDS = float(os.getenv("SCIBENCH_LLM_TIMEOUT_SECONDS", "10"))
+LLM_MAX_OUTPUT_TOKENS = int(os.getenv("SCIBENCH_LLM_MAX_OUTPUT_TOKENS", "16"))
+LLM_MIN_BONUS = float(os.getenv("SCIBENCH_LLM_MIN_BONUS", "-0.05"))
+LLM_MAX_BONUS = float(os.getenv("SCIBENCH_LLM_MAX_BONUS", "0.05"))
 
 @dataclass
 class LLMSubtreeResult:
@@ -159,6 +171,54 @@ def _llm_bonus_stub(subtree_expr: str) -> float:
     """
     return 0.0
 
+def _clamp_bonus(value: float) -> float:
+    return max(LLM_MIN_BONUS, min(LLM_MAX_BONUS, value))
+
+
+def _parse_bonus_text(raw_text: str) -> float:
+    txt = (raw_text or "").strip()
+    if not txt:
+        return 0.0
+
+    # Accept either "0.01" or tiny JSON snippets like {"bonus": 0.01}
+    if txt.startswith("{"):
+        try:
+            payload = json.loads(txt)
+            if isinstance(payload, dict) and "bonus" in payload:
+                return float(payload["bonus"])
+        except Exception:
+            pass
+
+    return float(txt)
+
+
+def _llm_bonus(subtree_expr: str) -> float:
+    """
+    Real LLM-backed scorer for subtree expressions.
+
+    Keeps the rest of MCTS unchanged: this function is the only call site for
+    OpenAI request/response logic and returns a tiny bounded shaping bonus.
+    """
+    if not os.getenv("OPENAI_API_KEY", "").strip():
+        return 0.0
+
+    openai_module = importlib.import_module("openai")
+    client = openai_module.OpenAI()
+
+    response = client.responses.create(
+        model=LLM_MODEL,
+        input=(
+            "Rate how promising this symbolic sub-expression is for modeling "
+            "a smooth physical relationship. Return only a float in "
+            f"[{LLM_MIN_BONUS}, {LLM_MAX_BONUS}] with no extra text.\n\n"
+            f"Expression:\n{subtree_expr}"
+        ),
+        max_output_tokens=LLM_MAX_OUTPUT_TOKENS,
+        timeout=LLM_TIMEOUT_SECONDS,
+    )
+
+    bonus_value = _parse_bonus_text(getattr(response, "output_text", ""))
+    return _clamp_bonus(bonus_value)
 
 def get_llm_subtree_bonus(state: str) -> Optional[LLMSubtreeResult]:
     """
@@ -186,7 +246,7 @@ def get_llm_subtree_bonus(state: str) -> Optional[LLMSubtreeResult]:
         b = _heuristic_bonus(expr)
 
         if ENABLE_LLM:
-            b += _llm_bonus_stub(expr)
+            b += _llm_bonus(expr)
 
         _cache[sid] = {
             "bonus": b,

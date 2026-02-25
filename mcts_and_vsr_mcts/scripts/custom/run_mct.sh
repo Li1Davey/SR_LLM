@@ -53,6 +53,7 @@ fi
 if [[ "${KEY}" == "1" ]]; then
   export SCIBENCH_LLM_ENABLE=1
   export SCIBENCH_LLM_CACHE_DIR="${OUT_DIR}/llm_cache"
+  export SCIBENCH_LLM_CACHE_PATH="${SCIBENCH_LLM_CACHE_DIR}/scibench_llm_subtree_cache.json"
 
   if [[ -z "${OPENAI_API_KEY:-}" ]]; then
     echo "[ERROR] KEY=1 but OPENAI_API_KEY is not set"
@@ -62,6 +63,7 @@ if [[ "${KEY}" == "1" ]]; then
   echo "[INFO] LLM feedback ENABLED"
 else
   export SCIBENCH_LLM_ENABLE=0
+  unset SCIBENCH_LLM_CACHE_PATH
   echo "[INFO] LLM feedback disabled"
 fi
 
