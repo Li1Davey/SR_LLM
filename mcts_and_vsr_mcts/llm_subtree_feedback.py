@@ -1,4 +1,5 @@
 # llm_subtree_feedback.py
+import atexit
 import importlib
 import json
 import os
@@ -33,6 +34,17 @@ LLM_TIMEOUT_SECONDS = float(os.getenv("SCIBENCH_LLM_TIMEOUT_SECONDS", "10"))
 LLM_MAX_OUTPUT_TOKENS = int(os.getenv("SCIBENCH_LLM_MAX_OUTPUT_TOKENS", "16"))
 LLM_MIN_BONUS = float(os.getenv("SCIBENCH_LLM_MIN_BONUS", "-0.05"))
 LLM_MAX_BONUS = float(os.getenv("SCIBENCH_LLM_MAX_BONUS", "0.05"))
+
+# usage summary knobs
+PRINT_LLM_CALL_SUMMARY = os.getenv("SCIBENCH_LLM_PRINT_CALL_SUMMARY", "1") == "1"
+
+_llm_stats = {
+    "subtree_bonus_invocations": 0,
+    "subtrees_total": 0,
+    "subtrees_cache_hits": 0,
+    "subtrees_cache_misses": 0,
+    "openai_calls": 0,
+}
 
 @dataclass
 class LLMSubtreeResult:
@@ -204,6 +216,8 @@ def _llm_bonus(subtree_expr: str) -> float:
 
     openai_module = importlib.import_module("openai")
     client = openai_module.OpenAI()
+    
+    _llm_stats["openai_calls"] += 1
 
     response = client.responses.create(
         model=LLM_MODEL,
@@ -230,6 +244,8 @@ def get_llm_subtree_bonus(state: str) -> Optional[LLMSubtreeResult]:
     if not state or "->" not in state:
         return None
 
+    _llm_stats["subtree_bonus_invocations"] += 1
+
     subtrees = _enumerate_subtrees_from_state(state)
 
     total_bonus = 0.0
@@ -238,11 +254,14 @@ def get_llm_subtree_bonus(state: str) -> Optional[LLMSubtreeResult]:
 
     for sid, expr in subtrees:
         used += 1
+        _llm_stats["subtrees_total"] += 1
         if sid in _cache:
             cache_hits += 1
+            _llm_stats["subtrees_cache_hits"] += 1
             total_bonus += float(_cache[sid].get("bonus", 0.0))
             continue
 
+        _llm_stats["subtrees_cache_misses"] += 1
         b = _heuristic_bonus(expr)
 
         if ENABLE_LLM:
@@ -268,3 +287,21 @@ def get_llm_subtree_bonus(state: str) -> Optional[LLMSubtreeResult]:
         used_subtrees=used,
         cache_hits=cache_hits,
     )
+    
+def _print_llm_call_summary() -> None:
+    if not PRINT_LLM_CALL_SUMMARY:
+        return
+    if not ENABLE_LLM:
+        return
+
+    print(
+        "[LLM] summary | "
+        f"subtree_bonus_invocations={_llm_stats['subtree_bonus_invocations']} | "
+        f"subtrees_total={_llm_stats['subtrees_total']} | "
+        f"cache_hits={_llm_stats['subtrees_cache_hits']} | "
+        f"cache_misses={_llm_stats['subtrees_cache_misses']} | "
+        f"openai_calls={_llm_stats['openai_calls']}",
+        flush=True,
+    )
+
+atexit.register(_print_llm_call_summary)
