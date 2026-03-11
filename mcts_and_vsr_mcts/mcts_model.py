@@ -7,7 +7,7 @@ import numpy as np
 from collections import defaultdict
 from sympy import Symbol
 
-from llm_subtree_feedback import get_llm_subtree_bonus, LLM_BONUS_SCALE
+from llm_supexp_feedback import maybe_generate_supexpressions
 from production_rules import production_rules_to_expr
 from program import execute
 from utils import pretty_print_expr
@@ -221,20 +221,27 @@ class MCTS(object):
 
     def update_hall_of_fame(self, state, reward, eq):
         module = state
-        # ---- LLM subtree bonus (cheap gating: only HOF candidates) ----
-        res = get_llm_subtree_bonus(module)
-        if res is not None:
-            reward = reward + (LLM_BONUS_SCALE * res.bonus)
-        # --------------------------------------------------------------
         if state.count(",") <= self.max_module:
+            hof_changed = False
             if not self.hall_of_fame:
                 self.hall_of_fame = [(module, reward, eq)]
+                hof_changed = True
             elif eq not in [x[2] for x in self.hall_of_fame]:
                 if len(self.hall_of_fame) < self.max_aug:
                     self.hall_of_fame = sorted(self.hall_of_fame + [(module, reward, eq)], key=lambda x: x[1])
+                    hof_changed = True
                 else:
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
+                        hof_changed = True
+
+            # Push high-reward candidates to OpenAI and append suggested
+            # reusable subexpressions into supexp.txt (if enabled).
+            if hof_changed:
+                try:
+                    maybe_generate_supexpressions(self.hall_of_fame, self.nvars)
+                except Exception as e:
+                    print(f"[SUPEXP] generation skipped: {e}", flush=True)
 
     def rollout(self, num_play, state_initial, ntn_initial):
         """
@@ -248,6 +255,7 @@ class MCTS(object):
 
         while idx < num_play:
             done = False
+            truncated = False
             state = state_initial
             ntn = ntn_initial
 
@@ -261,10 +269,13 @@ class MCTS(object):
                 self.QN[state][1] += 1
 
                 if state.count(",") >= self.max_len:
+                    truncated = True
                     break
 
+            # Count every rollout attempt, even truncated ones.
+            idx += 1
+
             if done:
-                idx += 1
                 if reward > best_r:
                     self.update_hall_of_fame(next_state, reward, eq)
                     best_eq = eq
@@ -367,8 +378,19 @@ class MCTS(object):
 
 
 def get_state(pr):
+    eq = pr[2]
+    if not isinstance(eq, str):
+        eq = str(eq)
+    # Avoid expensive simplification on very long expressions during status prints.
+    if len(eq) > 300:
+        pretty = eq
+    else:
+        try:
+            pretty = pretty_print_expr(eq)
+        except Exception:
+            pretty = eq
     return {
         "reward": pr[1],
-        "pretty-eq": pretty_print_expr(pr[2]),
+        "pretty-eq": pretty,
         "rules": pr[0],
     }

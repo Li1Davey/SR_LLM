@@ -45,6 +45,38 @@ def _dedupe_preserve_order(rules):
         out.append(rule)
     return out
 
+def _load_supexp_rules(nvars: int, non_terminal_node='A'):
+    """
+    Load additional RHS expressions from supexp.txt and convert to grammar rules.
+
+    File format (one per line):
+      (X1*exp(K*X0)-X0*exp(K*X1))/(X1-X0)
+      C/(X0+C)
+    Lines beginning with '#' are ignored.
+    """
+    enabled = os.getenv("SCIBENCH_SUPEXP_USE", "1") == "1"
+    if not enabled:
+        return []
+
+    path = os.getenv("SCIBENCH_SUPEXP_FILE", os.path.join(os.path.dirname(__file__), "supexp.txt"))
+    if not os.path.exists(path):
+        return []
+
+    rules = []
+    with open(path, "r") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+            rhs = line.split("->", 1)[1].strip() if "->" in line else line
+            valid = True
+            for tok in rhs.replace("(", " ").replace(")", " ").replace("*", " ").replace("+", " ").replace("-", " ").replace("/", " ").split():
+                if tok.startswith("X") and tok[1:].isdigit() and int(tok[1:]) >= nvars:
+                    valid = False
+                    break
+            if valid:
+                rules.append(f"{non_terminal_node}->{rhs}")
+    return rules
 
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
@@ -89,139 +121,56 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
         rules += get_n4_rules(nvars, non_terminal_node)
     if 'n5' in operators_set:
         rules += get_n5_rules(nvars, non_terminal_node)
+    rules += _load_supexp_rules(nvars, non_terminal_node)
     return _dedupe_preserve_order(rules)
 
 def get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node="A"):
     """
-    Safer but more versatile grammar for Feynman-like equations.
+    Keep the safe mode intentionally simple.
 
-    Design goals:
-    - preserve numeric stability (bounded denominator forms)
-    - increase cross-variable coverage (sum/diff/product interactions)
-    - improve functional expressiveness with affine-in-variable unary forms
+    We avoid complex handcrafted sequences here so the model starts from a
+    compact grammar; advanced atoms should come from supexp.txt.
     """
-    rules = [
-        f"{non_terminal_node}->({non_terminal_node}+{non_terminal_node})",
-        f"{non_terminal_node}->({non_terminal_node}-{non_terminal_node})",
-        f"{non_terminal_node}->{non_terminal_node}*{non_terminal_node}",
+    base_rules = [
+        f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
+        f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
+        f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}'
     ]
+    div_rules = [f'{non_terminal_node}->({non_terminal_node})/({non_terminal_node})']
+    exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
+    log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
+    sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
+    const_rules = [f'{non_terminal_node}->C']
+    abs_rules = [f'{non_terminal_node}->abs({non_terminal_node})']
 
-    # variables
-    rules += get_vars_rules(nvars, non_terminal_node)
-
-    # affine variable atoms for broader fit classes (linear offsets/scales)
-    if "const" in operators_set:
-        rules += [f"{non_terminal_node}->C"]
-        for i in range(nvars):
-            rules += [
-                f"{non_terminal_node}->C*X{i}",
-                f"{non_terminal_node}->(C*X{i}+C)",
-            ]
-
-    # explicit pairwise interactions across all variable pairs
-    for i in range(nvars):
-        for j in range(i + 1, nvars):
-            rules += [
-                f"{non_terminal_node}->(X{i}+X{j})",
-                f"{non_terminal_node}->(X{i}-X{j})",
-                f"{non_terminal_node}->(X{j}-X{i})",
-                f"{non_terminal_node}->X{i}*X{j}",
-            ]
-
-    # inv (safe-ish): ONLY 1/Xi and C/(Xi+C), not 1/(A)
-    if "inv" in operators_set:
-        for i in range(nvars):
-            rules += [f"{non_terminal_node}->1/X{i}"]
-            if "const" in operators_set:
-                rules += [f"{non_terminal_node}->C/(X{i}+C)"]
-
-    # div: constrain denominators to avoid monsters
-    if "div" in operators_set:
-        for i in range(nvars):
-            # normalized / saturating forms
-            rules += [
-                f"{non_terminal_node}->X{i}/(X{i}+C)",
-                f"{non_terminal_node}->C/(X{i}+C)",
-            ]
-
-            for j in range(nvars):
-                if i == j:
-                    continue
-                rules += [
-                    f"{non_terminal_node}->X{i}/(X{j}+C)",
-                    f"{non_terminal_node}->(X{i}+C)/(X{j}+C)",
-                ]
-
-            # allow A in numerator, but stabilize denominator
-            rules += [f"{non_terminal_node}->({non_terminal_node})/(X{i}+C)"]
-
-        # robust pairwise-difference denominator for any pair (not just X1-X0)
-        if "abs" in operators_set:
-            for i in range(nvars):
-                for j in range(i + 1, nvars):
-                    rules += [f"{non_terminal_node}->({non_terminal_node})/(abs(X{i}-X{j})+C)"]
-
-    # exp: variables + affine-in-variable forms (avoid exp(A) blow-up)
-    if "exp" in operators_set:
-        for i in range(nvars):
-            rules += [f"{non_terminal_node}->exp(X{i})"]
-            if "const" in operators_set:
-                rules += [
-                    f"{non_terminal_node}->exp(C*X{i})",
-                    f"{non_terminal_node}->exp(C*X{i}+C)",
-                ]
-
-    # sin/cos: variable and affine-variable forms only (not sin(A))
-    if ("sin" in operators_set) or ("cos" in operators_set):
-        for i in range(nvars):
-            if "sin" in operators_set:
-                rules += [f"{non_terminal_node}->sin(X{i})"]
-                if "const" in operators_set:
-                    rules += [f"{non_terminal_node}->sin(C*X{i})"]
-            if "cos" in operators_set:
-                rules += [f"{non_terminal_node}->cos(X{i})"]
-                if "const" in operators_set:
-                    rules += [f"{non_terminal_node}->cos(C*X{i})"]
-
-    # sqrt/log/abs: stability-aware variable forms
-    if "sqrt" in operators_set:
-        for i in range(nvars):
-            if "abs" in operators_set:
-                rules += [f"{non_terminal_node}->sqrt(abs(X{i}))"]
-                if "const" in operators_set:
-                    rules += [f"{non_terminal_node}->sqrt(abs(X{i})+C)"]
-            else:
-                rules += [f"{non_terminal_node}->sqrt(X{i})"]
-
-    if "log" in operators_set:
-        for i in range(nvars):
-            if ("abs" in operators_set) and ("const" in operators_set):
-                rules += [
-                    f"{non_terminal_node}->log(abs(X{i})+C)",
-                    f"{non_terminal_node}->log(abs(C*X{i})+C)",
-                ]
-            else:
-                rules += [f"{non_terminal_node}->log(X{i})"]
-
-    if "abs" in operators_set:
-        for i in range(nvars):
-            rules += [f"{non_terminal_node}->abs(X{i})"]
-            if "const" in operators_set:
-                rules += [f"{non_terminal_node}->abs(C*X{i}+C)"]
-
-    # powers: keep direct Xi**k plus one safe affine-square family
-    if "n2" in operators_set:
+    rules = base_rules + get_vars_rules(nvars, non_terminal_node)
+    if 'const' in operators_set:
+        rules += const_rules
+    if 'inv' in operators_set:
+        rules += get_inv_rules(nvars, non_terminal_node)
+    if 'div' in operators_set:
+        rules += div_rules
+    if 'sin' in operators_set or 'cos' in operators_set:
+        rules += get_sincos_vars_rules(non_terminal_node)
+    if 'sqrt' in operators_set:
+        rules += sqrt_rules
+    if 'exp' in operators_set:
+        rules += exp_rules
+    if 'abs' in operators_set:
+        rules += abs_rules
+    if 'log' in operators_set:
+        rules += log_rules
+    if 'n2' in operators_set:
         rules += get_n2_rules(nvars, non_terminal_node)
-        if "const" in operators_set:
-            for i in range(nvars):
-                rules += [f"{non_terminal_node}->(C*X{i}+C)**2"]
-    if "n3" in operators_set:
+    if 'n3' in operators_set:
         rules += get_n3_rules(nvars, non_terminal_node)
-    if "n4" in operators_set:
+    if 'n4' in operators_set:
         rules += get_n4_rules(nvars, non_terminal_node)
-    if "n5" in operators_set:
+    if 'n5' in operators_set:
         rules += get_n5_rules(nvars, non_terminal_node)
 
+    # Let LLM-proposed atoms drive advanced patterns.
+    rules += _load_supexp_rules(nvars, non_terminal_node)
     return _dedupe_preserve_order(rules)
 
 

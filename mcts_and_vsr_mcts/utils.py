@@ -1,16 +1,27 @@
 import sympy
 from sympy.core.numbers import Float, Rational, NegativeOne, Integer
-from sympy import simplify, expand, Symbol
+from sympy import simplify, Symbol
 from sympy.parsing.sympy_parser import parse_expr
 
 
 def pretty_print_expr(eq) -> str:
     '''
-    ask sympy simplify to pretty print the expression.
+    Ask sympy to return a compact/canonical expression string.
+
+    NOTE:
+    We intentionally avoid `expand(...)` here. Expanding can transform a
+    compact, interpretable identity into long partial-fraction style forms,
+    which hurts exact-equation readability for recovered solutions.
     '''
     if type(eq) == str:
         eq = parse_expr(eq)
-    return str(expand(simplify(eq)))
+    expr = simplify(eq)
+    # Prefer compact rational/exponential structure over expanded sums.
+    expr = sympy.together(expr)
+    expr = sympy.cancel(expr)
+    expr = sympy.factor(expr)
+    expr = simplify(expr)
+    return str(expr)
 
 
 def create_geometric_generations(n_generations, nvar, ratio=1.2):

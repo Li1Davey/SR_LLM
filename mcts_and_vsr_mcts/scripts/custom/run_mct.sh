@@ -10,7 +10,7 @@ NUM_EPISODES="${6:-1000}"
 ROLLOUTS="${7:-40}"
 MAX_LEN="${8:-20}"
 ETA="${9:-0.99}"
-KEY="${10:-0}"   # 0 = no LLM, 1 = use LLM
+KEY="${10:-0}"   # 0 = no LLM supexp generation, 1 = enable LLM supexp generation
 
 BASE=~/workspace/scibench
 EQ_FILE="${BASE}/data/unencrypted/custom_equations/${CASE}_report.in"
@@ -48,23 +48,31 @@ else
 fi
 
 # -------------------------------------------------
-# LLM subtree feedback (optional)
+# LLM supexp feedback (optional)
 # -------------------------------------------------
 if [[ "${KEY}" == "1" ]]; then
-  export SCIBENCH_LLM_ENABLE=1
-  export SCIBENCH_LLM_CACHE_DIR="${OUT_DIR}/llm_cache"
-  export SCIBENCH_LLM_CACHE_PATH="${SCIBENCH_LLM_CACHE_DIR}/scibench_llm_subtree_cache.json"
+  export SCIBENCH_SUPEXP_ENABLE=1
+  export SCIBENCH_SUPEXP_FILE="${OUT_DIR}/supexp.txt"
+  export SCIBENCH_SUPEXP_AUTO_APPEND=1
+  export SCIBENCH_SUPEXP_TOPK=8
+  export SCIBENCH_SUPEXP_COOLDOWN_SECONDS=120
+  export SCIBENCH_SUPEXP_MIN_HOF=2
+  export SCIBENCH_SUPEXP_MIN_BEST_REWARD=0.5
+  export SCIBENCH_SUPEXP_MIN_REWARD_DELTA=0.05
+  export SCIBENCH_SUPEXP_MAX_CALLS=40
+  export SCIBENCH_SUPEXP_MIN_HOF_CHANGES=4
 
   if [[ -z "${OPENAI_API_KEY:-}" ]]; then
     echo "[ERROR] KEY=1 but OPENAI_API_KEY is not set"
     exit 1
   fi
 
-  echo "[INFO] LLM feedback ENABLED"
+  echo "[INFO] LLM supexp feedback ENABLED"
 else
-  export SCIBENCH_LLM_ENABLE=0
-  unset SCIBENCH_LLM_CACHE_PATH
-  echo "[INFO] LLM feedback disabled"
+  export SCIBENCH_SUPEXP_ENABLE=0
+  export SCIBENCH_SUPEXP_FILE="${OUT_DIR}/supexp.txt"
+  export SCIBENCH_SUPEXP_AUTO_APPEND=0
+  echo "[INFO] LLM supexp feedback disabled"
 fi
 
 # -----------------------
