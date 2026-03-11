@@ -1,7 +1,43 @@
+import re
+
 import sympy
 from sympy.core.numbers import Float, Rational, NegativeOne, Integer
 from sympy import simplify, Symbol
 from sympy.parsing.sympy_parser import parse_expr
+
+
+def _max_parentheses_depth(expr: str) -> int:
+    depth = 0
+    max_depth = 0
+    for ch in expr:
+        if ch == '(':
+            depth += 1
+            max_depth = max(max_depth, depth)
+        elif ch == ')':
+            depth = max(0, depth - 1)
+    return max_depth
+
+
+def _looks_pathological_for_simplify(expr: str) -> bool:
+    """Cheap textual checks to avoid SymPy simplify stalls."""
+    if not expr:
+        return True
+    if len(expr) > 220:
+        return True
+    if expr.count('exp(') > 2:
+        return True
+    if expr.count('**') > 3:
+        return True
+    if expr.count('/') > 5:
+        return True
+    if _max_parentheses_depth(expr) > 18:
+        return True
+    if any(tok in expr for tok in ('zoo', 'oo', 'nan', 'Infinity', 'ComplexInfinity')):
+        return True
+    # Reject giant numeric literals that can trigger expensive parsing paths.
+    if re.search(r"\d{40,}", expr):
+        return True
+    return False
 
 
 def pretty_print_expr(eq) -> str:
@@ -13,15 +49,25 @@ def pretty_print_expr(eq) -> str:
     compact, interpretable identity into long partial-fraction style forms,
     which hurts exact-equation readability for recovered solutions.
     '''
-    if type(eq) == str:
-        eq = parse_expr(eq)
-    expr = simplify(eq)
-    # Prefer compact rational/exponential structure over expanded sums.
-    expr = sympy.together(expr)
-    expr = sympy.cancel(expr)
-    expr = sympy.factor(expr)
-    expr = simplify(expr)
-    return str(expr)
+    if isinstance(eq, str):
+        if _looks_pathological_for_simplify(eq):
+            return eq
+        eq = parse_expr(eq, evaluate=False)
+
+    eq_str = str(eq)
+    if _looks_pathological_for_simplify(eq_str):
+        return eq_str
+
+    try:
+        expr = simplify(eq)
+        # Prefer compact rational/exponential structure over expanded sums.
+        expr = sympy.together(expr)
+        expr = sympy.cancel(expr)
+        expr = sympy.factor(expr)
+        expr = simplify(expr)
+        return str(expr)
+    except Exception:
+        return eq_str
 
 
 def create_geometric_generations(n_generations, nvar, ratio=1.2):

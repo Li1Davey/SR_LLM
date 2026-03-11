@@ -11,15 +11,9 @@ from llm_supexp_feedback import maybe_generate_supexpressions
 from production_rules import production_rules_to_expr
 from program import execute
 from utils import pretty_print_expr
-
+import re
 
 def _qn_to_serializable(qn_dict, topk=None):
-    """
-    Convert QN defaultdict into JSON-serializable dict:
-      state -> {"Q": float, "N": int, "Q_per_N": float|None}
-
-    If topk is set, keep only top-k entries by N (visit count).
-    """
     items = []
     for k, v in qn_dict.items():
         try:
@@ -38,16 +32,6 @@ def _qn_to_serializable(qn_dict, topk=None):
 
 
 def _save_qn_snapshot(qn_dict, step=None, reason="periodic"):
-    """
-    Save QN snapshot if SCIBENCH_SAVE_QN=1.
-
-    Env vars:
-      SCIBENCH_SAVE_QN=1
-      SCIBENCH_QN_DIR=<dir to write json>
-      SCIBENCH_EQ_FILE=<equation file path>     (optional)
-      SCIBENCH_RUN_TAG=<case_run label>         (optional)
-      SCIBENCH_SAVE_QN_TOPK=<int>               (optional)
-    """
     if os.environ.get("SCIBENCH_SAVE_QN", "0") != "1":
         return
 
@@ -91,15 +75,44 @@ def _save_qn_snapshot(qn_dict, step=None, reason="periodic"):
 
     print(f"[QN] saved: {path}", flush=True)
 
+def _canonicalize_eq_structure(eq: str) -> str:
+    """
+    Normalize an equation string so HoF dedup compares structure rather than
+    exact fitted constants.
+    """
+    if eq is None:
+        return ""
+    s = str(eq)
+
+    # Normalize whitespace.
+    s = re.sub(r"\s+", "", s)
+
+    # Replace numeric literals with buckets so close fits count as one template.
+    # Keep X0/X1 names intact because they do not match this regex.
+    number_pat = r'(?<![A-Za-z_])[-+]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:e[-+]?\d+)?'
+
+    def repl(m):
+        token = m.group(0)
+        try:
+            val = float(token)
+        except Exception:
+            return token
+
+        # Keep exact zeros / ones stable because they often reflect structure.
+        if abs(val) < 1e-12:
+            return "0"
+        if abs(val - 1.0) < 1e-12:
+            return "1"
+        if abs(val + 1.0) < 1e-12:
+            return "-1"
+
+        # Collapse all other fitted constants to a generic marker.
+        return "CNUM"
+
+    s = re.sub(number_pat, repl, s)
+    return s
 
 class MCTS(object):
-    """
-    MCTS for symbolic regression.
-
-    Notes:
-    - CTV removed: always samples full X via task.rand_draw_data().
-    - QN now accumulates raw reward, and deeper states are recorded so JSON snapshots are meaningful.
-    """
     task = None
     program = None
 
@@ -131,7 +144,7 @@ class MCTS(object):
         self.hall_of_fame = []
         self.exploration_rate = exploration_rate
         self.UCBs = defaultdict(lambda: np.zeros(len(self.grammars)))
-        self.QN = defaultdict(lambda: np.zeros(2))  # [Q, N]
+        self.QN = defaultdict(lambda: np.zeros(2))
 
         self.eta = eta
         self.max_opt_iter = max_opt_iter
@@ -146,38 +159,48 @@ class MCTS(object):
         valid_actions = self.valid_production_rules(node)
         return [act for act in valid_actions if self.QN[state + "," + self.grammars[act]][1] == 0]
 
+    def score_expression_on_validation(self, eq, state_len):
+        val_X, val_y = self.task.get_val_batch()
+        reward, _, _, _ = self.program.optimize(
+            eq,
+            state_len,
+            val_X,
+            val_y,
+            self.input_var_Xs,
+            eta=self.eta,
+            max_opt_iter=min(self.max_opt_iter, 15),
+        )
+        return reward
+
     def step(self, state, action_idx, ntn):
-        """
-        Apply one grammar rule to expand the parse tree.
-        If no non-terminals remain, evaluate and return reward.
-        """
         action = self.grammars[action_idx]
         state = state + "," + action
         ntn = self.get_non_terminal_nodes(action) + ntn
 
         if not ntn:
-            self.task.rand_draw_data()
-            y_true = self.task.evaluate()
+            train_X, train_y = self.task.get_train_batch()
 
             expr_template = production_rules_to_expr(state.split(","))
-            reward, eq, _, _ = self.program.optimize(
+            reward_train, eq, _, _ = self.program.optimize(
                 expr_template,
                 len(state.split(",")),
-                self.task.X,
-                y_true,
+                train_X,
+                train_y,
                 self.input_var_Xs,
                 eta=self.eta,
                 max_opt_iter=self.max_opt_iter,
             )
+
+            if not np.isfinite(reward_train):
+                return state, ntn, reward_train, True, eq
+
+            reward_val = self.score_expression_on_validation(eq, len(state.split(",")))
+            reward = reward_val if np.isfinite(reward_val) else reward_train
             return state, ntn, reward, True, eq
 
         return state, ntn, 0, False, None
 
     def update_ucb_mcts(self, state, action):
-        """
-        UCB score for choosing `action` from `state`.
-        Uses Q/N + exploration term.
-        """
         next_state = state + "," + action
         Q_child = self.QN[next_state][0]
         N_parent = self.QN[state][1]
@@ -191,12 +214,7 @@ class MCTS(object):
         return (Q_child / N_child) + self.exploration_rate * np.sqrt(np.log(N_parent) / N_child)
 
     def back_propagate(self, state, action_index, reward):
-        """
-        Backpropagate raw reward into QN and update UCBs along the ancestry of `state`.
-        This makes Q nonzero even early (no scale gating).
-        """
         action = self.grammars[action_index]
-
         edge_key = state + "," + action
         self.QN[edge_key][0] += reward
         self.QN[edge_key][1] += 1
@@ -220,13 +238,17 @@ class MCTS(object):
                 cur_state = ""
 
     def update_hall_of_fame(self, state, reward, eq):
+        reward = float(reward)
         module = state
         if state.count(",") <= self.max_module:
             hof_changed = False
+            eq_key = _canonicalize_eq_structure(eq)
+            existing_keys = {_canonicalize_eq_structure(x[2]) for x in self.hall_of_fame}
+
             if not self.hall_of_fame:
                 self.hall_of_fame = [(module, reward, eq)]
                 hof_changed = True
-            elif eq not in [x[2] for x in self.hall_of_fame]:
+            elif eq_key not in existing_keys:
                 if len(self.hall_of_fame) < self.max_aug:
                     self.hall_of_fame = sorted(self.hall_of_fame + [(module, reward, eq)], key=lambda x: x[1])
                     hof_changed = True
@@ -234,9 +256,23 @@ class MCTS(object):
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
                         hof_changed = True
+            else:
+                # If the structure already exists, keep the better-scoring fit.
+                improved = False
+                new_hof = []
+                for item in self.hall_of_fame:
+                    if _canonicalize_eq_structure(item[2]) == eq_key:
+                        if reward > item[1]:
+                            new_hof.append((module, reward, eq))
+                            improved = True
+                        else:
+                            new_hof.append(item)
+                    else:
+                        new_hof.append(item)
+                if improved:
+                    self.hall_of_fame = sorted(new_hof, key=lambda x: x[1])
+                    hof_changed = True
 
-            # Push high-reward candidates to OpenAI and append suggested
-            # reusable subexpressions into supexp.txt (if enabled).
             if hof_changed:
                 try:
                     maybe_generate_supexpressions(self.hall_of_fame, self.nvars)
@@ -244,14 +280,11 @@ class MCTS(object):
                     print(f"[SUPEXP] generation skipped: {e}", flush=True)
 
     def rollout(self, num_play, state_initial, ntn_initial):
-        """
-        Perform `num_play` random rollouts from (state_initial, ntn_initial).
-        Returns (best_reward, best_eq, best_state).
-        """
         best_eq = ""
         best_r = -100
         best_state = None
         idx = 0
+        completed_rewards = []
 
         while idx < num_play:
             done = False
@@ -265,51 +298,44 @@ class MCTS(object):
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 state, ntn = next_state, ntn_next
 
-                # record visits to deeper nodes
                 self.QN[state][1] += 1
 
                 if state.count(",") >= self.max_len:
                     truncated = True
                     break
 
-            # Count every rollout attempt, even truncated ones.
             idx += 1
 
             if done:
+                completed_rewards.append(reward)
                 if reward > best_r:
                     self.update_hall_of_fame(next_state, reward, eq)
                     best_eq = eq
                     best_r = reward
                     best_state = next_state
 
+        if completed_rewards:
+            topk = sorted(completed_rewards)[-min(3, len(completed_rewards)):]
+            best_r = float(np.mean(topk))
+
         return best_r, best_eq, best_state
 
-    # -------- NEW: Tree stats helpers --------
     def tree_num_nodes(self):
-        """Total number of nodes tracked in QN."""
         return len(self.QN)
 
     def tree_height(self):
-        """Maximum depth among QN states (depth = number of commas)."""
         if not self.QN:
             return 0
         return max(s.count(",") for s in self.QN.keys())
-    # ----------------------------------------
 
     def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5):
-        """
-        Simple MCTS loop:
-        - selects one unvisited child from root each episode
-        - uses rollout to estimate reward
-        - backpropagates reward for root-edge
-        - records deep rollout states in QN for analysis
-        - prints tree stats only every N iterations (print_freq)
-        """
         best_solution = ("C", -100)
         save_every = int(os.environ.get("SCIBENCH_SAVE_QN_EVERY", "0") or 0)
 
         for t in range(1, num_episodes + 1):
-            # Print only every N iterations (and at start)
+            self.task.draw_episode_batches()
+            self.program.clear_cache()
+
             if t == 1 or (print_freq and t % print_freq == 0):
                 print(
                     f"\tITER {t}/{num_episodes} | "
@@ -323,11 +349,9 @@ class MCTS(object):
             unvisited_children = self.get_unvisited_children(state, ntn[0])
             valid_actions = self.valid_production_rules(ntn[0])
 
-            # NEW: if root is fully expanded, choose an action by UCB (instead of stalling)
             if len(unvisited_children) != 0:
                 action_idx = np.random.choice(unvisited_children)
             else:
-                # choose best UCB among valid root actions
                 ucb_vals = self.UCBs[state][valid_actions]
                 if np.allclose(ucb_vals, 0):
                     action_idx = np.random.choice(valid_actions)
@@ -345,8 +369,8 @@ class MCTS(object):
                 reward, eq, best_state = self.rollout(num_rollouts, next_state, ntn_next)
             else:
                 best_state = next_state
+                self.update_hall_of_fame(next_state, reward, eq)
 
-            # record deep best state so QN includes deeper keys
             if best_state is not None:
                 self.QN[best_state][0] += reward
                 self.QN[best_state][1] += 1
@@ -354,7 +378,6 @@ class MCTS(object):
             if reward > best_solution[1]:
                 best_solution = (eq, reward)
 
-            # backprop from root choice
             self.back_propagate(state, action_idx, reward)
 
             if save_every and (t % save_every == 0):
@@ -369,7 +392,6 @@ class MCTS(object):
         return [], self.hall_of_fame
 
     def print_hofs(self):
-        self.task.rand_draw_data()
         print("PRINT HOF")
         print("=" * 20)
         for pr in self.hall_of_fame:
@@ -381,7 +403,6 @@ def get_state(pr):
     eq = pr[2]
     if not isinstance(eq, str):
         eq = str(eq)
-    # Avoid expensive simplification on very long expressions during status prints.
     if len(eq) > 300:
         pretty = eq
     else:
@@ -390,7 +411,7 @@ def get_state(pr):
         except Exception:
             pretty = eq
     return {
-        "reward": pr[1],
+        "reward": float(pr[1]),
         "pretty-eq": pretty,
         "rules": pr[0],
     }

@@ -41,14 +41,14 @@ if [[ "${STAGE}" == "1" ]]; then
   export SCIBENCH_USE_DELTA=1
   export SCIBENCH_DELTA_BASE_IDX=0
   export SCIBENCH_DELTA_VAR_IDX=1
-  export SCIBENCH_MAX_OPT_ITER=25
+  export SCIBENCH_MAX_OPT_ITER=20
 else
   export SCIBENCH_USE_DELTA=0
   export SCIBENCH_MAX_OPT_ITER=150
 fi
 
 # -------------------------------------------------
-# LLM supexp feedback (optional)
+# LLM supexp feedback
 # -------------------------------------------------
 if [[ "${KEY}" == "1" ]]; then
   export SCIBENCH_SUPEXP_ENABLE=1
@@ -61,6 +61,11 @@ if [[ "${KEY}" == "1" ]]; then
   export SCIBENCH_SUPEXP_MIN_REWARD_DELTA=0.05
   export SCIBENCH_SUPEXP_MAX_CALLS=40
   export SCIBENCH_SUPEXP_MIN_HOF_CHANGES=4
+  export SCIBENCH_SUPEXP_USE=1
+  export SCIBENCH_SUPEXP_SEED_DEFAULTS=1
+  export SCIBENCH_SUPEXP_PREFER_HEURISTICS_FIRST=1
+  export SCIBENCH_SUPEXP_REQUIRE_APPEND_GAIN=1
+  export SCIBENCH_BATCHSIZE=256
 
   if [[ -z "${OPENAI_API_KEY:-}" ]]; then
     echo "[ERROR] KEY=1 but OPENAI_API_KEY is not set"

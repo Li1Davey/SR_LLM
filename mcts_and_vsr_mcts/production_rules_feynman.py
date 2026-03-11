@@ -48,35 +48,47 @@ def _dedupe_preserve_order(rules):
 def _load_supexp_rules(nvars: int, non_terminal_node='A'):
     """
     Load additional RHS expressions from supexp.txt and convert to grammar rules.
-
-    File format (one per line):
-      (X1*exp(K*X0)-X0*exp(K*X1))/(X1-X0)
-      C/(X0+C)
-    Lines beginning with '#' are ignored.
+    Optionally seed a few canonical atoms when the file is empty.
     """
     enabled = os.getenv("SCIBENCH_SUPEXP_USE", "1") == "1"
     if not enabled:
         return []
 
     path = os.getenv("SCIBENCH_SUPEXP_FILE", os.path.join(os.path.dirname(__file__), "supexp.txt"))
-    if not os.path.exists(path):
-        return []
+    seed_defaults = os.getenv("SCIBENCH_SUPEXP_SEED_DEFAULTS", "1") == "1"
 
-    rules = []
-    with open(path, "r") as f:
-        for raw in f:
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-            rhs = line.split("->", 1)[1].strip() if "->" in line else line
-            valid = True
-            for tok in rhs.replace("(", " ").replace(")", " ").replace("*", " ").replace("+", " ").replace("-", " ").replace("/", " ").split():
-                if tok.startswith("X") and tok[1:].isdigit() and int(tok[1:]) >= nvars:
-                    valid = False
-                    break
-            if valid:
-                rules.append(f"{non_terminal_node}->{rhs}")
-    return rules
+    seed_atoms = []
+    if seed_defaults:
+        seed_atoms.extend([
+            "X0/(X0+C)",
+            "X1/(X1+C)",
+            "exp(-K/X0)",
+            "exp(-K/X1)",
+        ])
+        if nvars >= 2:
+            seed_atoms.extend([
+                "(X1*exp(-K*X0)-X0*exp(-K*X1))/(X1-X0)",
+                "1-(X1*exp(-K*X0)-X0*exp(-K*X1))/(X1-X0)",
+            ])
+
+    file_atoms = []
+    if os.path.exists(path):
+        with open(path, "r") as f:
+            for raw in f:
+                line = raw.strip()
+                if not line or line.startswith("#"):
+                    continue
+                rhs = line.split("->", 1)[1].strip() if "->" in line else line
+                valid = True
+                for tok in rhs.replace("(", " ").replace(")", " ").replace("*", " ").replace("+", " ").replace("-", " ").replace("/", " ").split():
+                    if tok.startswith("X") and tok[1:].isdigit() and int(tok[1:]) >= nvars:
+                        valid = False
+                        break
+                if valid:
+                    file_atoms.append(rhs)
+
+    rules = [f"{non_terminal_node}->{rhs}" for rhs in (seed_atoms + file_atoms)]
+    return _dedupe_preserve_order(rules)
 
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
