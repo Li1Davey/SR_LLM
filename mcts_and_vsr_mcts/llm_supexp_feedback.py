@@ -21,8 +21,6 @@ SUPEXP_MIN_REWARD_DELTA = float(os.getenv("SCIBENCH_SUPEXP_MIN_REWARD_DELTA", "0
 SUPEXP_MAX_CALLS = int(os.getenv("SCIBENCH_SUPEXP_MAX_CALLS", "40"))
 SUPEXP_FAILURE_BACKOFF_MAX_MULT = float(os.getenv("SCIBENCH_SUPEXP_FAILURE_BACKOFF_MAX_MULT", "8.0"))
 SUPEXP_MIN_HOF_CHANGES = int(os.getenv("SCIBENCH_SUPEXP_MIN_HOF_CHANGES", "4"))
-SUPEXP_PREFER_HEURISTICS_FIRST = os.getenv("SCIBENCH_SUPEXP_PREFER_HEURISTICS_FIRST", "1") == "1"
-SUPEXP_REQUIRE_APPEND_GAIN = int(os.getenv("SCIBENCH_SUPEXP_REQUIRE_APPEND_GAIN", "1"))
 
 _LAST_PUSH_TS = 0.0
 _LAST_PUSH_BEST_REWARD = float("-inf")
@@ -35,37 +33,25 @@ _HOF_CHANGE_COUNTER = 0
 def _is_trivial_atom(s: str) -> bool:
     t = s.replace(" ", "")
     trivial = {
-        "X0", "X1", "X0/X1", "X1/X0", "(X0+X1)", "(X0-X1)", "(X1-X0)",
-        "exp(X0)", "exp(X1)", "log(X0)", "log(X1)", "sin(X0)", "sin(X1)", "cos(X0)", "cos(X1)",
+        "A", "C", "(A+A)", "(A-A)", "A*A", "(A)/(A)",
+        "exp(A)", "log(A)", "sin(A)", "cos(A)", "sqrt(A)", "abs(A)"
     }
-    if t in trivial:
-        return True
-    if re.fullmatch(r"[+-]?\d*\.?\d+\*?X\d+", t):
-        return True
-    return False
+    return t in trivial
 
-def _looks_like_numeric_guard_hack(s: str) -> bool:
-    """
-    Reject atoms that are really just numerical stabilizers rather than
-    transferable symbolic structure.
-    """
+
+def _is_bland_saturator(s: str) -> bool:
     t = s.replace(" ", "")
+    banned_exact = {
+        "A/(A+C)",
+        "A/(C+A)",
+        "abs(A/(A+C))",
+        "A/(C*A)",
+        "(C+A)/(C-A)",
+        "(A+exp(A))",
+        "(A-exp(A))",
+    }
+    return t in banned_exact
 
-    # Explicit epsilon literals.
-    if re.search(r"1e-\d+", t):
-        return True
-
-    # Tiny decimal literals often used as denominator guards.
-    if re.search(r"0\.0{3,}\d+", t):
-        return True
-
-    # Common shifted-difference patterns.
-    if "(X1-X0)+" in t or "(X0-X1)+" in t:
-        return True
-    if "(X1-X0)-" in t or "(X0-X1)-" in t:
-        return True
-
-    return False
 
 def _hof_fingerprint(candidates: Sequence[Tuple[str, float, str]], topk: int) -> str:
     top = sorted(candidates, key=lambda x: x[1], reverse=True)[:topk]
@@ -79,27 +65,36 @@ def _current_cooldown_seconds() -> float:
     mult = min(SUPEXP_FAILURE_BACKOFF_MAX_MULT, 2 ** _FAIL_STREAK)
     return SUPEXP_COOLDOWN_SECONDS * mult
 
+
 def _heuristic_atoms_from_hof(candidates: Sequence[Tuple[str, float, str]], nvars: int) -> List[str]:
-    """Extract reusable parameterized atoms from top HoF strings when LLM output is empty/noisy."""
-    top = sorted(candidates, key=lambda x: x[1], reverse=True)[:SUPEXP_TOPK]
+    """
+    Conservative but interaction-biased fallback heuristics.
+    No Xi, no K, no target-specific motif, but richer than generic saturators.
+    """
+    eqs = [str(eq) for _, _, eq in sorted(candidates, key=lambda x: x[1], reverse=True)[:SUPEXP_TOPK]]
+    joined = " ".join(eqs)
+
     out = []
-    for _, _, eq in top:
-        s = str(eq)
 
-        # exp(-a/Xi)  -> exp(-K/Xi)
-        for m in re.finditer(r"exp\(\s*([-+]?\d*\.?\d+(?:e[-+]?\d+)?)\s*/\s*(X\d+)\s*\)", s):
-            var = m.group(2)
-            if int(var[1:]) < nvars:
-                out.append(f"exp(-K/{var})")
+    if "-" in joined and "/" in joined:
+        out.append("(A-A)/(A-A)")
+    if "*" in joined and "exp(" in joined:
+        out.append("A*exp(A)")
+    if "-" in joined and "exp(" in joined:
+        out.append("A*exp(A-A)")
+    if "-" in joined and "*" in joined and "exp(" in joined:
+        out.append("(A*exp(A)-A*exp(A))/(A-A)")
+    if "+" in joined and "*" in joined and "exp(" in joined:
+        out.append("(A*exp(A)+A*exp(A))")
+    if "/" in joined and "*" in joined:
+        out.append("(A*A)/(A-A)")
+    if "/" in joined and "-" in joined:
+        out.append("1-(A-A)/(A-A)")
+    if "-" in joined and "*" in joined:
+        out.append("(A-A)*exp(A)")
+    if "/" in joined and "exp(" in joined:
+        out.append("exp(A)/(A-A)")
 
-        # Xi / (Xi + a)  -> Xi/(Xi + K)
-        pat1 = r"(X\d+)\s*/\s*\(\s*(?:1\.0\*)?\1\s*[+\-]\s*[-+]?\d*\.?\d+(?:e[-+]?\d+)?\s*\)"
-        for m in re.finditer(pat1, s):
-            var = m.group(1)
-            if int(var[1:]) < nvars:
-                out.append(f"{var}/({var} + K)")
-
-    # keep order, dedupe
     uniq = []
     seen = set()
     for a in out:
@@ -108,6 +103,7 @@ def _heuristic_atoms_from_hof(candidates: Sequence[Tuple[str, float, str]], nvar
         seen.add(a)
         uniq.append(a)
     return uniq
+
 
 def _truncate_eq_for_prompt(eq: str, max_len: int = 220) -> str:
     if not eq:
@@ -145,34 +141,32 @@ def _sanitize_subexpression(expr: str, nvars: int) -> str:
     if not s:
         return ""
 
-    # Very conservative charset.
     if not re.fullmatch(r"[A-Za-z0-9_+\-*/().,\s]+", s):
         return ""
 
-    # Strip optional LHS if model returns grammar-rule-like text.
     if "->" in s:
         s = s.split("->", 1)[1].strip()
 
-    # Remove markdown wrappers
     if s.startswith("`") and s.endswith("`"):
         s = s.strip("`").strip()
 
-    # Variable bounds check
-    for m in re.findall(r"X(\d+)", s):
-        if int(m) >= nvars:
-            return ""
+    if "K" in s or "k_shared" in s:
+        return ""
 
-    # Must contain at least one variable or placeholder and some structure.
-    if not any(tok in s for tok in ["X", "C", "K", "exp(", "log(", "sin(", "cos(", "/", "*"]):
+    # supexp atoms must be abstract; no direct variable terminals
+    if re.search(r"X\d+", s):
+        return ""
+
+    # Only abstract A/C grammar atoms are allowed.
+    if not any(tok in s for tok in ["A", "C", "exp(", "log(", "sin(", "cos(", "sqrt(", "abs(", "/", "*", "+", "-", "1"]):
         return ""
 
     if _is_trivial_atom(s):
         return ""
 
-    if _looks_like_numeric_guard_hack(s):
+    if _is_bland_saturator(s):
         return ""
 
-    # Conservative complexity limits
     if len(s) > 64:
         return ""
     if s.count("exp(") > 1:
@@ -184,13 +178,13 @@ def _sanitize_subexpression(expr: str, nvars: int) -> str:
     if any(tok in s for tok in ["zoo", "oo", "nan"]):
         return ""
 
-    # Avoid plain single-variable forms without transferability.
-    has_placeholder = ("C" in s) or ("K" in s)
+    has_placeholder = ("C" in s) or ("A" in s)
     has_binary = any(op in s for op in ["+", "-", "*", "/"])
     if not has_placeholder and not has_binary:
         return ""
 
     return s
+
 
 def _ensure_supexp_file(path: str) -> None:
     if not path:
@@ -241,31 +235,43 @@ def _build_prompt(candidates: Sequence[Tuple[str, float, str]], nvars: int) -> s
 
     return (
         "You are helping symbolic-regression grammar discovery.\n"
-        "Given high-reward expressions, propose compact reusable subexpressions\n"
-        "that are likely to transfer across equations.\n\n"
+        "Given high-reward expressions, propose compact reusable ABSTRACT subexpressions\n"
+        "that enrich the grammar toward interaction structure, cancellation, and repeated transformed terms.\n\n"
         "Return STRICT JSON only:\n"
         "{\"subexpressions\": [\"...\", \"...\"]}\n\n"
         "Hard constraints for each candidate:\n"
-        f"- Variables must be among X0..X{max(nvars-1,0)} only.\n"
+        "- Use only A and C placeholders. Do not use X0, X1, or any Xi variable names.\n"
         "- RHS only (NO 'A->' prefix).\n"
-        "- Use only functions/operators already in candidate equations: + - * / exp log sin cos and parentheses.\n"
+        "- Use only + - * / exp log sin cos sqrt abs and parentheses.\n"
         "- Keep each candidate <= 64 chars.\n"
         "- Keep each candidate shallow: <=1 exp(...), <=2 '/' and <=2 '**'.\n"
-        "- Prefer patterns with placeholders C or K for transferability.\n"
-        "- Avoid trivial atoms like X0, X1, X0/X1, exp(X0), sin(X0), cos(X1).\n"
-        "- Do NOT output numerical guard hacks like '+1e-8', '(X1-X0)+1e-8', or denominator shifts.\n"
-        "- Avoid constants-only expressions and avoid duplicates/near-duplicates.\n"
+        "- Prefer interaction motifs involving subtraction, division, repeated transformed subterms, or cancellation.\n"
+        "- Prefer patterns where similar transformed terms appear multiple times.\n"
+        "- Avoid simple saturators like A/(A+C), A/(C+A), abs(A/(A+C)), or unary wrappers that only enrich one branch.\n"
+        "- Do NOT output K, k_shared, or any Xi-specific shortcut pattern.\n"
+        "- Avoid trivial atoms like A, C, (A+A), exp(A), sin(A), cos(A).\n"
         "- Provide 4 to 10 suggestions.\n\n"
+        "Good styles:\n"
+        "- (A-A)/(A-A)\n"
+        "- A*exp(A-A)\n"
+        "- (A*exp(A)-A*exp(A))/(A-A)\n"
+        "- 1-(A-A)/(A-A)\n\n"
         "Bad examples (DO NOT output):\n"
-        "- zoo*X0\n"
-        "- exp(exp(X0))\n"
-        "- (X1-X0)+1e-8\n"
+        "- X0/(X0+C)\n"
+        "- exp(-K/X0)\n"
+        "- (X1*exp(-K*X0)-X0*exp(-K*X1))/(X1-X0)\n"
+        "- A/(A+C)\n"
+        "- abs(A/(A+C))\n"
         "- extremely long nested forms\n\n"
         "Candidates:\n" + "\n".join(cand_lines)
     )
 
 
 def maybe_generate_supexpressions(hall_of_fame: Sequence[Tuple[str, float, str]], nvars: int) -> int:
+    """
+    Send current high-reward candidates to OpenAI and append suggested
+    subexpressions to supexp.txt (deduped).
+    """
     global _LAST_PUSH_TS, _LAST_PUSH_BEST_REWARD, _LAST_PROMPT_FINGERPRINT, _CALL_COUNT, _FAIL_STREAK, _HOF_CHANGE_COUNTER
 
     if not ENABLE_SUPEXP:
@@ -305,38 +311,6 @@ def maybe_generate_supexpressions(hall_of_fame: Sequence[Tuple[str, float, str]]
         except Exception as e:
             print(f"[SUPEXP] could not initialize file {SUPEXP_FILE}: {e}", flush=True)
 
-    seen = set()
-    cleaned = []
-
-    # New behavior: try heuristics first to avoid blocking the MCTS hot path
-    if SUPEXP_PREFER_HEURISTICS_FIRST:
-        for a in _heuristic_atoms_from_hof(hall_of_fame, nvars):
-            s = _sanitize_subexpression(a, nvars)
-            if not s or s in seen:
-                continue
-            cleaned.append(s)
-            seen.add(s)
-            if len(cleaned) >= SUPEXP_MAX_SUGGESTIONS:
-                break
-
-        if cleaned and not SUPEXP_AUTO_APPEND:
-            print(f"[SUPEXP] heuristic suggestions ready ({len(cleaned)}), auto-append disabled", flush=True)
-            _LAST_PUSH_TS = time.time()
-            _LAST_PUSH_BEST_REWARD = best_reward
-            _LAST_PROMPT_FINGERPRINT = fp
-            _HOF_CHANGE_COUNTER = 0
-            return 0
-
-        if cleaned and SUPEXP_REQUIRE_APPEND_GAIN:
-            added = _append_unique_lines(SUPEXP_FILE, cleaned) if SUPEXP_AUTO_APPEND else 0
-            _LAST_PUSH_TS = time.time()
-            _LAST_PUSH_BEST_REWARD = best_reward
-            _LAST_PROMPT_FINGERPRINT = fp
-            _HOF_CHANGE_COUNTER = 0
-            if added > 0:
-                print(f"[SUPEXP] heuristic-added {added} expressions to {SUPEXP_FILE}", flush=True)
-                return added
-
     if not os.getenv("OPENAI_API_KEY", "").strip():
         return 0
 
@@ -365,6 +339,9 @@ def maybe_generate_supexpressions(hall_of_fame: Sequence[Tuple[str, float, str]]
         return 0
 
     candidates = _parse_json_or_lines(raw)
+    cleaned = []
+    seen = set()
+
     for c in candidates:
         s = _sanitize_subexpression(c, nvars)
         if not s or s in seen:

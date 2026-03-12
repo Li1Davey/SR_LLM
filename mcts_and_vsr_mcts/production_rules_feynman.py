@@ -35,6 +35,7 @@ def to_binary_expr_tree(expr):
             right = to_binary_expr_tree(op(*args[1:]))
             return [op.__name__, left, right]
 
+
 def _dedupe_preserve_order(rules):
     seen = set()
     out = []
@@ -48,46 +49,70 @@ def _dedupe_preserve_order(rules):
 def _load_supexp_rules(nvars: int, non_terminal_node='A'):
     """
     Load additional RHS expressions from supexp.txt and convert to grammar rules.
-    Optionally seed a few canonical atoms when the file is empty.
+
+    Strict policy:
+    - no K placeholder
+    - no direct Xi references in supexp atoms
+    - only A and C are allowed in supexp expressions
+    - reject weak abstract saturator forms that dominated recent runs
     """
     enabled = os.getenv("SCIBENCH_SUPEXP_USE", "1") == "1"
     if not enabled:
         return []
 
     path = os.getenv("SCIBENCH_SUPEXP_FILE", os.path.join(os.path.dirname(__file__), "supexp.txt"))
-    seed_defaults = os.getenv("SCIBENCH_SUPEXP_SEED_DEFAULTS", "1") == "1"
+    if not os.path.exists(path):
+        return []
 
-    seed_atoms = []
-    if seed_defaults:
-        seed_atoms.extend([
-            "X0/(X0+C)",
-            "X1/(X1+C)",
-            "exp(-K/X0)",
-            "exp(-K/X1)",
-        ])
-        if nvars >= 2:
-            seed_atoms.extend([
-                "(X1*exp(-K*X0)-X0*exp(-K*X1))/(X1-X0)",
-                "1-(X1*exp(-K*X0)-X0*exp(-K*X1))/(X1-X0)",
-            ])
+    def _is_allowed_supexp_rhs(rhs: str) -> bool:
+        s = rhs.replace(" ", "")
 
-    file_atoms = []
-    if os.path.exists(path):
-        with open(path, "r") as f:
-            for raw in f:
-                line = raw.strip()
-                if not line or line.startswith("#"):
-                    continue
-                rhs = line.split("->", 1)[1].strip() if "->" in line else line
-                valid = True
-                for tok in rhs.replace("(", " ").replace(")", " ").replace("*", " ").replace("+", " ").replace("-", " ").replace("/", " ").split():
-                    if tok.startswith("X") and tok[1:].isdigit() and int(tok[1:]) >= nvars:
-                        valid = False
-                        break
-                if valid:
-                    file_atoms.append(rhs)
+        # Hard reject K anywhere.
+        if "K" in s or "k_shared" in s:
+            return False
 
-    rules = [f"{non_terminal_node}->{rhs}" for rhs in (seed_atoms + file_atoms)]
+        # supexp atoms are abstract only: A and C allowed, but no Xi terminals.
+        if any(tok in s for tok in ["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9"]):
+            return False
+
+        # Only allow known abstract symbols/functions.
+        tokens = set(re.findall(r"[A-Za-z_]+", s))
+        allowed = {"A", "C", "exp", "log", "sin", "cos", "sqrt", "abs"}
+        if not tokens.issubset(allowed):
+            return False
+
+        # Reject weak abstract saturator / shortcut families.
+        banned_exact = {
+            "A/(A+C)",
+            "A/(C+A)",
+            "abs(A/(A+C))",
+            "A/(C*A)",
+            "(C+A)/(C-A)",
+            "(A+exp(A))",
+            "(A-exp(A))",
+        }
+        if s in banned_exact:
+            return False
+
+        # Reject very bland denominator-saturator patterns.
+        if re.fullmatch(r".*/\((A|C)[+\-](A|C)\)", s):
+            return False
+
+        return True
+
+    rules = []
+    with open(path, "r") as f:
+        for raw in f:
+            line = raw.strip()
+            if not line or line.startswith("#"):
+                continue
+
+            rhs = line.split("->", 1)[1].strip() if "->" in line else line
+            if not _is_allowed_supexp_rhs(rhs):
+                continue
+
+            rules.append(f"{non_terminal_node}->{rhs}")
+
     return _dedupe_preserve_order(rules)
 
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
@@ -98,9 +123,12 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
     if os.getenv("SCIBENCH_SAFE_GRAMMAR", "0") == "1":
         return get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node)
-    base_rules = [f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
-                  f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
-                  f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}']
+
+    base_rules = [
+        f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
+        f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
+        f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}'
+    ]
     div_rules = [f'{non_terminal_node}->({non_terminal_node})/({non_terminal_node})']
     exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
     log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
@@ -133,15 +161,14 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
         rules += get_n4_rules(nvars, non_terminal_node)
     if 'n5' in operators_set:
         rules += get_n5_rules(nvars, non_terminal_node)
+
     rules += _load_supexp_rules(nvars, non_terminal_node)
     return _dedupe_preserve_order(rules)
+
 
 def get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node="A"):
     """
     Keep the safe mode intentionally simple.
-
-    We avoid complex handcrafted sequences here so the model starts from a
-    compact grammar; advanced atoms should come from supexp.txt.
     """
     base_rules = [
         f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
@@ -181,7 +208,6 @@ def get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node="A
     if 'n5' in operators_set:
         rules += get_n5_rules(nvars, non_terminal_node)
 
-    # Let LLM-proposed atoms drive advanced patterns.
     rules += _load_supexp_rules(nvars, non_terminal_node)
     return _dedupe_preserve_order(rules)
 
@@ -248,23 +274,23 @@ def get_var_i_production_rules(round_idx, operators_set):
 
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}', ]
+    return [f'{non_terminal_node}->X{xi}']
 
 
 def get_ith_n2_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**2', ]
+    return [f'{non_terminal_node}->X{xi}**2']
 
 
 def get_ith_n3_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**3', ]
+    return [f'{non_terminal_node}->X{xi}**3']
 
 
 def get_ith_n4_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**4', ]
+    return [f'{non_terminal_node}->X{xi}**4']
 
 
 def get_ith_n5_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**5', ]
+    return [f'{non_terminal_node}->X{xi}**5']
 
 
 def get_ith_inv_rules(xi: int, non_terminal_node='A') -> list:

@@ -1,23 +1,11 @@
 # Auto-augmented reusable subexpressions for production_rules_feynman.
-# One RHS expression per line (optional A-> prefix is accepted).
-# Keep these simple and compositional; LLM feedback can append harder atoms.
+# Only abstract atoms are allowed here.
+# Allowed symbols: A, C, operators, and supported functions.
 
-# Linear / affine atoms
-X0
-X1
+A
 C
-C*X0
-C*X1
-(C*X0+C)
-(C*X1+C)
-
-# Core interaction atoms
-(X0+X1)
-(X1-X0)
-X0*X1
-
-# Simple stable ratio atoms
-X0/(X0+C)
-X1/(X1+C)
-C/(X0+C)
-C/(X1+C)
+(A+A)
+(A-A)
+A*A
+(A)/(A)
+exp(A)
