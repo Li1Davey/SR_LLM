@@ -1,6 +1,7 @@
 from sympy import Symbol, Float, Integer, Rational
 import sympy
 import os
+import re
 import numpy as np
 
 
@@ -46,6 +47,7 @@ def _dedupe_preserve_order(rules):
         out.append(rule)
     return out
 
+
 def _load_supexp_rules(nvars: int, non_terminal_node='A'):
     """
     Load additional RHS expressions from supexp.txt and convert to grammar rules.
@@ -64,24 +66,16 @@ def _load_supexp_rules(nvars: int, non_terminal_node='A'):
     if not os.path.exists(path):
         return []
 
-    def _is_allowed_supexp_rhs(rhs: str) -> bool:
-        s = rhs.replace(" ", "")
+    def _is_trivial_atom(s: str) -> bool:
+        t = s.replace(" ", "")
+        trivial = {
+            "A", "C", "(A+A)", "(A-A)", "A*A", "(A)/(A)",
+            "exp(A)", "log(A)", "sin(A)", "cos(A)", "sqrt(A)", "abs(A)"
+        }
+        return t in trivial
 
-        # Hard reject K anywhere.
-        if "K" in s or "k_shared" in s:
-            return False
-
-        # supexp atoms are abstract only: A and C allowed, but no Xi terminals.
-        if any(tok in s for tok in ["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9"]):
-            return False
-
-        # Only allow known abstract symbols/functions.
-        tokens = set(re.findall(r"[A-Za-z_]+", s))
-        allowed = {"A", "C", "exp", "log", "sin", "cos", "sqrt", "abs"}
-        if not tokens.issubset(allowed):
-            return False
-
-        # Reject weak abstract saturator / shortcut families.
+    def _is_bland_saturator(s: str) -> bool:
+        t = s.replace(" ", "")
         banned_exact = {
             "A/(A+C)",
             "A/(C+A)",
@@ -91,11 +85,53 @@ def _load_supexp_rules(nvars: int, non_terminal_node='A'):
             "(A+exp(A))",
             "(A-exp(A))",
         }
-        if s in banned_exact:
+        if t in banned_exact:
+            return True
+        if re.fullmatch(r".*/\((A|C)[+\-](A|C)\)", t):
+            return True
+        return False
+
+    def _is_allowed_supexp_rhs(rhs: str) -> bool:
+        s = rhs.replace(" ", "")
+
+        # Hard reject K anywhere.
+        if "K" in s or "k_shared" in s:
             return False
 
-        # Reject very bland denominator-saturator patterns.
-        if re.fullmatch(r".*/\((A|C)[+\-](A|C)\)", s):
+        # supexp atoms are abstract only
+        if any(tok in s for tok in ["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9"]):
+            return False
+
+        # Require some reusable abstract structure.
+        if not any(tok in s for tok in ["A", "C", "exp(", "log(", "sin(", "cos(", "sqrt(", "abs(", "/", "*", "+", "-", "1"]):
+            return False
+
+        # Only allow known abstract symbols/functions.
+        tokens = set(re.findall(r"[A-Za-z_]+", s))
+        allowed = {"A", "C", "exp", "log", "sin", "cos", "sqrt", "abs"}
+        if not tokens.issubset(allowed):
+            return False
+
+        if _is_trivial_atom(s):
+            return False
+
+        if _is_bland_saturator(s):
+            return False
+
+        if len(s) > 64:
+            return False
+        if s.count("exp(") > 1:
+            return False
+        if s.count("**") > 2:
+            return False
+        if s.count("/") > 2:
+            return False
+        if any(tok in s for tok in ["zoo", "oo", "nan"]):
+            return False
+
+        has_placeholder = ("C" in s) or ("A" in s)
+        has_binary = any(op in s for op in ["+", "-", "*", "/"])
+        if not has_placeholder and not has_binary:
             return False
 
         return True
@@ -114,6 +150,7 @@ def _load_supexp_rules(nvars: int, non_terminal_node='A'):
             rules.append(f"{non_terminal_node}->{rhs}")
 
     return _dedupe_preserve_order(rules)
+
 
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """

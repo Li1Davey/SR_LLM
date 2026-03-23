@@ -168,7 +168,7 @@ class MCTS(object):
             val_y,
             self.input_var_Xs,
             eta=self.eta,
-            max_opt_iter=min(self.max_opt_iter, 15),
+            max_opt_iter=self.max_opt_iter,
         )
         return reward
 
@@ -213,29 +213,26 @@ class MCTS(object):
 
         return (Q_child / N_child) + self.exploration_rate * np.sqrt(np.log(N_parent) / N_child)
 
-    def back_propagate(self, state, action_index, reward):
-        action = self.grammars[action_index]
-        edge_key = state + "," + action
-        self.QN[edge_key][0] += reward
-        self.QN[edge_key][1] += 1
+    def back_propagate(self, path, reward):
+        if not path:
+            return
 
-        cur_state = state
-        cur_action = action
+        ordered_states = [path[0][0]] + [child_state for _, _, child_state in path]
+        seen = set()
+        deduped_states = []
+        for s in ordered_states:
+            if s not in seen:
+                deduped_states.append(s)
+                seen.add(s)
 
-        while cur_state:
-            self.QN[cur_state][0] += reward
-            self.QN[cur_state][1] += 1
+        for s in deduped_states:
+            self.QN[s][0] += reward
+            self.QN[s][1] += 1
 
-            try:
-                aidx = self.grammars.index(cur_action)
-                self.UCBs[cur_state][aidx] = self.update_ucb_mcts(cur_state, cur_action)
-            except ValueError:
-                pass
-
-            if "," in cur_state:
-                cur_state, cur_action = cur_state.rsplit(",", 1)
-            else:
-                cur_state = ""
+        for parent_state, action_index, _ in reversed(path):
+            self.UCBs[parent_state][action_index] = self.update_ucb_mcts(
+                parent_state, self.grammars[action_index]
+            )
 
     def update_hall_of_fame(self, state, reward, eq):
         reward = float(reward)
@@ -284,39 +281,28 @@ class MCTS(object):
         best_r = -100
         best_state = None
         idx = 0
-        completed_rewards = []
 
         while idx < num_play:
             done = False
-            truncated = False
             state = state_initial
-            ntn = ntn_initial
+            ntn = list(ntn_initial)
 
-            while not done:
+            while not done and ntn:
                 valid_index = self.valid_production_rules(ntn[0])
                 action = np.random.choice(valid_index)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 state, ntn = next_state, ntn_next
 
-                self.QN[state][1] += 1
-
-                if state.count(",") >= self.max_len:
-                    truncated = True
+                if not done and state.count(",") >= self.max_len:
                     break
 
             idx += 1
 
-            if done:
-                completed_rewards.append(reward)
-                if reward > best_r:
-                    self.update_hall_of_fame(next_state, reward, eq)
-                    best_eq = eq
-                    best_r = reward
-                    best_state = next_state
-
-        if completed_rewards:
-            topk = sorted(completed_rewards)[-min(3, len(completed_rewards)):]
-            best_r = float(np.mean(topk))
+            if done and reward > best_r:
+                self.update_hall_of_fame(state, reward, eq)
+                best_eq = eq
+                best_r = reward
+                best_state = state
 
         return best_r, best_eq, best_state
 
@@ -327,6 +313,22 @@ class MCTS(object):
         if not self.QN:
             return 0
         return max(s.count(",") for s in self.QN.keys())
+
+    def select_action(self, state, node):
+        unvisited_children = self.get_unvisited_children(state, node)
+        valid_actions = self.valid_production_rules(node)
+
+        if len(unvisited_children) != 0:
+            return int(np.random.choice(unvisited_children)), True
+
+        ucb_vals = self.UCBs[state][valid_actions]
+        if np.allclose(ucb_vals, 0):
+            return int(np.random.choice(valid_actions)), False
+
+        ucb_vals = ucb_vals - np.max(ucb_vals)
+        p = np.exp(ucb_vals)
+        p = p / np.sum(p)
+        return int(np.random.choice(valid_actions, p=p)), False
 
     def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5):
         best_solution = ("C", -100)
@@ -345,40 +347,34 @@ class MCTS(object):
 
             state = "f->A"
             ntn = ["A"]
+            path = []
+            reward = -100
+            eq = ""
+            done = False
 
-            unvisited_children = self.get_unvisited_children(state, ntn[0])
-            valid_actions = self.valid_production_rules(ntn[0])
+            while not done and ntn:
+                action_idx, expanded_new_child = self.select_action(state, ntn[0])
+                next_state, ntn_next, reward, done, eq = self.step(state, action_idx, ntn[1:])
+                path.append((state, action_idx, next_state))
+                state, ntn = next_state, ntn_next
 
-            if len(unvisited_children) != 0:
-                action_idx = np.random.choice(unvisited_children)
-            else:
-                ucb_vals = self.UCBs[state][valid_actions]
-                if np.allclose(ucb_vals, 0):
-                    action_idx = np.random.choice(valid_actions)
-                else:
-                    ucb_vals = self.UCBs[state][valid_actions]
-                    ucb_vals = ucb_vals - np.max(ucb_vals)
-                    p = np.exp(ucb_vals)
-                    p = p / np.sum(p)
-                    action_idx = np.random.choice(valid_actions, p=p)
+                if done:
+                    self.update_hall_of_fame(state, reward, eq)
+                    break
 
-            next_state, ntn_next, reward, done, eq = self.step(state, action_idx, ntn[1:])
+                if state.count(",") >= self.max_len:
+                    reward = -100
+                    eq = ""
+                    break
 
-            best_state = None
-            if not done:
-                reward, eq, best_state = self.rollout(num_rollouts, next_state, ntn_next)
-            else:
-                best_state = next_state
-                self.update_hall_of_fame(next_state, reward, eq)
-
-            if best_state is not None:
-                self.QN[best_state][0] += reward
-                self.QN[best_state][1] += 1
+                if expanded_new_child:
+                    reward, eq, _ = self.rollout(num_rollouts, state, ntn)
+                    break
 
             if reward > best_solution[1]:
                 best_solution = (eq, reward)
 
-            self.back_propagate(state, action_idx, reward)
+            self.back_propagate(path, reward)
 
             if save_every and (t % save_every == 0):
                 _save_qn_snapshot(self.QN, step=t, reason="periodic")

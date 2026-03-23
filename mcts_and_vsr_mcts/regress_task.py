@@ -21,11 +21,18 @@ class RegressTask(object):
         self.val_X = None
         self.val_y = None
 
-    @staticmethod
-    def _ensure_2d_X(X):
+    def _ensure_2d_X(self, X):
         X = np.asarray(X)
+
         if X.ndim == 1:
             X = X.reshape(-1, 1)
+
+        # DataX.randn() returns [num_vars, sample_size] for scalar variables.
+        # Equation_evaluator.evaluate() expects [sample_size, num_vars].
+        expected_nvars = self.data_query_oracle.get_nvars()
+        if X.ndim == 2 and X.shape[0] == expected_nvars and X.shape[1] != expected_nvars:
+            X = X.T
+
         return X
 
     def rand_draw_data(self):

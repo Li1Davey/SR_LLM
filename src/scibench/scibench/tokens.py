@@ -1,15 +1,10 @@
 from typing import List
 
 from fractions import Fraction
-import os
 import numpy as np
 
 from scibench.file_util import is_float
 
-# configurable thresholds (so you can tune without editing code)
-_PROT_EPS = float(os.getenv("SCIBENCH_PROTECTED_EPS", "1e-6"))
-_EXP_CLIP = float(os.getenv("SCIBENCH_EXP_CLIP", "50"))  # exp(x) with x clipped to [-EXP_CLIP, +EXP_CLIP]
-_POW_ABS_CLIP = float(os.getenv("SCIBENCH_POW_ABS_CLIP", "1e6"))
 
 class sciToken(object):
     """
@@ -161,10 +156,6 @@ def logabs(x1):
 def expneg(x1):
     return np.exp(-x1)
 
-def safe_exp(x1):
-    """Safe exponential that clips inputs to avoid overflow."""
-    with np.errstate(over='ignore', invalid='ignore'):
-        return np.exp(np.clip(x1, -50, 50))
 
 def n3(x1):
     return np.power(x1, 3)
@@ -207,7 +198,6 @@ unprotected_ops = [
     sciToken(np.cos, "cos", arity=1, complexity=3),
     sciToken(np.tan, "tan", arity=1, complexity=4),
     sciToken(np.exp, "exp", arity=1, complexity=4),
-    sciToken(safe_exp, "safe_exp", arity=1, complexity=4),
     sciToken(np.log, "log", arity=1, complexity=4),
     sciToken(np.sqrt, "sqrt", arity=1, complexity=4),
 
@@ -224,7 +214,7 @@ unprotected_ops = [
     sciToken(np.square, "n2", arity=1, complexity=2),
     sciToken(n3, "n3", arity=1, complexity=3),
     sciToken(n4, "n4", arity=1, complexity=3),
-    sciToken(n5, "n5", arity=1, complexity=3),
+    sciToken(n5, "n5", arity=2, complexity=3),
     sciToken(sigmoid, "sigmoid", arity=1, complexity=4),
     sciToken(harmonic, "harmonic", arity=1, complexity=4)
 ]
@@ -233,71 +223,55 @@ unprotected_ops = [
 
 
 def protected_div(x1, x2):
-    x1 = np.asarray(x1)
-    x2 = np.asarray(x2)
-    out = np.ones(np.broadcast(x1, x2).shape, dtype=np.result_type(x1, x2, np.float32))
-    mask = np.abs(x2) > _PROT_EPS
-    if np.any(mask):
-        out[mask] = (x1[mask] / x2[mask])
-    return out
+    with np.errstate(divide='ignore', invalid='ignore', over='ignore'):
+        return np.where(np.abs(x2) > 0.001, np.divide(x1, x2), 1.)
 
-def protected_inv(x1):
-    x1 = np.asarray(x1)
-    out = np.zeros_like(x1, dtype=np.result_type(x1, np.float32))
-    mask = np.abs(x1) > _PROT_EPS
-    if np.any(mask):
-        out[mask] = 1.0 / x1[mask]
-    return out
-
-def protected_log(x1):
-    x1 = np.asarray(x1)
-    out = np.zeros_like(x1, dtype=np.result_type(x1, np.float32))
-    ax = np.abs(x1)
-    mask = ax > _PROT_EPS
-    if np.any(mask):
-        out[mask] = np.log(ax[mask])
-    return out
-
-def protected_sqrt(x1):
-    x1 = np.asarray(x1)
-    return np.sqrt(np.abs(x1))
 
 def protected_exp(x1):
-    x1 = np.asarray(x1)
-    # clip to avoid overflow and to keep gradients/search sane
-    return np.exp(np.clip(x1, -_EXP_CLIP, _EXP_CLIP))
+    with np.errstate(over='ignore'):
+        return np.where(x1 < 100, np.exp(x1), 0.0)
+
+
+def protected_log(x1):
+    """Closure of log for non-positive arguments."""
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return np.where(np.abs(x1) > 0.001, np.log(np.abs(x1)), 0.)
+
+
+def protected_sqrt(x1):
+    """Closure of sqrt for negative arguments."""
+    return np.sqrt(np.abs(x1))
+
+
+def protected_inv(x1):
+    """Closure of inverse for zero arguments."""
+    with np.errstate(divide='ignore', invalid='ignore'):
+        return np.where(np.abs(x1) > 0.001, 1. / x1, 0.)
+
 
 def protected_expneg(x1):
-    x1 = np.asarray(x1)
-    return np.exp(np.clip(-x1, -_EXP_CLIP, _EXP_CLIP))
+    with np.errstate(over='ignore'):
+        return np.where(x1 > -100, np.exp(-x1), 0.0)
+
 
 def protected_n2(x1):
-    x1 = np.asarray(x1)
-    out = np.zeros_like(x1, dtype=np.result_type(x1, np.float32))
-    mask = np.abs(x1) < _POW_ABS_CLIP
-    if np.any(mask):
-        out[mask] = x1[mask] * x1[mask]
-    return out
+    with np.errstate(over='ignore'):
+        return np.where(np.abs(x1) < 1e6, np.square(x1), 0.0)
+
 
 def protected_n3(x1):
-    x1 = np.asarray(x1)
-    out = np.zeros_like(x1, dtype=np.result_type(x1, np.float32))
-    mask = np.abs(x1) < _POW_ABS_CLIP
-    if np.any(mask):
-        out[mask] = x1[mask] * x1[mask] * x1[mask]
-    return out
+    with np.errstate(over='ignore'):
+        return np.where(np.abs(x1) < 1e6, np.power(x1, 3), 0.0)
+
 
 def protected_n4(x1):
-    x1 = np.asarray(x1)
-    out = np.zeros_like(x1, dtype=np.result_type(x1, np.float32))
-    mask = np.abs(x1) < _POW_ABS_CLIP
-    if np.any(mask):
-        y = x1[mask] * x1[mask]
-        out[mask] = y * y
-    return out
+    with np.errstate(over='ignore'):
+        return np.where(np.abs(x1) < 1e6, np.power(x1, 4), 0.0)
+
 
 def protected_sigmoid(x1):
-    return 1.0 / (1.0 + protected_expneg(x1))
+    return 1 / (1 + protected_expneg(x1))
+
 
 # Annotate protected ops
 protected_ops = [
@@ -306,7 +280,6 @@ protected_ops = [
 
     # Protected unary operators
     sciToken(protected_exp, "exp", arity=1, complexity=4),
-    sciToken(safe_exp, "safe_exp", arity=1, complexity=4),
     sciToken(protected_log, "log", arity=1, complexity=4),
     sciToken(protected_log, "logabs", arity=1, complexity=4),  # Protected logabs is support, but redundant
     sciToken(protected_sqrt, "sqrt", arity=1, complexity=4),

@@ -1,11 +1,12 @@
-# Auto-augmented reusable subexpressions for production_rules_feynman.
-# Only abstract atoms are allowed here.
-# Allowed symbols: A, C, operators, and supported functions.
+# Curated seed subexpressions for default (non-safe) grammar augmentation.
+# Policy:
+# - abstract only (A/C, no Xi, no K)
+# - avoid simple one-branch saturators and similar shortcut motifs
+# - prefer interaction, cancellation, and symmetric repeated-term structure
+# - keep seeds compatible with the current supexp validation filter
 
-A
-C
-(A+A)
-(A-A)
-A*A
-(A)/(A)
-exp(A)
+(A-A)*(A+A)
+(A-A)*(A-A)
+(A*A-A*A)
+(A-A)/(A*A)
+((A-A)*(A+A))/(A*C)

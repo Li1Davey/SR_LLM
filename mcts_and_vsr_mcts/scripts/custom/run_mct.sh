@@ -5,54 +5,63 @@ CASE="${1}"
 RUN="${2}"
 MODE="${3}"
 METRIC="${4}"
-STAGE="${5:-1}"          # 1 or 2
-NUM_EPISODES="${6:-1000}"
-ROLLOUTS="${7:-40}"
-MAX_LEN="${8:-20}"
-ETA="${9:-0.99}"
-KEY="${10:-0}"   # 0 = no LLM supexp generation, 1 = enable LLM supexp generation
+NUM_EPISODES="${5:-1000}"
+ROLLOUTS="${6:-40}"
+MAX_LEN="${7:-20}"
+ETA="${8:-1.0}"
+KEY="${9:-0}"   # 0 = no LLM supexp generation, 1 = enable LLM supexp generation
 
 BASE=~/workspace/scibench
 EQ_FILE="${BASE}/data/unencrypted/custom_equations/${CASE}_report.in"
-OUT_DIR="${BASE}/result/report_tests/${CASE}/${RUN}/stage${STAGE}"
-DATA_DIR="${OUT_DIR}/generated_data"
+OUT_DIR="${BASE}/result/report_tests/${CASE}/${RUN}"
 QN_DIR="${OUT_DIR}/qn_logs"
-mkdir -p "${DATA_DIR}" "${QN_DIR}" "${OUT_DIR}"
+mkdir -p "${OUT_DIR}" "${QN_DIR}"
 
-# -----------------------
-# Numerical safety (critical)
-# -----------------------
-export SCIBENCH_PROTECTED=1
-export SCIBENCH_PROTECTED_EPS=1e-6
-export SCIBENCH_EXP_CLIP=50
-export SCIBENCH_POW_ABS_CLIP=1e6
+# Each run gets its own supexp.txt, initialized from the base file.
+# This prevents cross-run contamination while still letting each run
+# start from the shared base supexp rules.
+SUPEXP_FILE="${OUT_DIR}/supexp.txt"
+BASE_SUPEXP="${BASE}/mcts_and_vsr_mcts/supexp.txt"
 
-# Avoid X0 ~= X1 degeneracy (important for stage 2)
-export SCIBENCH_ENSURE_X0_NE_X1=1
-export SCIBENCH_XPAIR_EPS=1e-12
-export SCIBENCH_XPAIR_REL_EPS=1e-6
-export SCIBENCH_XPAIR_MAX_TRIES=200
-
-# -----------------------
-# Curriculum controls
-# -----------------------
-if [[ "${STAGE}" == "1" ]]; then
-  export SCIBENCH_SAFE_GRAMMAR=1
-  export SCIBENCH_USE_DELTA=1
-  export SCIBENCH_DELTA_BASE_IDX=0
-  export SCIBENCH_DELTA_VAR_IDX=1
-  export SCIBENCH_MAX_OPT_ITER=20
+if [[ -f "${BASE_SUPEXP}" ]]; then
+  cp "${BASE_SUPEXP}" "${SUPEXP_FILE}"
 else
-  export SCIBENCH_USE_DELTA=0
-  export SCIBENCH_MAX_OPT_ITER=150
+  echo "# auto-generated supexp suggestions will be appended below" > "${SUPEXP_FILE}"
 fi
 
-# -------------------------------------------------
+# Remove all scibench env overrides tied to modified sampling / grammar / token behavior
+unset SCIBENCH_PROTECTED
+unset SCIBENCH_PROTECTED_EPS
+unset SCIBENCH_EXP_CLIP
+unset SCIBENCH_POW_ABS_CLIP
+
+unset SCIBENCH_ENSURE_X0_NE_X1
+unset SCIBENCH_XPAIR_EPS
+unset SCIBENCH_XPAIR_REL_EPS
+unset SCIBENCH_XPAIR_MAX_TRIES
+
+unset SCIBENCH_SAFE_GRAMMAR
+unset SCIBENCH_USE_DELTA
+unset SCIBENCH_DELTA_BASE_IDX
+unset SCIBENCH_DELTA_VAR_IDX
+unset SCIBENCH_DELTA_CLAMP
+unset SCIBENCH_MAX_OPT_ITER
+
+unset SCIBENCH_SAVE_X
+unset SCIBENCH_SAVE_DIR
+
+# Keep QN diagnostics enabled without restoring curriculum
+export SCIBENCH_SAVE_QN=1
+export SCIBENCH_SAVE_QN_EVERY="${SCIBENCH_SAVE_QN_EVERY:-500}"
+export SCIBENCH_SAVE_QN_TOPK=2000
+export SCIBENCH_QN_DIR="${QN_DIR}"
+export SCIBENCH_EQ_FILE="${EQ_FILE}"
+export SCIBENCH_RUN_TAG="${CASE}_${RUN}"
+
 # LLM supexp feedback
-# -------------------------------------------------
 if [[ "${KEY}" == "1" ]]; then
   export SCIBENCH_SUPEXP_ENABLE=1
-  export SCIBENCH_SUPEXP_FILE="${OUT_DIR}/supexp.txt"
+  export SCIBENCH_SUPEXP_FILE="${SUPEXP_FILE}"
   export SCIBENCH_SUPEXP_AUTO_APPEND=1
   export SCIBENCH_SUPEXP_TOPK=8
   export SCIBENCH_SUPEXP_COOLDOWN_SECONDS=120
@@ -73,32 +82,19 @@ if [[ "${KEY}" == "1" ]]; then
   fi
 
   echo "[INFO] LLM supexp feedback ENABLED"
+  echo "[INFO] Run-local supexp file initialized from: ${BASE_SUPEXP}"
+  echo "[INFO] New suggestions will append only to: ${SUPEXP_FILE}"
 else
   export SCIBENCH_SUPEXP_ENABLE=0
-  export SCIBENCH_SUPEXP_FILE="${OUT_DIR}/supexp.txt"
+  export SCIBENCH_SUPEXP_FILE="${SUPEXP_FILE}"
   export SCIBENCH_SUPEXP_AUTO_APPEND=0
   echo "[INFO] LLM supexp feedback disabled"
+  echo "[INFO] Run-local supexp file initialized from: ${BASE_SUPEXP}"
 fi
-
-# -----------------------
-# Save generated X (debugging)
-# -----------------------
-export SCIBENCH_SAVE_X=1
-export SCIBENCH_EQ_FILE="${EQ_FILE}"
-export SCIBENCH_RUN_TAG="${CASE}_${RUN}_stage${STAGE}"
-export SCIBENCH_SAVE_DIR="${DATA_DIR}"
-
-# -----------------------
-# Save QN snapshots
-# -----------------------
-export SCIBENCH_SAVE_QN=1
-export SCIBENCH_SAVE_QN_EVERY=5
-export SCIBENCH_SAVE_QN_TOPK=2000
-export SCIBENCH_QN_DIR="${QN_DIR}"
 
 cd "${BASE}/mcts_and_vsr_mcts"
 
-OUT_FILE="${OUT_DIR}/$(date +%F)_${CASE}_${RUN}_stage${STAGE}_${MODE}_${METRIC}_ep${NUM_EPISODES}.out"
+OUT_FILE="${OUT_DIR}/$(date +%F)_${CASE}_${RUN}_${MODE}_${METRIC}_ep${NUM_EPISODES}.out"
 
 nohup timeout 96h python main.py \
   --equation_name "${EQ_FILE}" \
@@ -115,7 +111,7 @@ nohup timeout 96h python main.py \
 
 echo $! > "${OUT_DIR}/pid.txt"
 
-echo "Started ${CASE}/${RUN} stage=${STAGE} (PID $(cat "${OUT_DIR}/pid.txt"))"
+echo "Started ${CASE}/${RUN} (PID $(cat "${OUT_DIR}/pid.txt"))"
 echo "Output: ${OUT_FILE}"
-echo "Data dir: ${DATA_DIR}"
-echo "QN dir: ${QN_DIR}"
+echo "QN logs: ${QN_DIR}"
+echo "supexp file for this run: ${SUPEXP_FILE}"

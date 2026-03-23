@@ -1,11 +1,12 @@
 :
 
-# Monte Carlo Tree Search for Symbolic Regression and Adapation to Control Variable Experimentation
+# Monte Carlo Tree Search for Symbolic Regression and Adaptation to Control Variable Experimentation
 
-THe MCTS baseline is modified from paper: SymbolicPhysicsLearner
+This repository contains an MCTS-based symbolic regression workflow adapted from **SymbolicPhysicsLearner**.
 
-## Run Model
- To run experiments with Symbolic Physics Learner, use
-```
-./scripts/train_run.sh                               
-```
+## Run the model
+
+Launch experiments with:
+
+```bash
+./run_mct.sh CASE RUN MODE METRIC [NUM_EPISODES] [ROLLOUTS] [MAX_LEN] [ETA] [KEY]

@@ -1,7 +1,5 @@
 import numpy as np
 import json
-import os
-from datetime import datetime
 
 
 class DataX(object):
@@ -21,70 +19,14 @@ class DataX(object):
                 self.data_X_samplers.append((LogUniformSampling2d(one_sample['range'], one_sample['only_positive'], one_sample['dim'])))
 
     def randn(self, sample_size):
+        """
+
+        :param sample_size: batch size
+        :return: return [#input_variables, sample_size, dimension of each variables]
+        """
         list_of_X = [one_sampler(sample_size) for one_sampler in self.data_X_samplers]
-        X = np.stack(list_of_X, axis=-1)  # shape: (sample_size, num_vars)
-        
-        # --- curriculum: if using delta, X1 will be set to X0 + Δ, so don't waste time checking X0!=X1 ---
-        use_delta = os.getenv("SCIBENCH_USE_DELTA", "0") == "1"
+        return np.stack(list_of_X, axis=0).squeeze()
 
-        # --- enforce separation between X0 and X1 (reject + resample; preserves X1 marginal) ---
-        if (not use_delta) and X.shape[-1] >= 2 and os.getenv("SCIBENCH_ENSURE_X0_NE_X1", "0") == "1":
-            eps_abs = float(os.getenv("SCIBENCH_XPAIR_EPS", "1e-12"))
-            eps_rel = float(os.getenv("SCIBENCH_XPAIR_REL_EPS", "1e-6"))
-            max_tries = int(os.getenv("SCIBENCH_XPAIR_MAX_TRIES", "200"))
-
-            x0 = X[:, 0]
-            x1 = X[:, 1]
-
-            for _ in range(max_tries):
-                thr = eps_abs + eps_rel * np.maximum(np.abs(x0), np.abs(x1))
-                bad = np.abs(x1 - x0) <= thr
-                if not np.any(bad):
-                    break
-
-                n_bad = int(np.sum(bad))
-                # resample ONLY X1 where it's too close to X0
-                x1[bad] = self.data_X_samplers[1](n_bad)
-
-            # If it STILL fails (rare), do one last full resample of X1 and accept whatever happens.
-            # Important: do NOT "push" values; that distorts the distribution.
-            thr = eps_abs + eps_rel * np.maximum(np.abs(x0), np.abs(x1))
-            bad = np.abs(x1 - x0) <= thr
-            if np.any(bad):
-                x1 = self.data_X_samplers[1](len(x1))
-
-            X[:, 0] = x0
-            X[:, 1] = x1
-
-        # --- curriculum hook: interpret X[:, delta_idx] as Δ and set X1 = X0 + Δ ---
-        if os.getenv("SCIBENCH_USE_DELTA", "0") == "1":
-            base_idx = int(os.getenv("SCIBENCH_DELTA_BASE_IDX", "0"))
-            delta_idx = int(os.getenv("SCIBENCH_DELTA_VAR_IDX", "1"))
-            X[:, delta_idx] = X[:, base_idx] + X[:, delta_idx]
-
-        # --- OPTIONAL: clamp after delta (ONLY if explicitly enabled) ---
-            if os.getenv("SCIBENCH_DELTA_CLAMP", "0") == "1":
-                sampler = self.data_X_samplers[delta_idx]
-                lo, hi = sampler.range
-                X[:, delta_idx] = np.clip(X[:, delta_idx], lo, hi)
-        
-        # --- optional: save generated X to disk ---
-        if os.getenv("SCIBENCH_SAVE_X", "0") == "1":
-            save_dir = os.getenv("SCIBENCH_SAVE_DIR", "")
-            eq_file = os.getenv("SCIBENCH_EQ_FILE", "unknown_equation")
-            run_tag = os.getenv("SCIBENCH_RUN_TAG", "run")
-
-            if save_dir:
-                os.makedirs(save_dir, exist_ok=True)
-
-                ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-                eq_base = os.path.splitext(os.path.basename(eq_file))[0]
-                pid = os.getpid()
-
-                out_path = os.path.join(save_dir, f"{ts}_{eq_base}_pid{pid}_{run_tag}_X.npy")
-                np.save(out_path, X)
-
-        return X
 
 class DefaultSampling(object):
     def __init__(self, name, range, only_positive=False):
