@@ -1,17 +1,17 @@
-import copy
-import sys
-import os
 import json
+import os
+import re
 import time
-import numpy as np
 from collections import defaultdict
+
+import numpy as np
 from sympy import Symbol
 
 from llm_supexp_feedback import maybe_generate_supexpressions
 from production_rules import production_rules_to_expr
 from program import execute
 from utils import pretty_print_expr
-import re
+
 
 def _qn_to_serializable(qn_dict, topk=None):
     items = []
@@ -67,13 +67,14 @@ def _save_qn_snapshot(qn_dict, step=None, reason="periodic"):
     step_str = f"_step{step}" if step is not None else ""
     path = os.path.join(
         qn_dir,
-        f"{ts}_{eq_stem}_pid{pid}_{run_tag}{step_str}_QN_{reason}.json"
+        f"{ts}_{eq_stem}_pid{pid}_{run_tag}{step_str}_QN_{reason}.json",
     )
 
     with open(path, "w") as f:
         json.dump(payload, f)
 
     print(f"[QN] saved: {path}", flush=True)
+
 
 def _canonicalize_eq_structure(eq: str) -> str:
     """
@@ -83,13 +84,9 @@ def _canonicalize_eq_structure(eq: str) -> str:
     if eq is None:
         return ""
     s = str(eq)
-
-    # Normalize whitespace.
     s = re.sub(r"\s+", "", s)
 
-    # Replace numeric literals with buckets so close fits count as one template.
-    # Keep X0/X1 names intact because they do not match this regex.
-    number_pat = r'(?<![A-Za-z_])[-+]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:e[-+]?\d+)?'
+    number_pat = r"(?<![A-Za-z_])[-+]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:e[-+]?\d+)?"
 
     def repl(m):
         token = m.group(0)
@@ -98,19 +95,17 @@ def _canonicalize_eq_structure(eq: str) -> str:
         except Exception:
             return token
 
-        # Keep exact zeros / ones stable because they often reflect structure.
         if abs(val) < 1e-12:
             return "0"
         if abs(val - 1.0) < 1e-12:
             return "1"
         if abs(val + 1.0) < 1e-12:
             return "-1"
-
-        # Collapse all other fitted constants to a generic marker.
         return "CNUM"
 
     s = re.sub(number_pat, repl, s)
     return s
+
 
 class MCTS(object):
     task = None
@@ -128,6 +123,8 @@ class MCTS(object):
         exploration_rate=1 / np.sqrt(2),
         eta=0.999,
         max_opt_iter=500,
+        greedy_ucb=True,
+        unvisited_select_prob=0.25,
     ):
         self.nvars = self.task.data_query_oracle.get_nvars()
         self.input_var_Xs = [Symbol("X" + str(i)) for i in range(self.nvars)]
@@ -148,8 +145,10 @@ class MCTS(object):
 
         self.eta = eta
         self.max_opt_iter = max_opt_iter
+        self.greedy_ucb = bool(greedy_ucb)
+        self.unvisited_select_prob = min(1.0, max(0.0, float(unvisited_select_prob)))
 
-    def valid_production_rules(self, node):
+    def valid_production_rules(self, node, state=None):
         return [i for i, x in enumerate(self.grammars) if x.startswith(node)]
 
     def get_non_terminal_nodes(self, prod) -> list:
@@ -213,26 +212,29 @@ class MCTS(object):
 
         return (Q_child / N_child) + self.exploration_rate * np.sqrt(np.log(N_parent) / N_child)
 
-    def back_propagate(self, path, reward):
-        if not path:
-            return
+    def back_propagate(self, state, action_index, reward):
+        action = self.grammars[action_index]
+        edge_key = state + "," + action
+        self.QN[edge_key][0] += reward
+        self.QN[edge_key][1] += 1
 
-        ordered_states = [path[0][0]] + [child_state for _, _, child_state in path]
-        seen = set()
-        deduped_states = []
-        for s in ordered_states:
-            if s not in seen:
-                deduped_states.append(s)
-                seen.add(s)
+        cur_state = state
+        cur_action = action
 
-        for s in deduped_states:
-            self.QN[s][0] += reward
-            self.QN[s][1] += 1
+        while cur_state:
+            self.QN[cur_state][0] += reward
+            self.QN[cur_state][1] += 1
 
-        for parent_state, action_index, _ in reversed(path):
-            self.UCBs[parent_state][action_index] = self.update_ucb_mcts(
-                parent_state, self.grammars[action_index]
-            )
+            try:
+                aidx = self.grammars.index(cur_action)
+                self.UCBs[cur_state][aidx] = self.update_ucb_mcts(cur_state, cur_action)
+            except ValueError:
+                pass
+
+            if "," in cur_state:
+                cur_state, cur_action = cur_state.rsplit(",", 1)
+            else:
+                cur_state = ""
 
     def update_hall_of_fame(self, state, reward, eq):
         reward = float(reward)
@@ -254,7 +256,6 @@ class MCTS(object):
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
                         hof_changed = True
             else:
-                # If the structure already exists, keep the better-scoring fit.
                 improved = False
                 new_hof = []
                 for item in self.hall_of_fame:
@@ -278,33 +279,42 @@ class MCTS(object):
 
     def rollout(self, num_play, state_initial, ntn_initial):
         best_eq = ""
-        best_r = -100
+        best_hof_r = -100
+        backprop_r = -100
         best_state = None
         idx = 0
+        completed_rewards = []
 
         while idx < num_play:
             done = False
             state = state_initial
-            ntn = list(ntn_initial)
+            ntn = ntn_initial
 
-            while not done and ntn:
+            while not done:
                 valid_index = self.valid_production_rules(ntn[0])
                 action = np.random.choice(valid_index)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 state, ntn = next_state, ntn_next
 
-                if not done and state.count(",") >= self.max_len:
+                self.QN[state][1] += 1
+
+                if state.count(",") >= self.max_len:
                     break
 
             idx += 1
 
-            if done and reward > best_r:
-                self.update_hall_of_fame(state, reward, eq)
-                best_eq = eq
-                best_r = reward
-                best_state = state
+            if done:
+                completed_rewards.append(reward)
+                if reward > best_hof_r:
+                    self.update_hall_of_fame(next_state, reward, eq)
+                    best_eq = eq
+                    best_hof_r = reward
+                    best_state = next_state
 
-        return best_r, best_eq, best_state
+        if completed_rewards:
+            backprop_r = float(np.mean(completed_rewards))
+
+        return backprop_r, best_eq, best_state
 
     def tree_num_nodes(self):
         return len(self.QN)
@@ -315,20 +325,22 @@ class MCTS(object):
         return max(s.count(",") for s in self.QN.keys())
 
     def select_action(self, state, node):
-        unvisited_children = self.get_unvisited_children(state, node)
         valid_actions = self.valid_production_rules(node)
+        if not valid_actions:
+            raise RuntimeError(f"No valid actions found for node {node!r}")
 
+        unvisited_children = self.get_unvisited_children(state, node)
         if len(unvisited_children) != 0:
-            return int(np.random.choice(unvisited_children)), True
+            return int(np.random.choice(unvisited_children))
 
         ucb_vals = self.UCBs[state][valid_actions]
         if np.allclose(ucb_vals, 0):
-            return int(np.random.choice(valid_actions)), False
+            return int(np.random.choice(valid_actions))
 
         ucb_vals = ucb_vals - np.max(ucb_vals)
         p = np.exp(ucb_vals)
         p = p / np.sum(p)
-        return int(np.random.choice(valid_actions, p=p)), False
+        return int(np.random.choice(valid_actions, p=p))
 
     def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5):
         best_solution = ("C", -100)
@@ -347,34 +359,25 @@ class MCTS(object):
 
             state = "f->A"
             ntn = ["A"]
-            path = []
-            reward = -100
-            eq = ""
-            done = False
 
-            while not done and ntn:
-                action_idx, expanded_new_child = self.select_action(state, ntn[0])
-                next_state, ntn_next, reward, done, eq = self.step(state, action_idx, ntn[1:])
-                path.append((state, action_idx, next_state))
-                state, ntn = next_state, ntn_next
+            action_idx = self.select_action(state, ntn[0])
+            next_state, ntn_next, reward, done, eq = self.step(state, action_idx, ntn[1:])
 
-                if done:
-                    self.update_hall_of_fame(state, reward, eq)
-                    break
+            best_state = None
+            if not done:
+                reward, eq, best_state = self.rollout(num_rollouts, next_state, ntn_next)
+            else:
+                best_state = next_state
+                self.update_hall_of_fame(next_state, reward, eq)
 
-                if state.count(",") >= self.max_len:
-                    reward = -100
-                    eq = ""
-                    break
-
-                if expanded_new_child:
-                    reward, eq, _ = self.rollout(num_rollouts, state, ntn)
-                    break
+            if best_state is not None:
+                self.QN[best_state][0] += reward
+                self.QN[best_state][1] += 1
 
             if reward > best_solution[1]:
                 best_solution = (eq, reward)
 
-            self.back_propagate(path, reward)
+            self.back_propagate(state, action_idx, reward)
 
             if save_every and (t % save_every == 0):
                 _save_qn_snapshot(self.QN, step=t, reason="periodic")

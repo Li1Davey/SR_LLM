@@ -1,4 +1,7 @@
-from pympler import classtracker
+try:
+    from pympler import classtracker
+except ImportError:
+    classtracker = None
 import time
 import argparse
 import os
@@ -6,9 +9,6 @@ import random
 import numpy as np
 
 from mcts_model import MCTS
-from scibench.program import sciProgram
-from scibench.symbolic_data_generator import DataX
-from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
 from program import Program
 
@@ -30,7 +30,7 @@ def run_mcts(production_rules, non_terminal_nodes=["A"], num_episodes=1000, num_
     exploration_rate = exp_rate
 
     use_tracker = os.getenv("SCIBENCH_TRACK_MEM", "0") == "1"
-    tracker = classtracker.ClassTracker() if use_tracker else None
+    tracker = classtracker.ClassTracker() if (use_tracker and classtracker is not None) else None
 
     mcts_model = MCTS(
         base_grammars=grammars,
@@ -65,6 +65,10 @@ def run_mcts(production_rules, non_terminal_nodes=["A"], num_episodes=1000, num_
 
 def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, optimizer,
          production_rules_mode, num_rollouts, max_len, eta, batch_size, max_opt_iter):
+    from scibench.program import sciProgram
+    from scibench.symbolic_data_generator import DataX
+    from scibench.symbolic_equation_evaluator_public import Equation_evaluator
+
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -102,9 +106,17 @@ def mcts(equation_name, num_episodes, metric_name, noise_type, noise_scale, opti
     os.environ["SCIBENCH_PRODUCTION_RULE_MODE"] = production_rules_mode
 
     if production_rules_mode == "trigometric":
-        from production_rules_trigometric import get_production_rules
+        try:
+            from production_rules_trigometric import get_production_rules
+        except ImportError:
+            print('[warn] production_rules_trigometric not found; falling back to feynman grammar')
+            from production_rules_feynman import get_production_rules
     elif production_rules_mode == "livermore2":
-        from production_rules import get_production_rules
+        try:
+            from production_rules import get_production_rules
+        except ImportError:
+            print('[warn] production_rules not found; falling back to feynman grammar')
+            from production_rules_feynman import get_production_rules
     elif production_rules_mode == "feynman":
         from production_rules_feynman import get_production_rules
     else:
@@ -140,7 +152,7 @@ if __name__ == "__main__":
     )
     parser.add_argument("--noise_type", type=str, default="normal")
     parser.add_argument("--noise_scale", type=float, default=0.0)
-    parser.add_argument("--production_rule_mode", type=str, default="trigometric")
+    parser.add_argument("--production_rule_mode", type=str, default="feynman")
     parser.add_argument(
         "--batch_size",
         type=int,
