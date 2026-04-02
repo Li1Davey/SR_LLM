@@ -1,416 +1,629 @@
-import json
-import os
-import re
-import time
-from collections import defaultdict
-
+import copy
+import sys
 import numpy as np
+from collections import defaultdict
 from sympy import Symbol
-
-from llm_supexp_feedback import maybe_generate_supexpressions
+from sympy.parsing.sympy_parser import parse_expr
 from production_rules import production_rules_to_expr
 from program import execute
-from utils import pretty_print_expr
-
-
-def _qn_to_serializable(qn_dict, topk=None):
-    items = []
-    for k, v in qn_dict.items():
-        try:
-            q = float(v[0])
-            n = int(v[1])
-        except Exception:
-            continue
-        items.append((str(k), q, n))
-
-    items.sort(key=lambda x: x[2], reverse=True)
-    if topk is not None:
-        items = items[: int(topk)]
-
-    out = {k: {"Q": q, "N": n, "Q_per_N": (q / n if n else None)} for (k, q, n) in items}
-    return out, len(items)
-
-
-def _save_qn_snapshot(qn_dict, step=None, reason="periodic"):
-    if os.environ.get("SCIBENCH_SAVE_QN", "0") != "1":
-        return
-
-    qn_dir = os.environ.get("SCIBENCH_QN_DIR", "").strip()
-    if not qn_dir:
-        return
-
-    os.makedirs(qn_dir, exist_ok=True)
-
-    eq_file = os.environ.get("SCIBENCH_EQ_FILE", "unknown_eq")
-    eq_stem = os.path.splitext(os.path.basename(eq_file))[0]
-    run_tag = os.environ.get("SCIBENCH_RUN_TAG", "run")
-    pid = os.getpid()
-    ts = time.strftime("%Y%m%d_%H%M%S")
-
-    topk_env = os.environ.get("SCIBENCH_SAVE_QN_TOPK", "").strip()
-    topk = int(topk_env) if topk_env else None
-
-    qn_out, saved_count = _qn_to_serializable(qn_dict, topk=topk)
-
-    payload = {
-        "timestamp": ts,
-        "pid": pid,
-        "eq_file": eq_file,
-        "run_tag": run_tag,
-        "step": step,
-        "reason": reason,
-        "topk": topk,
-        "num_entries_saved": saved_count,
-        "QN": qn_out,
-    }
-
-    step_str = f"_step{step}" if step is not None else ""
-    path = os.path.join(
-        qn_dir,
-        f"{ts}_{eq_stem}_pid{pid}_{run_tag}{step_str}_QN_{reason}.json",
-    )
-
-    with open(path, "w") as f:
-        json.dump(payload, f)
-
-    print(f"[QN] saved: {path}", flush=True)
-
-
-def _canonicalize_eq_structure(eq: str) -> str:
-    """
-    Normalize an equation string so HoF dedup compares structure rather than
-    exact fitted constants.
-    """
-    if eq is None:
-        return ""
-    s = str(eq)
-    s = re.sub(r"\s+", "", s)
-
-    number_pat = r"(?<![A-Za-z_])[-+]?(?:\d+\.\d*|\d*\.\d+|\d+)(?:e[-+]?\d+)?"
-
-    def repl(m):
-        token = m.group(0)
-        try:
-            val = float(token)
-        except Exception:
-            return token
-
-        if abs(val) < 1e-12:
-            return "0"
-        if abs(val - 1.0) < 1e-12:
-            return "1"
-        if abs(val + 1.0) < 1e-12:
-            return "-1"
-        return "CNUM"
-
-    s = re.sub(number_pat, repl, s)
-    return s
+from utils import pretty_print_expr, expression_to_template, nth_repl
+from llm_production_rule_feedback import ENABLE_PR_FEEDBACK, maybe_generate_production_rules
 
 
 class MCTS(object):
-    task = None
+    """
+    hall_of_fame: ranked good expressions.
+    """
+    task = None  # Task
     program = None
+    # constants
+    opt_num_expr = 1  # number of experiments done for optimization
+    expr_obj_thres = 1e-6
+    expr_consts_thres = 1e-3
 
-    def __init__(
-        self,
-        base_grammars,
-        aug_grammars,
-        non_terminal_nodes,
-        aug_nt_nodes,
-        max_len,
-        max_module,
-        aug_grammars_allowed,
-        exploration_rate=1 / np.sqrt(2),
-        eta=0.999,
-        max_opt_iter=500,
-        greedy_ucb=True,
-        unvisited_select_prob=0.25,
-    ):
+    noise_std = 0.0
+
+    def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
+                 exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500, rule_bank=None):
+        # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
-        self.input_var_Xs = [Symbol("X" + str(i)) for i in range(self.nvars)]
-
+        self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
         self.base_grammars = base_grammars
         self.aug_grammars = aug_grammars
         self.grammars = base_grammars + [x for x in aug_grammars if x not in base_grammars]
-
+        self.aug_nt_nodes = aug_nt_nodes
         self.non_terminal_nodes = non_terminal_nodes
         self.max_len = max_len
         self.max_module = max_module
         self.max_aug = aug_grammars_allowed
-
         self.hall_of_fame = []
         self.exploration_rate = exploration_rate
         self.UCBs = defaultdict(lambda: np.zeros(len(self.grammars)))
         self.QN = defaultdict(lambda: np.zeros(2))
-
+        self.scale = 0
         self.eta = eta
         self.max_opt_iter = max_opt_iter
-        self.greedy_ucb = bool(greedy_ucb)
-        self.unvisited_select_prob = min(1.0, max(0.0, float(unvisited_select_prob)))
+        self.rule_bank = rule_bank
 
-    def valid_production_rules(self, node, state=None):
-        return [i for i, x in enumerate(self.grammars) if x.startswith(node)]
+    def tree_num_nodes(self):
+        return len(self.QN.keys())
+
+    def tree_height(self):
+        max_depth = 0
+        for key in self.QN.keys():
+            depth = max(0, str(key).count(','))
+            if depth > max_depth:
+                max_depth = depth
+        return max_depth
+
+    def valid_production_rules(self, Node):
+        # Get indices of all possible production rules starting with a given node
+        return [i for i, x in enumerate(self.grammars) if x.startswith(Node)]
+
+    def valid_non_termianl_production_rules(self, Node):
+        # Get index of all possible production rules starting with a given node
+        valid_rules=[]
+        for i, x in enumerate(self.grammars):
+            if x.startswith(Node) and np.sum([y in x[3:] for y in self.non_terminal_nodes]):
+                valid_rules.append(i)
+        return valid_rules
+        # return [self.grammars.index(x) for x in self.grammars if x.startswith(Node) ]
 
     def get_non_terminal_nodes(self, prod) -> list:
+        # Get all the non-terminal nodes from right-hand side of a production rule grammar
         return [i for i in prod[3:] if i in self.non_terminal_nodes]
 
     def get_unvisited_children(self, state, node) -> list:
+        #  Pick an action to to visit the index of all unvisited child.
         valid_actions = self.valid_production_rules(node)
-        return [act for act in valid_actions if self.QN[state + "," + self.grammars[act]][1] == 0]
-
-    def score_expression_on_validation(self, eq, state_len):
-        val_X, val_y = self.task.get_val_batch()
-        reward, _, _, _ = self.program.optimize(
-            eq,
-            state_len,
-            val_X,
-            val_y,
-            self.input_var_Xs,
-            eta=self.eta,
-            max_opt_iter=self.max_opt_iter,
-        )
-        return reward
+        return [act for act in valid_actions if self.QN[state + ',' + self.grammars[act]][1] == 0]
 
     def step(self, state, action_idx, ntn):
+        """
+        state:      all production rules
+        action_idx: index of grammar starts from the current Non-terminal Node
+        tree:       the current tree
+        ntn:        all remaining non-terminal nodes
+
+        This defines one step of Parse Tree traversal
+        return tree (next state), remaining non-terminal nodes, reward, and if it is done
+        """
         action = self.grammars[action_idx]
-        state = state + "," + action
+        state = state + ',' + action
         ntn = self.get_non_terminal_nodes(action) + ntn
 
         if not ntn:
-            train_X, train_y = self.task.get_train_batch()
+            self.task.rand_draw_data_with_X_fixed()
+            y_true = self.task.evaluate()
+            expr_template = production_rules_to_expr(state.split(','))
+            reward, eq, _, _ = self.program.optimize(expr_template,
+                                                     len(state.split(',')),
+                                                     self.task.X,
+                                                     y_true,
+                                                     self.input_var_Xs,
+                                                     eta=self.eta,
+                                                     max_opt_iter=self.max_opt_iter)
 
-            expr_template = production_rules_to_expr(state.split(","))
-            reward_train, eq, _, _ = self.program.optimize(
-                expr_template,
-                len(state.split(",")),
-                train_X,
-                train_y,
-                self.input_var_Xs,
-                eta=self.eta,
-                max_opt_iter=self.max_opt_iter,
-            )
-
-            if not np.isfinite(reward_train):
-                return state, ntn, reward_train, True, eq
-
-            reward_val = self.score_expression_on_validation(eq, len(state.split(",")))
-            reward = reward_val if np.isfinite(reward_val) else reward_train
             return state, ntn, reward, True, eq
+        else:
+            return state, ntn, 0, False, None
 
-        return state, ntn, 0, False, None
+    def freeze_equations(self, list_of_grammars, opt_num_expr, stand_alone_constants, next_free_variable):
+        # decide summary constants and stand alone constants.
+        print("---------Freeze Equation----------")
+        freezed_exprs = []
+        aug_nt_nodes = []
+        new_stand_alone_constants = stand_alone_constants
+        # only use the best
+        state, _, expr = list_of_grammars[-1]
+        optimized_constants = []
+        optimized_obj = []
+        expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
+        print('expr template is"', expr_template)
+        for _ in range(opt_num_expr):
+            self.task.rand_draw_X_fixed()
+            self.task.rand_draw_data_with_X_fixed()
+            y_true = self.task.evaluate()
+            _, eq, opt_consts, opt_obj = self.program.optimize(expr_template,
+                                                               len(state.split(',')),
+                                                               self.task.X,
+                                                               y_true,
+                                                               self.input_var_Xs,
+                                                               eta=self.eta,
+                                                               max_opt_iter=100)
+            ##
+            optimized_constants.append(opt_consts)
+            optimized_obj.append(opt_obj)
+        optimized_constants = np.asarray(optimized_constants)
+        optimized_obj = np.asarray(optimized_obj)
+        print(optimized_obj)
+        num_changing_consts = expr_template.count('C')
+        is_summary_constants = np.zeros(num_changing_consts)
+        if np.max(optimized_obj) <= self.expr_obj_thres:
+            for ci in range(num_changing_consts):
+                print("std", np.std(optimized_constants[:, ci]), end="\t")
+                if abs(np.mean(optimized_constants[:, ci])) < 1e-5:
+                    print(f'c{ci} is a noisy minial constant')
+                    is_summary_constants[ci] = 2
+                elif np.std(optimized_constants[:, ci]) <= self.expr_consts_thres:
+                    print(f'c{ci} {np.mean(optimized_constants[:, ci])} is a stand-alone constant')
+                else:
+                    print(f'c{ci}  is a summary constant')
+                    is_summary_constants[ci] = 1
+            ####
+            # summary constant vs controlled variable
+            ####
+            for ci in range(num_changing_consts):
+                if is_summary_constants[ci] != 1:
+                    continue
+                print(expr_template)
+                new_expr_template = nth_repl(copy.copy(expr_template), 'C', str(optimized_constants[-1, ci]), ci + 1)
+                print(new_expr_template, ci, np.mean(optimized_constants[:, ci]))
+                # optimized_constants = []
+                optimized_cond_obj = []
+                print('expr template is"', new_expr_template)
+                for _ in range(opt_num_expr * 3):
+                    self.task.rand_draw_X_fixed_with_index(next_free_variable)
+                    y_true = self.task.evaluate()
+                    _, eq, opt_consts, opt_obj = self.program.optimize(new_expr_template,
+                                                                       len(state.split(',')),
+                                                                       self.task.X,
+                                                                       y_true,
+                                                                       self.input_var_Xs,
+                                                                       eta=self.eta,
+                                                                       max_opt_iter=100)
+                    ##
+                    # optimized_constants.append(opt_consts)
+                    optimized_cond_obj.append(opt_obj)
+                if np.max(optimized_cond_obj) <= self.expr_obj_thres:
+                    print(f'summary constant c{ci} will still be a constant in the next round')
+                    is_summary_constants[ci] = 3
+                else:
+                    print(f'summary constant c{ci} will be a summary constant in the next round')
+
+            ####
+            cidx = 0
+            new_expr_template = 'B->'
+            for ti in expr_template:
+                if ti == 'C' and is_summary_constants[cidx] == 1:
+                    # real summary constant in the next round
+                    new_expr_template += '(A)'
+                    cidx += 1
+                elif ti == "C" and is_summary_constants[cidx] == 0:
+                    # standalone constant
+                    est_c = np.mean(optimized_constants[:, cidx])
+                    if abs(est_c) < 1e-5:
+                        est_c = 0.0
+                    new_expr_template += str(est_c)
+                    if len(new_stand_alone_constants) == 0 or min([abs(est_c - fi) for fi in new_stand_alone_constants]) < 1e-5:
+                        new_stand_alone_constants.append(est_c)
+                    cidx += 1
+                elif ti == 'C' and is_summary_constants[cidx] == 2:
+                    # noise values
+                    new_expr_template += '0.0'
+                    cidx += 1
+                elif ti == 'C' and is_summary_constants[cidx] == 3:
+                    # is a summary constant but will still be constant in the next round
+                    new_expr_template += 'C'
+                    cidx += 1
+                else:
+                    new_expr_template += ti
+            freezed_exprs.append(new_expr_template)
+            aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+            return freezed_exprs, aug_nt_nodes, new_stand_alone_constants
+
+        print("No available expression is found....trying to add the current best guessed...")
+        state, _, expr = list_of_grammars[-1]
+        expr_template = expression_to_template(parse_expr(expr), stand_alone_constants)
+        cidx = 0
+        new_expr_template = 'B->'
+        for ti in expr_template:
+            if ti == 'C':
+                # summary constant
+                new_expr_template += '(A)'
+                cidx += 1
+            else:
+                new_expr_template += ti
+        freezed_exprs.append(new_expr_template)
+        aug_nt_nodes.append(['A', ] * sum([1 for ti in new_expr_template if ti == 'A']))
+        expri, ntnodei = freezed_exprs[0], aug_nt_nodes[0]
+        countA = expri.count('(A)')
+        # diversify the number of A
+        new_freezed_exprs = [expri, ]
+        new_aug_nt_nodes = [['A', ] * countA, ]
+
+        if countA >= 3:
+            ti = 0
+            while ti < 2:
+                mask = np.random.randint(2, size=countA)
+                while np.sum(mask) == 0 or np.sum(mask) == countA:
+                    mask = np.random.randint(2, size=countA)
+                countAi = 0
+                expri_new = ""
+                for i in range(len(expri)):
+                    if expri[i] == 'A' and mask[countAi] == 0:
+                        expri_new += 'C'
+                    else:
+                        expri_new += expri[i]
+                    countAi += (expri[i] == 'A')
+                if expri_new not in new_freezed_exprs:
+                    new_freezed_exprs.append(expri_new)
+                    new_aug_nt_nodes.append(['A', ] * (np.sum(mask)))
+                    ti += 1
+        else:
+            new_freezed_exprs.append(expri)
+            new_aug_nt_nodes.append(ntnodei)
+        # only generate at most 3 template for the next round, otherwise it will be too time consuming
+        ret_frezze_exprs, ret_aug_nt_nodes=[], []
+        for x, y in zip(new_freezed_exprs, new_aug_nt_nodes):
+            if x not in ret_frezze_exprs:
+                ret_frezze_exprs.append(x)
+                ret_aug_nt_nodes.append(y)
+        return ret_frezze_exprs, ret_aug_nt_nodes, new_stand_alone_constants
+
+    def rollout(self, num_play, state_initial, ntn_initial):
+        """
+        Perform `num_play` simulations and return the best terminal reward.
+        Failed attempts that hit max_len still count toward the rollout budget.
+        """
+        best_eq = ''
+        best_r = -100
+        idx = 0
+
+        while idx < num_play:
+            idx += 1
+            done = False
+            state = state_initial
+            ntn = list(ntn_initial)
+            reward = -100
+            eq = ''
+            steps = 0
+            max_steps = max(1, self.max_len - state.count(',') + 1)
+
+            while not done and ntn and steps < max_steps:
+                valid_index = self.valid_production_rules(ntn[0])
+                if not valid_index:
+                    break
+                action = int(np.random.choice(valid_index))
+                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                state = next_state
+                ntn = ntn_next
+                steps += 1
+
+                if not done and state.count(',') >= self.max_len:
+                    break
+
+            if done and reward > best_r:
+                self.update_hall_of_fame(state, reward, eq)
+                best_eq = eq
+                best_r = reward
+
+        return best_r, best_eq
 
     def update_ucb_mcts(self, state, action):
-        next_state = state + "," + action
+        """
+        Get the ucb score for a given child of current node
+        Q and N values are stored in QN matrix.
+        """
+        next_state = state + ',' + action
         Q_child = self.QN[next_state][0]
         N_parent = self.QN[state][1]
         N_child = self.QN[next_state][1]
+        return Q_child / N_child + self.exploration_rate * np.sqrt(np.log(N_parent) / N_child)
 
-        if N_child <= 0:
-            return float("inf")
-        if N_parent <= 0:
-            N_parent = 1
+    def update_QN_scale(self, new_scale):
+        # Update the Q and the N values self.scaled by the new best reward.
+        if self.scale != 0:
+            for s in self.QN:
+                self.QN[s][0] *= (self.scale / new_scale)
 
-        return (Q_child / N_child) + self.exploration_rate * np.sqrt(np.log(N_parent) / N_child)
+        self.scale = new_scale
 
     def back_propagate(self, state, action_index, reward):
+        """
+        Update the Q, N and ucb for all corresponding decedent after a complete rollout
+        """
+
         action = self.grammars[action_index]
-        edge_key = state + "," + action
-        self.QN[edge_key][0] += reward
-        self.QN[edge_key][1] += 1
+        if self.scale != 0:
+            self.QN[state + ',' + action][0] += reward / self.scale
+        else:
+            self.QN[state + ',' + action][0] += 0
+        self.QN[state + ',' + action][1] += 1
 
-        cur_state = state
-        cur_action = action
-
-        while cur_state:
-            self.QN[cur_state][0] += reward
-            self.QN[cur_state][1] += 1
-
-            try:
-                aidx = self.grammars.index(cur_action)
-                self.UCBs[cur_state][aidx] = self.update_ucb_mcts(cur_state, cur_action)
-            except ValueError:
-                pass
-
-            if "," in cur_state:
-                cur_state, cur_action = cur_state.rsplit(",", 1)
+        while state:
+            # print("the state is", state)
+            if self.scale != 0:
+                self.QN[state][0] += reward / self.scale
             else:
-                cur_state = ""
+                self.QN[state][0] += 0
+            self.QN[state][1] += 1
+            self.UCBs[state][self.grammars.index(action)] = self.update_ucb_mcts(state, action)
+            if state in self.grammars:
+                state = ''
+            elif ',' in state:
+                state, action = state.rsplit(',', 1)
+            else:
+                state = ''
+
+    def get_ucb_policy(self, nA):
+        """
+        Creates a policy based on UCB score.
+        """
+
+        def policy_fn(state, node):
+            valid_action = self.valid_production_rules(node)
+            A = np.zeros(nA, dtype=float)
+            if not valid_action:
+                return A
+
+            policy_valid = []
+            for a in valid_action:
+                u = float(self.UCBs[state][a])
+                if not np.isfinite(u):
+                    u = 0.0
+                policy_valid.append(u)
+
+            if len(set(np.round(policy_valid, 12))) == 1:
+                A[valid_action] = float(1 / len(valid_action))
+                return A
+
+            shifted = np.asarray(policy_valid, dtype=float)
+            shifted = shifted - np.max(shifted)
+            probs = np.exp(shifted)
+            probs = probs / np.sum(probs)
+
+            best_action = valid_action[int(np.argmax(probs))]
+            A[best_action] += 0.8
+            A[valid_action] += float(0.2 / len(valid_action))
+            return A
+
+        return policy_fn
+
+    def get_uniform_random_policy(self):
+        """
+        Creates an random policy to select an unvisited child.
+        """
+
+        def policy_fn(UC):
+            if len(UC) != len(set(UC)):
+                print(UC)
+                print(self.grammars)
+            action_probs = np.ones(len(UC), dtype=float) * float(1 / len(UC))
+            return action_probs
+
+        return policy_fn
 
     def update_hall_of_fame(self, state, reward, eq):
-        reward = float(reward)
+        """
+        If we pass by a concise solution with high score, we store it as an
+        single action for future use.
+        """
         module = state
-        if state.count(",") <= self.max_module:
-            hof_changed = False
-            eq_key = _canonicalize_eq_structure(eq)
-            existing_keys = {_canonicalize_eq_structure(x[2]) for x in self.hall_of_fame}
-
+        hall_changed = False
+        if state.count(',') <= self.max_module:
             if not self.hall_of_fame:
                 self.hall_of_fame = [(module, reward, eq)]
-                hof_changed = True
-            elif eq_key not in existing_keys:
+                hall_changed = True
+            elif eq not in [x[2] for x in self.hall_of_fame]:
                 if len(self.hall_of_fame) < self.max_aug:
                     self.hall_of_fame = sorted(self.hall_of_fame + [(module, reward, eq)], key=lambda x: x[1])
-                    hof_changed = True
+                    hall_changed = True
                 else:
                     if reward > self.hall_of_fame[0][1]:
                         self.hall_of_fame = sorted(self.hall_of_fame[1:] + [(module, reward, eq)], key=lambda x: x[1])
-                        hof_changed = True
-            else:
-                improved = False
-                new_hof = []
-                for item in self.hall_of_fame:
-                    if _canonicalize_eq_structure(item[2]) == eq_key:
-                        if reward > item[1]:
-                            new_hof.append((module, reward, eq))
-                            improved = True
-                        else:
-                            new_hof.append(item)
-                    else:
-                        new_hof.append(item)
-                if improved:
-                    self.hall_of_fame = sorted(new_hof, key=lambda x: x[1])
-                    hof_changed = True
+                        hall_changed = True
 
-            if hof_changed:
-                try:
-                    maybe_generate_supexpressions(self.hall_of_fame, self.nvars)
-                except Exception as e:
-                    print(f"[SUPEXP] generation skipped: {e}", flush=True)
+        if hall_changed and self.rule_bank is not None and ENABLE_PR_FEEDBACK:
+            maybe_generate_production_rules(
+                hall_of_fame=self.hall_of_fame,
+                rule_bank=self.rule_bank,
+                nvars=self.task.data_query_oracle.get_nvars(),
+                operators_set=self.task.data_query_oracle.get_operators_set(),
+            )
 
-    def rollout(self, num_play, state_initial, ntn_initial):
-        best_eq = ""
-        best_hof_r = -100
-        backprop_r = -100
-        best_state = None
-        idx = 0
-        completed_rewards = []
+    def MCTS_run(self, num_episodes, num_rollouts=40, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
+        """
+        Monte Carlo Tree Search algorithm
+        """
 
-        while idx < num_play:
-            done = False
-            state = state_initial
-            ntn = ntn_initial
+        nA = len(self.grammars)
+        states = []
 
-            while not done:
-                valid_index = self.valid_production_rules(ntn[0])
-                action = np.random.choice(valid_index)
-                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
-                state, ntn = next_state, ntn_next
-
-                self.QN[state][1] += 1
-
-                if state.count(",") >= self.max_len:
-                    break
-
-            idx += 1
-
-            if done:
-                completed_rewards.append(reward)
-                if reward > best_hof_r:
-                    self.update_hall_of_fame(next_state, reward, eq)
-                    best_eq = eq
-                    best_hof_r = reward
-                    best_state = next_state
-
-        if completed_rewards:
-            backprop_r = float(np.mean(completed_rewards))
-
-        return backprop_r, best_eq, best_state
-
-    def tree_num_nodes(self):
-        return len(self.QN)
-
-    def tree_height(self):
-        if not self.QN:
-            return 0
-        return max(s.count(",") for s in self.QN.keys())
-
-    def select_action(self, state, node):
-        valid_actions = self.valid_production_rules(node)
-        if not valid_actions:
-            raise RuntimeError(f"No valid actions found for node {node!r}")
-
-        unvisited_children = self.get_unvisited_children(state, node)
-        if len(unvisited_children) != 0:
-            return int(np.random.choice(unvisited_children))
-
-        ucb_vals = self.UCBs[state][valid_actions]
-        if np.allclose(ucb_vals, 0):
-            return int(np.random.choice(valid_actions))
-
-        ucb_vals = ucb_vals - np.max(ucb_vals)
-        p = np.exp(ucb_vals)
-        p = p / np.sum(p)
-        return int(np.random.choice(valid_actions, p=p))
-
-    def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5):
-        best_solution = ("C", -100)
-        save_every = int(os.environ.get("SCIBENCH_SAVE_QN_EVERY", "0") or 0)
+        # ucb_policy for fully expanded node and uniform_random_policy for not fully expanded node
+        ucb_policy = self.get_ucb_policy(nA)
+        reward_his = []
+        best_solution = ('C', -100)
 
         for t in range(1, num_episodes + 1):
-            self.task.draw_episode_batches()
-            self.program.clear_cache()
-
-            if t == 1 or (print_freq and t % print_freq == 0):
-                print(
-                    f"\tITER {t}/{num_episodes} | "
-                    f"Tree nodes={self.tree_num_nodes()} | "
-                    f"Tree height={self.tree_height()}"
-                )
-
-            state = "f->A"
-            ntn = ["A"]
-
-            action_idx = self.select_action(state, ntn[0])
-            next_state, ntn_next, reward, done, eq = self.step(state, action_idx, ntn[1:])
-
-            best_state = None
-            if not done:
-                reward, eq, best_state = self.rollout(num_rollouts, next_state, ntn_next)
-            else:
-                best_state = next_state
-                self.update_hall_of_fame(next_state, reward, eq)
-
-            if best_state is not None:
-                self.QN[best_state][0] += reward
-                self.QN[best_state][1] += 1
-
-            if reward > best_solution[1]:
-                best_solution = (eq, reward)
-
-            self.back_propagate(state, action_idx, reward)
-
-            if save_every and (t % save_every == 0):
-                _save_qn_snapshot(self.QN, step=t, reason="periodic")
-
-            if verbose and (t == 1 or (print_freq and t % print_freq == 0)):
+            print(f"	ITER {t}/{num_episodes} | Tree nodes={self.tree_num_nodes()} | Tree height={self.tree_height()}")
+            if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
                 print("#QN:", len(self.QN.keys()))
-                self.print_hofs()
+                self.print_hofs(-1, verbose=False)
+                sys.stdout.flush()
 
-        _save_qn_snapshot(self.QN, step=num_episodes, reason="final")
-        self.print_hofs()
-        return [], self.hall_of_fame
+            if not is_first_round:
+                state = 'f->B'
+                ntn = ['B']
+            else:
+                state = 'f->A'
+                ntn = ['A']
+            unvisited_children = self.get_unvisited_children(state, ntn[0])
 
-    def print_hofs(self):
+            # scenario 1: if current parent node fully expanded, follow ucb_policy
+            while not unvisited_children:
+                prob = ucb_policy(state, ntn[0])
+                action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
+                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                if state not in states:
+                    states.append(state)
+
+                if not done:
+                    state = next_state
+                    ntn = ntn_next
+                    unvisited_children = self.get_unvisited_children(state, ntn[0])
+
+                    if state.count(',') >= self.max_len:
+                        unvisited_children = []
+                        self.back_propagate(state, action, 0)
+                        reward_his.append(best_solution[1])
+                        break
+                else:
+                    unvisited_children = []
+                    if reward > best_solution[1]:
+                        self.update_hall_of_fame(next_state, reward, eq)
+                        if reward > 0:
+                            self.update_QN_scale(reward)
+                        best_solution = (eq, reward)
+                    # print("BACK-PROPAGATION STEP")
+                    self.back_propagate(state, action, reward)
+                    reward_his.append(best_solution[1])
+                    break
+
+            # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
+            while unvisited_children:
+                # prob = uniform_random_policy(unvisited_children)
+                action = np.random.choice(unvisited_children)
+                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                if not done:
+                    reward, eq = self.rollout(num_rollouts, next_state, ntn_next)
+                    if state not in states:
+                        states.append(state)
+                if reward > best_solution[1]:
+                    self.update_hall_of_fame(next_state, reward, eq)
+                    if reward > 0:
+                        self.update_QN_scale(reward)
+                    best_solution = (eq, reward)
+                # 4. BACK-PROPAGATION STEP in MCTS.
+                self.back_propagate(state, action, reward)
+                reward_his.append(best_solution[1])
+                unvisited_children.remove(action)
+                if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                    break
+            if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                break
+
+        print("#QN:", len(self.QN.keys()))
+        self.print_hofs(-1, verbose=False)
+        sys.stdout.flush()
+        print([x[1] for x in self.hall_of_fame], reward_threhold)
+
+        return reward_his, self.hall_of_fame
+
+    def MCTS_run_orig(self, num_episodes, num_rollouts=40, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
+        """
+        Monte Carlo Tree Search algorithm
+        """
+
+        nA = len(self.grammars)
+        states = []
+
+        # The policy we're following:
+        # ucb_policy for fully expanded node and uniform_random_policy for not fully expanded node
+        ucb_policy = self.get_ucb_policy(nA)
+        reward_his = []
+        best_solution = ('C', -100)
+
+        for t in range(1, num_episodes + 1):
+            print(f"	ITER {t}/{num_episodes} | Tree nodes={self.tree_num_nodes()} | Tree height={self.tree_height()}")
+            if t % print_freq == 0 and verbose and len(self.hall_of_fame) >= 1:
+                print("#QN:", len(self.QN.keys()))
+                self.print_hofs(-2, verbose=False)
+                sys.stdout.flush()
+
+            if not is_first_round:
+                state = 'f->B'
+                ntn = ['B']
+            else:
+                state = 'f->A'
+                ntn = ['A']
+            unvisited_children = self.get_unvisited_children(state, ntn[0])
+
+            # scenario 1: if current parent node fully expanded, follow ucb_policy
+            while not unvisited_children:
+                prob = ucb_policy(state, ntn[0])
+                action = np.random.choice(np.arange(nA), p=prob / np.sum(prob))
+                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                if state not in states:
+                    states.append(state)
+
+                if not done:
+                    state = next_state
+                    ntn = ntn_next
+                    unvisited_children = self.get_unvisited_children(state, ntn[0])
+
+                    if state.count(',') >= self.max_len:
+                        unvisited_children = []
+                        self.back_propagate(state, action, 0)
+                        reward_his.append(best_solution[1])
+                        break
+                else:
+                    unvisited_children = []
+                    if reward > best_solution[1]:
+                        self.update_hall_of_fame(next_state, reward, eq)
+                        if reward > 0:
+                            self.update_QN_scale(reward)
+                        best_solution = (eq, reward)
+                    # print("BACK-PROPAGATION STEP")
+                    self.back_propagate(state, action, reward)
+                    reward_his.append(best_solution[1])
+                    break
+
+            # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
+            if len(unvisited_children) != 0:
+                # prob = uniform_random_policy(unvisited_children)
+                action = np.random.choice(unvisited_children)
+                next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
+                if not done:
+                    reward, eq = self.rollout(num_rollouts, next_state, ntn_next)
+                    if state not in states:
+                        states.append(state)
+                if reward > best_solution[1]:
+                    self.update_hall_of_fame(next_state, reward, eq)
+                    if reward > 0:
+                        self.update_QN_scale(reward)
+                    best_solution = (eq, reward)
+                # 4. BACK-PROPAGATION STEP in MCTS.
+                self.back_propagate(state, action, reward)
+                reward_his.append(best_solution[1])
+                unvisited_children.remove(action)
+                if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                    break
+            if len(self.hall_of_fame) > 1 and max([x[1] for x in self.hall_of_fame]) > reward_threhold:
+                break
+
+        return reward_his, self.hall_of_fame
+
+    def print_hofs(self, flag, verbose=False):
+        if flag == -1:
+            old_vf = copy.copy(self.program.get_vf())
+            self.program.vf = [1, ] * self.nvars
+            self.task.set_allowed_inputs(self.program.get_vf())
+        self.task.rand_draw_data_with_X_fixed()
         print("PRINT HOF")
         print("=" * 20)
-        for pr in self.hall_of_fame:
-            print("        " + str(get_state(pr)))
+        for pr in self.hall_of_fame[-len(self.hall_of_fame):]:
+            print('        ' + str(get_state(pr)), end="\n")
         print("=" * 20)
+        if flag == -1:
+            self.program.vf = old_vf
+            self.task.set_allowed_inputs(old_vf)
+
+    def print_reward_function_all_metrics(self, expr_str):
+        """used for print the error for all metrics between the predicted program `p` and true program."""
+        y_hat = execute(expr_str, self.task.X.T, self.input_var_Xs)
+        dict_of_result = self.task.data_query_oracle._evaluate_all_losses(self.task.X, y_hat)
+        # dict_of_result['tree_edit_distance'] = self.task.data_query_oracle.compute_normalized_tree_edit_distance(expr_str)
+        print('-' * 30)
+        for mertic_name in dict_of_result:
+            print(f"{mertic_name} {dict_of_result[mertic_name]}")
+        print('-' * 30)
 
 
 def get_state(pr):
-    eq = pr[2]
-    if not isinstance(eq, str):
-        eq = str(eq)
-    if len(eq) > 300:
-        pretty = eq
-    else:
-        try:
-            pretty = pretty_print_expr(eq)
-        except Exception:
-            pretty = eq
-    return {
-        "reward": float(pr[1]),
-        "pretty-eq": pretty,
-        "rules": pr[0],
+    state_dict = {
+        'reward': pr[1],
+        'pretty-eq': pretty_print_expr(pr[2]),
+        'rules': pr[0],
     }
+    return state_dict

@@ -3,75 +3,53 @@ import numpy as np
 
 class RegressTask(object):
     """
-    Minimal task with per-episode cached train/validation batches.
-
-    The important change is that MCTS can evaluate all candidates in an episode
-    on the same data instead of redrawing on every terminal expansion.
+    used to handle input data 'X' for querying the data oracle.
+    also used to set the controlled variables in input data `X`
     """
 
-    def __init__(self, batchsize, dataX, data_query_oracle):
+    def __init__(self, batchsize, allowed_input, dataX, data_query_oracle):
+        """
+            batchsize: batch size
+            allowed_input: 1 if the input variable is free. 0 if the input variable is controlled.
+            dataX: generate the input data.
+        """
         self.batchsize = batchsize
+        self.allowed_input = allowed_input
+        self.n_input = allowed_input.size
         self.dataX = dataX
         self.data_query_oracle = data_query_oracle
-        self.X = None
-        self.y = None
 
-        self.train_X = None
-        self.train_y = None
-        self.val_X = None
-        self.val_y = None
+        self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
+        self.X_fixed = np.random.rand(self.n_input)
 
-    def _ensure_2d_X(self, X):
-        X = np.asarray(X)
+    def set_allowed_inputs(self, allowed_inputs):
+        self.allowed_input = np.copy(allowed_inputs)
+        self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
-        if X.ndim == 1:
-            X = X.reshape(-1, 1)
+    def set_allowed_input(self, i, flag):
+        self.allowed_input[i] = flag
+        self.fixed_column = [i for i in range(self.n_input) if self.allowed_input[i] == 0]
 
-        # DataX.randn() returns [num_vars, sample_size] for scalar variables.
-        # Equation_evaluator.evaluate() expects [sample_size, num_vars].
-        expected_nvars = self.data_query_oracle.get_nvars()
-        if X.ndim == 2 and X.shape[0] == expected_nvars and X.shape[1] != expected_nvars:
-            X = X.T
+    def rand_draw_X_non_fixed(self):
+        self.X = self.dataX.randn(sample_size=self.batchsize).T
 
-        return X
+    def rand_draw_X_fixed(self):
+        self.X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
 
-    def rand_draw_data(self):
-        self.X = self._ensure_2d_X(self.dataX.randn(sample_size=self.batchsize))
-        self.y = self.data_query_oracle.evaluate(self.X)
+    def rand_draw_X_fixed_with_index(self, xi):
+        X_fixed = np.squeeze(self.dataX.randn(sample_size=1))
+        self.X_fixed[xi] = X_fixed[xi]
+        if len(self.fixed_column):
+            self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
-    def draw_episode_batches(self):
-        self.train_X = self._ensure_2d_X(self.dataX.randn(sample_size=self.batchsize))
-        self.train_y = self.data_query_oracle.evaluate(self.train_X)
-
-        self.val_X = self._ensure_2d_X(self.dataX.randn(sample_size=self.batchsize))
-        self.val_y = self.data_query_oracle.evaluate(self.val_X)
-
-        # Keep current batch aligned with train by default for backward compatibility.
-        self.X = self.train_X
-        self.y = self.train_y
-
-    def get_train_batch(self):
-        if self.train_X is None or self.train_y is None:
-            self.draw_episode_batches()
-        return self.train_X, self.train_y
-
-    def get_val_batch(self):
-        if self.val_X is None or self.val_y is None:
-            self.draw_episode_batches()
-        return self.val_X, self.val_y
+    def rand_draw_data_with_X_fixed(self):
+        self.X = self.dataX.randn(sample_size=self.batchsize).T
+        if len(self.fixed_column):
+            self.X[:, self.fixed_column] = self.X_fixed[self.fixed_column]
 
     def evaluate(self):
-        if self.y is None:
-            self.rand_draw_data()
-        return self.y
+        return self.data_query_oracle.evaluate(self.X)
 
     def reward_function(self, p):
         y_hat = p.execute(self.X)
-
-        if isinstance(y_hat, np.ndarray) and (not np.all(np.isfinite(y_hat))):
-            return -1e9
-
-        if getattr(p, "invalid", False):
-            return -1e9
-
         return self.data_query_oracle._evaluate_loss(self.X, y_hat)

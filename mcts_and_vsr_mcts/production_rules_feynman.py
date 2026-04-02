@@ -1,7 +1,5 @@
 from sympy import Symbol, Float, Integer, Rational
 import sympy
-import os
-import re
 import numpy as np
 
 
@@ -37,151 +35,32 @@ def to_binary_expr_tree(expr):
             return [op.__name__, left, right]
 
 
-def _dedupe_preserve_order(rules):
-    seen = set()
-    out = []
-    for rule in rules:
-        if rule in seen:
-            continue
-        seen.add(rule)
-        out.append(rule)
-    return out
-
-
-def _load_supexp_rules(nvars: int, non_terminal_node='A'):
-    """
-    Load additional RHS expressions from supexp.txt and convert to grammar rules.
-
-    Strict policy:
-    - no K placeholder
-    - no direct Xi references in supexp atoms
-    - only A and C are allowed in supexp expressions
-    - reject weak abstract saturator forms that dominated recent runs
-    """
-    enabled = os.getenv("SCIBENCH_SUPEXP_USE", "1") == "1"
-    if not enabled:
-        return []
-
-    path = os.getenv("SCIBENCH_SUPEXP_FILE", os.path.join(os.path.dirname(__file__), "supexp.txt"))
-    if not os.path.exists(path):
-        return []
-
-    def _is_trivial_atom(s: str) -> bool:
-        t = s.replace(" ", "")
-        trivial = {
-            "A", "C", "(A+A)", "(A-A)", "A*A", "(A)/(A)",
-            "exp(A)", "log(A)", "sin(A)", "cos(A)", "sqrt(A)", "abs(A)"
-        }
-        return t in trivial
-
-    def _is_bland_saturator(s: str) -> bool:
-        t = s.replace(" ", "")
-        banned_exact = {
-            "A/(A+C)",
-            "A/(C+A)",
-            "abs(A/(A+C))",
-            "A/(C*A)",
-            "(C+A)/(C-A)",
-            "(A+exp(A))",
-            "(A-exp(A))",
-        }
-        if t in banned_exact:
-            return True
-        if re.fullmatch(r".*/\((A|C)[+\-](A|C)\)", t):
-            return True
-        return False
-
-    def _is_allowed_supexp_rhs(rhs: str) -> bool:
-        s = rhs.replace(" ", "")
-
-        # Hard reject K anywhere.
-        if "K" in s or "k_shared" in s:
-            return False
-
-        # supexp atoms are abstract only
-        if any(tok in s for tok in ["X0", "X1", "X2", "X3", "X4", "X5", "X6", "X7", "X8", "X9"]):
-            return False
-
-        # Require some reusable abstract structure.
-        if not any(tok in s for tok in ["A", "C", "exp(", "log(", "sin(", "cos(", "sqrt(", "abs(", "/", "*", "+", "-", "1"]):
-            return False
-
-        # Only allow known abstract symbols/functions.
-        tokens = set(re.findall(r"[A-Za-z_]+", s))
-        allowed = {"A", "C", "exp", "log", "sin", "cos", "sqrt", "abs"}
-        if not tokens.issubset(allowed):
-            return False
-
-        if _is_trivial_atom(s):
-            return False
-
-        if _is_bland_saturator(s):
-            return False
-
-        if len(s) > 64:
-            return False
-        if s.count("exp(") > 1:
-            return False
-        if s.count("**") > 2:
-            return False
-        if s.count("/") > 2:
-            return False
-        if any(tok in s for tok in ["zoo", "oo", "nan"]):
-            return False
-
-        has_placeholder = ("C" in s) or ("A" in s)
-        has_binary = any(op in s for op in ["+", "-", "*", "/"])
-        if not has_placeholder and not has_binary:
-            return False
-
-        return True
-
-    rules = []
-    with open(path, "r") as f:
-        for raw in f:
-            line = raw.strip()
-            if not line or line.startswith("#"):
-                continue
-
-            rhs = line.split("->", 1)[1].strip() if "->" in line else line
-            if not _is_allowed_supexp_rhs(rhs):
-                continue
-
-            rules.append(f"{non_terminal_node}->{rhs}")
-
-    return _dedupe_preserve_order(rules)
-
-
 def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     """
     nvars: number of input variables.
     operators_set: set of mathematical operators.
     Return: for example, A->(A+A), A->(A-A), A->A*A, A->(A)/(A)
     """
-    if os.getenv("SCIBENCH_SAFE_GRAMMAR", "0") == "1":
-        return get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node)
-
-    base_rules = [
-        f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
-        f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
-        f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}'
-    ]
+    base_rules = [f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
+                  f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
+                  f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}']
     div_rules = [f'{non_terminal_node}->({non_terminal_node})/({non_terminal_node})']
+    # inv_rules = [f'{non_terminal_node}->1/({non_terminal_node})']
     exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
     log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
     sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
     const_rules = [f'{non_terminal_node}->C']
     abs_rules = [f'{non_terminal_node}->abs({non_terminal_node})']
 
-    rules = base_rules + get_vars_rules(nvars, non_terminal_node)
+    rules = base_rules + get_vars_rules(nvars)  # + const_rules
     if 'const' in operators_set:
         rules += const_rules
     if 'inv' in operators_set:
-        rules += get_inv_rules(nvars, non_terminal_node)
+        rules += get_inv_rules(nvars)
     if 'div' in operators_set:
         rules += div_rules
     if 'sin' in operators_set or 'cos' in operators_set:
-        rules += get_sincos_vars_rules(non_terminal_node)
+        rules += get_sincos_vars_rules()
     if 'sqrt' in operators_set:
         rules += sqrt_rules
     if 'exp' in operators_set:
@@ -191,62 +70,14 @@ def get_production_rules(nvars, operators_set, non_terminal_node='A'):
     if 'log' in operators_set:
         rules += log_rules
     if 'n2' in operators_set:
-        rules += get_n2_rules(nvars, non_terminal_node)
+        rules += get_n2_rules(nvars)
     if 'n3' in operators_set:
-        rules += get_n3_rules(nvars, non_terminal_node)
+        rules += get_n3_rules(nvars)
     if 'n4' in operators_set:
-        rules += get_n4_rules(nvars, non_terminal_node)
+        rules += get_n4_rules(nvars)
     if 'n5' in operators_set:
-        rules += get_n5_rules(nvars, non_terminal_node)
-
-    rules += _load_supexp_rules(nvars, non_terminal_node)
-    return _dedupe_preserve_order(rules)
-
-
-def get_production_rules_safe_singleA(nvars, operators_set, non_terminal_node="A"):
-    """
-    Keep the safe mode intentionally simple.
-    """
-    base_rules = [
-        f'{non_terminal_node}->({non_terminal_node}+{non_terminal_node})',
-        f'{non_terminal_node}->({non_terminal_node}-{non_terminal_node})',
-        f'{non_terminal_node}->{non_terminal_node}*{non_terminal_node}'
-    ]
-    div_rules = [f'{non_terminal_node}->({non_terminal_node})/({non_terminal_node})']
-    exp_rules = [f'{non_terminal_node}->exp({non_terminal_node})']
-    log_rules = [f'{non_terminal_node}->log({non_terminal_node})']
-    sqrt_rules = [f'{non_terminal_node}->sqrt({non_terminal_node})']
-    const_rules = [f'{non_terminal_node}->C']
-    abs_rules = [f'{non_terminal_node}->abs({non_terminal_node})']
-
-    rules = base_rules + get_vars_rules(nvars, non_terminal_node)
-    if 'const' in operators_set:
-        rules += const_rules
-    if 'inv' in operators_set:
-        rules += get_inv_rules(nvars, non_terminal_node)
-    if 'div' in operators_set:
-        rules += div_rules
-    if 'sin' in operators_set or 'cos' in operators_set:
-        rules += get_sincos_vars_rules(non_terminal_node)
-    if 'sqrt' in operators_set:
-        rules += sqrt_rules
-    if 'exp' in operators_set:
-        rules += exp_rules
-    if 'abs' in operators_set:
-        rules += abs_rules
-    if 'log' in operators_set:
-        rules += log_rules
-    if 'n2' in operators_set:
-        rules += get_n2_rules(nvars, non_terminal_node)
-    if 'n3' in operators_set:
-        rules += get_n3_rules(nvars, non_terminal_node)
-    if 'n4' in operators_set:
-        rules += get_n4_rules(nvars, non_terminal_node)
-    if 'n5' in operators_set:
-        rules += get_n5_rules(nvars, non_terminal_node)
-
-    rules += _load_supexp_rules(nvars, non_terminal_node)
-    return _dedupe_preserve_order(rules)
+        rules += get_n5_rules(nvars)
+    return rules
 
 
 def get_inv_rules(nvars: int, non_terminal_node='A') -> list:
@@ -292,7 +123,7 @@ def get_n5_rules(nvars: int, non_terminal_node='A') -> list:
 
 
 def get_sincos_vars_rules(non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->sin({non_terminal_node})', f'{non_terminal_node}->cos({non_terminal_node})']
+    return [f'{non_terminal_node}->sin(A)', f'{non_terminal_node}->cos(A)']
 
 
 def get_var_i_production_rules(round_idx, operators_set):
@@ -311,26 +142,29 @@ def get_var_i_production_rules(round_idx, operators_set):
 
 
 def get_ith_var_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}']
+    # [A-> C*Xi]
+    return [f'{non_terminal_node}->X{xi}', ]
 
 
 def get_ith_n2_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**2']
+    # [A-> C*Xi]
+    return [f'{non_terminal_node}->X{xi}**2', ]
 
 
 def get_ith_n3_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**3']
+    return [f'{non_terminal_node}->X{xi}**3', ]
 
 
 def get_ith_n4_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**4']
+    return [f'{non_terminal_node}->X{xi}**4', ]
 
 
 def get_ith_n5_rules(xi: int, non_terminal_node='A') -> list:
-    return [f'{non_terminal_node}->X{xi}**5']
+    return [f'{non_terminal_node}->X{xi}**5', ]
 
 
 def get_ith_inv_rules(xi: int, non_terminal_node='A') -> list:
+    # [A-> C/Xi]
     return [f'{non_terminal_node}->1/X{xi}']
 
 
@@ -338,3 +172,7 @@ if __name__ == '__main__':
     seq = "f->A,A->A*A,A->sqrt(A),A->sqrt(A),A->C,A->(A+A),A->sqrt(A),A->X0,A->C"
     seq = seq.split(',')
     production_rules_to_expr(seq)
+
+    # X0 = Symbol('X0')
+    # expr = 2.1 / X0  # 3.5*X0+4.0+
+    # preorder_traversal_expr = to_binary_expr_tree(expr)
