@@ -5,7 +5,6 @@ import os
 
 from mcts_model import MCTS
 
-from utils import create_reward_threshold
 import random
 import numpy as np
 from scibench.symbolic_data_generator import DataX
@@ -13,23 +12,37 @@ from scibench.symbolic_equation_evaluator_public import Equation_evaluator
 from regress_task import RegressTask
 from program import Program
 
-# Imports (DS)
 import datetime
 
 
 def run_mcts(
-        production_rules, non_terminal_nodes=['A'], num_episodes=1000, num_rollouts=40,
+        production_rules, non_terminal_nodes=None, num_episodes=1000, num_rollouts=40,
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
-        num_transplant=1, norm_threshold=1e-10,
+        num_transplant=1,
         max_opt_iter=200,
         suggest_log_path='llm_rule_history.log'
 ):
+    if non_terminal_nodes is None:
+        non_terminal_nodes = ['A']
+
     grammars = production_rules
     module_grow_step = (max_len - max_module_init) / num_transplant
     exploration_rate = exp_rate
     max_module = max_module_init
     best_modules = []
     aug_grammars = []
+
+    # Write the log header once before the transplant loop.
+    # FIXED: removed the misplaced inner try block that referenced i_itr and
+    # mcts_model before they existed — both are only defined inside the loop (DS)
+    try:
+        dir_name = os.path.dirname(suggest_log_path)
+        if dir_name:
+            os.makedirs(dir_name, exist_ok=True)
+        with open(suggest_log_path, 'a') as f:
+            f.write(f"=== LLM Rule History Log — started {datetime.datetime.now().isoformat()} ===\n\n")
+    except Exception as e:
+        print(f">>> [MCTS-LLM] Warning: could not create log file: {type(e).__name__}: {e}")
 
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
@@ -46,17 +59,18 @@ def run_mcts(
                           exploration_rate=exploration_rate,
                           max_opt_iter=max_opt_iter,
                           eta=eta,
-                          suggest_log_path=suggest_log_path)
+                          suggest_log_path=suggest_log_path,
+                          num_episodes=num_episodes)
 
+        # Log config for this transplant step.
+        # FIXED: removed references to min_reward_for_llm and min_gap which no
+        # longer exist on MCTS after the LLM trigger was simplified (DS)
         try:
-            dir_name = os.path.dirname(suggest_log_path)
-            if dir_name:
-                os.makedirs(dir_name, exist_ok=True)
             with open(suggest_log_path, 'a') as f:
-                f.write(f"=== LLM Rule History Log — started {datetime.datetime.now().isoformat()} ===\n")
-                f.write(f"=== min_reward_for_llm={mcts_model.min_reward_for_llm}, suggest_interval={mcts_model.suggest_interval} ===\n\n")
+                f.write(f"=== Transplant step {i_itr} — "
+                        f"suggest_interval={mcts_model.suggest_interval} ===\n\n")
         except Exception as e:
-            print(f">>> [MCTS-LLM] Warning: could not create log file: {type(e).__name__}: {e}")
+            print(f">>> [MCTS-LLM] Warning: could not write transplant header: {type(e).__name__}: {e}")
 
         tracker.track_object(mcts_model)
         start = time.time()
@@ -82,8 +96,10 @@ def run_mcts(
         max_module += module_grow_step
         exploration_rate *= 1.2
 
-    print("final hof")
-    mcts_model.print_hofs()
+    # Guard against num_transplant=0 where mcts_model would never be defined
+    if 'mcts_model' in locals():
+        print("final hof")
+        mcts_model.print_hofs()
 
 
 def mcts(equation_name, num_episodes, num_rollouts, metric_name, noise_type, noise_scale,
@@ -105,18 +121,26 @@ def mcts(equation_name, num_episodes, num_rollouts, metric_name, noise_type, noi
     MCTS.program = Program(nvar, optimizer)
     MCTS.program.evalaute_loss = data_query_oracle.compute_metric
 
+    # Fix: added else branch to raise a clear error for unrecognised modes
+    # instead of silently leaving production_rules undefined (NameError)
     if production_rules_mode == 'trigometric':
-        from production_rules_trigometric import get_var_i_production_rules, get_production_rules
+        from production_rules_trigometric import get_production_rules
     elif production_rules_mode == 'livermore2':
-        from production_rules import get_var_i_production_rules, get_production_rules
+        from production_rules import get_production_rules
     elif production_rules_mode == 'feynman':
-        from production_rules_feynman import get_var_i_production_rules, get_production_rules
+        from production_rules_feynman import get_production_rules
+    else:
+        raise ValueError(
+            f"Unknown production_rule_mode: '{production_rules_mode}'. "
+            f"Choose from: trigometric, livermore2, feynman"
+        )
 
     production_rules = get_production_rules(nvar, operators_set)
     print("The production rules are:", production_rules)
 
     if track_memory:
         import memray
+        # Remove stale memray output file before starting a fresh trace
         if os.path.isfile(memray_output_bin):
             os.remove(memray_output_bin)
         with memray.Tracker(memray_output_bin):
@@ -128,7 +152,7 @@ def mcts(equation_name, num_episodes, num_rollouts, metric_name, noise_type, noi
                 max_opt_iter=max_opt_iter,
                 suggest_log_path=suggest_log_path
             )
-            end_time = time.time() - start
+            elapsed = time.time() - start
     else:
         start = time.time()
         run_mcts(
@@ -138,9 +162,10 @@ def mcts(equation_name, num_episodes, num_rollouts, metric_name, noise_type, noi
             max_opt_iter=max_opt_iter,
             suggest_log_path=suggest_log_path
         )
-        end_time = time.time() - start
+        # Fix: renamed end_time → elapsed since this is a duration, not a timestamp
+        elapsed = time.time() - start
 
-    print("MCTS {} mins".format(np.round(end_time / 60, 3)))
+    print("MCTS {} mins".format(np.round(elapsed / 60, 3)))
 
 
 if __name__ == '__main__':
@@ -152,30 +177,33 @@ if __name__ == '__main__':
                         help='list servers, storage, or both (default: %(default)s)')
     parser.add_argument("--metric_name", type=str, default='neg_mse', help="The name of the metric for loss.")
     parser.add_argument("--num_episodes", type=int, default=1000, help="the number of episode for MCTS.")
-    parser.add_argument("--num_per_episodes", type=int, default=30, help="the number of episode for MCTS.")
+    # Fix: removed dead --num_per_episodes arg that was parsed but never forwarded anywhere
     parser.add_argument("--num_rollouts", type=int, default=40,
                         help="Number of rollouts per episode.")
     parser.add_argument("--max_opt_iter", type=int, default=200,
                         help="Max optimizer iterations per rollout.")
     parser.add_argument("--noise_type", type=str, default='normal', help="The name of the noises.")
-    parser.add_argument("--noise_scale", type=float, default=0.0, help="This parameter adds the standard deviation of the noise")
-    parser.add_argument("--memray_output_bin", type=str, help="memory profile")
-    parser.add_argument("--production_rule_mode", type=str, default='trigometric', help="production rules")
+    parser.add_argument("--noise_scale", type=float, default=0.0,
+                        help="Standard deviation of noise added to observations.")
+    parser.add_argument("--memray_output_bin", type=str, default="memray_output.bin",
+                        help="Output file for memray memory profiling.")
+    parser.add_argument("--production_rule_mode", type=str, default='trigometric',
+                        help="Production rule set to use: trigometric, livermore2, or feynman.")
     parser.add_argument('--suggest_log_path', type=str,
                         default='llm_rule_history.log',
-                        help='Path to save LLM prompt/response audit log')
+                        help='Path to save LLM prompt/response audit log.')
     parser.add_argument("--track_memory", action="store_true",
-                        help="whether run memery track evaluation.")
+                        help="Whether to enable memory tracking via memray.")
 
     args = parser.parse_args()
 
+    # Fix: use seed+1 for numpy to guarantee the two seeds are always different,
+    # even if both calls to perf_counter() land on the same timer tick
     seed = int(time.perf_counter() * 10000) % 1000007
     random.seed(seed)
     print('random seed=', seed)
-
-    seed = int(time.perf_counter() * 10000) % 1000007
-    np.random.seed(seed)
-    print('np.random seed=', seed)
+    np.random.seed(seed + 1)
+    print('np.random seed=', seed + 1)
     print(args)
 
     mcts(args.equation_name, args.num_episodes, args.num_rollouts,

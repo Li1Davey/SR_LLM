@@ -28,7 +28,8 @@ class MCTS(object):
     noise_std = 0.0
 
     def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
-                 exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500, suggest_log_path="llm_rule_history.log"):
+                 exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500, suggest_log_path="llm_rule_history.log",
+                 num_episodes=1000):
         # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
@@ -48,20 +49,11 @@ class MCTS(object):
         self.scale = 0
         self.eta = eta
         self.max_opt_iter = max_opt_iter
-        # --- LLM guide and timer configurations (DS)
-        self.last_best_reward_at_suggest = np.inf 
-        # Tracks the last time we successfully queried the LLM
+        # --- LLM timer and audit config (DS)
+        # Tracks the last iteration we queried the LLM
         self.last_suggest_iter = 0
-        # How many MCTS episodes to wait before asking the LLM for new rules again
-        self.suggest_interval = 20
-        # Never call LLM more often than every # iters
-        self.min_gap = 10
-        # Only call LLM if we have something useful
-        self.min_reward_for_llm = -8.0
-        # Require meaningful improvement before resetting the stuck clock
-        self.stuck_improvement_threshold = 0.3
-        # A flag that turns True whenever a high-quality expression enters the Hall of Fame
-        self.hof_improved = False       
+        # Query the LLM every 10th of total episodes
+        self.suggest_interval = max(1, num_episodes // 10)
         # File path for auditing LLM prompts and responses
         self.suggest_log_path = suggest_log_path
 
@@ -73,6 +65,12 @@ class MCTS(object):
         and the defaultdict must reflect the new size for any new states it creates.
         """
         return np.zeros(len(self.grammars))
+    
+    # (DS)
+    def _count_new_nonterminals(self, rule):
+        """Count how many new A nodes a rule introduces on its RHS."""
+        rhs = rule.split('->', 1)[1]
+        return rhs.count('A')
 
     def valid_production_rules(self, Node):
         # Get index of all possible production rules starting with a given node
@@ -105,35 +103,69 @@ class MCTS(object):
             self.task.rand_draw_data_with_X_fixed()
             y_true = self.task.evaluate()
             expr_template = production_rules_to_expr(state.split(','))
-            
-            # Guard against astronomically large exponents produced by chained
-            # power rules (e.g. A**3**3**3). (DS)
+
             try:
+                # Guard 1: reject oversized template strings before any sympy parsing —
+                # massive templates can hang parse_expr itself (DS)
+                if not isinstance(expr_template, str) or len(expr_template) > 200:
+                    print(f"         [step] Expression string too long "
+                        f"({len(expr_template) if isinstance(expr_template, str) else type(expr_template)} chars) — skipping")
+                    return state, ntn, -999.0, True, expr_template
+
+                # Guard 2: reject chained power towers at the string level before parsing —
+                # patterns like **2**3 cause parse_expr to hang or produce astronomically
+                # large integers that overflow everything downstream (DS)
+                if re.search(r'\*\*\d+\*\*\d+', expr_template):
+                    print(f"         [step] Chained power tower detected — skipping: {expr_template[:80]}")
+                    return state, ntn, -999.0, True, expr_template
+
+                # Guard 3: reject states with too many production rules —
+                # long rule chains like repeated A->(A)/(A) or A->A*A produce deeply
+                # nested rational expressions with dozens of terms after optimization,
+                # e.g. X0**27*X1**39/(...) which are numerically useless and slow (DS)
+                num_rules = len(state.split(','))
+                if num_rules > 20:
+                    print(f"         [step] Too many production rules ({num_rules}) — skipping: {expr_template[:80]}")
+                    return state, ntn, -999.0, True, expr_template
+
                 test_expr = parse_expr(expr_template.replace('C', '1'))
+
+                # Guard 4: reject astronomically large integer exponents —
+                # catches cases that slip past the string-level check (DS)
                 max_exp = max(
                     (abs(int(a.exp)) for a in test_expr.atoms(Pow) if a.exp.is_Integer),
                     default=0
                 )
-                if max_exp > 100:
-                    print(f"         [step] Exponent too large ({max_exp}) — skipping: {expr_template}")
-                    return state, ntn, -10.0, True, expr_template
-            except Exception:
-                # If parsing itself fails, treat as invalid
-                return state, ntn, -10.0, True, expr_template
-            
+                if max_exp > 20:
+                    print(f"         [step] Exponent too large ({max_exp}) — skipping: {expr_template[:80]}")
+                    return state, ntn, -999.0, True, expr_template
+
+                # Guard 5: reject expressions with no free variables after C=1 substitution —
+                # covers both pure numbers (X0-X0 → 0) and no-symbol cases (C*C → 1).
+                # is_number implies free_symbols is empty, so one check covers both. (DS)
+                if not test_expr.free_symbols:
+                    print(f"         [step] Expression has no free variables — skipping: {expr_template[:80]}")
+                    return state, ntn, -999.0, True, expr_template
+
+            except Exception as e:
+                # Parse or guard failure — treat as invalid rather than crashing (DS)
+                print(f"         [step] Guard check failed ({type(e).__name__}: {e}) — skipping: "
+                    f"{str(expr_template)[:80]}")
+                return state, ntn, -999.0, True, expr_template
+
             reward, eq, _, _ = self.program.optimize(expr_template,
-                                                     len(state.split(',')),
-                                                     self.task.X,
-                                                     y_true,
-                                                     self.input_var_Xs,
-                                                     eta=self.eta,
-                                                     max_opt_iter=self.max_opt_iter)
-            
+                                                    len(state.split(',')),
+                                                    self.task.X,
+                                                    y_true,
+                                                    self.input_var_Xs,
+                                                    eta=self.eta,
+                                                    max_opt_iter=self.max_opt_iter)
+
             # Penalise any non-finite result (nan, inf, -inf) instead of
             # propagating it into UCB scores and corrupting the search tree. (DS)
             if not np.isfinite(reward):
-                print(f"         [step] Non-finite reward ({reward}) replaced with -10.0 for: {eq}")
-                reward = -10.0
+                print(f"         [step] Non-finite reward ({reward}) replaced with -999.0 for: {eq}")
+                reward = -999.0
 
             return state, ntn, reward, True, eq
         else:
@@ -224,16 +256,26 @@ class MCTS(object):
         """
         Creates an policy based on ucb score.
         """
-
+        # Pre-compute which grammar indices are terminal (RHS contains no 'A')
+        # so we don't recompute this inside the hot loop. (DS)
+        terminal_indices = frozenset(
+            i for i, rule in enumerate(self.grammars)
+            if 'A' not in rule.split('->', 1)[1]
+        )
+        TERMINAL_PENALTY = 0.5  # multiplicative discount on UCB score for terminals (DS)
+        
         def policy_fn(state, node):
             valid_action = self.valid_production_rules(node)
 
-            # Compute all UCB scores first so the uniform fallback check
-            # has actual values to compare — the original code checked an
-            # empty list, so the fallback was never reachable. (DS)
-            ucb_scores = [np.exp(self.UCBs[state][a]) for a in valid_action]
-            sum_ucb = sum(ucb_scores)
+            ucb_scores = []
+            for a in valid_action:
+                score = np.exp(self.UCBs[state][a])
+                if a in terminal_indices:
+                    score *= TERMINAL_PENALTY  # discount terminal rules (DS)
+                ucb_scores.append(score)
 
+            sum_ucb = sum(ucb_scores)
+            
             A = np.zeros(nA, dtype=float)
 
             # If sum is zero or all scores are identical, fall back to uniform.
@@ -259,32 +301,33 @@ class MCTS(object):
         If we pass by a concise solution with high score, we store it as an
         single action for future use.
         """
+        # Reject trivially zero or constant-only expressions — these have
+        # reward 0.0 by coincidence (optimizer found best fit is zero) but
+        # contribute nothing useful to the HOF or LLM context. (DS)
+        if eq is None:
+            return
+        try:
+            if parse_expr(str(eq)).is_number:
+                return
+        except Exception:
+            pass
+        
         module = state
         if state.count(',') <= self.max_module:
             if not self.hall_of_fame:
                 self.hall_of_fame = [(module, reward, eq)]
-                # Trigger LLM because the first valid lead was found (DS)
-                self.hof_improved = True 
             elif eq not in [x[2] for x in self.hall_of_fame]:
-                # set hof_improved if the expression actually
-                # enters the hall of fame, not just because it is unique. (DS)
                 if len(self.hall_of_fame) < self.max_aug:
-                    # HOF has room — expression always enters
                     self.hall_of_fame = sorted(
                         self.hall_of_fame + [(module, reward, eq)],
                         key=lambda x: x[1]
                     )
-                    # Mark improvement only after confirmed entry
-                    self.hof_improved = True
                 else:
                     if reward > self.hall_of_fame[0][1]:
-                        # Expression is better than the current worst — it enters
                         self.hall_of_fame = sorted(
                             self.hall_of_fame[1:] + [(module, reward, eq)],
                             key=lambda x: x[1]
                         )
-                        # Mark improvement only after confirmed entry
-                        self.hof_improved = True
 
     def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
         """
@@ -387,41 +430,37 @@ class MCTS(object):
                 break
             
             # LLM rule suggestion logic (DS)
-            # Trigger if the model reached the interval OR if it found a new HOF entry 
-            # and we have at least one example to show the LLM.
-            best_current_reward = max([x[1] for x in self.hall_of_fame]) if self.hall_of_fame else -100
+            # Single trigger: fire every suggest_interval episodes if the HOF
+            # has at least one expression to show the LLM.
+            # min_reward_for_llm — all redundant once we use a simple periodic trigger.
             iterations_since_last = t - self.last_suggest_iter
-
-            # Only consider stuck if improvement is less than threshold — avoids noise triggering a call
-            is_stuck = (best_current_reward <= self.last_best_reward_at_suggest + self.stuck_improvement_threshold)
+            has_context = len(self.hall_of_fame) > 0
             interval_elapsed = (iterations_since_last >= self.suggest_interval)
-            
-            has_min_gap = (iterations_since_last >= self.min_gap)
-            has_good_context = (best_current_reward > self.min_reward_for_llm)
 
-            # Stuck relative to last call — same as before
-            should_suggest = interval_elapsed and is_stuck
+            if interval_elapsed and has_context:
+                best_current_reward = max(x[1] for x in self.hall_of_fame)
+                
+                # If the best reward already exceeds the threshold, the answer has
+                # been found — skip the LLM call entirely rather than adding rules
+                # that dilute the UCB policy for the remaining episodes. (DS)
+                if best_current_reward >= reward_threhold:
+                    print(f">>> [MCTS-LLM] Skipping LLM call — reward threshold already met "
+                        f"({best_current_reward:.4f} >= {reward_threhold}).")
+                    self.last_suggest_iter = t
+                    continue  # skip to next iteration
+                
+                print(f"\n>>> [MCTS-LLM] Querying LLM at iteration {t} "
+                      f"(best reward so far: {best_current_reward:.4f})...")
 
-            # HOF improved but we haven't called recently — same as before  
-            should_suggest_early = self.hof_improved and has_min_gap and is_stuck
-
-            # NEW: interval elapsed regardless of stuck status — catches post-improvement plateaus
-            should_suggest_periodic = interval_elapsed
-
-            if (should_suggest or should_suggest_early or should_suggest_periodic) and has_good_context:
-                print(f"\n>>> [MCTS-LLM] MCTS is stuck at reward {best_current_reward:.4f}. Querying LLM at iteration {t}...")
-
-                # 1. Extract the top 5 most successful expressions found so far as context
+                # 1. Top 5 expressions as context for the LLM
                 best_expr_examples = [item[2] for item in self.hall_of_fame[-5:]]
 
-                # 2. Define the operator set (fallback to standard ops if task doesn't specify)
-                # This ensures the LLM doesn't suggest 'tan' if the solver only supports 'sin'
+                # 2. Operator set — use task-declared set if available
                 allowed_ops = {'+', '-', '*', '/', 'sin', 'cos', 'exp', 'log', '**'}
                 if hasattr(self.task, 'get_allowed_operators'):
                     allowed_ops = set(self.task.get_allowed_operators())
 
-                # 3. Retrieve vars_range so suggest_rules can filter domain-unsafe rules
-                # e.g. reject log(A) if any variable range includes negative numbers
+                # 3. Variable ranges for domain-safety filtering in suggest_rules
                 vars_range = None
                 if hasattr(self.task, 'data_query_oracle'):
                     try:
@@ -429,18 +468,15 @@ class MCTS(object):
                         if isinstance(raw, str):
                             vars_range = json.loads(raw)
                         elif isinstance(raw, list) and raw and not isinstance(raw[0], dict):
-                            # Handles char-by-char split — rejoin and parse
                             vars_range = json.loads(''.join(str(c) for c in raw))
                         else:
                             vars_range = raw
                     except Exception:
                         vars_range = None
-                
-                # Debug print temporarily just before the suggest_rules call:
+
                 print(f">>> [DEBUG] vars_range retrieved: {vars_range}")
 
-                # 4. Call the external suggestion pipeline
-                # This handles prompt building, API call, safety validation and domain filtering
+                # 4. Call the suggestion pipeline
                 new_rules, rejected = suggest_rules(
                     equation_name=getattr(self.task, 'name', 'SymbolicDiscovery'),
                     current_rules=self.grammars,
@@ -451,60 +487,56 @@ class MCTS(object):
                     log_path=self.suggest_log_path
                 )
 
-                # Hard whitelist filter — reject any rule using an operator the task
-                # did not declare in its function_set, regardless of what the LLM suggeste
+                # 5. Hard whitelist — strip rules using operators the task didn't declare
                 task_function_set = set(getattr(self.task, 'function_set', []))
-                all_possible_ops  = {'sin', 'cos', 'exp', 'log', 'sqrt', 'tan'}
-                
-                # Only apply the filter if the task declared a non-empty function_set.
-                # An empty set is ambiguous — it could mean "not configured" rather than
-                # "everything is forbidden". Skipping the filter in that case prevents
-                # silently rejecting every transcendental rule the LLM suggests.
-                if task_function_set:
-                    forbidden_ops = all_possible_ops - task_function_set  # ops NOT in function_set
+                all_possible_ops = {'sin', 'cos', 'exp', 'log', 'sqrt', 'tan'}
 
+                if task_function_set:
+                    forbidden_ops = all_possible_ops - task_function_set
                     if forbidden_ops and new_rules:
                         safe_rules = []
                         for rule in new_rules:
-                            # word-boundary regex so 'exp' only matches the actual
-                            # function call 'exp(' and not substrings inside other tokens.
                             blocked_by = [
                                 op for op in forbidden_ops
                                 if re.search(rf'\b{op}\b', rule)
                             ]
                             if blocked_by:
-                                print(f">>> [MCTS-LLM] Rejected rule {rule!r} — uses forbidden op(s): {blocked_by}")
+                                print(f">>> [MCTS-LLM] Rejected rule {rule!r} "
+                                      f"— uses forbidden op(s): {blocked_by}")
                                 rejected.append(rule)
                             else:
                                 safe_rules.append(rule)
                         new_rules = safe_rules
 
-                # 5. Integrate the new rules into the MCTS search space
+                # 6. Integrate new rules and refresh the UCB policy
                 if new_rules:
                     added_count = 0
                     for rule in new_rules:
                         if rule not in self.grammars:
+                            new_nts = self._count_new_nonterminals(rule)
+                            # Reject rules that fan out too aggressively — more than 3
+                            # new non-terminal nodes causes exponential tree blowup
+                            # at max_len=30 (DS)
+                            if new_nts > 3:
+                                print(f">>> [MCTS-LLM] Rejected rule {rule!r} "
+                                    f"— introduces {new_nts} non-terminals (max 3)")
+                                continue
                             self.grammars.append(rule)
                             added_count += 1
+                        else:
+                            print(f">>> [MCTS-LLM] Rule already in grammar, skipping: {rule!r}")
 
                     if added_count > 0:
-                        print(f">>> [MCTS-LLM] Successfully expanded grammar with {added_count} new rules.")
-                        # IMPORTANT: Since self.grammars grew, we must refresh the policy
-                        # so it can choose from the new indices in future iterations.
+                        print(f">>> [MCTS-LLM] Expanded grammar with {added_count} new rules.")
                         nA = len(self.grammars)
                         for state_key in self.UCBs:
                             old = self.UCBs[state_key]
                             if len(old) < nA:
-                                # Pad with zeros for the new rule indices
                                 self.UCBs[state_key] = np.pad(old, (0, nA - len(old)))
-
-                        # Refresh the policy so it knows about the new indices
                         ucb_policy = self.get_ucb_policy(nA)
 
-                # 6. Reset triggers to prevent redundant API calls
+                # 7. Reset timer
                 self.last_suggest_iter = t
-                self.last_best_reward_at_suggest = best_current_reward
-                self.hof_improved = False
 
         return reward_his, self.hall_of_fame
 

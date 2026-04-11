@@ -9,133 +9,94 @@ from openai import OpenAI
 def _get_client():
     return OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
-
 def build_prompt(equation_name, current_rules, best_expressions, nvars, operators_set, vars_range=None):
     """
-    Build a plain-text prompt to send to the LLM that requests new CFG production rules.
+    Build a plain-text prompt for LLM to generate new CFG production rules.
 
     Parameters:
-    - equation_name (str): name or identifier of the target equation (for context/logging)
-    - current_rules (list[str]): existing production rules, e.g. ['A->(A+A)', 'A->C*X0']
-    - best_expressions (list[str]): top expressions found so far to give the model context
-    - nvars (int): number of input variables (X0 .. X{nvars-1})
-    - operators_set (set or list): allowed operator names, e.g. {'sin', 'cos', 'exp'}
-    - vars_range (list[dict], optional): variable range metadata from the oracle
+    - equation_name (str): Identifier of the target equation (for context/logging).
+    - current_rules (list[str]): Existing production rules, e.g. ['A->(A+A)', 'A->C*X0'].
+    - best_expressions (list[str]): Top expressions found so far for context.
+    - nvars (int): Number of input variables (X0 .. X{nvars-1}).
+    - operators_set (set or list): Allowed operators, e.g. {'sin', 'cos', 'exp'}.
+    - vars_range (list[dict], optional): Variable range metadata from the oracle.
 
     Returns:
-    - prompt (str): assembled prompt text to send as the user's message to the LLM
+    - prompt (str): Assembled prompt to send as the user's message to the LLM.
     """
-
+    
     # STAGE 1 — Variable range summary
     range_lines = []
-    transcendental_ok = False  # conservative default — suppressed unless evidence found
+    transcendental_ok = True  # Initialize as True; will be set to False if conditions dictate
 
     if vars_range:
         for i, vr in enumerate(vars_range):
-            # Skip malformed entries — should not happen after upstream parsing fix
-            # but we guard here as a second line of defence
             if not isinstance(vr, dict) or 'range' not in vr:
                 continue
 
-            lo, hi = vr['range'][0], vr['range'][1]
+            lo, hi = vr['range']
             only_pos = vr.get('only_positive', False)
-
-            # Build a list of plain-English notes for this variable
             notes = []
+
+            # Build notes based on the variable's range
             if only_pos:
                 notes.append("always positive")
             if hi > 1e6:
-                # Large-scale variables (e.g. stellar mass in kg) need to appear
-                # in a denominator so the model output stays at a reasonable scale
                 notes.append("very large scale — likely appears in denominator")
             elif hi <= 10:
-                # Small-range variables (e.g. orbital radius in AU) are candidates
-                # for being raised to higher integer powers
                 notes.append("small scale — may appear raised to higher powers")
 
-            # Transcendental functions (sin, cos, exp, log) are only physically
-            # plausible if a variable can take negative values or span many orders
-            # of magnitude in a way that suggests periodicity or exponential growth.
-            # If every variable is strictly positive, we suppress trig suggestions.
-            if not only_pos or lo < 0:
-                transcendental_ok = True
+            # Set transcendental_ok to False only if all variables are strictly positive
+            if only_pos and lo >= 0:
+                transcendental_ok = False
 
             note_str = f" ({', '.join(notes)})" if notes else ""
             range_lines.append(f"  X{i}: [{lo}, {hi}]{note_str}")
 
-    # If no valid range metadata was available, fall back to a neutral statement
-    range_block = (
-        "Variable ranges:\n" + "\n".join(range_lines)
-        if range_lines
-        else "Variable ranges: (not available)"
-    )
-    
-    # STAGE 2 — Structural hints derived from best expressions
-    # Check which algebraic patterns are already present in the best expressions
-    has_division  = any('/' in e for e in best_expressions)
-    has_power     = any('**' in e for e in best_expressions)
-    has_product   = any('*X' in e or 'X*' in e for e in best_expressions)
+    range_block = "Variable ranges:\n" + "\n".join(range_lines) if range_lines else "Variable ranges: (not available)"
 
-    # Check whether any variable has a very large range (denominator candidate)
-    has_large_var = any(
-        isinstance(vr, dict) and vr.get('range', [0, 0])[1] > 1e6
-        for vr in (vars_range or [])
+    # STAGE 2 — Structural hints derived from best expressions
+    has_division = any('/' in e for e in best_expressions)
+    has_power = any('**' in e for e in best_expressions)
+    has_product = any('*' in e for e in best_expressions)
+    has_transcendental = any(func in e for e in best_expressions for func in ['sin', 'cos', 'exp', 'log'])
+
+    # Analyze general complexity and structure
+    complexity_check = any(
+        isinstance(e, str) and (len(e.split()) > 5 or len(e) > 100)  # Expensive expressions or too many terms
+        for e in best_expressions
     )
 
     hints = []
-
-    if has_division and has_large_var:
-        # Division by a large variable is already appearing — the next step is
-        # likely to raise the numerator variable to a higher power
-        hints.append(
-            "- Division by a large-scale variable is already appearing — "
-            "consider higher powers in the numerator (e.g. A**3, A*A*A)"
-        )
-
+    if has_division:
+        hints.append("- Division is present in some expressions — explore the potential for ratios involving higher powers.")
     if has_power:
-        # Power terms are present — suggest combining them with division to form
-        # ratio structures like X0**3 / X1
-        hints.append(
-            "- Power terms are appearing — consider combining powers with "
-            "division (e.g. A**3 divided by a large-scale variable)"
-        )
+        hints.append("- Power terms are prevalent — consider combining powers effectively with other operations.")
+    if has_product:
+        hints.append("- Products of variables are evident — assess possible combinations that utilize these products.")
+    if has_transcendental:
+        hints.append("- Transcendental functions are present — inquire about combinations that maintain periodic or exponential behavior.")
 
-    if has_product and has_large_var:
-        # Products of variables are appearing alongside a large-scale variable —
-        # suggest the ratio form that would naturally scale the output correctly
-        hints.append(
-            "- Products of variables appear — consider whether a ratio of a "
-            "power to the large-scale variable fits the data"
-        )
-
+    if complexity_check:
+        hints.append("- Some expressions are complex; explore simplifying components to create new insights.")
     if not hints:
-        # No strong pattern detected yet — encourage broad algebraic exploration
-        hints.append(
-            "- No strong structure found yet — suggest diverse algebraic forms "
-            "such as ratios and higher powers"
-        )
+        hints.append("- No strong structure found yet — consider suggesting a diverse array of algebraic forms, including ratios and powers.")
 
     hint_block = "\n".join(hints)
-    
+
     # STAGE 3 — Transcendental function warning
-    if not transcendental_ok:
+    trig_warning = ""
+    if not transcendental_ok and not has_transcendental:
         trig_warning = (
             "\nIMPORTANT: All variables are strictly positive with no indication "
-            "of periodic or exponential behavior. Do NOT suggest sin, cos, exp, "
-            "or log — focus exclusively on algebraic rules (powers, ratios, products)."
+            "of periodic or exponential behavior. Prefer algebraic rules (powers, ratios)."
         )
-    else:
-        # Variables can be negative or zero — transcendental functions are plausible
-        trig_warning = ""
-    
+
     # STAGE 4 — Final prompt assembly
-    # Prepare text blocks: fallback to "(none)" if empty to make the prompt explicit.
     rules_text = "\n".join(current_rules) if current_rules else "(none)"
     best_text = "\n".join(best_expressions) if best_expressions else "(none)"
     ops_text = ", ".join(sorted(list(operators_set))) if operators_set else "(none)"
 
-    # The prompt is intentionally explicit and strict about the required output format.
-    # This helps downstream parsing by ensuring the model returns only rule lines.
     prompt = f"""You are helping a symbolic regression system discover a physical equation.
 Context:
 - Equation: {equation_name}
@@ -157,15 +118,15 @@ A-><right-hand-side>
 
 Constraints (strict):
 - Every rule must start with 'A->'
-- Use only variables X0..X{nvars - 1}, 'C' for constants, and operators from the allowed set
-- Do not repeat existing rules
+- Use only variables X0..X{nvars - 1}, 'C' for constants, and operators from the allowed set.
+- Do not repeat existing rules.
 - Prefer algebraic structure (powers, ratios) over transcendental functions
-  unless the variable ranges clearly support them
-- Output only the rules, one per line, with no additional text
+  unless the variable ranges clearly support them.
+- Output only the rules, one per line, with no additional text.
 """
     return prompt
 
-def call_openai(prompt, model="gpt-4.1-mini", temperature=0.7):
+def call_openai(prompt, model="gpt-4.1-mini", temperature=0.2):
     """
     Send the prompt to OpenAI and return the model's plain text response.
 
@@ -367,7 +328,7 @@ def suggest_rules(equation_name,
                 try:
                     parsed.append(json.loads(entry))
                 except (json.JSONDecodeError, ValueError):
-                    parsed.append(entry)  # leave as-is if unparseable
+                    parsed.append(entry)
             else:
                 parsed.append(entry)
         vars_range = parsed
