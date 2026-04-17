@@ -7,11 +7,9 @@ from sympy.parsing.sympy_parser import parse_expr
 from production_rules import production_rules_to_expr
 from program import execute
 from utils import pretty_print_expr, expression_to_template, nth_repl
-# Imports (DS)
 import json
 import re
-# Import the suggestion pipeline functions we defined earlier
-from suggester import suggest_rules 
+from suggester import suggest_rules
 
 
 class MCTS(object):
@@ -30,7 +28,6 @@ class MCTS(object):
     def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500, suggest_log_path="llm_rule_history.log",
                  num_episodes=1000):
-        # number of input variables
         self.nvars = self.task.data_query_oracle.get_nvars()
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
         self.base_grammars = base_grammars
@@ -42,6 +39,8 @@ class MCTS(object):
         self.max_module = max_module
         self.max_aug = aug_grammars_allowed
         self.hall_of_fame = []
+        # Separate audit log — top expressions seen, length-constrained (DS)
+        self.top_expressions = []
         self.exploration_rate = exploration_rate
         # FIXED - size is re-evaluated dynamically every time a new key is created (DS)
         self.UCBs = defaultdict(self._make_ucb_entry)
@@ -49,23 +48,21 @@ class MCTS(object):
         self.scale = 0
         self.eta = eta
         self.max_opt_iter = max_opt_iter
-        # --- LLM timer and audit config (DS)
-        # Tracks the last iteration we queried the LLM
+        # LLM timer and audit config (DS)
         self.last_suggest_iter = 0
-        # Query the LLM every 10th of total episodes
         self.suggest_interval = max(1, num_episodes // 10)
-        # File path for auditing LLM prompts and responses
         self.suggest_log_path = suggest_log_path
+        # Consecutive empty LLM call counter — used to skip stale calls (DS)
+        self.consecutive_empty_llm_calls = 0
 
     # (DS)
     def _make_ucb_entry(self):
         """
         Dynamically creates a zero array sized to the CURRENT grammar length.
-        This is critical because the LLM can expand self.grammars mid-run,
-        and the defaultdict must reflect the new size for any new states it creates.
+        Critical because the LLM can expand self.grammars mid-run.
         """
         return np.zeros(len(self.grammars))
-    
+
     # (DS)
     def _count_new_nonterminals(self, rule):
         """Count how many new A nodes a rule introduces on its RHS."""
@@ -75,7 +72,7 @@ class MCTS(object):
     def valid_production_rules(self, Node):
         # Get index of all possible production rules starting with a given node
         return [self.grammars.index(x) for x in self.grammars if x.startswith(Node)]
-    
+
     def get_non_terminal_nodes(self, prod) -> list:
         # Get all the non-terminal nodes from right-hand side of a production rule grammar
         return [i for i in prod[3:] if i in self.non_terminal_nodes]
@@ -87,13 +84,8 @@ class MCTS(object):
 
     def step(self, state, action_idx, ntn):
         """
-        state:      all production rules
-        action_idx: index of grammar starts from the current Non-terminal Node
-        tree:       the current tree
-        ntn:        all remaining non-terminal nodes
-
-        This defines one step of Parse Tree traversal
-        return tree (next state), remaining non-terminal nodes, reward, and if it is done
+        One step of Parse Tree traversal.
+        Returns: (next_state, ntn, reward, done, eq)
         """
         action = self.grammars[action_idx]
         state = state + ',' + action
@@ -105,24 +97,18 @@ class MCTS(object):
             expr_template = production_rules_to_expr(state.split(','))
 
             try:
-                # Guard 1: reject oversized template strings before any sympy parsing —
-                # massive templates can hang parse_expr itself (DS)
+                # Guard 1: reject oversized template strings (DS)
                 if not isinstance(expr_template, str) or len(expr_template) > 200:
                     print(f"         [step] Expression string too long "
-                        f"({len(expr_template) if isinstance(expr_template, str) else type(expr_template)} chars) — skipping")
+                          f"({len(expr_template) if isinstance(expr_template, str) else type(expr_template)} chars) — skipping")
                     return state, ntn, -999.0, True, expr_template
 
-                # Guard 2: reject chained power towers at the string level before parsing —
-                # patterns like **2**3 cause parse_expr to hang or produce astronomically
-                # large integers that overflow everything downstream (DS)
+                # Guard 2: reject chained power towers (DS)
                 if re.search(r'\*\*\d+\*\*\d+', expr_template):
                     print(f"         [step] Chained power tower detected — skipping: {expr_template[:80]}")
                     return state, ntn, -999.0, True, expr_template
 
-                # Guard 3: reject states with too many production rules —
-                # long rule chains like repeated A->(A)/(A) or A->A*A produce deeply
-                # nested rational expressions with dozens of terms after optimization,
-                # e.g. X0**27*X1**39/(...) which are numerically useless and slow (DS)
+                # Guard 3: reject states with too many production rules (DS)
                 num_rules = len(state.split(','))
                 if num_rules > 20:
                     print(f"         [step] Too many production rules ({num_rules}) — skipping: {expr_template[:80]}")
@@ -130,8 +116,7 @@ class MCTS(object):
 
                 test_expr = parse_expr(expr_template.replace('C', '1'))
 
-                # Guard 4: reject astronomically large integer exponents —
-                # catches cases that slip past the string-level check (DS)
+                # Guard 4: reject astronomically large integer exponents (DS)
                 max_exp = max(
                     (abs(int(a.exp)) for a in test_expr.atoms(Pow) if a.exp.is_Integer),
                     default=0
@@ -140,29 +125,24 @@ class MCTS(object):
                     print(f"         [step] Exponent too large ({max_exp}) — skipping: {expr_template[:80]}")
                     return state, ntn, -999.0, True, expr_template
 
-                # Guard 5: reject expressions with no free variables after C=1 substitution —
-                # covers both pure numbers (X0-X0 → 0) and no-symbol cases (C*C → 1).
-                # is_number implies free_symbols is empty, so one check covers both. (DS)
+                # Guard 5: reject expressions with no free variables (DS)
                 if not test_expr.free_symbols:
                     print(f"         [step] Expression has no free variables — skipping: {expr_template[:80]}")
                     return state, ntn, -999.0, True, expr_template
 
             except Exception as e:
-                # Parse or guard failure — treat as invalid rather than crashing (DS)
                 print(f"         [step] Guard check failed ({type(e).__name__}: {e}) — skipping: "
-                    f"{str(expr_template)[:80]}")
+                      f"{str(expr_template)[:80]}")
                 return state, ntn, -999.0, True, expr_template
 
             reward, eq, _, _ = self.program.optimize(expr_template,
-                                                    len(state.split(',')),
-                                                    self.task.X,
-                                                    y_true,
-                                                    self.input_var_Xs,
-                                                    eta=self.eta,
-                                                    max_opt_iter=self.max_opt_iter)
+                                                      len(state.split(',')),
+                                                      self.task.X,
+                                                      y_true,
+                                                      self.input_var_Xs,
+                                                      eta=self.eta,
+                                                      max_opt_iter=self.max_opt_iter)
 
-            # Penalise any non-finite result (nan, inf, -inf) instead of
-            # propagating it into UCB scores and corrupting the search tree. (DS)
             if not np.isfinite(reward):
                 print(f"         [step] Non-finite reward ({reward}) replaced with -999.0 for: {eq}")
                 reward = -999.0
@@ -172,13 +152,10 @@ class MCTS(object):
             return state, ntn, 0, False, None
 
     def rollout(self, num_play, state_initial, ntn_initial):
-        """
-        Perform `num_play` simulation, get the maximum reward
-        """
+        """Perform num_play simulations, return maximum reward."""
+        # Note: reward, next_state, and eq are intentionally not initialized here.
+        # as they were already assigned inside the loop (DS)
         best_eq = ''
-        reward = -100
-        next_state = None
-        eq = ''
         best_r = -100
         idx = 0
         while idx < num_play:
@@ -222,14 +199,12 @@ class MCTS(object):
         if self.scale != 0:
             for s in self.QN:
                 self.QN[s][0] *= (self.scale / new_scale)
-
         self.scale = new_scale
 
     def back_propagate(self, state, action_index, reward):
         """
         Update the Q, N and ucb for all corresponding decedent after a complete rollout
         """
-
         action = self.grammars[action_index]
         if self.scale != 0:
             self.QN[state + ',' + action][0] += reward / self.scale
@@ -238,7 +213,6 @@ class MCTS(object):
         self.QN[state + ',' + action][1] += 1
 
         while state:
-            # print("the state is", state)
             if self.scale != 0:
                 self.QN[state][0] += reward / self.scale
             else:
@@ -253,17 +227,15 @@ class MCTS(object):
                 state = ''
 
     def get_ucb_policy(self, nA):
-        """
-        Creates an policy based on ucb score.
-        """
+        """Creates a policy based on UCB scores."""
         # Pre-compute which grammar indices are terminal (RHS contains no 'A')
         # so we don't recompute this inside the hot loop. (DS)
         terminal_indices = frozenset(
             i for i, rule in enumerate(self.grammars)
             if 'A' not in rule.split('->', 1)[1]
         )
-        TERMINAL_PENALTY = 0.5  # multiplicative discount on UCB score for terminals (DS)
-        
+        TERMINAL_PENALTY = 0.5
+
         def policy_fn(state, node):
             valid_action = self.valid_production_rules(node)
 
@@ -271,11 +243,11 @@ class MCTS(object):
             for a in valid_action:
                 score = np.exp(self.UCBs[state][a])
                 if a in terminal_indices:
-                    score *= TERMINAL_PENALTY  # discount terminal rules (DS)
+                    # discount terminal rules (DS)
+                    score *= TERMINAL_PENALTY
                 ucb_scores.append(score)
 
             sum_ucb = sum(ucb_scores)
-            
             A = np.zeros(nA, dtype=float)
 
             # If sum is zero or all scores are identical, fall back to uniform.
@@ -288,18 +260,18 @@ class MCTS(object):
             # Normalise each score — no need to track the action index here
             # since ucb_scores is already ordered to match valid_action (DS)
             policy_valid = [score / sum_ucb for score in ucb_scores]
-
-            best_action = valid_action[np.argmax(policy_valid)]
+            best_action  = valid_action[np.argmax(policy_valid)]
             A[best_action] += 0.8
             A[valid_action] += float(0.2 / len(valid_action))
             return A
 
         return policy_fn
-    
+
     def update_hall_of_fame(self, state, reward, eq):
         """
-        If we pass by a concise solution with high score, we store it as an
-        single action for future use.
+        Update HOF and top_expressions audit log.
+        Both lists enforce the module length constraint so the LLM
+        only ever sees compact, structurally meaningful expressions.
         """
         # Reject trivially zero or constant-only expressions — these have
         # reward 0.0 by coincidence (optimizer found best fit is zero) but
@@ -311,7 +283,7 @@ class MCTS(object):
                 return
         except Exception:
             pass
-        
+
         module = state
         if state.count(',') <= self.max_module:
             if not self.hall_of_fame:
@@ -329,10 +301,25 @@ class MCTS(object):
                             key=lambda x: x[1]
                         )
 
-    def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5, is_first_round=False, reward_threhold=10):
-        """
-        Monte Carlo Tree Search algorithm
-        """
+            # --- Update top_expressions audit log ---
+            # Same module length constraint as HOF — guarantees compact expressions
+            # so the audit log and LLM context stay clean (DS)
+            if eq not in [x[2] for x in self.top_expressions]:
+                if len(self.top_expressions) < 20:
+                    self.top_expressions = sorted(
+                        self.top_expressions + [(module, reward, eq)],
+                        key=lambda x: x[1]
+                    )
+                else:
+                    if reward > self.top_expressions[0][1]:
+                        self.top_expressions = sorted(
+                            self.top_expressions[1:] + [(module, reward, eq)],
+                            key=lambda x: x[1]
+                        )
+
+    def MCTS_run_orig(self, num_episodes, num_rollouts=50, verbose=False, print_freq=5,
+                      is_first_round=False, reward_threhold=10):
+        """Monte Carlo Tree Search algorithm."""
         #  Must complete at least 10% of episodes (DS)
         min_episodes = max(1, num_episodes // 10)
         nA = len(self.grammars)
@@ -361,7 +348,7 @@ class MCTS(object):
                 ntn = ['A']
             unvisited_children = self.get_unvisited_children(state, ntn[0])
 
-            # scenario 1: if current parent node fully expanded, follow ucb_policy
+            # Scenario 1: fully expanded node — follow UCB policy
             while not unvisited_children:
                 prob = ucb_policy(state, ntn[0])
                 print("UCB_policy... prob=", prob)
@@ -390,15 +377,13 @@ class MCTS(object):
                         if reward > 0:
                             self.update_QN_scale(reward)
                         best_solution = (eq, reward)
-                    # print("BACK-PROPAGATION STEP")
                     self.back_propagate(state, action, reward)
                     reward_his.append(best_solution[1])
                     break
 
-            # scenario 2: if current parent node not fully expanded, follow uniform_random_policy
+            # Scenario 2: not fully expanded — follow uniform random policy
             if len(unvisited_children) != 0:
                 print("uniform_random_policy... ", unvisited_children)
-                # prob = uniform_random_policy(unvisited_children)
                 action = np.random.choice(unvisited_children)
                 next_state, ntn_next, reward, done, eq = self.step(state, action, ntn[1:])
                 print('state:', state, '\t action:', self.grammars[action])
@@ -411,7 +396,6 @@ class MCTS(object):
                     if reward > 0:
                         self.update_QN_scale(reward)
                     best_solution = (eq, reward)
-                # 4. BACK-PROPAGATION STEP in MCTS.
                 self.back_propagate(state, action, reward)
                 reward_his.append(best_solution[1])
                 unvisited_children.remove(action)
@@ -421,14 +405,14 @@ class MCTS(object):
                         and t >= min_episodes):
                     print(f">>> Early exit (inner) at iteration {t} — reward threshold met.")
                     break
-
+            
             # Outer exit: same guard, prevents exit on iteration 1 (DS)
             if (len(self.hall_of_fame) > 1
                     and max([x[1] for x in self.hall_of_fame]) > reward_threhold
                     and t >= min_episodes):
                 print(f">>> Early exit (outer) at iteration {t} — reward threshold met.")
                 break
-            
+
             # LLM rule suggestion logic (DS)
             # Single trigger: fire every suggest_interval episodes if the HOF
             # has at least one expression to show the LLM.
@@ -439,28 +423,40 @@ class MCTS(object):
 
             if interval_elapsed and has_context:
                 best_current_reward = max(x[1] for x in self.hall_of_fame)
-                
-                # If the best reward already exceeds the threshold, the answer has
-                # been found — skip the LLM call entirely rather than adding rules
-                # that dilute the UCB policy for the remaining episodes. (DS)
+
                 if best_current_reward >= reward_threhold:
                     print(f">>> [MCTS-LLM] Skipping LLM call — reward threshold already met "
-                        f"({best_current_reward:.4f} >= {reward_threhold}).")
+                          f"({best_current_reward:.4f} >= {reward_threhold}).")
                     self.last_suggest_iter = t
-                    continue  # skip to next iteration
-                
+                    continue
+
+                # Skip if the last N calls all returned nothing — grammar is saturated
+                # for the current expression landscape. Reset after one skip to retry. (DS)
+                if self.consecutive_empty_llm_calls >= 2:
+                    print(f">>> [MCTS-LLM] Skipping LLM call — "
+                          f"{self.consecutive_empty_llm_calls} consecutive empty responses, "
+                          f"grammar may be saturated. Will retry next interval.")
+                    self.last_suggest_iter = t
+                    self.consecutive_empty_llm_calls = 0
+                    continue
+
                 print(f"\n>>> [MCTS-LLM] Querying LLM at iteration {t} "
                       f"(best reward so far: {best_current_reward:.4f})...")
 
-                # 1. Top 5 expressions as context for the LLM
-                best_expr_examples = [item[2] for item in self.hall_of_fame[-5:]]
+                # 1. Top 20 best expressions as LLM context — sorted descending by reward
+                #    so the best are first. HOF enforces max_module so all are compact. (DS)
+                best_expr_examples = [
+                    item[2] for item in sorted(
+                        self.top_expressions, key=lambda x: x[1], reverse=True
+                    )
+                ]
 
-                # 2. Operator set — use task-declared set if available
+                # 2. Operator set
                 allowed_ops = {'+', '-', '*', '/', 'sin', 'cos', 'exp', 'log', '**'}
                 if hasattr(self.task, 'get_allowed_operators'):
                     allowed_ops = set(self.task.get_allowed_operators())
 
-                # 3. Variable ranges for domain-safety filtering in suggest_rules
+                # 3. Variable ranges
                 vars_range = None
                 if hasattr(self.task, 'data_query_oracle'):
                     try:
@@ -484,12 +480,19 @@ class MCTS(object):
                     nvars=self.nvars,
                     operators_set=allowed_ops,
                     vars_range=vars_range,
+                    base_rules=self.base_grammars,
                     log_path=self.suggest_log_path
                 )
 
-                # 5. Hard whitelist — strip rules using operators the task didn't declare
+                # Update consecutive empty call counter (DS)
+                if not new_rules:
+                    self.consecutive_empty_llm_calls += 1
+                else:
+                    self.consecutive_empty_llm_calls = 0
+
+                # 5. Hard whitelist — strip rules using undeclared operators
                 task_function_set = set(getattr(self.task, 'function_set', []))
-                all_possible_ops = {'sin', 'cos', 'exp', 'log', 'sqrt', 'tan'}
+                all_possible_ops  = {'sin', 'cos', 'exp', 'log', 'sqrt', 'tan'}
 
                 if task_function_set:
                     forbidden_ops = all_possible_ops - task_function_set
@@ -508,18 +511,15 @@ class MCTS(object):
                                 safe_rules.append(rule)
                         new_rules = safe_rules
 
-                # 6. Integrate new rules and refresh the UCB policy
+                # 6. Integrate new rules — final duplicate guard here as safety net (DS)
                 if new_rules:
                     added_count = 0
                     for rule in new_rules:
                         if rule not in self.grammars:
                             new_nts = self._count_new_nonterminals(rule)
-                            # Reject rules that fan out too aggressively — more than 3
-                            # new non-terminal nodes causes exponential tree blowup
-                            # at max_len=30 (DS)
                             if new_nts > 3:
                                 print(f">>> [MCTS-LLM] Rejected rule {rule!r} "
-                                    f"— introduces {new_nts} non-terminals (max 3)")
+                                      f"— introduces {new_nts} non-terminals (max 3)")
                                 continue
                             self.grammars.append(rule)
                             added_count += 1
@@ -549,10 +549,10 @@ class MCTS(object):
             print('        ' + str(get_state(pr)), end="\n")
         print("=" * 20)
 
+# Simplified (DS)
 def get_state(pr):
-    state_dict = {
-        'reward': pr[1],
+    return {
+        'reward':    pr[1],
         'pretty-eq': pretty_print_expr(pr[2]),
-        'rules': pr[0],
+        'rules':     pr[0],
     }
-    return state_dict
