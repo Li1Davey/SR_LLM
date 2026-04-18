@@ -253,8 +253,8 @@ def suggest_rules(equation_name,
                   operators_set,
                   model="gpt-4.1-mini",
                   vars_range=None,
-                  temperature=0.2,
-                  max_suggestions=5,
+                  temperature=0.4,
+                  max_suggestions=10,
                   base_rules=None,
                   log_path="llm_rule_history.log"):
     """

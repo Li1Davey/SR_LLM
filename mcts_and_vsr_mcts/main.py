@@ -20,7 +20,8 @@ def run_mcts(
         max_len=30, eta=0.9999, max_module_init=15, num_aug=10, exp_rate=1 / np.sqrt(2),
         num_transplant=1,
         max_opt_iter=200,
-        suggest_log_path='llm_rule_history.log'
+        suggest_log_path='llm_rule_history.log',
+        use_llm=False
 ):
     if non_terminal_nodes is None:
         non_terminal_nodes = ['A']
@@ -35,14 +36,15 @@ def run_mcts(
     # Write the log header once before the transplant loop.
     # FIXED: removed the misplaced inner try block that referenced i_itr and
     # mcts_model before they existed — both are only defined inside the loop (DS)
-    try:
-        dir_name = os.path.dirname(suggest_log_path)
-        if dir_name:
-            os.makedirs(dir_name, exist_ok=True)
-        with open(suggest_log_path, 'a') as f:
-            f.write(f"=== LLM Rule History Log — started {datetime.datetime.now().isoformat()} ===\n\n")
-    except Exception as e:
-        print(f">>> [MCTS-LLM] Warning: could not create log file: {type(e).__name__}: {e}")
+    if use_llm:
+        try:
+            dir_name = os.path.dirname(suggest_log_path)
+            if dir_name:
+                os.makedirs(dir_name, exist_ok=True)
+            with open(suggest_log_path, 'a') as f:
+                f.write(f"=== LLM Rule History Log — started {datetime.datetime.now().isoformat()} ===\n\n")
+        except Exception as e:
+            print(f">>> [MCTS-LLM] Warning: could not create log file: {type(e).__name__}: {e}")
 
     for i_itr in range(num_transplant):
         print("transplanation step=", i_itr)
@@ -60,17 +62,19 @@ def run_mcts(
                           max_opt_iter=max_opt_iter,
                           eta=eta,
                           suggest_log_path=suggest_log_path,
+                          use_llm=use_llm,
                           num_episodes=num_episodes)
 
         # Log config for this transplant step.
         # FIXED: removed references to min_reward_for_llm and min_gap which no
         # longer exist on MCTS after the LLM trigger was simplified (DS)
-        try:
-            with open(suggest_log_path, 'a') as f:
-                f.write(f"=== Transplant step {i_itr} — "
-                        f"suggest_interval={mcts_model.suggest_interval} ===\n\n")
-        except Exception as e:
-            print(f">>> [MCTS-LLM] Warning: could not write transplant header: {type(e).__name__}: {e}")
+        if use_llm:
+            try:
+                with open(suggest_log_path, 'a') as f:
+                    f.write(f"=== Transplant step {i_itr} — "
+                            f"suggest_interval={mcts_model.suggest_interval} ===\n\n")
+            except Exception as e:
+                print(f">>> [MCTS-LLM] Warning: could not write transplant header: {type(e).__name__}: {e}")
 
         tracker.track_object(mcts_model)
         start = time.time()
@@ -106,7 +110,8 @@ def mcts(equation_name, num_episodes, num_rollouts, metric_name, noise_type, noi
          optimizer, production_rules_mode, memray_output_bin,
          max_opt_iter=200,
          suggest_log_path='llm_rule_history.log',
-         track_memory=False):
+         track_memory=False,
+         use_llm=False):
     data_query_oracle = Equation_evaluator(equation_name, noise_type, noise_scale, metric_name)
     dataXgen = DataX(data_query_oracle.get_vars_range_and_types())
     nvar = data_query_oracle.get_nvars()
@@ -150,7 +155,8 @@ def mcts(equation_name, num_episodes, num_rollouts, metric_name, noise_type, noi
                 num_episodes=num_episodes,
                 num_rollouts=num_rollouts,
                 max_opt_iter=max_opt_iter,
-                suggest_log_path=suggest_log_path
+                suggest_log_path=suggest_log_path,
+                use_llm=use_llm
             )
             elapsed = time.time() - start
     else:
@@ -160,7 +166,8 @@ def mcts(equation_name, num_episodes, num_rollouts, metric_name, noise_type, noi
             num_episodes=num_episodes,
             num_rollouts=num_rollouts,
             max_opt_iter=max_opt_iter,
-            suggest_log_path=suggest_log_path
+            suggest_log_path=suggest_log_path,
+            use_llm=use_llm
         )
         # Fix: renamed end_time → elapsed since this is a duration, not a timestamp
         elapsed = time.time() - start
@@ -194,12 +201,21 @@ if __name__ == '__main__':
                         help='Path to save LLM prompt/response audit log.')
     parser.add_argument("--track_memory", action="store_true",
                         help="Whether to enable memory tracking via memray.")
+    # Agrument for when to use LLM suggester
+    parser.add_argument(
+    "--use_llm",
+    type=lambda x: x.lower() == "true",
+    default=False,
+    help="Whether to enable LLM rule suggestions during MCTS (default: false).")
+    parser.add_argument("--seed", type=int, default=None,
+                        help="Random seed for reproducibility. If not set, uses time-based seed.")
+
 
     args = parser.parse_args()
 
     # Fix: use seed+1 for numpy to guarantee the two seeds are always different,
     # even if both calls to perf_counter() land on the same timer tick
-    seed = int(time.perf_counter() * 10000) % 1000007
+    seed = args.seed if args.seed is not None else int(time.perf_counter() * 10000) % 1000007
     random.seed(seed)
     print('random seed=', seed)
     np.random.seed(seed + 1)
@@ -207,7 +223,10 @@ if __name__ == '__main__':
     print(args)
 
     mcts(args.equation_name, args.num_episodes, args.num_rollouts,
-         args.metric_name, args.noise_type, args.noise_scale,
-         args.optimizer, args.production_rule_mode,
-         args.memray_output_bin, args.max_opt_iter,
-         args.suggest_log_path, args.track_memory)
+        args.metric_name, args.noise_type, args.noise_scale,
+        args.optimizer, args.production_rule_mode,
+        args.memray_output_bin,
+        max_opt_iter=args.max_opt_iter,
+        suggest_log_path=args.suggest_log_path,
+        track_memory=args.track_memory,
+        use_llm=args.use_llm)

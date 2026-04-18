@@ -1,6 +1,5 @@
 import json
 from suggester import (
-    suggest_rules,
     filter_best_for_prompt,
     build_prompt,
     call_openai,
@@ -79,7 +78,7 @@ print(prompt)
 print("=" * 60)
 print("STEP 3 — call_openai (live)")
 print("=" * 60)
-raw = call_openai(prompt)
+raw = call_openai(prompt, model="gpt-4.1-mini")
 print("  Raw LLM response:")
 print(raw)
 

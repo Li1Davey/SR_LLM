@@ -27,7 +27,7 @@ class MCTS(object):
 
     def __init__(self, base_grammars, aug_grammars, non_terminal_nodes, aug_nt_nodes, max_len, max_module, aug_grammars_allowed,
                  exploration_rate=1 / np.sqrt(2), eta=0.999, max_opt_iter=500, suggest_log_path="llm_rule_history.log",
-                 num_episodes=1000):
+                 use_llm=False, num_episodes=1000):
         self.nvars = self.task.data_query_oracle.get_nvars()
         self.input_var_Xs = [Symbol('X' + str(i)) for i in range(self.nvars)]
         self.base_grammars = base_grammars
@@ -49,6 +49,7 @@ class MCTS(object):
         self.eta = eta
         self.max_opt_iter = max_opt_iter
         # LLM timer and audit config (DS)
+        self.use_llm = use_llm
         self.last_suggest_iter = 0
         self.suggest_interval = max(1, num_episodes // 10)
         self.suggest_log_path = suggest_log_path
@@ -305,7 +306,7 @@ class MCTS(object):
             # Same module length constraint as HOF — guarantees compact expressions
             # so the audit log and LLM context stay clean (DS)
             if eq not in [x[2] for x in self.top_expressions]:
-                if len(self.top_expressions) < 20:
+                if len(self.top_expressions) < 30:
                     self.top_expressions = sorted(
                         self.top_expressions + [(module, reward, eq)],
                         key=lambda x: x[1]
@@ -422,6 +423,12 @@ class MCTS(object):
             interval_elapsed = (iterations_since_last >= self.suggest_interval)
 
             if interval_elapsed and has_context:
+                # Skip the logic if use_llm is false (DS)
+                if not self.use_llm:
+                    print(f">>> [MCTS-LLM] LLM disabled — skipping suggestion at iteration {t}.")
+                    self.last_suggest_iter = t
+                    continue
+                
                 best_current_reward = max(x[1] for x in self.hall_of_fame)
 
                 if best_current_reward >= reward_threhold:
