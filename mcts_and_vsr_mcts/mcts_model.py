@@ -69,7 +69,24 @@ class MCTS(object):
         """Count how many new A nodes a rule introduces on its RHS."""
         rhs = rule.split('->', 1)[1]
         return rhs.count('A')
-
+    
+    # (DS)
+    def _ops_from_rules(self) -> set:
+        """Infer operator set directly from current grammar rules."""
+        SYMBOL_OPS = {'+', '-', '*', '/', '**', '^'}
+        ops = set()
+        for rule in self.grammars:
+            if '->' not in rule:
+                continue
+            rhs = rule.split('->', 1)[1]
+            for tok in re.findall(r'[A-Za-z_][A-Za-z0-9_]*', rhs):
+                if tok not in ('A', 'B', 'C', 'f') and not re.fullmatch(r'X\d+', tok):
+                    ops.add(tok)
+            for op in SYMBOL_OPS:
+                if op in rhs:
+                    ops.add(op)
+        return ops
+    
     def valid_production_rules(self, Node):
         # Get index of all possible production rules starting with a given node
         return [self.grammars.index(x) for x in self.grammars if x.startswith(Node)]
@@ -129,6 +146,27 @@ class MCTS(object):
                 # Guard 5: reject expressions with no free variables (DS)
                 if not test_expr.free_symbols:
                     print(f"         [step] Expression has no free variables — skipping: {expr_template[:80]}")
+                    return state, ntn, -999.0, True, expr_template
+
+                # Guard 6: reject deeply nested unary functions
+                NESTABLE_OPS = ['exp', 'sin', 'cos', 'log', 'sqrt', 'tan']
+                for op in NESTABLE_OPS:
+                    count = expr_template.count(op)
+                    if count > 4:
+                        print(f"         [step] Too many '{op}' calls ({count}) — skipping: {expr_template[:80]}")
+                        return state, ntn, -999.0, True, expr_template
+                
+                # Guard 7: reject excessive overall nesting depth
+                max_depth = 0
+                depth = 0
+                for ch in expr_template:
+                    if ch == '(':
+                        depth += 1
+                        max_depth = max(max_depth, depth)
+                    elif ch == ')':
+                        depth -= 1
+                if max_depth > 8:
+                    print(f"         [step] Nesting depth too deep ({max_depth}) — skipping: {expr_template[:80]}")
                     return state, ntn, -999.0, True, expr_template
 
             except Exception as e:
@@ -417,18 +455,16 @@ class MCTS(object):
             # LLM rule suggestion logic (DS)
             # Single trigger: fire every suggest_interval episodes if the HOF
             # has at least one expression to show the LLM.
-            # min_reward_for_llm — all redundant once we use a simple periodic trigger.
             iterations_since_last = t - self.last_suggest_iter
             has_context = len(self.hall_of_fame) > 0
             interval_elapsed = (iterations_since_last >= self.suggest_interval)
 
             if interval_elapsed and has_context:
-                # Skip the logic if use_llm is false (DS)
                 if not self.use_llm:
                     print(f">>> [MCTS-LLM] LLM disabled — skipping suggestion at iteration {t}.")
                     self.last_suggest_iter = t
                     continue
-                
+
                 best_current_reward = max(x[1] for x in self.hall_of_fame)
 
                 if best_current_reward >= reward_threhold:
@@ -437,21 +473,19 @@ class MCTS(object):
                     self.last_suggest_iter = t
                     continue
 
-                # Skip if the last N calls all returned nothing — grammar is saturated
-                # for the current expression landscape. Reset after one skip to retry. (DS)
-                if self.consecutive_empty_llm_calls >= 2:
-                    print(f">>> [MCTS-LLM] Skipping LLM call — "
-                          f"{self.consecutive_empty_llm_calls} consecutive empty responses, "
-                          f"grammar may be saturated. Will retry next interval.")
-                    self.last_suggest_iter = t
-                    self.consecutive_empty_llm_calls = 0
-                    continue
+                # Escalate temperature on consecutive empty calls rather than
+                # skipping — the grammar may not be saturated, the model just
+                # needs more entropy to suggest novel rules. Cap at 1.0.
+                escalated_temp = min(1.0, 0.2 + 0.15 * self.consecutive_empty_llm_calls)
+                if self.consecutive_empty_llm_calls > 0:
+                    print(f">>> [MCTS-LLM] {self.consecutive_empty_llm_calls} consecutive empty "
+                          f"call(s) — escalating temperature to {escalated_temp:.2f}")
 
                 print(f"\n>>> [MCTS-LLM] Querying LLM at iteration {t} "
-                      f"(best reward so far: {best_current_reward:.4f})...")
+                      f"(best reward so far: {best_current_reward:.4f}, "
+                      f"temperature: {escalated_temp:.2f})...")
 
-                # 1. Top 20 best expressions as LLM context — sorted descending by reward
-                #    so the best are first. HOF enforces max_module so all are compact. (DS)
+                # 1. Top best expressions as LLM context — sorted descending by reward
                 best_expr_examples = [
                     item[2] for item in sorted(
                         self.top_expressions, key=lambda x: x[1], reverse=True
@@ -459,9 +493,7 @@ class MCTS(object):
                 ]
 
                 # 2. Operator set
-                allowed_ops = {'+', '-', '*', '/', 'sin', 'cos', 'exp', 'log', '**'}
-                if hasattr(self.task, 'get_allowed_operators'):
-                    allowed_ops = set(self.task.get_allowed_operators())
+                allowed_ops = self._ops_from_rules()
 
                 # 3. Variable ranges
                 vars_range = None
@@ -479,7 +511,8 @@ class MCTS(object):
 
                 print(f">>> [DEBUG] vars_range retrieved: {vars_range}")
 
-                # 4. Call the suggestion pipeline
+                # 4. Call the suggestion pipeline — pass escalated temperature
+                #    directly so suggest_rules logs the actual temperature used
                 new_rules, rejected = suggest_rules(
                     equation_name=getattr(self.task, 'name', 'SymbolicDiscovery'),
                     current_rules=self.grammars,
@@ -488,12 +521,15 @@ class MCTS(object):
                     operators_set=allowed_ops,
                     vars_range=vars_range,
                     base_rules=self.base_grammars,
-                    log_path=self.suggest_log_path
+                    log_path=self.suggest_log_path,
+                    temperature=escalated_temp,
                 )
 
-                # Update consecutive empty call counter (DS)
+                # Update consecutive empty call counter — only reset on success
                 if not new_rules:
                     self.consecutive_empty_llm_calls += 1
+                    print(f">>> [MCTS-LLM] No new rules returned "
+                          f"(consecutive empty: {self.consecutive_empty_llm_calls}).")
                 else:
                     self.consecutive_empty_llm_calls = 0
 
@@ -518,7 +554,7 @@ class MCTS(object):
                                 safe_rules.append(rule)
                         new_rules = safe_rules
 
-                # 6. Integrate new rules — final duplicate guard here as safety net (DS)
+                # 6. Integrate new rules — final duplicate guard as safety net
                 if new_rules:
                     added_count = 0
                     for rule in new_rules:

@@ -9,31 +9,90 @@ def _get_client():
     return OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 
-def filter_best_for_prompt(best_expressions: list, max_show: int = 15, max_expr_len: int = 120) -> list:
+def _normalise_rule(rule: str) -> str:
     """
-    Filter best expressions shown to the LLM by character length.
-    Preserves compact high-power expressions like X0**9/(X1+C) while
-    stripping massive sympy-expanded forms that are noise for the LLM.
-    Falls back to the shortest available if nothing passes the filter.
+    Strip redundant parentheses from RHS for semantic dedup.
+    Ensures A->(A+A) and A->A+A are treated as identical.
+    """
+    if '->' not in rule:
+        return rule.replace(' ', '')
+    lhs, rhs = rule.split('->', 1)
+    prev = None
+    while prev != rhs:
+        prev = rhs
+        rhs = re.sub(r'$([^()]+)$', r'\1', rhs)
+    return f"{lhs}->{rhs}".replace(' ', '')
+
+
+def _compute_covered_skeletons(current_rules: list) -> set:
+    """
+    Extract the normalised RHS skeletons already covered by the current grammar.
+    Strips constants and variable names to leave pure structural patterns.
+    Used to give the model a compact summary of what is already reachable,
+    so it can focus on genuine gaps rather than re-deriving known patterns.
+    """
+    skeletons = set()
+    for rule in current_rules:
+        if '->' not in rule:
+            continue
+        rhs = rule.split('->', 1)[1].strip()
+        skel = re.sub(r'C\*?', '', rhs)
+        skel = re.sub(r'X\d+', '', skel)
+        skel = re.sub(r'\s+', '', skel)
+        norm = _normalise_rule(f"A->{skel}").replace('A->', '')
+        if norm:
+            skeletons.add(norm)
+    return skeletons
+
+
+def filter_best_for_prompt(best_expressions: list, max_show: int = 20, max_expr_len: int = 180) -> list:
+    """
+    Filter best expressions shown to the LLM by character length, then apply a
+    skeleton diversity filter so the model sees varied structural patterns rather
+    than 20 near-identical linear combinations.
+
+    max_expr_len is 180 so expressions containing sin(X0)**2, X2**2*sin(X0),
+    sin(X0)*cos(X0) etc. are not cut — these are exactly the patterns the LLM
+    needs to see to suggest power/product/trig-product rules.
+    Falls back to the shortest available if nothing passes the length filter.
     """
     clean = [e for e in best_expressions if len(e) <= max_expr_len]
     result = clean if clean else sorted(best_expressions, key=len)
-    return result[:max_show]
+
+    # Skeleton diversity — keep at most 3 expressions per rough skeleton bucket
+    # to avoid showing the model only linear sums of terminals.
+    skeleton_counts: dict = {}
+    diverse = []
+    for expr in result:
+        skeleton = re.sub(r'[-+]?[0-9]+\.?[0-9]*[eE]?[-+]?[0-9]*\*?', '', expr)
+        skeleton = re.sub(r'X\d+', 'X', skeleton)
+        key = skeleton[:40]
+        if skeleton_counts.get(key, 0) < 3:
+            skeleton_counts[key] = skeleton_counts.get(key, 0) + 1
+            diverse.append(expr)
+        if len(diverse) >= max_show:
+            break
+
+    return diverse if diverse else result[:max_show]
 
 
-def build_prompt(equation_name, current_rules, best_expressions, nvars, operators_set, vars_range=None, max_suggestions=5, base_rules=None):
+def build_prompt(equation_name, current_rules, best_expressions, nvars, operators_set,
+                 vars_range=None, max_suggestions=5, base_rules=None):
     """
     Build a plain-text prompt for the LLM to extract repeating subexpressions
-    from the best expressions and encode them as new terminal production rules.
+    from the best expressions and encode them as new production rules.
 
-    The LLM's job is pattern extraction, not grammar design — it should look
-    at what subexpressions appear repeatedly across the best expressions and
-    suggest those as new A-> terminal rules so the MCTS can reuse them directly.
+    Key design decisions:
+    - The example block uses base_rules only to illustrate grammar mechanics,
+      kept short so it does not crowd the current rules list.
+    - current_rules are deduplicated and normalised before display.
+    - A compact 'already covered skeletons' block gives the model a structural
+      summary that is harder to accidentally re-derive than the full rule list.
+    - Trig pattern examples are included only when sin/cos are in operators_set.
+    - The trig warning only fires for large-range variables, not all positives.
     """
-    # Variable range summary
+    # --- Variable range block ---
     range_lines = []
-    transcendental_ok = True
-
     if vars_range:
         for i, vr in enumerate(vars_range):
             if not isinstance(vr, dict) or 'range' not in vr:
@@ -47,32 +106,69 @@ def build_prompt(equation_name, current_rules, best_expressions, nvars, operator
                 notes.append("very large scale — likely appears in denominator")
             elif hi <= 10:
                 notes.append("small scale — may appear raised to higher powers")
-            if only_pos and lo >= 0:
-                transcendental_ok = False
             note_str = f" ({', '.join(notes)})" if notes else ""
             range_lines.append(f"  X{i}: [{lo}, {hi}]{note_str}")
 
-    range_block = "Variable ranges:\n" + "\n".join(range_lines) if range_lines else "Variable ranges: (not available)"
+    range_block = (
+        "Variable ranges:\n" + "\n".join(range_lines)
+        if range_lines else "Variable ranges: (not available)"
+    )
 
-    base_rules_text = ",  ".join(base_rules) if base_rules else ",  ".join(current_rules)
+    # --- Base rules example (short, for grammar mechanics only) ---
+    base_rules_text = ",  ".join(base_rules) if base_rules else ",  ".join(current_rules[:6])
 
-    rules_text = "\n".join(current_rules) if current_rules else "(none)"
-    ops_text   = ", ".join(sorted(list(operators_set))) if operators_set else "(none)"
-    expr_text  = "\n".join(best_expressions) if best_expressions else "(none)"
+    # --- Deduplicate current_rules before display ---
+    seen_norm = set()
+    deduped_rules = []
+    for r in current_rules:
+        n = _normalise_rule(r)
+        if n not in seen_norm:
+            seen_norm.add(n)
+            deduped_rules.append(r)
 
+    rules_text   = "\n".join(deduped_rules) if deduped_rules else "(none)"
+    ops_text     = ", ".join(sorted(list(operators_set))) if operators_set else "(none)"
+    expr_text    = "\n".join(best_expressions) if best_expressions else "(none)"
+
+    # --- Covered skeletons summary ---
+    covered      = _compute_covered_skeletons(deduped_rules)
+    covered_text = ",  ".join(sorted(covered)) if covered else "(none)"
+
+    # --- Trig warning: only for large-range variables ---
     trig_warning = ""
-    if not transcendental_ok:
-        trig_warning = (
-            "IMPORTANT: All variables are strictly positive. "
-            "Do not suggest sin, cos, exp, or log rules.\n\n"
-        )
+    if vars_range:
+        large_range_vars = [
+            f"X{i}" for i, vr in enumerate(vars_range)
+            if isinstance(vr, dict) and 'range' in vr and vr['range'][1] > 1e6
+        ]
+        if large_range_vars:
+            trig_warning = (
+                f"NOTE: Do not suggest sin or cos applied directly to "
+                f"{', '.join(large_range_vars)} — those variables span very large ranges "
+                f"and trig functions produce numerical noise at that scale.\n\n"
+            )
+
+    # --- Trig pattern examples (only when trig is in the operator set) ---
+    has_trig = bool({'sin', 'cos'} & set(operators_set or []))
+
+    trig_skeleton_examples = (
+        f"  e.g. 'C*sin(X0) + C*cos(X0)'  ->  skeleton is 'sin(A)+cos(A)'\n"
+        f"  e.g. 'C*sin(X0)*cos(X0)'       ->  skeleton is 'sin(A)*cos(A)'\n"
+        f"  e.g. 'C*sin(X0)**2'            ->  skeleton is 'sin(A)**2'\n"
+    ) if has_trig else ""
+
+    trig_pattern_lines = (
+        f"  Trig product : if 'sin(A)*cos(A)' recurs  ->  'A->sin(A)*cos(A)'\n"
+        f"  Trig power   : if 'sin(A)**2' recurs       ->  'A->sin(A)**2'\n"
+        f"  Trig ratio   : if 'A/sin(A)' recurs        ->  'A->A/sin(A)'\n"
+    ) if has_trig else ""
 
     prompt = (
         f"You are assisting a symbolic regression system in discovering a physical equation.\n"
-        f"The system builds expressions by repeatedly replacing A using production rules.\n"
-        f"For example, given base rules such as:\n"
-        f"  {base_rules_text}\n"
-        f"Each A is independently replaced until no A remains, forming a full expression.\n\n"
+        f"The system builds expressions by repeatedly replacing the non-terminal A using\n"
+        f"production rules until no A remains, forming a complete expression.\n"
+        f"Example grammar mechanics (base rules only — not the full current grammar):\n"
+        f"  {base_rules_text}\n\n"
         f"=== CONTEXT ===\n"
         f"Equation      : {equation_name}\n"
         f"Variables     : X0..X{nvars - 1}\n"
@@ -80,37 +176,44 @@ def build_prompt(equation_name, current_rules, best_expressions, nvars, operator
         f"Operators     : {ops_text}\n\n"
         f"=== BEST EXPRESSIONS (highest reward first) ===\n"
         f"{expr_text}\n\n"
-        f"=== CURRENT PRODUCTION RULES (DO NOT REPEAT THESE) ===\n"
+        f"=== CURRENT PRODUCTION RULES (ALL ALREADY IN THE GRAMMAR) ===\n"
         f"{rules_text}\n\n"
+        f"=== STRUCTURAL PATTERNS ALREADY COVERED ===\n"
+        f"{covered_text}\n"
+        f"Every pattern listed above is already reachable. Only suggest rules whose\n"
+        f"stripped skeleton does NOT appear in the covered list.\n\n"
         f"{trig_warning}"
         f"=== STRUCTURAL ANALYSIS INSTRUCTIONS ===\n"
-        f"Step 1 — Strip constants: mentally replace every numeric coefficient with C.\n"
-        f"Step 2 — Find skeletons: what is the shape of each expression ignoring C?\n"
-        f"  Parentheses are grouping only — '(A)/(A)', 'A/A', and '(A/A)' are the same skeleton.\n"
-        f"  e.g. 'C*A + C*A'  ->  skeleton is '(A+A)'\n"
-        f"  e.g. 'C*A/A'      ->  skeleton is 'A/A'\n"
-        f"  e.g. 'C*A/(A+A)'  ->  skeleton is 'A/(A+A)'\n"
-        f"Step 3 — Find recurring sub-skeletons across 3+ expressions. Look for ALL pattern types:\n"
-        f"  Ratio    : if 'A/A' recurs -> 'A->A/A',       if 'A/(A+A)' recurs -> 'A->A/(A+A)'\n"
-        f"  Power    : if 'A**A' recurs -> 'A->A**A',      if 'A**A*A' recurs -> 'A->A**A*A'\n"
-        f"  Product  : if 'A*A' recurs -> 'A->A*A',        if 'A*A*A' recurs -> 'A->A*A*A'\n"
-        f"  Mixed    : if 'A*A/A' recurs -> 'A->A*A/A',    if '(A+A)/A' recurs -> 'A->(A+A)/A'\n"
-        f"  Before suggesting a rule, strip all redundant parentheses from it, then check if\n"
-        f"  the result already appears — with or without parentheses — in the existing rules.\n"
-        f"  Only suggest it if the stripped form is genuinely absent from the existing rules.\n"
-        f"Step 4 — Encode only the recurring sub-skeletons as new rules.\n\n"
+        f"Step 1 — Strip constants: replace every numeric coefficient with C.\n"
+        f"Step 2 — Find skeletons: the shape of each expression ignoring C and variable names.\n"
+        f"  Parentheses are grouping only — '(A)/(A)', 'A/A', '(A/A)' are the same skeleton.\n"
+        f"  e.g. 'C*A + C*A'    ->  skeleton is 'A+A'\n"
+        f"  e.g. 'C*A/A'        ->  skeleton is 'A/A'\n"
+        f"  e.g. 'C*A/(A+A)'    ->  skeleton is 'A/A+A'\n"
+        f"{trig_skeleton_examples}"
+        f"Step 3 — Find recurring sub-skeletons across 3+ expressions:\n"
+        f"  Ratio   : 'A/A' recurs        ->  'A->A/A'\n"
+        f"  Power   : 'A**2' recurs       ->  'A->A**2'\n"
+        f"  Product : 'A*A*A' recurs      ->  'A->A*A*A'\n"
+        f"  Mixed   : 'A*A/A' recurs      ->  'A->A*A/A'\n"
+        f"{trig_pattern_lines}"
+        f"  Check each candidate against the COVERED list above before including it.\n"
+        f"Step 4 — Encode only genuinely new recurring sub-skeletons as rules.\n\n"
         f"=== YOUR TASK ===\n"
-        f"Following Steps 1-4 above, identify subexpressions that recur across the best\n"
-        f"expressions and encode each as a new rule in the format 'A-><subexpression>',\n"
-        f"where the right-hand side contains only A and operators — variables and constants\n"
-        f"are reached through existing rules.\n\n"
+        f"Identify subexpressions that recur across the best expressions and are NOT already\n"
+        f"covered. Encode each as 'A-><subexpression>' where the RHS contains only A,\n"
+        f"operators, and function names — variables and constants are reached through\n"
+        f"existing terminal rules.\n\n"
         f"=== OUTPUT FORMAT ===\n"
         f"- Up to {max_suggestions} new rules, one per line, starting with 'A->'\n"
-        f"- DO NOT repeat any of the current rule already listed above\n"
+        f"- DO NOT suggest any rule whose skeleton already appears in the COVERED list\n"
+        f"- A->(A+A) and A->A+A are identical — do not suggest both\n"
+        f"- Output fewer than {max_suggestions} if you cannot find that many genuine new rules\n"
         f"- Output only the rules, one per line, no explanation\n"
     )
 
     return prompt
+
 
 def call_openai(prompt, model="gpt-4.1-mini", temperature=0.2):
     """Send the prompt to OpenAI and return the model's plain text response."""
@@ -138,20 +241,29 @@ def parse_and_validate_rules(response_text, existing_rules, operators_set, nvars
 
     Checks:
     - Lines must start with '<non_terminal>->'
-    - Reject duplicates (whitespace-normalized) against existing_rules
-    - RHS must contain only allowed tokens
+    - Reject duplicates (normalised, parenthesis-insensitive) against existing_rules
+    - RHS tokens must be one of: non_terminal, C, XN variables, any operator in
+      operators_set (including named functions like sin/cos/exp/log/sqrt/tan),
+      numeric literals, or punctuation (+, -, *, /, (, ), **)
     - Intra-response duplicates also caught
     """
     existing = set(existing_rules or [])
     ops      = set(operators_set or [])
 
-    allowed_vars   = {f"X{i}" for i in range(max(0, nvars))}
-    allowed_tokens = {"C", non_terminal} | allowed_vars | ops
+    allowed_vars = {f"X{i}" for i in range(max(0, nvars))}
+
+    # Any operator that is a valid Python identifier (word token) is allowed as
+    # a named function in the RHS — covers sin, cos, exp, log, sqrt, tan, and
+    # any custom function the task declares. Symbol operators (+, -, *, /, **)
+    # are handled separately via ALLOWED_PUNCT.
+    named_ops = {op for op in ops if re.fullmatch(r'[A-Za-z_][A-Za-z0-9_]*', op)}
+
+    allowed_tokens = {"C", non_terminal} | allowed_vars | named_ops
 
     ALLOWED_PUNCT = frozenset({"+", "-", "*", "/", "(", ")", ",", "**"})
 
-    # Whitespace-normalize existing rules for dedup
-    normalized_existing = {r.replace(' ', '') for r in existing}
+    # Normalised dedup — catches A->A/A when A->(A)/(A) already exists
+    normalized_existing = {_normalise_rule(r) for r in existing}
 
     valid    = []
     rejected = []
@@ -174,7 +286,7 @@ def parse_and_validate_rules(response_text, existing_rules, operators_set, nvars
         line = line.replace(' ', '')
         rhs  = rhs.replace(' ', '')
 
-        if line in normalized_existing:
+        if _normalise_rule(line) in normalized_existing:
             rejected.append(line)
             continue
 
@@ -202,8 +314,8 @@ def parse_and_validate_rules(response_text, existing_rules, operators_set, nvars
             continue
 
         valid.append(line)
-        # Catch duplicates within the same LLM response
-        normalized_existing.add(line)
+        # Catch intra-response duplicates using the same normalised key
+        normalized_existing.add(_normalise_rule(line))
 
     return valid, rejected
 
@@ -221,8 +333,8 @@ def is_domain_safe(rule: str, vars_range: list) -> bool:
     if not valid_ranges:
         return True
 
-    has_negatives = any(r['range'][0] < 0  for r in valid_ranges)
-    has_zero = any(r['range'][0] <= 0 for r in valid_ranges)
+    has_negatives = any(r['range'][0] < 0 for r in valid_ranges)
+    has_zero      = any(r['range'][0] <= 0 for r in valid_ranges)
 
     if has_negatives or has_zero:
         for pattern in ('log', 'sqrt', 'A**0.', 'A**C'):
@@ -231,11 +343,13 @@ def is_domain_safe(rule: str, vars_range: list) -> bool:
                       f"— {pattern!r} unsafe when domain includes zero/negatives")
                 return False
 
-    # Trig safety — sin/cos over ranges >> 2*pi produce numerical noise
+    # Trig safety — only reject sin/cos applied directly to a large-range
+    # variable. Compositions like sin(A)*cos(A) where A resolves to a small
+    # variable are fine and must not be blocked.
     TRIG_FNS = ('sin', 'cos')
     for i, vr in enumerate(valid_ranges):
         vmin, vmax = vr['range']
-        if vmax > 100:
+        if vmax > 1e6:
             var = f"X{i}"
             for fn in TRIG_FNS:
                 if f"{fn}({var})" in rule:
@@ -253,29 +367,32 @@ def suggest_rules(equation_name,
                   operators_set,
                   model="gpt-4.1-mini",
                   vars_range=None,
-                  temperature=0.4,
-                  max_suggestions=10,
+                  temperature=0.2,
+                  max_suggestions=6,
                   base_rules=None,
                   log_path="llm_rule_history.log"):
     """
     High-level wrapper that runs the full LLM suggestion pipeline:
-    1. Filter best expressions by length to remove bloated sympy expansions
-    2. Build prompt with structural hints
-    3. Query the LLM
-    4. Parse and validate returned rules
+    1. Filter best expressions by length and skeleton diversity
+    2. Build prompt — single deduplicated rules list, covered-skeletons block,
+       trig-aware instructions, large-range trig warning
+    3. Query the LLM at the provided temperature (caller handles escalation)
+    4. Parse and validate returned rules (normalised, parenthesis-insensitive
+       dedup; all operators_set members accepted as valid tokens)
     5. Filter domain-unsafe rules
     6. Log the full cycle
 
     Parameters:
     - equation_name (str)
     - current_rules (list[str])
-    - best_expressions (list[str]): pre-sorted by reward descending before this call
+    - best_expressions (list[str]): pre-sorted by reward descending
     - nvars (int)
     - operators_set (set[str])
     - model (str)
     - vars_range (list[dict] | None)
-    - temperature (float)
+    - temperature (float): caller is responsible for escalation on empty calls
     - max_suggestions (int)
+    - base_rules (list[str] | None): shown in the mechanics example only
     - log_path (str | None)
 
     Returns:
@@ -296,11 +413,10 @@ def suggest_rules(equation_name,
                 parsed.append(entry)
         vars_range = parsed
 
-    # 1. Filter best expressions by length — removes massive sympy-expanded
-    #    denominators while preserving compact high-power forms like X0**9/(X1+C)
+    # 1. Filter best expressions by length and skeleton diversity
     filtered_expressions = filter_best_for_prompt(best_expressions)
 
-    # 2. Build the prompt with structural hints
+    # 2. Build the prompt
     prompt = build_prompt(
         equation_name,
         current_rules,
@@ -312,10 +428,10 @@ def suggest_rules(equation_name,
         base_rules=base_rules
     )
 
-    # 3. Call the LLM
+    # 3. Call the LLM at the temperature the caller decided
     raw = call_openai(prompt, model=model, temperature=temperature)
 
-    # 4. Parse and validate
+    # 4. Parse and validate — normalised dedup, all operators_set members allowed
     valid, rejected = parse_and_validate_rules(
         raw,
         existing_rules=current_rules,
@@ -326,7 +442,7 @@ def suggest_rules(equation_name,
 
     # 5. Filter domain-unsafe rules
     if vars_range is not None:
-        domain_safe = [r for r in valid if is_domain_safe(r, vars_range)]
+        domain_safe     = [r for r in valid if     is_domain_safe(r, vars_range)]
         domain_rejected = [r for r in valid if not is_domain_safe(r, vars_range)]
 
         if domain_rejected:
@@ -338,7 +454,7 @@ def suggest_rules(equation_name,
 
     valid = valid[:max_suggestions]
 
-    # 6. Log the full cycle — includes both the raw and filtered expression lists
+    # 6. Log the full cycle
     if log_path:
         entry = {
             "timestamp":            datetime.datetime.utcnow().isoformat() + "Z",
