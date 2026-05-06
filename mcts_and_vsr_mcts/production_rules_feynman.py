@@ -1,21 +1,7 @@
 from sympy import Symbol, Float, Integer, Rational
 import sympy
 import numpy as np
-
-
-def production_rules_to_expr(list_of_production_rules):
-    """
-    Convert a list of production rules to the exact symbolic equation.
-    For example ['f->A', 'A->(A-A)', 'A->X0', 'A->X1'] => X0*X1
-    """
-    seq = ['f']
-    for one_rule in list_of_production_rules:
-        for ix, s in enumerate(seq):
-            if s == one_rule[0]:
-                seq = seq[:ix] + list(one_rule[3:]) + seq[ix + 1:]
-                break
-    output = ''.join(seq)
-    return output
+from utils import production_rules_to_expr
 
 
 def to_binary_expr_tree(expr):

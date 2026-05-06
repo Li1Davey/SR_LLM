@@ -52,14 +52,7 @@ class Program(object):
         If placeholder C is in the equation, also execute estimation for C
         Reward = 1 / (1 + MSE) * Penalty ** num_term
 
-        Parameters
-        ----------
-        eq : Str object. the discovered equation (with placeholders for coefficients).
-        tree_size: number of production rules in the complete parse tree.
-        (data_X, y_true) : 2-d numpy array.
-
-        Returns
-        -------
+        # Returns ----------
         score: discovered equations.
         eq: discovered equations with estimated numerical values.
         """
@@ -75,13 +68,30 @@ class Program(object):
         
         if num_changing_consts == 0:  # zero constant
             y_pred = execute(eq, data_X.T, input_var_Xs)
-            
+
             # Guard against non-finite y_pred before computing reward (DS)
             if y_pred is None or not np.all(np.isfinite(y_pred)) or np.iscomplexobj(y_pred):
                 print(f"         [optimize] Invalid y_pred (nan/inf/complex) for eq: {eq}")
                 return -np.inf, eq, 0, np.inf
-            
-        elif num_changing_consts >= 20:  # discourage over complicated numerical estimations
+
+            # ---------------------------------------------------------------
+            # CHANGE: zero y_pred guard (no-constant branch)
+            #
+            # Problem: expressions with no C placeholders (e.g. X0*X1 - X0*X1,
+            # or grammar combinations that cancel out) can evaluate to a zero
+            # array against the data.  neg_mse of a zero prediction is finite
+            # (-var(y_true)), so these pass the isfinite check above and enter
+            # the HOF as 'simp: 0' with a real reward.
+            #
+            # Fix: if the predicted array is all zeros, reject immediately.
+            # np.all(y_pred == 0) also catches the case where execute() returns
+            # a scalar 0 broadcast to the batch size.
+            # ---------------------------------------------------------------
+            if np.all(y_pred == 0):
+                print(f"         [optimize] Expression evaluates to zero array — skipping: {eq}")
+                return -np.inf, eq, 0, np.inf
+
+        elif num_changing_consts >= 20:  # discourage over-complicated numerical estimations
             return -np.inf, eq, t_optimized_constants, t_optimized_obj
         else:
             c_lst = ['c' + str(i) for i in range(num_changing_consts)]
@@ -97,13 +107,11 @@ class Program(object):
                 eq_est = eq_est.replace('- +', '-')
                 eq_est = eq_est.replace('+ +', '+')
                 y_pred = execute(eq_est, data_X.T, input_var_Xs)
-                
-                # Guard bad y_pred before passing to loss — bad values cause the
-                # optimizer to receive nan/inf gradients and spiral into garbage constants (DS)
+
                 if y_pred is None or not np.all(np.isfinite(y_pred)) or np.iscomplexobj(y_pred):
                     return np.inf   # tells the optimizer this candidate is worthless
 
-                # var_ytrue already computed at the top of optimize() — reuse it (DS)
+                # var_ytrue was computed above — reuse it (DS)
                 return -self.evalaute_loss(y_pred, y_true, var_ytrue)
 
             # do more than one experiment,
@@ -137,20 +145,16 @@ class Program(object):
                     up = [5] * num_changing_consts
                     bounds = list(zip(lw, up))
                     opt_result = shgo(f, bounds, minimizer_kwargs=minimizer_kwargs, options={'maxiter': max_opt_iter})
-                # elif self.optimizer == "direct":
-                #     lw = [-10] * num_changing_consts
-                #     up = [10] * num_changing_consts
-                #     bounds = list(zip(lw, up))
-                #     opt_result = direct(f, bounds, maxiter=max_opt_iter)
 
+                # do something with the optimized constants now
                 t_optimized_constants = opt_result['x']
                 c_lst = t_optimized_constants.tolist()
                 t_optimized_obj = opt_result['fun']
 
                 if verbose:
                     print(opt_result)
-                eq_est = eq
 
+                eq_est = eq
                 for i in range(len(c_lst)):
                     est_c = np.mean(c_lst[i])
                     if abs(est_c) < 1e-5:
@@ -162,21 +166,64 @@ class Program(object):
                 eq_est = eq_est.replace('+ +', '+')
 
                 y_pred = execute(eq_est, data_X.T, input_var_Xs)
-                
-                # var_ytrue already computed above, no need to recompute here (DS)
-                # var_ytrue = np.var(y_true)
+
+                # var_ytrue was computed above — reuse it (DS)
+                var_ytrue = np.var(y_true)
                 
                 # Guard the post-optimizer y_pred too (DS)
                 if y_pred is None or not np.all(np.isfinite(y_pred)) or np.iscomplexobj(y_pred):
                     print(f"         [optimize] Invalid y_pred after optimization for eq: {eq}")
                     return -np.inf, eq, t_optimized_constants, np.inf
 
+                # ---------------------------------------------------------------
+                # CHANGE: zero y_pred guard (post-optimizer branch)
+                #
+                # Problem: expressions like C/(X0*X0) have free variables so they
+                # pass all step() guards, but the optimizer legally sets C=0 to
+                # minimise loss, producing y_pred = 0 everywhere and 'simp: 0'.
+                # neg_mse of a zero prediction is finite (-var(y_true)) so these
+                # receive a real reward and pollute the HOF.
+                #
+                # Fix: check y_pred directly after execute() — same array already
+                # computed — before simplifying or computing the reward.
+                # ---------------------------------------------------------------
+                if np.all(y_pred == 0):
+                    print(f"         [optimize] Expression evaluates to zero array after "
+                          f"optimization — skipping: {eq_est[:80]}")
+                    return -np.inf, eq, t_optimized_constants, np.inf
+
                 eq = pretty_print_expr(parse_expr(eq_est))
 
+                # --- Post-simplification guards ---
+                # These run after sympy expands the optimized expression, where
+                # blowup and degenerate forms that weren't visible in the template
+                # can emerge.
+
+                # Guard A: reject expressions that sympy expanded into a very long
+                # string. The template was short (passed Guard 1) but constant
+                # substitution can cause sympy to fully expand products of sums
+                # into hundreds of terms (seen as 1500+ char expressions in logs).
+                if len(str(eq)) > 500:
+                    print(f"         [optimize] Simplified expression too long "
+                          f"({len(str(eq))} chars) — skipping")
+                    return -np.inf, eq, t_optimized_constants, np.inf
+
+                # Guard B: reject expressions that simplified to a bare number.
+                # The optimizer legally collapses some expressions (e.g. C/(X0*X0)
+                # with C=0) to a constant. parse_expr().is_number catches this
+                # reliably after pretty_print_expr has fully simplified.
+                try:
+                    if parse_expr(str(eq)).is_number:
+                        print(f"         [optimize] Expression simplified to constant "
+                              f"after optimization — skipping: {eq}")
+                        return -np.inf, eq, t_optimized_constants, np.inf
+                except Exception:
+                    pass
+
                 print('\t reward',
-                      eta ** tree_size * float(-np.log10(1e-60 - self.evalaute_loss(y_pred, y_true, var_ytrue))),
-                      '\t loss:', -self.evalaute_loss(y_pred, y_true, var_ytrue),
-                      'simp:', eq)
+                    eta ** tree_size * float(-np.log10(1e-60 - self.evalaute_loss(y_pred, y_true, var_ytrue))),
+                    '\t loss:', -self.evalaute_loss(y_pred, y_true, var_ytrue),
+                    'simp:', eq)
             except Exception as e:
                 print(e)
                 return -np.inf, eq, 0, np.inf
@@ -230,7 +277,6 @@ def execute_eval(expr_str: str, data_X: np.ndarray, input_var_Xs, simulated_step
 
 
 def simplify_template(eq):
-    orig = eq
     for i in range(10):
         eq = eq.replace('(C+C)', 'C')
         eq = eq.replace('sqrt(C)', 'C')
@@ -240,6 +286,11 @@ def simplify_template(eq):
         eq = eq.replace('(C-C)', 'C')
         eq = eq.replace('C*C', 'C')
         eq = eq.replace('(C/C)', 'C')
+        # Collapse constant-only unary calls early so Guard 5 fires less
+        # often on trivially constant expressions. (DS)
+        eq = eq.replace('exp(C)', 'C')
+        eq = eq.replace('log(C)', 'C')
+        eq = eq.replace('tan(C)', 'C')
     return eq
 
 

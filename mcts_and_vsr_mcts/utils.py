@@ -4,6 +4,21 @@ from sympy import simplify, expand, Symbol
 from sympy.parsing.sympy_parser import parse_expr
 
 
+def production_rules_to_expr(list_of_production_rules):
+    """
+    Convert a list of production rules to the exact symbolic equation string.
+    For example ['f->A', 'A->(A-A)', 'A->X0', 'A->X1'] => '(X0-X1)'
+    Canonical definition — imported by all production_rules_*.py modules.
+    """
+    seq = ['f']
+    for one_rule in list_of_production_rules:
+        for ix, s in enumerate(seq):
+            if s == one_rule[0]:
+                seq = seq[:ix] + list(one_rule[3:]) + seq[ix + 1:]
+                break
+    return ''.join(seq)
+
+
 def pretty_print_expr(eq) -> str:
     '''
     ask sympy simplify to pretty print the expression.

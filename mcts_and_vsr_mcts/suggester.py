@@ -208,6 +208,9 @@ def build_prompt(equation_name, current_rules, best_expressions, nvars, operator
         f"- Up to {max_suggestions} new rules, one per line, starting with 'A->'\n"
         f"- DO NOT suggest any rule whose skeleton already appears in the COVERED list\n"
         f"- A->(A+A) and A->A+A are identical — do not suggest both\n"
+        f"- DO NOT suggest rules where a function is applied to itself or nested,\n"
+        f"  e.g. exp(exp(A)), sin(cos(A)), log(exp(A)) are all forbidden —\n"
+        f"  nesting is achieved naturally by applying single-call rules in sequence\n"
         f"- Output fewer than {max_suggestions} if you cannot find that many genuine new rules\n"
         f"- Output only the rules, one per line, no explanation\n"
     )
@@ -246,6 +249,7 @@ def parse_and_validate_rules(response_text, existing_rules, operators_set, nvars
       operators_set (including named functions like sin/cos/exp/log/sqrt/tan),
       numeric literals, or punctuation (+, -, *, /, (, ), **)
     - Intra-response duplicates also caught
+    - Nested function calls rejected — e.g. exp(exp(A)), sin(cos(A)) (DS)
     """
     existing = set(existing_rules or [])
     ops      = set(operators_set or [])
@@ -264,6 +268,13 @@ def parse_and_validate_rules(response_text, existing_rules, operators_set, nvars
 
     # Normalised dedup — catches A->A/A when A->(A)/(A) already exists
     normalized_existing = {_normalise_rule(r) for r in existing}
+
+    # Functions that can form dangerous nesting towers when composed in a
+    # single rule — e.g. exp(exp(A)), sin(cos(A)), log(exp(A)). The grammar
+    # already composes single-call rules naturally through tree expansion so
+    # nesting inside one rule adds no new structure and blows up expression
+    # depth in a single step.
+    NESTABLE_OPS = ['exp', 'sin', 'cos', 'log', 'sqrt', 'tan']
 
     valid    = []
     rejected = []
@@ -310,6 +321,26 @@ def parse_and_validate_rules(response_text, existing_rules, operators_set, nvars
             break
 
         if malformed:
+            rejected.append(line)
+            continue
+
+        # Reject rules containing nested function calls — e.g. exp(exp(A)),
+        # sin(cos(A)), log(exp(A)). The grammar composes single-call rules
+        # naturally through tree expansion so nesting in a single rule adds
+        # no new structure and blows up expression depth in one step.
+        nested = False
+        for op in NESTABLE_OPS:
+            if op not in rhs:
+                continue
+            # Match this op's call and check if any nestable op appears
+            # inside its argument brackets.
+            pattern = rf'{op}$[^)]*(?:{"|".join(NESTABLE_OPS)})[^)]*$'
+            if re.search(pattern, rhs):
+                print(f">>> [parse_and_validate_rules] Rejected rule {line!r} "
+                      f"— nested function call detected ({op}(...))")
+                nested = True
+                break
+        if nested:
             rejected.append(line)
             continue
 
@@ -368,7 +399,7 @@ def suggest_rules(equation_name,
                   model="gpt-4.1-mini",
                   vars_range=None,
                   temperature=0.2,
-                  max_suggestions=6,
+                  max_suggestions=3,
                   base_rules=None,
                   log_path="llm_rule_history.log"):
     """

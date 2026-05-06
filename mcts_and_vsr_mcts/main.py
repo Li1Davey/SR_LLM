@@ -81,7 +81,10 @@ def run_mcts(
         _, good_modules = mcts_model.MCTS_run_orig(num_episodes,
                                                    num_rollouts=num_rollouts,
                                                    verbose=True,
-                                                   is_first_round=True,
+                                                   # Only the first transplant step starts
+                                                   # from scratch — subsequent steps use
+                                                   # augmented grammars via f->B. (DS)
+                                                   is_first_round=(i_itr == 0),
                                                    print_freq=5)
         tracker.create_snapshot()
         tracker.stats.print_summary()
