@@ -1,0 +1,13 @@
+python main.py \
+  --equation_name ../data/unencrypted/custom_equations/arrhenius.in \
+  --optimizer L-BFGS-B \
+  --metric_name neg_mse \
+  --noise_type normal \
+  --noise_scale 0.0 \
+  --num_episodes 2500 \
+  --num_rollouts 40 \
+  --max_opt_iter 200 \
+  --production_rule_mode feynman \
+  --suggest_log_path /home/dasanchez13/workspace/scibench/results/arrhenius_107b/llm_rule_history.log \
+  --use_llm true \
+  --seed 777
