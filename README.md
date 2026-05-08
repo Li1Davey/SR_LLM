@@ -11,7 +11,7 @@
 ### Data Oracle
 
 | Path | Description |
-|---|---|
+| --- | --- |
 | `data/` | Generated datasets. Each file encodes a ground-truth expression. |
 | `src/scibench/` | Data-oracle API (`Equation_evaluator`, `DataX`). |
 
@@ -21,18 +21,15 @@ draws fresh batches on demand, rather than loading a static CSV.
 ### Method Implementations
 
 | Folder | Method |
-|---|---|
-| `dso_classic/` | DSR, PQT, VPG, GPMeld — from [brendenpetersen/deep-symbolic-optimization](https://github.com/brendenpetersen/deep-symbolic-optimization) |
-| `gp_and_vsr_gp/` | Classic GP baseline — adapted from [jiangnanhugo/cvgp](https://github.com/jiangnanhugo/cvgp) |
-| `mcts_and_vsr_mcts/` | MCTS with optional LLM grammar expansion (this work) |
-| `Eureqa/` | Commercial genetic search baseline |
+| --- | --- |
+| `mcts_and_mcts_llm/` | MCTS with optional LLM grammar expansion (this work) |
+| `src/` | Shared source modules and the `scibench` data-oracle package |
 
-### Extra
+### Results & Outputs
 
 | Folder | Description |
-|---|---|
-| `plots/` | Jupyter notebooks for paper figures |
-| `result/` | Training logs and program outputs |
+| --- | --- |
+| `results/` | Training logs and program outputs |
 
 ---
 
@@ -51,11 +48,7 @@ pip install -e .
 
 ### Method-specific setup
 
-- **GP** → `gp_and_vsr_gp/`
-- **MCTS** → `mcts_and_vsr_mcts/`
-- **DSR / PQT / VPG** → `dso_classic/`
-  Requires the `DSO` library and Python 3.7 (TensorFlow 1.15.4 dependency).
-- **Eureqa** → `eureqa/`
+- **MCTS / MCTS-LLM** → `mcts_and_mcts_llm/`
 
 Each sub-folder contains a `README.md` and `scripts/` with run instructions.
 
@@ -73,5 +66,3 @@ If you use this codebase, please cite the original work:
   year      = {2023}
 }
 ```
-
-> **Note:** Replace the placeholder above with the full citation from the published paper.
