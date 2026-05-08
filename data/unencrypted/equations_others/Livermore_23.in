@@ -1,2 +1,0 @@
-0
-{"eq_name": "Livermore_23", "num_vars": 1, "dim": [1], "vars_range_and_types": "[{\"name\": \"LogUniform\", \"range\": [0.1, 10], \"dim\": [1], \"only_positive\": true}]", "function_set": ["add", "sub", "mul", "div", "exp", "const"], "eq_expression": "[('exp', 'unary'), ('mul', 'binary'), (-0.500000000000000, 'const'), ('pow', 'binary'), ('X0', 'var'), (2, 'const')]", "simulated_exec": false, "expr": "exp(-0.5*X0**2)", "expr_obj_thres": 0.01}

@@ -1,2 +1,0 @@
-0
-{"eq_name": "Livermore_10", "num_vars": 2, "dim": [1, 1], "vars_range_and_types": "[{\"name\": \"LogUniform\", \"range\": [0.1, 10], \"dim\": [1], \"only_positive\": true}, {\"name\": \"LogUniform\", \"range\": [0.1, 10], \"dim\": [1], \"only_positive\": true}]", "function_set": ["add", "sub", "mul", "div", "sin", "cos", "const"], "eq_expression": "[('mul', 'binary'), (6, 'const'), ('mul', 'binary'), ('cos', 'unary'), ('X1', 'var'), ('sin', 'unary'), ('X0', 'var')]", "simulated_exec": false, "expr": "6*sin(X0)*cos(X1)", "expr_obj_thres": 0.01}
