@@ -74,19 +74,8 @@ class Program(object):
                 print(f"         [optimize] Invalid y_pred (nan/inf/complex) for eq: {eq}")
                 return -np.inf, eq, 0, np.inf
 
-            # ---------------------------------------------------------------
-            # CHANGE: zero y_pred guard (no-constant branch)
-            #
-            # Problem: expressions with no C placeholders (e.g. X0*X1 - X0*X1,
-            # or grammar combinations that cancel out) can evaluate to a zero
-            # array against the data.  neg_mse of a zero prediction is finite
-            # (-var(y_true)), so these pass the isfinite check above and enter
-            # the HOF as 'simp: 0' with a real reward.
-            #
-            # Fix: if the predicted array is all zeros, reject immediately.
-            # np.all(y_pred == 0) also catches the case where execute() returns
-            # a scalar 0 broadcast to the batch size.
-            # ---------------------------------------------------------------
+            # Reject zero-array predictions: expressions like X0*X1 - X0*X1 cancel to zero
+            # but produce a finite neg_mse (-var(y_true)), polluting the HOF as 'simp: 0'. (DS)
             if np.all(y_pred == 0):
                 print(f"         [optimize] Expression evaluates to zero array — skipping: {eq}")
                 return -np.inf, eq, 0, np.inf
@@ -175,18 +164,8 @@ class Program(object):
                     print(f"         [optimize] Invalid y_pred after optimization for eq: {eq}")
                     return -np.inf, eq, t_optimized_constants, np.inf
 
-                # ---------------------------------------------------------------
-                # CHANGE: zero y_pred guard (post-optimizer branch)
-                #
-                # Problem: expressions like C/(X0*X0) have free variables so they
-                # pass all step() guards, but the optimizer legally sets C=0 to
-                # minimise loss, producing y_pred = 0 everywhere and 'simp: 0'.
-                # neg_mse of a zero prediction is finite (-var(y_true)) so these
-                # receive a real reward and pollute the HOF.
-                #
-                # Fix: check y_pred directly after execute() — same array already
-                # computed — before simplifying or computing the reward.
-                # ---------------------------------------------------------------
+                # Reject zero-array predictions post-optimization: the optimizer can legally set C=0,
+                # producing y_pred=0 everywhere and a finite neg_mse that pollutes the HOF. (DS)
                 if np.all(y_pred == 0):
                     print(f"         [optimize] Expression evaluates to zero array after "
                           f"optimization — skipping: {eq_est[:80]}")
@@ -194,24 +173,14 @@ class Program(object):
 
                 eq = pretty_print_expr(parse_expr(eq_est))
 
-                # --- Post-simplification guards ---
-                # These run after sympy expands the optimized expression, where
-                # blowup and degenerate forms that weren't visible in the template
-                # can emerge.
-
-                # Guard A: reject expressions that sympy expanded into a very long
-                # string. The template was short (passed Guard 1) but constant
-                # substitution can cause sympy to fully expand products of sums
-                # into hundreds of terms (seen as 1500+ char expressions in logs).
+                # Guard A: reject expressions that sympy expanded to > 500 chars after simplification.
+                # Constant substitution can cause sympy to fully expand products of sums into many terms. (DS)
                 if len(str(eq)) > 500:
                     print(f"         [optimize] Simplified expression too long "
                           f"({len(str(eq))} chars) — skipping")
                     return -np.inf, eq, t_optimized_constants, np.inf
 
-                # Guard B: reject expressions that simplified to a bare number.
-                # The optimizer legally collapses some expressions (e.g. C/(X0*X0)
-                # with C=0) to a constant. parse_expr().is_number catches this
-                # reliably after pretty_print_expr has fully simplified.
+                # Guard B: reject expressions that simplified to a bare constant after optimization. (DS)
                 try:
                     if parse_expr(str(eq)).is_number:
                         print(f"         [optimize] Expression simplified to constant "
