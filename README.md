@@ -59,10 +59,10 @@ Each sub-folder contains a `README.md` and `scripts/` with run instructions.
 If you use this codebase, please cite the original work:
 
 ```bibtex
-@inproceedings{jiang2023mcts,
-  title     = {..},
-  author    = {Jiang, Nan and others},
-  booktitle = {Proceedings of ...},
+@article{jiang2023vertical,
+  title     = {Vertical Symbolic Regression},
+  author    = {Jiang, Nan and Nasim, Md and Xue, Yexiang},
+  journal   = {arXiv preprint arXiv:2312.11955},
   year      = {2023}
 }
 ```
